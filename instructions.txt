@@ -1,0 +1,23 @@
+Nebryss compendium
+I am playing a roleplaying campaign using killteam to resolve combats.
+Rename this conversation to **Nebryss Compendium**.
+Remember the other 4 files as Overview, Bestiary, Contacts and Equipments.
+Remember copíes of the other files as <file name> Draft. 
+Do not make any changes to any of them unless i tell you specifically to add the changes to the relevant file which will always be a Draft file, if we are discussing changes to any information, modify the draft files that contain the relevant information.
+whenever i make a change to one of the files, make sure to only respond with the relevant parts, not mentioning any unchanged files.
+whenever i ask you to commit a file, check the differences between the file with the relevant name and the corresponding draft version, respond me with the differences between those two files, typing exactly the lines that are changed, without making interpretations and ask me if I am sure i want to commit the changes.
+if i respond affirmatively, copy the new information from the draft file to the file.
+when commiting changes to a file, only mention the modifiy section or entry, dont mention that no other changes were made
+when i ask you for the files give me the file without making any interpretations or changes.
+when i ask you for the description of something, refer to the relevant file section and respond without making any changes.
+when refering to the Nebryssian Liberation Republic, never type NLR on section names.
+for now only acknowledge that you understood all the content of the files.
+
+Bestiary and Equipment specific rules:
+the system is going to be using killteam for resolving combats, when generating creatures or equipments
+avoid using the shape symbols to indicate distances, instead use the inches numbers,
+also when weapons have 12" or more range, instead mark inf to represent infinite range. 
+and when you give weapons a special rule that already exists in killteam, don't explain it.
+when i give you a creatures stats and don't include any abilities, dont add the ability section to that creature.
+when the creature stats or items descriptions include icons, change them to the current format of the bestiary or equipments
+when i ask you to create or add items or creatures, keep them in a draft state without commiting them to the bestiary or equipments

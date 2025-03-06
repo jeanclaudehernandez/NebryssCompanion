@@ -1,0 +1,160 @@
+---
+
+### **Bestiary of Nebryss**  
+**Power Rating (PR) Formula**  
+- **PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`  
+  - **Wounds**: Wound count × 2.2.  
+  - **Save Modifier**: Subtract the Save value from 6, then multiply by 7.  
+  - **Weapon Threat**: (Total Attacks × Average Damage) + Special Rule value.  
+  - **Ability Score**: +7 per impactful ability.  
+  - **Movement**: Movement value × 4.  
+  - **APL**: APL value × 6.  
+
+---
+
+#### **Murloc (PR: 67)** 
+**Faction**: Forces of nature
+**Family**: Murloc  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″             |  
+| **Wounds**           | 6              |  
+| **Save**             | 6+             |  
+| **APL**              | 1              |  
+| **Group Activation** | 2              |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **Weapon Skill** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|------------------|------------|-------------------------|  
+| **Rusty Spear**      | Melee           | 3           | 4+               | 2/3        | Lethal 5+               |  
+| **Crude Net**        | 6″              | 2           | 5+               | 1/2        | Entangle                |  
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Amphibious Assault**| **1AP:** Perform a **Swim** action (move 6″ through water or mist-covered terrain). |  
+| **Pack Tactics**     | Improves **Weapon Skill** and **Ballistic Skill** by 1 while within 3″ of another friendly Murloc. |  
+| **Primitive Cunning**| Once per Turning Point, can perform a **Free Dash** action when activated. |  
+
+---  
+
+#### **Murloc King (PR: 101)**
+**Faction**: Forces of nature
+**Family**: Murloc  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″             |  
+| **Wounds**           | 12             |  
+| **Save**             | 5+             |  
+| **APL**              | 2              |  
+| **Group Activation** | 1              |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **Weapon Skill** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|------------------|------------|-------------------------|  
+| **Royal Trident**    | Melee           | 4           | 3+               | 3/4        | Lethal 5+, Brutal       |  
+| **Tidal Blast**      | 6″              | 3           | 4+               | 2/3        | Blast (1″), Ceaseless   |  
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Amphibious Assault**| **1AP:** Perform a **Swim** action (move 6″ through water or mist-covered terrain). |  
+| **King’s Command**   | While within 6″ of this operative, other friendly Murloc operatives can re-roll **Weapon Skill** rolls of 1. |  
+| **Tidal Surge**      | **1AP:** Once per Turning Point, this operative can perform a **Tidal Surge** action. All enemy operatives within 3″ are pushed 2″ away. |  
+| **Primitive Cunning**| Once per Turning Point, can perform a **Free Dash** action when activated. |  
+
+---  
+
+#### **Aetherwing (PR: 100)** 
+**Faction**: Forces of nature
+**Family**: Tzaangor   
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 7″             |  
+| **Wounds**           | 10             |  
+| **Save**             | 5+             |  
+| **APL**              | 2              |  
+| **Group Activation** | 1              |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **Weapon Skill** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|------------------|------------|-------------------------|  
+| **Aether Talons**    | Melee           | 4           | 4+               | 3/4        | Rending                 |  
+| **Beak Gore**        | Melee           | 3           | 4+               | 4/5        | Brutal                  |  
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Aether Dive**      | **1AP:** Perform a **Fly** action (move 7″ over terrain and models).      |  
+| **Primal Strength**  | When performing a **Fight** action, add 1 to the Damage of successful hits. |  
+| **Mistborn Fury**    | Once per Turning Point, can perform a **Free Fight** action when activated. |  
+
+---  
+
+#### **Intercessor Warrior(PR: 118)**  
+**Faction**: Imperium
+**Family**: Space  Marine
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″             |  
+| **Wounds**           | 14             |  
+| **Save**             | 3+             |  
+| **APL**              | 3              |  
+| **Group Activation** | 1              |  
+
+---  
+
+| **Weapon**               | **RNG** | **Attacks** | **WS/BS** | **Damage** | **Special Rules**       |  
+|--------------------------|---------|-------------|-----------|------------|-------------------------|  
+| **Auto Bolt Rifle**      | inf     | 4           | 3+        | 3/4        | Torrent 1               |  
+| **Bolt Rifle**           | inf     | 4           | 3+        | 3/4        | Piercing Crits 1        |  
+| **Stalker Bolt Rifle**   | inf     | 4           | 3+        | 3/4 or 3/5 | **Mobile:** No special rules. **Heavy:** Piercing Crits 1, Lethal 5+, Heavy (Dash only). |  
+| **Fists**                | Melee   | 4           | 3+        | 3/4        | -                       |  
+
+---  
+
+| **Ability**              | **Effect**                                                                 |  
+|--------------------------|---------------------------------------------------------------------------|  
+| **Astartes Discipline**  | Immune to **Pinning**. Re-roll **Injury Rolls** of 1.                     |  
+
+---  
+
+#### **Captain Marcus Valen (PR: 172)**  
+*Captain of the White Consuls, diplomat, and master tactician.*  
+**Faction**: Imperium
+**Family**: Space Marine
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″             |  
+| **Wounds**           | 18             |  
+| **Save**             | 3+             |  
+| **APL**              | 3              |  
+| **Group Activation** | 1              |  
+
+---  
+
+| **Weapon**               | **RNG** | **Attacks** | **WS/BS** | **Damage** | **Special Rules**       |  
+|--------------------------|---------|-------------|-----------|------------|-------------------------|  
+| **The Lance of Sabatine** | Melee   | 5           | 3+        | **5/7**    | Brutal, Rending         |  
+| **Mistforged Plasma Gun** | 8″      | 4           | 3+        | **4/5**    | Balanced, Piercing 1. **Supercharged:** Damage 5/6, Lethal 5+, Hot. |  
+
+---  
+
+| **Ability**              | **Effect**                                                                 |  
+|--------------------------|---------------------------------------------------------------------------|  
+| **Diplomat’s Resolve**   | Friendly operatives within 6″ ignore **Injury penalties**.                |  
+| **Lancer’s Charge**      | **1AP:** Perform a free **Charge** action and a free **Fight** action in any order. |  
+| **Mistforged Precision** | Re-roll one hit or wound roll per activation. Ignores penalties from mist anomalies. |  
+
+---  

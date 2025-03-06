@@ -1,0 +1,42 @@
+### **Equipment Shop**
+
+| **Name**               | **₥**      | **Description**                                                                 |
+|-------------------------|------------|---------------------------------------------------------------------------------|
+| **Mistforged Pistol**   | 15         | A: 3 -- RNG: 12" -- WS: 4+ -- DMG: 2/3 -- SR: Lethal 5+, Mist-Piercing (ignores mist-based penalties to hit). |
+| **Chainsword**          | 12         | A: 4 -- RNG: Melee -- WS: 3+ -- DMG: 3/4 -- SR: Rending.                        |
+| **Plasma Rifle**        | 20         | A: 2 -- RNG: inf -- WS: 4+ -- DMG: 4/5 -- SR: Blast (1"), Hot.                  |
+| **Mistcloak**           | 8          | A mist-resistant cloak that grants the wearer +1 to Save rolls while in dense mist zones. |
+| **Mist Compass**        | 5          | A handheld device that helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |
+| **Stimpack**            | 3          | A single-use injector that restores 1D3 wounds to the user. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |
+| **Mist Grenade**        | 6          | A: 1 -- RNG: 6" -- WS: - -- DMG: 2/3 -- SR: Blast (3"), Mist Dispersal (clears mist in a 3" radius for one round). |
+| **Mist-Resistant Armor**| 18         | Lightweight armor that reduces damage from mist anomalies by 1 (to a minimum of 1). |
+| **Grappling Hook**      | 4          | A reusable tool that allows the user to traverse difficult terrain or scale obstacles. |
+| **Reinforced Carapace** | 22         | Heavy armor that increases Wounds by 4 but reduces Movement by 1". |
+| **Mistweave Plate**     | 25         | Medium armor that increases Wounds by 1 and grants +1 to Save rolls in mist zones. |
+| **Longshot Rifle**      | 17         | A: 3 -- RNG: inf -- WS: 3+ -- DMG: 3/4 -- SR: Saturate.                         |
+| **Mist Lantern**        | 7          | A portable light source that pierces through dense mist, illuminating a 6" radius. |
+| **Rations Pack**        | 2          | A week’s worth of preserved food and water, essential for long journeys. |
+| **Medkit**              | 9          | A compact medical kit that allows the user to stabilize wounded allies and restore 2D3 + 2 wounds once per recharge. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |
+| **Mist-Repellent Spray**| 3.5        | A single-use spray that clears mist in a 1" radius for 1 round. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |
+| **Signal Flare**        | 2.5        | A flare that can be used to signal for help or mark a location, visible through mist. |
+| **Lockpick Set**        | 5          | A set of tools for bypassing locks and traps. |
+| **Mist-Tracker Goggles**| 12         | Goggles that highlight mist anomalies and hidden paths within 12". |
+
+---
+
+### **Ammunition Types**
+
+| **Name**               | **₥** | **Qant** | **Type**       | **Description**                                                                 |
+|-------------------------|-------|----------|----------------|---------------------------------------------------------------------------------|
+| **Standard Bolter Rounds** | 2    | 10       | Bolter          | Standard ammunition for bolter-type weapons. Reliable and effective.            |
+| **Kraken Penetrator Rounds** | 10  | 5        | Bolter          | High-penetration rounds that worsen the target’s Save characteristic by 1 and have Piercing 1. |
+| **Hellfire Rounds**     | 6    | 6        | Bolter          | Rounds filled with acidic compounds, dealing +1 Damage to biological targets.   |
+| **Standard Plasma Cells** | 3   | 8        | Plasma          | Standard energy cells for plasma weapons. Stable and efficient.                 |
+| **Standard Gunpowder Rounds** | 1 | 20       | Pistol/Rifle    | Basic ammunition for gunpowder-based pistols and rifles.                        |
+| **Armor-Piercing Rounds** | 4  | 8        | Rifle/Sniper    | Rounds designed to pierce armor, ignoring 1 point of Armor Save.                |
+| **Hollow-Point Rounds** | 3    | 10       | Pistol          | Rounds that expand on impact, dealing +1 Damage to unarmored targets.           |
+| **Match Grade Rounds**  | 10   | 5        | Sniper          | Precision-engineered rounds that worsen the target’s Save characteristic by 1 and have Devastating 2. |
+| **Incendiary Rounds**   | 4    | 8        | Rifle           | Rounds that ignite on impact, dealing 1 additional Damage over the next round.  |
+| **Fragmentation Rounds**| 3    | 10       | Pistol/Rifle    | Rounds that explode on impact, dealing Blast (1") Damage.                       |
+
+---
