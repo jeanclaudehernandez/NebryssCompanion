@@ -155,6 +155,6 @@
 |--------------------------|---------------------------------------------------------------------------|  
 | **Diplomat’s Resolve**   | Friendly operatives within 6″ ignore **Injury penalties**.                |  
 | **Lancer’s Charge**      | **1AP:** Perform a free **Charge** action and a free **Fight** action in any order. |  
-| **Mistforged Precision** | Re-roll one hit or wound roll per activation. Ignores penalties from mist anomalies. |  
+| **Mistforged Precision** | Re-roll one hit roll per activation. Only Available within mist dense zones. |  
 
 ---  
