@@ -1,72 +1,70 @@
-### **The Imperium of Man**
+### **Contacts**  
 
-#### **Inquisitor Veyra Mortis – Ordo Hereticus**
-- **Mission**: Purge all knowledge of the mist’s true nature and eliminate heretical elements.
-- **Methods**: Works with Adeptus Sororitas and Imperial Navy forces; employs infiltrators and sanctioned purges.
-- **Personality**: Fanatical, brutal, and uncompromising.
-- **Location**: Primarily stationed at **Fortress Sanctus**, where she oversees purges and enforces Imperial doctrine.
+### **The Imperium of Man**  
 
-#### **Inquisitor Alaric Dresdan – Ordo Malleus**
-- **Mission**: Harness the mist’s properties for the Imperium’s benefit.
-- **Methods**: Works with radical Magi of the Adeptus Mechanicus and sanctioned psykers; conducts clandestine experiments.
-- **Personality**: Pragmatic, methodical, and controversial.
-- **Location**: Primarily stationed at **Stormwatch**, where he studies mist patterns and coordinates with Imperial forces.
+#### **c1.1 Inquisitor Veyra Mortis – Ordo Hereticus**
+- **c1.1.1 Mission**: Purge all knowledge of the mist’s true nature and eliminate heretical elements.
+- **c1.1.2 Methods**: Works with Adeptus Sororitas and Imperial Navy forces; employs infiltrators and sanctioned purges.
+- **c1.1.3 Personality**: Fanatical, brutal, and uncompromising.
+- **c1.1.4 Location**: Primarily stationed at **Fortress Sanctus**, where she oversees purges and enforces Imperial doctrine.
 
-#### **Captain Marcus Valen – White Consuls**
-- **Role**: Diplomatic envoy and military advisor to the Imperium’s forces on Nebryss.
-- **Mission**: Ensure the stability of Imperial control while fostering alliances with local factions, particularly the Gilded Accord, to secure mist trade routes.
-- **Wargear**:
-  - **The Lance of Sabatine**: A golden power fist engraved with the emblem of a lancer on horseback, symbolizing the White Consuls’ commitment to swift and decisive action.
-  - **Mistforged Plasma Gun**: A custom plasma gun optimized for combat in dense mist, featuring enhanced cooling systems and a targeting array that pierces through the mist’s distortions.
-- **Personality**: Diplomatic, honorable, and compassionate, with a focus on strategic thinking and alliance-building.
-- **Location**: Stationed at **Fortress Sanctus**, but frequently travels to **Stormwatch** to assist Inquisitor Alaric Dresdan with mist-related operations.
+#### **c1.2 Inquisitor Alaric Dresdan – Ordo Malleus**
+- **c1.2.1 Mission**: Harness the mist’s properties for the Imperium’s benefit.
+- **c1.2.2 Methods**: Works with radical Magi of the Adeptus Mechanicus and sanctioned psykers; conducts clandestine experiments.
+- **c1.2.3 Personality**: Pragmatic, methodical, and controversial.
+- **c1.2.4 Location**: Primarily stationed at **Stormwatch**, where he studies mist patterns and coordinates with Imperial forces.
 
----
-
-### **The Gilded Accord**
-
-#### **Nebryssian Reserve Director Thalos Grenn**
-- **Role**: The head of the Nebryssian Reserve, Thalos oversees the minting and distribution of Mistral coins and manages the Accord’s digital financial systems.
-- **Personality**: Meticulous, cautious, and highly intelligent. He is a master of finance but struggles with interpersonal relationships.
-- **Location**: **Luminos**.
-
-#### **Kael "Stormchaser" Draven**
-- **Role**: A legendary navigator and one of the most skilled members of the Fogbound Cartographers. Known for his daring rescues and ability to deliver VIPs through the most perilous mist zones.
-- **Location**: Operates from **Zephyria** and other key locations along mist trade routes.
+#### **c1.3 Captain Marcus Valen – White Consuls**
+- **c1.3.1 Role**: Diplomatic envoy and military advisor to the Imperium’s forces on Nebryss.
+- **c1.3.2 Mission**: Ensure the stability of Imperial control while fostering alliances with local factions, particularly the Gilded Accord, to secure mist trade routes.
+- **c1.3.3 Wargear**:
+  - **c1.3.3.1 The Lance of Sabatine**: A golden power fist engraved with the emblem of a lancer on horseback, symbolizing the White Consuls’ commitment to swift and decisive action.
+  - **c1.3.3.2 Mistforged Plasma Gun**: A custom plasma gun optimized for combat in dense mist, featuring enhanced cooling systems and a targeting array that pierces through the mist’s distortions.
+- **c1.3.4 Personality**: Diplomatic, honorable, and compassionate, with a focus on strategic thinking and alliance-building.
+- **c1.3.5 Location**: Stationed at **Fortress Sanctus**, but frequently travels to **Stormwatch** to assist Inquisitor Alaric Dresdan with mist-related operations.
 
 ---
 
-### **The Nebryssian Liberation Republic**
+### **The Gilded Accord**  
 
-#### **Commander Elara Voss**
-- **Role**: The charismatic leader of the NLR, known for her tactical brilliance and unwavering dedication to Nebryss’s independence.
-- **Personality**: Inspiring, resourceful, and fiercely protective of her people.
-- **Location**: Primarily stationed at the **Veiled Citadel** in **Misthaven**.
+#### **c2.1 Nebryssian Reserve Director Thalos Grenn**
+- **c2.1.1 Role**: The head of the Nebryssian Reserve, Thalos oversees the minting and distribution of Mistral coins and manages the Accord’s digital financial systems.
+- **c2.1.2 Personality**: Meticulous, cautious, and highly intelligent. He is a master of finance but struggles with interpersonal relationships.
+- **c2.1.3 Location**: **Luminos**.
 
-#### **Mistweaver Kaelen Draymoor**
-- **Role**: A revered Mistweaver who has survived multiple rituals, earning him the title “The Unbroken.”
-- **Personality**: Wise, enigmatic, and deeply spiritual.
-- **Location**: Resides in the **Mistweaver’s Grove**, where he trains new Mistweavers and conducts rituals.
-
----
-
-### **The Crimson Corsairs**
-
-#### **Lady Seraphine "The Siren" Voss**
-- **Reputation**: A former Rogue Trader turned pirate, Seraphine uses her charm and cunning to manipulate her enemies. She is known for seducing her targets into lowering their guard before striking.
-- **Backstory**: Accused of heresy by the Inquisition, she fled to Nebryss to evade persecution and rebuild her power.
-- **Fleet Size**: 4 ships (small and stealthy).
-- **Flagship**: **The Crimson Siren** – A luxurious but deadly vessel disguised as a trading ship, equipped with hidden weaponry and a cloaking device.
-- **Tactics**: Relies on deception, often posing as a merchant or ally before revealing her true intentions and attacking.
-- **Motivations**: Seeks to rebuild her power and wealth while evading her relatives and the Inquisition.
-
-#### **Garrick "The Butcher" Malrik**
-- **Reputation**: A brutal and bloodthirsty pirate who leaves no survivors. Garrick is feared for his savagery and his fleet’s relentless pursuit of prey.
-- **Fleet Size**: 2 ships (one medium-sized raider and one large flagship).
-- **Flagship**: **The Bloodied Cutlass** – A massive, heavily armored raider with reinforced hulls and a ramming prow designed to tear through enemy ships.
-- **Tactics**: Prefers direct assaults, using his flagship’s surprising speed and firepower to overwhelm his targets.
-- **Motivations**: Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality.
+#### **c2.2 Kael "Stormchaser" Draven**
+- **c2.2.1 Role**: A legendary navigator and one of the most skilled members of the Fogbound Cartographers. Known for his daring rescues and ability to deliver VIPs through the most perilous mist zones.
+- **c2.2.2 Location**: Operates from **Zephyria** and other key locations along mist trade routes.
 
 ---
 
-Let me know if you need further details or specific information about any of these NPCs!
+### **The Nebryssian Liberation Republic**  
+
+#### **c3.1 Commander Elara Voss**
+- **c3.1.1 Role**: The charismatic leader of the Nebryssian Liberation Republic, known for her tactical brilliance and unwavering dedication to Nebryss’s independence.
+- **c3.1.2 Personality**: Inspiring, resourceful, and fiercely protective of her people.
+- **c3.1.3 Location**: Primarily stationed at the **Veiled Citadel** in **Misthaven**.
+
+#### **c3.2 Mistweaver Kaelen Draymoor**
+- **c3.2.1 Role**: A revered Mistweaver who has survived multiple rituals, earning him the title “The Unbroken.”
+- **c3.2.2 Personality**: Wise, enigmatic, and deeply spiritual.
+- **c3.2.3 Location**: Resides in the **Mistweaver’s Grove**, where he trains new Mistweavers and conducts rituals.
+
+---
+
+### **The Crimson Corsairs**  
+
+#### **c4.1 Lady Seraphine "The Siren" Voss**
+- **c4.1.1 Reputation**: A former Rogue Trader turned pirate, Seraphine uses her charm and cunning to manipulate her enemies. She is known for seducing her targets into lowering their guard before striking.
+- **c4.1.2 Backstory**: Accused of heresy by the Inquisition, she fled to Nebryss to evade persecution and rebuild her power.
+- **c4.1.3 Fleet Size**: 4 ships (small and stealthy).
+- **c4.1.4 Flagship**: **The Crimson Siren** – A luxurious but deadly vessel disguised as a trading ship, equipped with hidden weaponry and a cloaking device.
+- **c4.1.5 Tactics**: Relies on deception, often posing as a merchant or ally before revealing her true intentions and attacking.
+- **c4.1.6 Motivations**: Seeks to rebuild her power and wealth while evading her relatives and the Inquisition.
+
+#### **c4.2 Garrick "The Butcher" Malrik**
+- **c4.2.1 Reputation**: A brutal and bloodthirsty pirate who leaves no survivors. Garrick is feared for his savagery and his fleet’s relentless pursuit of prey.
+- **c4.2.2 Fleet Size**: 2 ships (one medium-sized raider and one large flagship).
+- **c4.2.3 Flagship**: **The Bloodied Cutlass** – A massive, heavily armored raider with reinforced hulls and a ramming prow designed to tear through enemy ships.
+- **c4.2.4 Tactics**: Prefers direct assaults, using his flagship’s surprising speed and firepower to overwhelm his targets.
+- **c4.2.5 Motivations**: Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality.
