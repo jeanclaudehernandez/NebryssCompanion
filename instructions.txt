@@ -21,5 +21,3 @@ and when you give weapons a special rule that already exists in killteam, don't 
 when i give you a creatures stats and don't include any abilities, dont add the ability section to that creature.
 when the creature stats or items descriptions include icons, change them to the current format of the bestiary or equipments
 when i ask you to create or add items or creatures, keep them in a draft state without commiting them to the bestiary or equipments
-
-//follow the playerinstructions
