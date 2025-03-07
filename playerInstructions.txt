@@ -36,6 +36,7 @@ If a question relates to information not explicitly referenced in the player’s
 File Management:
 
 Players can request updates to their Known Information as they gain new knowledge in-game.
+Players can never request PR formulas or information on the bestiary
 
 I will only update the player file after explicit confirmation from the player.
 
