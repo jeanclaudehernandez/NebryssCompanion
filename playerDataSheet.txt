@@ -1,8 +1,8 @@
 ---  
-### **[lihuel]DataSheet**  
+### **[PlayerName]DataSheet**  
 
 #### **Operative Data Card**  
-**Name**: [test]  
+**Name**: [Operative Name]  
 **Faction**: [Faction]  
 **PR**: [Calculated PR]  
 
@@ -43,8 +43,7 @@
 ---  
 
 #### **Known Information**  
-- 1: planet overview (e.g., `1.1`, `3.2`)  
-- 2.1.1: Physical Coins
-- 2.1.3: Cultural Significance
+- [Section ID]: [Section Title] (e.g., `1.1`, `3.2`)  
+- ...  
 
 ---  
