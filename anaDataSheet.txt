@@ -1,0 +1,50 @@
+---  
+### **AnaDataSheet**  
+
+#### **Operative Data Card**  
+**Name**: Thennur
+**race**: Fellgor
+**Origin**: Nebryssian Liberation Republic
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″              |  
+| **Wounds**           | 8               |
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
+|----------------------|-----------------|-------------|--------|------------|-------------------|  
+| **Claws**            | Melee           | 4           | 3+     | 2/3        | Rending (+2)      |  
+| **Mist Blast**       | 10″             | 3           | 4+     | 2/3        | Psychic Push*     |  
+*Psychic Push*: After resolving this weapon’s attacks, **if at least one attack dice inflicted damage**,  choose a direction and push the target 2″. Roll one D6, on a **1–2**, this operative suffers 2 wounds.
+
+---  
+
+| **Ability**          | **Effect**                                  |  
+|----------------------|--------------------------------------------|  
+| **Mist Veil**        | *1AP, Once per battle*: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured. |  
+| **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 mortal wound to restore 2D3 +1 wounds to a friendly operative within Control Range. |  
+
+---  
+
+#### **Progression**  
+- **Level**: 1  
+- **EXP**: 0  
+
+---  
+
+#### **Inventory**  
+- **Mistral Coins**: 0₥ (physical)  
+- **Mistral Bank**: 0₥ (digital)  
+- **Items**:  
+  - **Mist Compass** x1  
+
+---  
+
+#### **Known Information**  
+- `6.4`: **The Nebryssian Liberation Republic**  
+- `6.4.3`: **Misthaven**  
+- `3`: **The Mist and Its Effects**  
