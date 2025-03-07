@@ -3,8 +3,8 @@
 
 #### **Operative Data Card**  
 **Name**: [Operative Name]  
-**Faction**: [Faction]  
-**PR**: [Calculated PR]  
+**race**: [Operative Name]
+**Origin**: [Operative faction of origin]
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  

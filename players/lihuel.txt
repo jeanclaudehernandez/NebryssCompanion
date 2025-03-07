@@ -1,0 +1,40 @@
+ #### **Operative Data Card**  
+**Name**: Akrina Voss  
+**race**: Human  
+**Origin**: Imperium of Man  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″              |  
+| **Wounds**           | 6               |  
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
+|----------------------|-----------------|-------------|--------|------------|-------------------|  
+| **Leg Blade**        | Melee           | 4           | 4+     | 2/3        | Quick Assault*    |  
+| **Stub Pistol**      | 8″              | 4           | 4+     | 2/3        | -                 |  
+
+---  
+
+| **Ability**          | **Effect**                                  |  
+|----------------------|--------------------------------------------|  
+| **Unrelenting Agility** | *Once per battle*: this operative may perform  **Shoot** action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target of that shooting action survives, this operative gains **1AP** untill the end of the activation. |
+| **Quick Assault** | *Once per battle*: if this operative hasn't done a shoot action during this activation it can resolve two successful or critical hit dice in sequence. | 
+
+---  
+
+#### **Inventory**  
+- **Mistral Coins**: 0₥ (physical)  
+- **Mistral Bank**: 0₥ (digital)  
+- **Items**: None  
+
+---  
+
+#### **Known Information**  
+- `6.1`: **The Imperium of Man**  
+- `3`: **The Mist and Its Effects**  
+- `6.5`: **The Crimson Corsairs**  
+---  
