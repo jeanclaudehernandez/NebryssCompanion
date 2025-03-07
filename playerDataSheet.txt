@@ -1,4 +1,3 @@
----  
 ### **[PlayerName]DataSheet**  
 
 #### **Operative Data Card**  
