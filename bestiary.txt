@@ -1,13 +1,13 @@
 ### **Bestiary of Nebryss**  
 **Revised Power Rating (PR) Formula**  
 **PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`  
-- **Weapon Threat**: `(Attacks × Avg. Damage) + Special Rules + (7 − WS)`.  
+- **Weapon Threat**: `(Attacks × min Damage) + Special Rules + (7 − WS)` highest value of all weapons.  
   - **Special Rules**: Positive (e.g., *Lethal 5+*) = **+2**, Negative (e.g., *Heavy*) = **−1**.  
 - **Ability Score**: **+7 per impactful ability**.  
 
 ---  
 
-#### **Murloc (PR: 77)**  
+#### **Murloc (PR: 68)**  
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -31,12 +31,12 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Amphibious Assault**| **1AP:** Swim 6″ through water or mist.                                   |  
-| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc.                                 |  
-| **Primitive Cunning**| Free Dash once per Turning Point.                                        |  
+| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --impactfull                                |  
+| **Primitive Cunning**| Free Dash once per Turning Point. --impactfull                                       |  
 
 ---  
 
-#### **Murloc King (PR: 119)**  
+#### **Murloc King (PR: 103)**  
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -59,12 +59,12 @@
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **King’s Command**   | Re-roll WS 1s for nearby Murlocs.                                        |  
-| **Tidal Surge**      | **1AP:** Push enemies 2″ away.                                           |  
+| **King’s Command**   | Re-roll WS 1s for Murlocs withing 6". --impactfull                                       |  
+| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --impactfull                                           |  
 
 ---  
 
-#### **Aetherwing (PR: 109)**  
+#### **Aetherwing (PR: 93)**  
 **Faction**: Forces of nature  
 **Family**: Tzaangor  
 
@@ -88,11 +88,11 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                                             |  
-| **Primal Strength**  | +1 Damage to successful Fight actions.                                    |  
+| **Primal Strength**  | +1 Damage to successful Fight actions. --impactfull                                   |  
 
 ---  
 
-#### **Intercessor Warrior (PR: 124)**  
+#### **Intercessor Warrior (PR: 113)**  
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -109,17 +109,11 @@
 | **Weapon**               | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |--------------------------|---------|-------------|--------|------------|-------------------------|  
 | **Stalker Bolt Rifle**   | inf     | 4           | 3+     | 3/4 or 3/5 | Piercing Crits 1 (+2), Lethal 5+ (+2), Heavy (−1) |  
-| **Fists**                | Melee   | 4           | 3+     | 3/4        | -                       |  
+| **Fists**                | Melee   | 4           | 3+     | 3/4        | -                       |   
 
 ---  
 
-| **Ability**              | **Effect**                                                                 |  
-|--------------------------|---------------------------------------------------------------------------|  
-| **Astartes Discipline**  | Immune to Pinning. Re-roll Injury Rolls of 1.                             |  
-
----  
-
-#### **Captain Marcus Valen (PR: 162)**  
+#### **Captain Marcus Valen (PR: 143)**  
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -143,6 +137,6 @@
 | **Ability**              | **Effect**                                                                 |  
 |--------------------------|---------------------------------------------------------------------------|  
 | **Mistforged Precision** | Re-roll one attack roll in mist zones.                                    |  
-| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.                                      |  
+| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --impactfull                        |  
 
 ---  
