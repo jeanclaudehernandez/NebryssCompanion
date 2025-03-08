@@ -139,4 +139,31 @@
 | **Mistforged Precision** | Re-roll one attack roll in mist zones.                                    |  
 | **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --impactfull                        |  
 
+--- 
+
+#### **Screamer (PR: 76)**  
+**Faction**: Abyssal Cabal (Tzeentch Daemonic Auxiliary)  
+**Family**: Daemon  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 8″              |  
+| **Wounds**           | 5               |  
+| **Save**             | 6+              |  
+| **APL**              | 1               |  
+| **Group Activation** | 1               |  
+
 ---  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
+|----------------------|---------|-------------|--------|------------|-------------------------|  
+| **Warpfire Maw**     | Melee   | 4           | 4+     | 2/3        | Lethal 5+ (+2)          |  
+| **Psychic Shriek**   | 6″      | 2           | -      | 1/2        | Psychic*, Ceaseless (+2)|  
+*Psychic*: Resolve as mortal wounds on unmodified critical hits.  
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
+| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --impactfull |  
