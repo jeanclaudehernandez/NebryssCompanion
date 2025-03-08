@@ -89,7 +89,8 @@
   - **9.3.3**: **Mist Knowledge**: Fully understands the mist’s warp nature and seeks to exploit it.  
   - **9.3.4**: **Iconography**: Generic Chaos-worshipping symbols.  
   - **9.3.5**: **Notable Locations**:  
-    - **9.3.5.1**: **Maledictum Prime**: A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.  
+    - **9.3.5.1**: **Maledictum Prime**: A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.
+    - **9.3.5.1.1**: **The Veilrend Spire**: A towering obsidian monolith at Maledictum Prime’s heart, where the Cabal conducts warp rituals to harness the mist’s power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness.    
 
 - **9.4**: **The Nebryssian Liberation Republic (20% control)**  
   - **9.4.1**: **Role**: A resistance force fighting for the planet’s independence.  
