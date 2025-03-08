@@ -1,0 +1,54 @@
+### **LorenoDataSheet**  
+
+#### **Operative Data Card**  
+**Name**: Xarion Vex, the Shattered Oracle  
+**race**: Human (Mutated)  
+**Origin**: Abyssal Cabal (Deserter)  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 5″              |  
+| **Wounds**           | 12              |  
+| **Save**             | 5+              |  
+| **APL**              | 3               |  
+
+---  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**          |  
+|----------------------|---------|-------------|--------|------------|----------------------------|  
+| **Mist-Warp Staff**  | Melee   | 3           | 3+     | 3/4        | Rending                    |  
+| **Warpflame Blast**  | inf     | 3           | 4+     | 2/3        | Blast (1″), Lethal 5+, Warpflame* |  
+*Warpflame*: Inflict 1 mortal wound on a critical hit.  
+
+---  
+
+| **Ability**          | **Effect**                                  |  
+|----------------------|--------------------------------------------|  
+| **Fractal Visions**  | *Once per Turning Point*: Reroll a failed defense roll. |  
+| **Mist Veilwalk**    | *1AP*: Teleport 6″ through mist zones. Roll 1D6; on a **4+**, gain **Conceal** until next activation. |  
+| **Unstable Mist-Energy** | After resolving a psychic action, roll 1D6. On a **1–2**, suffer 2 wounds. |  
+| **Screaming Vortex** | *Once per battle*: When this operative incapacitates an enemy, before removing it from the killzone, you may place a **Screamer** operative within 3″ of it. |  
+
+---  
+
+#### **Progression**  
+- **Level**: 1  
+- **EXP**: 0  
+
+---  
+
+#### **Inventory**  
+- **Mistral Coins**: 0₥ (physical)  
+- **Mistral Bank**: 0₥ (digital)  
+- **Items**:  
+  - **Shattered Mirror** x1 (Holds "echoes of unmade futures"; no mechanical effect).  
+  - **Mist-Tracker Goggles** x1  
+
+---  
+
+#### **Known Information**  
+- `9.3.1`: **The Abyssal Cabal – Role**  
+- `9.3.5.1.1`: **Veilrend Spire – Description**  
+- `13.1`: **The Mistheart – Lore**  
+- `c4.1.1`: **Lady Seraphine "The Siren" Voss – Reputation**  
+- `X.1`: **Tzeentch’s Influence – Hidden Agendas**  
