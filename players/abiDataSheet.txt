@@ -1,0 +1,56 @@
+### **AbiDataSheet**  
+
+#### **Operative Data Card**  
+**Name**: Wendy  
+**race**: Human  
+**Origin**: Imperium of Man  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″              |  
+| **Wounds**           | 5               |  
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
+|----------------------|-----------------|-------------|--------|------------|-------------------|  
+| **Lasgun**           | inf             | 3           | 4+     | 2/3        | -                 |  
+| **Bayonet**          | Melee           | 3           | 4+     | 2/3        | -                 |  
+
+---  
+
+| **Ability**          | **Effect**                                  |  
+|----------------------|--------------------------------------------|  
+| **Medic Kit**        | *1AP, Once per battle*: Heal 1D3 +1 wounds to a friendly operative within Control Range. This ability can only be used if there are no enemy operatives within 6″ of this operative or the target operative. |  
+| **Fast Reload Munitions** | *1AP*: Place an ammunition box marker within Control Range. Whenever a friendly operative performs a **Shoot** action within Control Range of the ammunition box marker, they can re-roll one attack dice but cannot retain critical successes from this re-roll. |  
+
+---  
+
+#### **Progression**  
+- **Level**: 1  
+- **EXP**: 0  
+
+---  
+
+#### **Inventory**  
+- **Mistral Coins**: 0₥ (physical)  
+- **Mistral Bank**: 0₥ (digital)  
+- **Items**:  
+  - **Medical Supplies** x2/5  
+
+---  
+
+#### **Known Information**  
+- `9.1.1`: **The Imperium of Man – Goal**  
+- `9.1.2`: **The Imperium of Man – Challenges**  
+- `9.1.4`: **The Imperium of Man – Naming**  
+- `9.1.5.1`: **Fortress Sanctus – Description**  
+- `9.4.1`: **The Nebryssian Liberation Republic – Role**  
+- `9.4.4`: **The Nebryssian Liberation Republic – People Identity**  
+- `9.4.5`: **The Nebryssian Liberation Republic – Iconography**  
+- `9.4.7.1`: **The Nebryssian Liberation Republic – Goals**  
+- `9.4.7.2`: **The Nebryssian Liberation Republic – Challenges**  
+- `9.4.6`: **The Nebryssian Liberation Republic – Capital: Misthaven**  
+  - `9.4.6.1`: **Misthaven – Description**  
