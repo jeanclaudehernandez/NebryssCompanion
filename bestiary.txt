@@ -172,7 +172,7 @@
 --- 
 
 #### **Screamer (PR: 76)**  
-**Faction**: Abyssal Cabal (Tzeentch Daemonic Auxiliary)  
+**Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
 | **Attribute**       | **Value**       |  
@@ -196,4 +196,48 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
-| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --impactfull |  
+| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --impactfull |
+
+---
+
+#### **Screecher Green**  
+**Faction**: Abyssal Cabal  
+**Family**: Daemon  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 8″              |  
+| **Wounds**           | 1               |  
+| **Save**             | 3+              |  
+| **APL**              | 1               |  
+| **Group Activation** | 1               |
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
+| **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6"- |
+| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point- |
+
+---
+
+#### **Screecher Purple**  
+**Faction**: Abyssal Cabal  
+**Family**: Daemon  
+
+| **Attribute**       | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 8″              |  
+| **Wounds**           | 1               |  
+| **Save**             | 3+              |  
+| **APL**              | 1               |  
+| **Group Activation** | 1               |
+
+---  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|---------------------------------------------------------------------------|  
+| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
+| **Arcane Bargain**   | once per activation if there is an enemy visible and within control range roll **1d6**, that enemy suffers **result** mortal wounds and restore **result** wounds from friendly operative that it's both visible and within 6", if another operative **other than Xarion Vex** recovered wounds this way and Xarion Vex is both visible and within 6" of this operative and the other friendly operative, restore **result/2** wounds rounded up from **Xarion Vex** |
+| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point- |
