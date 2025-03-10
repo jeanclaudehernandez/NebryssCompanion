@@ -31,8 +31,8 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Amphibious Assault**| **1AP:** Swim 6″ through water or mist.                                   |  
-| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --impactfull                                |  
-| **Primitive Cunning**| Free Dash once per Turning Point. --impactfull                                       |  
+| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --**impactful**                                |  
+| **Primitive Cunning**| Free Dash once per Turning Point when within 6" of **Murloc King**.                                       |  
 
 ---  
 
@@ -59,8 +59,8 @@
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --impactfull                                       |  
-| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --impactfull                                           |
+| **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --**impactful**                                       |  
+| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --**impactful**                                           |
 | **King's cunning**   | if there is a friendly operative within 3" at the beginning of the activation, this operative can perform free dash  |  
 
 ---  
@@ -89,7 +89,7 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                                             |  
-| **Primal Strength**  | +1 Damage to successful Fight actions. --impactfull                                   |  
+| **Primal Strength**  | +1 Damage to successful Fight actions. --**impactful**                                   |  
 
 ---  
 
@@ -139,8 +139,8 @@
 |--------------------------|---------------------------------------------------------------------------|  
 | **Combat Medicae**       | *1AP, Once per Turning Point*: Heal **2D3 +2** wounds to a friendly operative within 3″. |  
 | **Genetic Augmentation** | *1AP*: Grant a friendly operative within 6″ **+1 to WS/BS** until the end of this operative’s next activation. --**impactfull** |  
-| **Revitalizing Aura**    | All friendly operatives within 6″ reduce incoming damage by **1** (to a minimum of 1). Does not stack with other WS/BS modifiers --**impactfull** |  
-| **Desperate Charge**     | This operative can perform two dash actions if it doesn't perform any actions other than dash and move during this activation and it has the engage order  --**impactful** |
+| **Revitalizing Aura**    | All friendly operatives within 6″ reduce incoming damage by **1** (to a minimum of 1). Does not stack with other WS/BS modifiers. --**impactfull** |  
+| **Desperate Charge**     | This operative can perform two dash actions if it doesn't perform any actions other than dash and move during this activation and it has the engage order.  --**impactful** |
 
 ---  
 
@@ -168,7 +168,7 @@
 | **Ability**              | **Effect**                                                                 |  
 |--------------------------|---------------------------------------------------------------------------|  
 | **Mistforged Precision** | Re-roll one attack roll in mist zones.                                    |  
-| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --impactfull                        |  
+| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --**impactful**                        |  
 
 --- 
 
@@ -196,8 +196,8 @@
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
-| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --impactfull |
+| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                        |  
+| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --**impactful** |
 
 ---
 
@@ -217,9 +217,9 @@
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
-| **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6"- |
-| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point- |
+| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                        |  
+| **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6". --**impactful** |
+| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point. |
 
 ---
 
@@ -239,6 +239,6 @@
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --impactfull                                        |  
-| **Arcane Bargain**   | once per activation if there is an enemy visible and within control range roll **1d6**, that enemy suffers **result** mortal wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if another operative **other than Xarion Vex** recovered wounds this way and Xarion Vex is both visible and within 4" of this operative and the other friendly operative, restore **result/2** wounds rounded up from **Xarion Vex** |
-| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point- |
+| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                      |  
+| **Arcane Bargain**   | once per activation if there is an enemy visible and within control range roll **1d6**, that enemy suffers **result** mortal wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if another operative **other than Xarion Vex** recovered wounds this way and Xarion Vex is both visible and within 4" of this operative and the other friendly operative, restore **result/2** wounds rounded up from **Xarion Vex**. --**impactful**|
+| **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point. |
