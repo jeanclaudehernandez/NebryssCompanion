@@ -3,7 +3,7 @@
 #### **Operative Data Card**  
 **Name**: Wendy  
 **race**: Human  
-**Origin**: Imperium of Man  
+**Origin**: Imperium of Man  (deserter)
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -23,7 +23,7 @@
 
 | **Ability**          | **Effect**                                  |  
 |----------------------|--------------------------------------------|  
-| **Battlefield first aid**        | *1AP, Once per battle*: Heal 1D3 +1 wounds to a friendly operative within Control Range. This ability can only be used if there are no enemy operatives within 6″ of this operative or the target operative. |  
+| **Battlefield first aid**        | *1AP, Once per battle*: Heal 1D3 +1 wounds to a friendly operative within Control Range. This ability can only be used if there are no enemy operatives within 3″ of this operative or the target operative. |  
 | **Fast Reload Munitions** | *1AP*: Place an ammunition box marker within Control Range. Whenever a friendly operative performs a **Shoot** action within Control Range of the ammunition box marker, they can re-roll one attack dice but cannot retain critical successes from this re-roll. |  
 
 ---  

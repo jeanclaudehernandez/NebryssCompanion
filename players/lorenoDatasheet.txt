@@ -17,7 +17,7 @@
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**          |  
 |----------------------|---------|-------------|--------|------------|----------------------------|  
 | **Mist-Warp Staff**  | Melee   | 4           | 3+     | 2/3        |                            |  
-| **Warpflame Blast**  | 12"     | 3           | 4+     | 2/3        | Blast (1″), PSYCHIC        |  
+| **Warpflame Blast**  | 12"     | 3           | 4+     | 2/3        | Blast (2″)(+2), PSYCHIC, hot(-1)   |  
 
 ---  
 
@@ -25,8 +25,8 @@
 |----------------------|--------------------------------------------|  
 | **Fractal Visions**  | *Once per Battle*: Reroll a failed shooting attack dice. |  
 | **Mist Veilwalk**    | *1AP*: Teleport 6″ through mist zones. Roll 1D6; on a **4+**, gain **Conceal** until next activation. |
-| **Screaming Vortex** | *2AP, Once per battle*: place withint control range one Screecher(green or purple) operative within control range, cannot place it if there is an enemy visible and within 6", Scream Ritual |
-| **Heretic Astartes** | it can perform either two Shoot actions or two Fight actions. You cannot select the same PSYCHIC ranged weapon more than once per activation.  |
+| **Screaming Vortex** | *2AP, Once per battle*: place withint control range one Screecher(green or purple) operative within control range, cannot place it if there is an enemy visible and within 6". --impactful|
+| **Heretic Astartes** | it can perform either two Shoot actions or two Fight actions. You cannot select the same PSYCHIC ranged weapon more than once per activation.  --impactfull|
 
 
 ---

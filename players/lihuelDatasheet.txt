@@ -1,7 +1,7 @@
 #### **Operative Data Card**  
 **Name**: Akrina Voss  
 **race**: Human  
-**Origin**: Imperium of Man  
+**Origin**: Imperium of Man  (exiled)
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -21,8 +21,8 @@
 
 | **Ability**          | **Effect**                                  |  
 |----------------------|--------------------------------------------|  
-| **Unrelenting Agility** | *Once per battle*: this operative may perform  **Shoot** action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target of that shooting action survives, this operative gains **1AP** untill the end of the activation. |
-| **Quick Assault** | *Once per battle*: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two successful or critical hit dice in sequence and add 1dmg to both their damage characteristics. | 
+| **Unrelenting Agility** | *Once per battle*: this operative may perform  **Shoot** action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target of that shooting action survives, this operative gains **1AP** untill the end of the activation.  --impactfull|
+| **Quick Assault** | *Once per battle*: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two successful or critical hit dice in sequence and add 1dmg to both their damage characteristics. --impactfull| 
 
 ---  
 
