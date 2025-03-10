@@ -23,7 +23,7 @@
 
 | **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |----------------------|-----------------|-------------|--------|------------|-------------------------|  
-| **Rusty Spear**      | Melee           | 3           | 4+     | 2/3        | Lethal 5+ (+2)          |  
+| **Rusty Spear**      | Melee           | 3           | 4+     | 2/3        | -                       |  
 | **Crude Net**        | 6″              | 2           | 5+     | 1/2        | Entangle (+2)           |  
 
 ---  
@@ -52,15 +52,16 @@
 
 | **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |----------------------|-----------------|-------------|--------|------------|-------------------------|  
-| **Royal Trident**    | Melee           | 4           | 3+     | 3/4        | Lethal 5+ (+2), Brutal (+2) |  
-| **Tidal Blast**      | 6″              | 3           | 4+     | 2/3        | Blast (1″) (+2), Ceaseless (+2) |  
+| **Royal Trident**    | Melee           | 4           | 3+     | 3/4        | Lethal 5+ (+2), Shock (+2) |  
+| **Tidal Blast**      | 6″              | 3           | 4+     | 2/3        | Blast (1″) (+1), Ceaseless (+2) |  
 
 ---  
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
-| **King’s Command**   | Re-roll WS 1s for Murlocs withing 6". --impactfull                                       |  
-| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --impactfull                                           |  
+| **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --impactfull                                       |  
+| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --impactfull                                           |
+| **King's cunning**   | if there is a friendly operative within 3" at the beginning of the activation, this operative can perform free dash  |  
 
 ---  
 
