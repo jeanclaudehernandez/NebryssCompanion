@@ -7,7 +7,7 @@
 
 ---  
 
-#### **Murloc (PR: 68)**  
+#### **Murloc (PR: 59)**  
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -114,7 +114,7 @@
 
 ---  
 
-### **Apothecary Biologis (PR: 135) **  
+### **Apothecary Biologis (PR: 143) **  
 **Faction**: Imperium
 **Family**: Space Marine
 
@@ -130,14 +130,14 @@
 
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
 |----------------------|---------|-------------|--------|------------|-------------------|  
-| **Narthecium**       | Melee   | 4           | 3+     | 3/4        | Rending, *Combat Medicae* |  
+| **Narthecium**       | Melee   | 4           | 3+     | 3/4        | Rending(+2), *Combat Medicae* |  
 | **Bolt Pistol**      | 8″      | 4           | 3+     | 3/4        | -                 |  
 
 ---  
 
 | **Ability**              | **Effect**                                                                 |  
 |--------------------------|---------------------------------------------------------------------------|  
-| **Combat Medicae**       | *1AP, Once per Turning Point*: Heal **2D3 +2** wounds to a friendly operative within 3″. |  
+| **Combat Medicae**       | *1AP*: Heal **2D3 +2** wounds to a friendly operative within 3″. -**impactful** |  
 | **Genetic Augmentation** | *1AP*: Grant a friendly operative within 6″ **+1 to WS/BS** until the end of this operative’s next activation. --**impactfull** |  
 | **Revitalizing Aura**    | All friendly operatives within 6″ reduce incoming damage by **1** (to a minimum of 1). Does not stack with other WS/BS modifiers. --**impactfull** |  
 | **Desperate Charge**     | This operative can perform two dash actions if it doesn't perform any actions other than dash and move during this activation and it has the engage order.  --**impactful** |
