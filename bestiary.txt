@@ -1,7 +1,7 @@
 ### **Bestiary of Nebryss**  
 **Revised Power Rating (PR) Formula**  
 **PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`  
-- **Weapon Threat**: `(Attacks × min Damage) + Special Rules + (7 − WS)` highest value of all weapons.  
+- **Weapon Threat**: `(Attacks × min Damage x (7 − WS)) + Special Rules` highest value of all weapons.  
   - **Special Rules**: Positive (e.g., *Lethal 5+*) = **+2**, Negative (e.g., *Heavy*) = **−1**.  
 - **Ability Score**: **+7 per impactful ability**.  
 
@@ -23,8 +23,11 @@
 
 | **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |----------------------|-----------------|-------------|--------|------------|-------------------------|  
-| **Rusty Spear**      | Melee           | 3           | 4+     | 2/3        | -                       |  
-| **Crude Net**        | 6″              | 2           | 5+     | 1/2        | Entangle (+2)           |  
+| **Rusty Spear**      | Melee           | 3           | 4+     | 2/3        | -                       |
+| **Coral Sword**      | Melee           | 4           | 4+     | 1/2        | Ceaseless(+1)           |  
+| **Crude Net**        | 6″              | 2           | 5+     | 1/2        | Entangle (+1)           |
+| **Throwing Spear**   | 8″              | 4           | 5+     | 2/3        | -                       |
+  
 
 ---  
 
@@ -32,9 +35,38 @@
 |----------------------|---------------------------------------------------------------------------|  
 | **Amphibious Assault**| **1AP:** Swim 6″ through water or mist.                                   |  
 | **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --**impactful**                                |  
-| **Primitive Cunning**| Free Dash once per Turning Point when within 6" of **Murloc King**.                                       |  
+| **Primitive Cunning**| Free Dash once per Turning Point when within 6" of **Murloc King**.                                       |
+| **Crab Shell Shield** | Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success. |   
 
 ---  
+
+#### **Murloc Tidecaller (PR: 76)**  
++**Faction**: Forces of nature  
++**Family**: Murloc  
++
++| **Attribute**       | **Value**       |  
++|----------------------|-----------------|  
++| **Movement**         | 6″              |  
++| **Wounds**           | 8               |  
++| **Save**             | 5+              |  
++| **APL**              | 2               |  
++| **Group Activation** | 1               |  
++
++---  
++
++| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
++|----------------------|-----------------|-------------|--------|------------|-------------------------|  
++| **Tidal Trident**    | Melee           | 3           | 4+     | 2/3        | Punishing (+2)          |  
++| **Tidal Bolt**       | 12″             | 3           | 5+     | 2/3        | Blast (1″) (+1)         |  
++
++---  
++
++| **Ability**          | **Effect**                                                                 |  
++|----------------------|---------------------------------------------------------------------------|  
++| **Tidal Surge** | **1AP:** Push 2" all enemies within 6″. --**impactful**             |  
++| **Primitive Cunning** | Free Dash once per Turning Point when within 6" of **Murloc King**.       |  
+
+---
 
 #### **Murloc King (PR: 103)**  
 **Faction**: Forces of nature  
@@ -60,8 +92,7 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --**impactful**                                       |  
-| **Tidal Surge**      | **1AP:** Push enemies within 6",  2″ away. --**impactful**                                           |
-| **King's cunning**   | if there is a friendly operative within 3" at the beginning of the activation, this operative can perform free dash  |  
+| **Tidal Surge**      | **1AP:** Push 2" all enemies within 6". --**impactful**                                           | 
 
 ---  
 
