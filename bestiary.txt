@@ -108,7 +108,7 @@
 
 | **Weapon**               | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |--------------------------|---------|-------------|--------|------------|-------------------------|  
-| **Stalker Bolt Rifle**   | inf     | 4           | 3+     | 3/4 or 3/5 | Piercing Crits 1 (+2), Lethal 5+ (+2), Heavy (−1) |  
+| **Stalker Bolt Rifle**   | 14"     | 4           | 3+     | 3/4 or 3/5 | Piercing Crits 1 (+2), Lethal 5+ (+2), Heavy (−1) |  
 | **Fists**                | Melee   | 4           | 3+     | 3/4        | -                       |   
 
 ---  
