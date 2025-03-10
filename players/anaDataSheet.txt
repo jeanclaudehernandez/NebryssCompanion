@@ -17,7 +17,7 @@
 | **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
 |----------------------|-----------------|-------------|--------|------------|-------------------|  
 | **Claws**            | Melee           | 4           | 3+     | 2/3        | Rending (+2)      |  
-| **Mist Blast**       | 10″             | 3           | 4+     | 2/3        | Psychic Push*     |  
+| **Mist Blast**       | 12″             | 3           | 4+     | 2/3        | Psychic Push*     |  
 *Psychic Push*: After resolving this weapon’s attacks, **if at least one attack dice inflicted damage**,  choose a direction and push the target 2″. Roll one D6, on a **1–2**, this operative suffers 2 wounds.
 
 ---  
