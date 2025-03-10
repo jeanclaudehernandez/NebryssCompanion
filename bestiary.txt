@@ -7,7 +7,7 @@
 
 ---  
 
-#### **Murloc (PR: 59)**  
+#### **Murloc (PR: 68)**  
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -40,7 +40,7 @@
 
 ---  
 
-#### **Murloc Tidecaller (PR: 76)**  
+#### **Murloc Tidecaller (PR: 88)**  
 +**Faction**: Forces of nature  
 +**Family**: Murloc  
 +
@@ -68,7 +68,7 @@
 
 ---
 
-#### **Murloc King (PR: 103)**  
+#### **Murloc King (PR: 135)**  
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -96,7 +96,7 @@
 
 ---  
 
-#### **Aetherwing (PR: 93)**  
+#### **Aetherwing (PR: 114)**  
 **Faction**: Forces of nature  
 **Family**: Tzaangor  
 
@@ -124,7 +124,7 @@
 
 ---  
 
-#### **Intercessor Warrior (PR: 113)**  
+#### **Intercessor Warrior (PR: 145)**  
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -145,7 +145,7 @@
 
 ---  
 
-### **Apothecary Biologis (PR: 143) **  
+### **Apothecary Biologis (PR: 166) **  
 **Faction**: Imperium
 **Family**: Space Marine
 
@@ -175,7 +175,7 @@
 
 ---  
 
-#### **Captain Marcus Valen (PR: 143)**  
+#### **Captain Marcus Valen (PR: 214)**  
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -203,7 +203,7 @@
 
 --- 
 
-#### **Screamer (PR: 76)**  
+#### **Screamer (PR: 65)**  
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
@@ -232,7 +232,7 @@
 
 ---
 
-#### **Screecher Green**  
+#### **Screecher Green (PR: 75)**  
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
@@ -254,7 +254,7 @@
 
 ---
 
-#### **Screecher Purple**  
+#### **Screecher Purple (PR: 75)**  
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
