@@ -10,10 +10,63 @@
 
 ---  
 
+## **Index**  
+
+### **Forces of Nature**  
+
+- **b1.1**: Murloc
+  - **b1.1.1**: Stats  
+  - **b1.1.2**: Weapons (Rusty Spear, Coral Sword, Crude Net, Throwing Spear)  
+  - **b1.1.3**: Abilities (Amphibious Assault, Pack Tactics, Primitive Cunning, Crab Shell Shield)  
+- **b1.2**: Murloc Tidecaller
+  - **b1.2.1**: Stats  
+  - **b1.2.2**: Weapons (Tidal Trident, Tidal Bolt)  
+  - **b1.2.3**: Abilities (Tidal Surge, Primitive Cunning)  
+- **b1.3**: Murloc King
+  - **b1.3.1**: Stats  
+  - **b1.3.2**: Weapons (Royal Trident, Tidal Blast)  
+  - **b1.3.3**: Abilities (King’s Command, Tidal Surge)  
+- **b1.4**: Aetherwing
+  - **b1.4.1**: Stats  
+  - **b1.4.2**: Weapons (Aether Talons, Beak Gore)  
+  - **b1.4.3**: Abilities (Aether Dive, Primal Strength)  
+
+### **Imperium**  
+
+- **b2.1**: Intercessor Warrior
+  - **b2.1.1**: Stats  
+  - **b2.1.2**: Weapons (Stalker Bolt Rifle, Fists)  
+  - **b2.1.3**: Abilities (N/A)  
+- **b2.2**: Apothecary Biologis  
+  - **b2.2.1**: Stats  
+  - **b2.2.2**: Weapons (Narthecium, Bolt Pistol)  
+  - **b2.2.3**: Abilities (Combat Medicae, Genetic Augmentation, Revitalizing Aura, Desperate Charge)  
+- **b2.3**: Captain Marcus Valen  
+  - **b2.3.1**: Stats  
+  - **b2.3.2**: Weapons (Lance of Sabatine, Mistforged Plasma Gun)  
+  - **b2.3.3**: Abilities (Mistforged Precision, Lancer’s Charge)  
+
+### **Abyssal Cabal**  
+
+- **b3.1**: Screamer  
+  - **b3.1.1**: Stats  
+  - **b3.1.2**: Weapons (Warpfire Maw, Psychic Shriek)  
+  - **b3.1.3**: Abilities (Daemonic Flight, Warpfire Trail)  
+- **b3.2**: Screecher Green  
+  - **b3.2.1**: Stats  
+  - **b3.2.2**: Weapons (N/A)  
+  - **b3.2.3**: Abilities (Daemonic Flight, Aegis of the Ninefold Deceit, Ethereal Form)  
+- **b3.3**: Screecher Purple  
+  - **b3.3.1**: Stats  
+  - **b3.3.2**: Weapons (N/A)  
+  - **b3.3.3**: Abilities (Daemonic Flight, Arcane Bargain, Ethereal Form)  
+
+---  
+
 ## **Murloc (PR: 68)**
 
 **Faction**: Forces of nature  
-**Family**: Murloc  
+**Subgroup**: Murloc  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -46,7 +99,7 @@
 ## **Murloc Tidecaller (PR: 88)**
 
 +**Faction**: Forces of nature  
-+**Family**: Murloc  
++**Subgroup**: Murloc  
 +
 +| **Attribute**       | **Value**       |  
 +|----------------------|-----------------|  
@@ -75,7 +128,7 @@
 ## **Murloc King (PR: 135)**
 
 **Faction**: Forces of nature  
-**Family**: Murloc  
+**Subgroup**: Murloc  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -104,7 +157,7 @@
 ## **Aetherwing (PR: 114)**
 
 **Faction**: Forces of nature  
-**Family**: Tzaangor  
+**Subgroup**: Tzaangor  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -133,7 +186,7 @@
 ## **Intercessor Warrior (PR: 145)**  
 
 **Faction**: Imperium  
-**Family**: Space Marine  
+**Subgroup**: Space Marine  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -155,7 +208,7 @@
 ## **Apothecary Biologis (PR: 159)**  
 
 **Faction**: Imperium
-**Family**: Space Marine
+**Subgroup**: Space Marine
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -186,7 +239,7 @@
 ## **Captain Marcus Valen (PR: 214)**
 
 **Faction**: Imperium  
-**Family**: Space Marine  
+**Subgroup**: Space Marine  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -215,7 +268,7 @@
 ## **Screamer (PR: 65)**
 
 **Faction**: Abyssal Cabal  
-**Family**: Daemon  
+**Subgroup**: Daemon  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -246,7 +299,7 @@
 ## **Screecher Green (PR: 75)**  
 
 **Faction**: Abyssal Cabal  
-**Family**: Daemon  
+**Subgroup**: Daemon  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  
@@ -269,7 +322,7 @@
 ## **Screecher Purple (PR: 75)**  
 
 **Faction**: Abyssal Cabal  
-**Family**: Daemon  
+**Subgroup**: Daemon  
 
 | **Attribute**       | **Value**       |  
 |----------------------|-----------------|  

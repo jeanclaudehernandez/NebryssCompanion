@@ -51,11 +51,20 @@
 
 ## **Known Information**  
 
-- `9.3.1`: **The Abyssal Cabal – Role**  
-- `9.3.2`: **The Abyssal Cabal – Recruitment**  
-- `9.3.3`: **The Abyssal Cabal – Mist Knowledge**  
-- `9.3.4`: **The Abyssal Cabal – Iconography**  
-- `9.3.5.1`: **Maledictum Prime – Description**  
-- `9.3.5.1.1`: **Veilrend Spire – Description**  
+- `9.3`: **The Abyssal Cabal**
+  - `9.3.1`: **Role**  
+  - `9.3.2`: **Recruitment**  
+  - `9.3.3`: **Mist Knowledge**  
+  - `9.3.4`: **Iconography**  
+  - `9.3.5.1`: **Maledictum Prime – Description**  
+  - `9.3.5.1.1`: **Veilrend Spire – Description**  
 - `13.1`: **The Mistheart – Lore**  
 - `X.1`: **Tzeentch’s Influence – Hidden Agendas**
+- `b3.2`: **Screecher Green**
+  - `b3.2.1`: **stats**
+  - `b3.2.2`: **weapons**
+  - `b3.2.3`: **abilities**
+- `b3.3`: **Screecher Purple**  
+  - `b3.2.1`: **stats**
+  - `b3.2.2`: **weapons**
+  - `b3.2.3`: **abilities**
