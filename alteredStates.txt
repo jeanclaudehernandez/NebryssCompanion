@@ -5,4 +5,4 @@
 | **Entangled**      | The operative cannot perform actions that involve moving. At the start of its activation, roll **1D6 + APL**. On a **6+**, remove this state. |  
 | **Bleeding**       | At the start of the operative’s activation, it suffers **1D3 wounds**. Roll **1D6 + APL** at the end of its activation. On a **5+**, remove this state. |   
 | **Burning**       | At the start of the operative’s activation, it suffers **1 wound**. After 3 Activations, remove this state. | 
-| **Supressed**        | The operative skips its next activation. This state is automatically removed after one Turning Point. |  
+| **Supressed**        | When this operative would activate, instead skip it's activation and remove this state. |  
