@@ -55,6 +55,15 @@
   - `6.3`: **Mist-Weaving Technology**  
   - `6.3.2.2`: **Temporary Mist Zones**  
   - `6.3.3`: **Mist-Weaving Limitations and Risks**
+- `9.1`: **The Imperium of Man**  
+  - `9.1.1`: **Goal**
+- `9.2`: **The Gilded Accord**  
+  - `9.2.1`: **Role**
+  - `9.2.2`: **Neutrality**
+  - `9.2.4`: **Capital**
+- `9.3`: **The Abyssal Cabal**  
+  - `9.3.1`: **Role**
+  - `9.3.2`: **Recruitment**
 - `9.4`: **The Nebryssian Liberation Republic**
   - `9.4.1`: **Role**  
   - `9.4.2`: **Mist Knowledge**  
