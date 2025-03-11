@@ -1,13 +1,17 @@
-### **Bestiary of Nebryss**  
+
+# **Bestiary of Nebryss**  
+
 **Revised Power Rating (PR) Formula**  
-**PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`  
+**PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`
+
 - **Weapon Threat**: `(Attacks × min Damage x (7 − WS)) + Special Rules` highest value of all weapons.  
   - **Special Rules**: Positive (e.g., *Lethal 5+*) = **+2**, Negative (e.g., *Heavy*) = **−1**.  
 - **Ability Score**: **+7 per impactful ability**.  
 
 ---  
 
-#### **Murloc (PR: 68)**  
+## **Murloc (PR: 68)**
+
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -28,7 +32,6 @@
 | **Crude Net**        | 6″              | 2           | 5+     | 1/2        | Entangle (+1)           |
 | **Throwing Spear**   | 8″              | 4           | 5+     | 2/3        | -                       |
   
-
 ---  
 
 | **Ability**          | **Effect**                                                                 |  
@@ -36,11 +39,12 @@
 | **Amphibious Assault**| **1AP:** Swim 6″ through water or mist.                                   |  
 | **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --**impactful**                                |  
 | **Primitive Cunning**| Free Dash once per Turning Point when within 6" of **Murloc King**.                                       |
-| **Crab Shell Shield** | Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success. |   
+| **Crab Shell Shield** | Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success. |
 
 ---  
 
-#### **Murloc Tidecaller (PR: 88)**  
+## **Murloc Tidecaller (PR: 88)**
+
 +**Faction**: Forces of nature  
 +**Family**: Murloc  
 +
@@ -66,9 +70,10 @@
 +| **Tidal Surge** | **1AP:** Push 2" all enemies within 6″. --**impactful**             |  
 +| **Primitive Cunning** | Free Dash once per Turning Point when within 6" of **Murloc King**.       |  
 
----
+---  
 
-#### **Murloc King (PR: 135)**  
+## **Murloc King (PR: 135)**
+
 **Faction**: Forces of nature  
 **Family**: Murloc  
 
@@ -92,11 +97,12 @@
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|---------------------------------------------------------------------------|  
 | **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --**impactful**                                       |  
-| **Tidal Surge**      | **1AP:** Push 2" all enemies within 6". --**impactful**                                           | 
+| **Tidal Surge**      | **1AP:** Push 2" all enemies within 6". --**impactful**                                           |
 
 ---  
 
-#### **Aetherwing (PR: 114)**  
+## **Aetherwing (PR: 114)**
+
 **Faction**: Forces of nature  
 **Family**: Tzaangor  
 
@@ -124,7 +130,8 @@
 
 ---  
 
-#### **Intercessor Warrior (PR: 145)**  
+## **Intercessor Warrior (PR: 145)**  
+
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -141,11 +148,12 @@
 | **Weapon**               | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |--------------------------|---------|-------------|--------|------------|-------------------------|  
 | **Stalker Bolt Rifle**   | 14"     | 4           | 3+     | 3/4 or 3/5 | Piercing Crits 1 (+2), Lethal 5+ (+2), Heavy (−1) |  
-| **Fists**                | Melee   | 4           | 3+     | 3/4        | -                       |   
+| **Fists**                | Melee   | 4           | 3+     | 3/4        | -                       |
 
 ---  
 
-### **Apothecary Biologis (PR: 159) **  
+## **Apothecary Biologis (PR: 159)**  
+
 **Faction**: Imperium
 **Family**: Space Marine
 
@@ -175,7 +183,8 @@
 
 ---  
 
-#### **Captain Marcus Valen (PR: 214)**  
+## **Captain Marcus Valen (PR: 214)**
+
 **Faction**: Imperium  
 **Family**: Space Marine  
 
@@ -201,9 +210,10 @@
 | **Mistforged Precision** | Re-roll one attack roll in mist zones.                                    |  
 | **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --**impactful**                        |  
 
---- 
+---  
 
-#### **Screamer (PR: 65)**  
+## **Screamer (PR: 65)**
+
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
@@ -220,7 +230,8 @@
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
 |----------------------|---------|-------------|--------|------------|-------------------------|  
 | **Warpfire Maw**     | Melee   | 4           | 4+     | 2/3        | Lethal 5+ (+2)          |  
-| **Psychic Shriek**   | 6″      | 2           | 4+      | 1/2        | Psychic*, Ceaseless (+2)|  
+| **Psychic Shriek**   | 6″      | 2           | 4+      | 1/2        | Psychic*, Ceaseless (+2)|
+
 *Psychic*: Resolve as mortal wounds on unmodified critical hits.  
 
 ---  
@@ -230,9 +241,10 @@
 | **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                        |  
 | **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --**impactful** |
 
----
+---  
 
-#### **Screecher Green (PR: 75)**  
+## **Screecher Green (PR: 75)**  
+
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
@@ -252,9 +264,10 @@
 | **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6". --**impactful** |
 | **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point. |
 
----
+---  
 
-#### **Screecher Purple (PR: 75)**  
+## **Screecher Purple (PR: 75)**  
+
 **Faction**: Abyssal Cabal  
 **Family**: Daemon  
 
