@@ -1,6 +1,7 @@
-### **AnaDataSheet**  
+# **AnaDataSheet**  
 
-#### **Operative Data Card**  
+## **Operative Data Card**
+
 **Name**: Thennur
 **race**: Fellgor
 **Origin**: Nebryssian Liberation Republic (Traveler)
@@ -17,25 +18,28 @@
 | **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
 |----------------------|-----------------|-------------|--------|------------|-------------------|  
 | **Claws**            | Melee           | 4           | 3+     | 2/3        | Rending (+2)      |  
-| **Mist Blast**       | 10″             | 3           | 4+     | 2/3        | Psychic Push*     |  
-*Psychic Push*: After resolving this weapon’s attacks, **if at least one attack dice inflicted damage**,  choose a direction and push the target 2″. Roll one D6, on a **1–2**, this operative suffers 2 wounds.
+| **Mist Blast**       | 10″             | 3           | 4+     | 2/3        | Psychic Push*     |
+
+*Psychic Push*: After resolving this weapon’s attacks, **if at least one attack dice inflicted damage**,  choose a direction and push the target 2″. Roll one D6, on a **1–2**, this operative suffers 1 wound.
 
 ---  
 
 | **Ability**          | **Effect**                                  |  
 |----------------------|--------------------------------------------|  
 | **Mist Veil**        | *1AP, Once per battle*: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured. |  
-| **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 mortal wound to restore 2D3 +1 wounds to another friendly operative within Control Range. |  
+| **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 mortal wound to restore 2D3 +1 wounds to another friendly operative within Control Range. |
 
 ---  
 
-#### **Progression**  
+## **Progression**
+
 - **Level**: 1  
 - **EXP**: 0  
 
 ---  
 
-#### **Inventory**  
+## **Inventory**
+
 - **Mistral Coins**: 0₥ (physical)  
 - **Mistral Bank**: 0₥ (digital)  
 - **Items**:  
@@ -43,7 +47,8 @@
 
 ---  
 
-#### **Known Information**  
+## **Known Information**  
+
 - `6.1`: **The Mist and Its Effects – Mist Density Levels**  
 - `6.2`: **The Mist and Its Effects – Above and Below the Mist**  
 - `6.3`: **The Mist and Its Effects – Mist-Weaving Technology**  
@@ -53,4 +58,4 @@
 - `9.4.2`: **The Nebryssian Liberation Republic – Mist Knowledge**  
 - `9.4.3`: **The Nebryssian Liberation Republic – Mistweavers**  
 - `9.4.6`: **The Nebryssian Liberation Republic – Capital: Misthaven**  
-- `9.4.7`: **The Nebryssian Liberation Republic – Goals and Challenges** 
+- `9.4.7`: **The Nebryssian Liberation Republic – Goals and Challenges**

@@ -1,6 +1,8 @@
-### **AbiDataSheet**  
 
-#### **Operative Data Card**  
+# **AbiDataSheet**  
+
+## **Operative Data Card**  
+
 **Name**: Wendy  
 **race**: Human  
 **Origin**: Imperium of Man  (deserter)
@@ -28,13 +30,15 @@
 
 ---  
 
-#### **Progression**  
+## **Progression**  
+
 - **Level**: 1  
 - **EXP**: 0  
 
 ---  
 
-#### **Inventory**  
+## **Inventory**  
+
 - **Mistral Coins**: 0₥ (physical)  
 - **Mistral Bank**: 0₥ (digital)  
 - **Items**:  
@@ -42,7 +46,8 @@
 
 ---  
 
-#### **Known Information**  
+## **Known Information**  
+
 - `9.1.1`: **The Imperium of Man – Goal**  
 - `9.1.2`: **The Imperium of Man – Challenges**  
 - `9.1.4`: **The Imperium of Man – Naming**  

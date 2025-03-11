@@ -1,6 +1,8 @@
-### **LorenoDataSheet**  
 
-#### **Operative Data Card**  
+# **LorenoDataSheet**  
+
+1## **Operative Data Card**  
+
 **Name**: Xarion Vex, the Shattered Oracle  
 **race**: Astartes (Mutated)  
 **Origin**: Abyssal Cabal (Deserter)  
@@ -24,19 +26,21 @@
 | **Ability**          | **Effect**                                  |  
 |----------------------|--------------------------------------------|  
 | **Fractal Visions**  | *Once per Battle*: Reroll a failed shooting attack dice. |  
-| **Mist Veilwalk**    | *1AP*: Teleport 6″ through mist zones. Roll 1D6; on a **4+**, gain **Conceal** until next activation. |
+| **Mist Veilwalk**    | *1AP*: Teleport 6″ through mist zones. Roll 1D6; on a **4+**, change order to **Conceal Order**. |
 | **Screaming Vortex** | *2AP, Once per battle*: place withint control range one Screecher(green or purple) operative within control range, cannot place it if there is an enemy visible and within 6". --**impactful**|
-| **Heretic Astartes** | Once per long rest: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions. You cannot select the same PSYCHIC ranged weapon more than once. For the rest of the battle it can counteract regarless of order --**impactful**|
+| **Heretic Astartes** | Once per long rest: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions. You cannot select the same PSYCHIC ranged weapon more than once. For the rest of the battle it can counteract regarless of order --**impactful**|  
 
+---  
 
----
-#### **Progression**  
+## **Progression**  
+
 - **Level**: 1  
 - **EXP**: 0  
 
 ---  
 
-#### **Inventory**  
+## **Inventory**  
+
 - **Mistral Coins**: 0₥ (physical)  
 - **Mistral Bank**: 0₥ (digital)  
 - **Items**:  
@@ -45,7 +49,8 @@
 
 ---  
 
-#### **Known Information**  
+## **Known Information**  
+
 - `9.3.1`: **The Abyssal Cabal – Role**  
 - `9.3.2`: **The Abyssal Cabal – Recruitment**  
 - `9.3.3`: **The Abyssal Cabal – Mist Knowledge**  
@@ -53,4 +58,4 @@
 - `9.3.5.1`: **Maledictum Prime – Description**  
 - `9.3.5.1.1`: **Veilrend Spire – Description**  
 - `13.1`: **The Mistheart – Lore**  
-- `X.1`: **Tzeentch’s Influence – Hidden Agendas**  
+- `X.1`: **Tzeentch’s Influence – Hidden Agendas**
