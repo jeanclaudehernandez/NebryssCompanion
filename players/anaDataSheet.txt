@@ -49,13 +49,16 @@
 
 ## **Known Information**  
 
-- `6.1`: **The Mist and Its Effects – Mist Density Levels**  
-- `6.2`: **The Mist and Its Effects – Above and Below the Mist**  
-- `6.3`: **The Mist and Its Effects – Mist-Weaving Technology**  
-- `6.3.2.2`: **Temporary Mist Zones**  
-- `6.3.3`: **Mist-Weaving Limitations and Risks**  
-- `9.4.1`: **The Nebryssian Liberation Republic – Role**  
-- `9.4.2`: **The Nebryssian Liberation Republic – Mist Knowledge**  
-- `9.4.3`: **The Nebryssian Liberation Republic – Mistweavers**  
-- `9.4.6`: **The Nebryssian Liberation Republic – Capital: Misthaven**  
-- `9.4.7`: **The Nebryssian Liberation Republic – Goals and Challenges**
+- `6`: **The Mist and Its Effects**
+  - `6.1`: **Mist Density Levels**  
+  - `6.2`: **Above and Below the Mist**  
+  - `6.3`: **Mist-Weaving Technology**  
+  - `6.3.2.2`: **Temporary Mist Zones**  
+  - `6.3.3`: **Mist-Weaving Limitations and Risks**
+- `9.4`: **The Nebryssian Liberation Republic**
+  - `9.4.1`: **Role**  
+  - `9.4.2`: **Mist Knowledge**  
+  - `9.4.3`: **Mistweavers**  
+  - `9.4.6`: **Capital: Misthaven**  
+  - `9.4.7`: **Goals**
+  - `9.4.8`: **Challenges**

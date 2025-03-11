@@ -48,14 +48,15 @@
 
 ## **Known Information**  
 
-- `9.1.1`: **The Imperium of Man – Goal**  
-- `9.1.2`: **The Imperium of Man – Challenges**  
-- `9.1.4`: **The Imperium of Man – Naming**  
-- `9.1.5.1`: **Fortress Sanctus – Description**  
-- `9.4.1`: **The Nebryssian Liberation Republic – Role**  
-- `9.4.4`: **The Nebryssian Liberation Republic – People Identity**  
-- `9.4.5`: **The Nebryssian Liberation Republic – Iconography**  
-- `9.4.7.1`: **The Nebryssian Liberation Republic – Goals**  
-- `9.4.7.2`: **The Nebryssian Liberation Republic – Challenges**  
-- `9.4.6`: **The Nebryssian Liberation Republic – Capital: Misthaven**  
-  - `9.4.6.1`: **Misthaven – Description**  
+- `9.1`: **The Imperium of Man**
+  - `9.1.1`: **Goal**  
+  - `9.1.2`: **Challenges**  
+  - `9.1.4`: **Naming**  
+  - `9.1.5.1`: **Fortress Sanctus – Description**
+- `9.4`: **The Nebryssian Liberation Republic**
+  - `9.4.1`: **Role**  
+  - `9.4.7`: **Goals**
+    - `9.4.7.1`
+    - `9.4.7.3`
+  - `9.4.6`: **Capital: Misthaven**  
+    - `9.4.6.1`: **Description**  

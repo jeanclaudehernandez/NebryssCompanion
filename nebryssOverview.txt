@@ -112,16 +112,15 @@
     - **9.4.6.2**: **Key Features**:  
       - **9.4.6.2.1**: **The Veiled Citadel**: The NLR’s central stronghold, camouflaged within the mist and accessible only to those who know the secret paths.  
       - **9.4.6.2.2**: **The Mistweaver’s Grove**: A sacred grove where Mistweavers commune with the mist, drawing power from its enigmatic energies.  
-      - **9.4.6.2.3**: **The Silent Market**: A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence.  
-  - **9.4.7**: **Goals and Challenges**:  
-    - **9.4.7.1**: **Goals**:  
-      - **9.4.7.1.1**: Secure Nebryss’s independence from all external forces.  
-      - **9.4.7.1.2**: Protect and expand their mist-weaving knowledge.  
-      - **9.4.7.1.3**: Unite the planet’s factions under a banner of freedom.  
-    - **9.4.7.2**: **Challenges**:  
-      - **9.4.7.2.1**: Constant pressure from the Imperium and Abyssal Cabal.  
-      - **9.4.7.2.2**: The high cost of mist-weaving, which often results in the death of Mistweavers.  
-      - **9.4.7.2.3**: Balancing their ideals with the need to cooperate with factions like the Gilded Accord.  
+      - **9.4.6.2.3**: **The Silent Market**: A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence.
+  - **9.4.7**: **Goals**:  
+    - **9.4.7.1**: Secure Nebryss’s independence from all external forces.  
+    - **9.4.7.2**: Protect and expand their mist-weaving knowledge.  
+    - **9.4.7.3**: Unite the planet’s factions under a banner of freedom.  
+  - **9.4.8**: **Challenges**:  
+    - **9.4.8.1**: Constant pressure from the Imperium and Abyssal Cabal.  
+    - **9.4.8.2**: The high cost of mist-weaving, which often results in the death of Mistweavers.  
+    - **9.4.8.3**: Balancing their ideals with the need to cooperate with factions like the Gilded Accord.  
 
 - **9.5**: **The Crimson Corsairs (8% control, mainly mobile)**  
   - **9.5.1**: **Role**: A pirate faction raiding mist trade routes indiscriminately.  
