@@ -6,21 +6,28 @@
 | **Chainsword**          | 12         | A: 4 -- RNG: Melee -- WS: 3+ -- DMG: 3/4 -- SR: Rending (+2).                        |  
 | **Plasma Rifle**        | 20         | A: 2 -- RNG: inf -- WS: 4+ -- DMG: 4/5 -- SR: Blast (1")(+1), Hot(-1).                  |  
 | **Mistcloak**           | 8          | A mist-resistant cloak that grants the wearer +1 to Save rolls while in dense mist zones. |  
-| **Mist Compass**        | 5          | A handheld device that helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
-| **Stimpack**            | 3          | A single-use injector that restores 1D3 wounds to the user. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
-| **Mist Grenade**        | 6          | A: 1 -- RNG: 6" -- WS: - -- DMG: 2/3 -- SR: Blast (3")(+2), Mist Dispersal (clears mist in a 3" radius for one round). |  
 | **Mist-Resistant Armor**| 18         | Lightweight armor that reduces damage from mist anomalies by 1 (to a minimum of 1). |  
-| **Grappling Hook**      | 4          | A reusable tool that allows the user to traverse difficult terrain or scale obstacles. |  
 | **Reinforced Carapace** | 22         | Heavy armor that increases Wounds by 4 but reduces Movement by 1". |  
 | **Mistweave Plate**     | 25         | Medium armor that increases Wounds by 1 and grants +1 to Save rolls in mist zones. |  
 | **Longshot Rifle**      | 17         | A: 3 -- RNG: inf -- WS: 3+ -- DMG: 3/4 -- SR: Saturate.                         |  
+| **Grappling Hook**      | 4          | A reusable tool that allows the user to traverse difficult terrain or scale obstacles. |  
+| **Lockpick Set**        | 5          | A set of tools for bypassing locks and traps. |  
+| **Mist-Tracker Goggles**| 12         | Goggles that highlight mist anomalies and hidden paths within 12". |  
+
+---
+
+### **Consumables Shop**  
+
+| **Name**               | **₥**      | **Description**                                                                 |  
+|-------------------------|------------|---------------------------------------------------------------------------------|  
+| **Mist Compass**        | 5          | A handheld device that helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
+| **Stimpack**            | 3          | A single-use injector that restores 1D3 wounds to the user. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
+| **Mist Grenade**        | 6          | A: 1 -- RNG: 6" -- WS: - -- DMG: 2/3 -- SR: Blast (3")(+2), Mist Dispersal (clears mist in a 3" radius for one round). |  
 | **Mist Lantern**        | 7          | A portable light source that pierces through dense mist, illuminating a 6" radius. |  
 | **Rations Pack**        | 2          | A week’s worth of preserved food and water, essential for long journeys. |  
 | **Medkit**              | 9          | A compact medical kit that allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
 | **Mist-Repellent Spray**| 3.5        | A single-use spray that clears mist in a 1" radius for 1 round. When used in combat, this action costs 1AP and cannot be used within Control Range of enemy operatives. |  
 | **Signal Flare**        | 2.5        | A flare that can be used to signal for help or mark a location, visible through mist. |  
-| **Lockpick Set**        | 5          | A set of tools for bypassing locks and traps. |  
-| **Mist-Tracker Goggles**| 12         | Goggles that highlight mist anomalies and hidden paths within 12". |  
 | **Medical Supplies**    | 2          | A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities. |  
 
 ---
@@ -38,4 +45,6 @@
 | **Hollow-Point Rounds** | 3    | 10       | Pistol          | Rounds that expand on impact, dealing +1 Damage to unarmored targets.           |  
 | **Match Grade Rounds**  | 10   | 5        | Sniper          | Precision-engineered rounds that worsen the target’s Save characteristic by 1 and have Devastating 2. |  
 | **Incendiary Rounds**   | 4    | 8        | Rifle           | Rounds that ignite on impact, weapon gains: apply **burning** on the target.  |  
-| **Fragmentation Rounds**| 3    | 10       | Pistol/Rifle    | Rounds that explode on impact, weapon gains SR blast(1").                       |  
+| **Fragmentation Rounds**| 3    | 10       | Pistol/Rifle    | Rounds that explode on impact, weapon gains SR blast(1").                       |
+
+---
