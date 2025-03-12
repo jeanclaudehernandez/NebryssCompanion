@@ -1,0 +1,112 @@
+
+# **Shops of Nebryss**  
+
+---
+
+## **Shop**: Herbwhisper’s Apothecary
+
+**Owner**: Tessa Herbwhisper  
+**Location**: Zephyria’s Sky Bazaar (9.2.5.3)  
+**Items**:
+
+- Mist Compass (₥5)  
+- Stimpack (₥3)  
+- Mist Grenade (₥6)  
+- Mist Lantern (₥7)  
+- Rations Pack (₥2)  
+- Medkit (₥9)  
+- Mist-Repellent Spray (₥3.5)  
+- Medical Supplies (₥2)  
+
+---
+
+## **Shop**: Ironveil’s Ward  
+
+**Owner**: Kaela Ironveil  
+**Location**: Zephyria’s Sky Bazaar (9.2.5.4)  
+**Items**:  
+
+- Mistcloak (₥8)  
+- Mist-Resistant Armor (₥18)  
+- Reinforced Carapace (₥22)  
+- Mistweave Plate (₥25)  
+- Mistweave Shroud (₥30)  
+- Swiftwind Harness (₥25)  
+- Aegis Battleplate (₥50)  
+
+---
+
+## **Shop**: Blackhammer’s Arsenal  
+
+**Owner**: Orion Blackhammer  
+**Location**: Zephyria’s Sky Bazaar (9.2.5.5)  
+**Items**:  
+
+- Mistforged Pistol (₥15)  
+- Chainsword (₥12)  
+- Plasma Rifle (₥20)  
+- Longshot Rifle (₥17)  
+- Inferno Bolter Rifle (₥35)  
+- Voidstrike Pistol (₥25)  
+- Nightstalker Sniper Rifle (₥50)  
+- Stormchaser Assault Rifle (₥30)  
+
+---
+
+## **Shop**: Anchorforge’s Drydock  
+
+**Owner**: Drakos Anchorforge  
+**Location**: Zephyria’s Sky Bazaar (9.2.5.6)  
+**Items**:
+
+- **Mist Engines**:  
+  - Swiftwind Engine (₥5000)  
+  - Endurance Engine (₥4500)  
+  - Cargo Hauler Engine (₥4000)  
+  - Balanced Engine (₥5500)  
+- **Ship Hulls**:  
+  - Swiftwind Hull (₥8000)  
+  - Endurance Hull (₥7500)  
+  - Cargo Hauler Hull (₥7000)  
+  - Fortified Hull (₥9000)  
+- **Cannons**:  
+  - Light Deck Cannon (₥3000)  
+  - Heavy Broadside (₥5000)  
+  - Mistfire Cannon (₥6000)  
+  - Plasma Cannon (₥7000)  
+- **Cannonballs**:  
+  - Standard Cannonballs (₥50)  
+  - Explosive Cannonballs (₥100)  
+  - Mist-Infused Ammo (₥150)  
+  - Plasma Charges (₥200)  
+
+---
+
+## **Shop**: The Stoutbarrel Tavern  
+
+**Owner**: Nessa Stoutbarrel  
+**Location**: Zephyria (9.2.6.2)  
+**Items**:  
+
+- Rations Pack (₥2)  
+- Stimpack (₥3)  
+- Mist-Repellent Spray (₥3.5)  
+- Signal Flare (₥2.5)  
+- *Specialty*:  
+  - **Stoutbarrel Ale** (₥1 per pint) – Restores 1D3 wounds but imposes a **-1″ movement penalty** for the next activation.  
+
+---
+
+## **Shop**: Skyguide’s Emporium  
+
+**Owner**: Lyra Skyguide  
+**Location**: Zephyria’s Sky Bazaar (freelance stall)  
+**Items**:
+
+- Mist Compass (₥5)  
+- Mist-Tracker Goggles (₥12)  
+- Lockpick Set (₥10)  
+- Mist Lantern (₥7)  
+- **Custom Maps** (₥20) – Grants re-rolls for navigation checks in mist zones.  
+
+---
