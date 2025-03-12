@@ -41,6 +41,42 @@
 - **c2.2.1 Role**: A legendary navigator and one of the most skilled members of the Fogbound Cartographers. Known for his daring rescues and ability to deliver VIPs through the most perilous mist zones.
 - **c2.2.2 Location**: Operates from **Zephyria** and other key locations along mist trade routes.
 
+### **c2.3 Tessa Herbwhisper – Apothecary Owner**
+
+- **c2.3.1 Role**: Owner of *Herbwhisper’s Apothecary*, a renowned shop in Zephyria’s Sky Bazaar specializing in rare herbs, potions, and remedies.  
+- **c2.3.2 Personality**: Cheerful, knowledgeable, and deeply passionate about alchemy and healing.  
+- **c2.3.3 Location**: Zephyria’s Sky Bazaar.  
+
+#### **c2.4 Kaela Ironveil – Armorsmith**
+
+- **c2.4.1 Role**: Owner of *Ironveil’s Ward*, a prestigious armor shop in Zephyria’s Sky Bazaar known for its masterfully crafted protective gear.  
+- **c2.4.2 Personality**: Elegant, meticulous, and fiercely protective of her craft. She refuses to sell to those she deems unworthy.  
+- **c2.4.3 Location**: Zephyria’s Sky Bazaar.  
+
+#### **c2.5 Orion Blackhammer – Weaponsmith**
+
+- **c2.5.1 Role**: Owner of *Blackhammer’s Arsenal*, a bustling forge in Zephyria’s Sky Bazaar specializing in deadly and durable weapons.  
+- **c2.5.2 Personality**: Gruff and burly, with a soft spot for those who respect the art of war.  
+- **c2.5.3 Location**: Zephyria’s Sky Bazaar.  
+
+#### **c2.6 Drakos Anchorforge – Shipwright**
+
+- **c2.6.1 Role**: Owner of *Anchorforge’s Drydock*, a bustling shipyard in Zephyria’s Sky Bazaar known for crafting vessels that can withstand the harshest mist storms.  
+- **c2.6.2 Personality**: Grizzled, experienced, and deeply loyal to his clients. He has a wealth of tales from his own voyages.  
+- **c2.6.3 Location**: Zephyria’s Sky Bazaar.  
+
+#### **c2.7 Nessa Stoutbarrel – Tavern Owner**
+
+- **c2.7.1 Role**: Owner of *The Stoutbarrel Tavern*, a lively establishment in Zephyria known for its hearty food, strong drinks, and welcoming atmosphere.  
+- **c2.7.2 Personality**: Jovial, quick-witted, and a natural storyteller. She keeps her patrons entertained with tales of her adventures.  
+- **c2.7.3 Location**: Zephyria.  
+
+#### **c2.8 Lyra Skyguide – Tourist Guide**
+
+- **c2.8.1 Role**: A freelance guide who leads tourists through Zephyria’s most famous landmarks and hidden gems.  
+- **c2.8.2 Personality**: Spirited, adventurous, and deeply knowledgeable about Zephyria’s history and culture.  
+- **c2.8.3 Location**: Zephyria.  
+
 ---
 
 ## **The Nebryssian Liberation Republic**  

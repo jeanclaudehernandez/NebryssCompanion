@@ -84,8 +84,23 @@
   - **9.2.3**: **People Identity**: People refer to themselves by their home island (e.g., Zephyrians from Zephyria).  
   - **9.2.4**: **Capital**: Zephyria, a massive floating island-ship and the crown jewel of the Gilded Accord.  
   - **9.2.5**: **Notable Features of Zephyria**:  
-    - **9.2.5.1**: **Sky Bazaar**: A sprawling, multi-tiered marketplace where all factions trade.  
-    - **9.2.5.2**: **Mistforge**: The technological heart of the Gilded Accord, where mist-based innovations are developed and refined.  
+    - **9.2.5.1**: **Sky Bazaar**: A sprawling, multi-tiered marketplace where all factions trade.
+      - **9.2.5.1.3**: **Herbwhisper’s Apothecary**
+        - **9.2.5.1.3.1**: A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.
+        -**9.2.5.1.3.2**: owner: **Tessa Herbwhisper** – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy.
+      - **9.2.5.1.4**: **Ironveil’s Ward**
+        - **9.2.5.1.4.1**: A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.
+        - **9.2.5.1.4.2**: owner: **Kaela Ironveil** – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy.
+      - **9.2.5.1.5**: **Blackhammer’s Arsenal**
+        - **9.2.5.1.5.1**: A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.
+      - **9.2.5.1.5.2**: owner **Orion Blackhammer** – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war.
+    - **9.2.5.2**: **Mistforge**: The technological heart of the Gilded Accord, where mist-based innovations are developed and refined.
+    - **9.2.5.3**: **Anchorforge’s Drydock**
+      - **9.2.5.6.1**: A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers.
+      - **9.2.5.6.2**: owner **Drakos Anchorforge** – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages.
+    - **9.2.5.4**: **The Stoutbarrel Tavern**  
+      - **9.2.5.4.1**: A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.  
+      - **9.2.5.4.2**: owner: **Nessa Stoutbarrel** – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures.  
   - **9.2.6**: **Notable Islands**:  
     - **9.2.6.1**: **Luminos**: A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture.  
   - **9.2.7**: **Iconography**: Golden spires, flowing mist patterns, symbols of wind and wealth.  
