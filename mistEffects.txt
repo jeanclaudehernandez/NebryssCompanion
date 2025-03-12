@@ -1,18 +1,20 @@
 
 # **Mist Zone Combat Effects**  
 
-| **Effect Name**           | **Density Level** | **Description**                                                                                                                     |  
-|---------------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------|  
-| **Mist Obscuration**      | Light             | All operatives treat visibility as **Obscured** beyond 10″. Worsen WS by 1 of Ranged attacks beyond 6″.                             |  
-| **Mist Veil**             | Light             | Operatives in the mist zone gain **Cover** against ranged attacks, but their movement is reduced by **1″**.                         |  
-| **Mist Drift**            | Medium            | At the end of each operative’s activation, roll **1D6**. On a **4+**, the operative is pushed **2″** in a random direction.         |  
-| **Mist Fatigue**          | Medium            | At the beggining of turning point all operatives roll 1D3, on a **1** loses 1AP. Roll **1D6 + APL** at the end of activation.       |  
-| **Mist Obscuration (M)**  | Medium            | All operatives treat visibility as **Obscured** beyond 6″. Worsen WS by 1 of Ranged attacks beyond 3″.                              |
-| **Mist Anomaly**          | Dense             | At the start of each Turning Point, roll **1D6**. On a **4+**, a random operative within the mist zone suffers **1D3 wounds**.      |  
-| **Mistborn Ambush**       | Dense             | Roll 1D3, at the beginning of turning point **result** place **1D3 Force of nature Creatures**. They activate after all operatives. |  
-| **Mist Resonance**        | Dense             | PSYCHIC abilities gain **+1 to hit** but inflict **1 wound** on the user if they fail the roll.                                     |  
-| **Mist Echoes**           | Dense             | Operatives in the mist zone cannot use **Silent** or **Conceal** abilities.                                                         |  
-| **Mist Cloak**            | Dense             | Operatives in the mist zone cannot be targeted by ranged attacks beyond **12″**.                                                    |  
-| **Mist Dispersal**        | -                 | This Zone isn't affected by mist, Ranged attacks within or that target an operative in mist still apply mist effects                |  
+| **Effect Name**      | **Density Level** | **Description**                                                                                                                     |  
+|----------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------|  
+| **Obscuration**      | Light             | All operatives treat visibility as **Obscured** beyond 10″. Worsen WS by 1 of Ranged attacks beyond 6″.                             |  
+| **Mist Veil**        | Light             | Operatives in the mist zone gain **Cover** against ranged attacks, but their movement is reduced by **1″**.                         |  
+| **Drift**            | Medium            | At the end of each operative’s activation, roll **1D6**. On a **4+**, the operative is pushed **2″** in a random direction.         |  
+| **Fatigue**          | Medium            | At the beggining of turning point all operatives roll 1D6, on a **1** loses 1AP. Roll **1D6 + APL** at the end of activation.       |  
+| **Obscuration (M)**  | Medium            | All operatives treat visibility as **Obscured** beyond 6″. Worsen WS by 1 of Ranged attacks.                                        |
+| **Dificult terrain** | Medium            | Operatives cannot perform the dash action.                                                                                          |
+| **Mist Anomaly**     | Dense             | At the start of each Turning Point, roll **1D6**. On a **4+**, a random operative within the mist zone suffers **1D3 wounds**.      |  
+| **Mistborn Ambush**  | Dense             | Roll 1D3, at the beginning of turning point **result** place **1D3 Force of nature Creatures**. They activate after all operatives. |  
+| **Resonance**        | Dense             | PSYCHIC abilities gain **+1 to hit** but inflict **1 wound** on the user if they fail the roll.                                     |  
+| **Mist Echoes**      | Dense             | Operatives in the mist zone cannot use **Silent** or **Conceal** abilities.                                                         |  
+| **Mist Cloak**       | Dense             | Operatives in the mist zone cannot be targeted by ranged attacks beyond **12″**.                                                    |
+| **Watch your step**  | Dense             | Operatives roll **1d6 + APL** on  a **6+** halve that operatives movement.                                                          |
+| **Dispersal**        | -                 | This Zone isn't affected by mist, Ranged attacks within or that target an operative in mist still apply mist effects.               |  
 
 ---
