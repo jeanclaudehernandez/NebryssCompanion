@@ -214,10 +214,12 @@
 
 ---  
 
-| **Weapon**               | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                                 |  
-|--------------------------|---------|-------------|--------|------------|---------------------------------------------------|  
-| **Stalker Bolt Rifle**   | 14"     | 4           | 3+     | 3/4 or 3/5 | Piercing Crits 1 (+2), Lethal 5+ (+2), Heavy (−1) |  
-| **Fists**                | Melee   | 4           | 3+     | 3/4        | -                                                 |
+| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                            |  
+|----------------------------------|---------|-------------|--------|------------|----------------------------------------------|  
+| **Stalker Bolt Rifle (mobile)**  | 10"     | 4           | 3+     | 3/4        | Piercing Crits 1 (+2),                       |
+| **Stalker Bolt Rifle (heavy)**   | 14"     | 4           | 3+     | 3/5        | Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)  |
+| **Chainsword**                   | Melee   | 4           | 3+     | 3/4        | Rending (+2)                                 |
+| **Fists**                        | Melee   | 4           | 3+     | 3/4        | -                                            |
 
 ---  
 
@@ -267,10 +269,11 @@
 
 ---  
 
-| **Weapon**               | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                        |  
-|--------------------------|---------|-------------|--------|------------|------------------------------------------|  
-| **Lance of Sabatine**    | Melee   | 5           | 3+     | 5/7        | Brutal (+2), Rending (+2)                |  
-| **Mistforged Plasma Gun**| 8″      | 4           | 3+     | 4/5        | Balanced (+2), Piercing 1 (+2), Hot (−1) |  
+| **Weapon**                              | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                        |  
+|-----------------------------------------|---------|-------------|--------|------------|------------------------------------------|  
+| **Lance of Sabatine**                   | Melee   | 5           | 3+     | 5/7        | Brutal (+2), Rending (+2)                |  
+| **Mistforged Plasma Gun (standard)**    | 8″      | 4           | 3+     | 3/5        | Balanced (+2), Piercing 1 (+2),          |
+| **Mistforged Plasma Gun (super charge)**| 10″     | 4           | 3+     | 4/5        | Balanced (+2), Piercing 1 (+2), Hot (−1) |  
 
 ---  
 
@@ -374,7 +377,7 @@
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**              |  
 |----------------------|---------|-------------|--------|------------|--------------------------------|  
 | **Boltgun**          | 14″     | 4           | 3+     | 3/4        | Relentless (+2)                |  
-| **Chainsword**       | Melee   | 4           | 3+     | 3/4        | Rending (+2)                   |  
+| **Chainsword**       | Melee   | 4           | 3+     | 3/5        | Rending (+2)                   |  
   
 ---  
   
@@ -400,10 +403,11 @@
   
 ---  
   
-| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**              |  
-|----------------------|---------|-------------|--------|------------|--------------------------------|  
-| **Plasma Pistol**    | 8″      | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2)       |  
-| **Power Sword**      | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)    |  
+| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                       |  
+|----------------------------------|---------|-------------|--------|------------|-----------------------------------------|  
+| **Plasma Pistol (super charge)** | 10″     | 4           | 3+     | 4/5        | Piercing 1(+2) Hot (−1), Lethal 5+ (+2) |
+| **Plasma Pistol (standard)**     | 8″      | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)               |  
+| **Power Sword**                  | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)             |  
   
 ---  
   
@@ -460,10 +464,12 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
   
 ---  
   
-| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                    |  
-|----------------------|---------|-------------|--------|------------|--------------------------------------|  
-| **Plasma Gun**       | 14″     | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2)             |  
-| **Melta**            | 6″      | 3           | 3+     | 5/6        | Devastating 2 (+2), Piercing 1 (+1)  |  
+| **Weapon**                     | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                         |  
+|--------------------------------|---------|-------------|--------|------------|-------------------------------------------|  
+| **Plasma Gun (standard)**      | 14″     | 4           | 3+     | 3/5        | Pïercing 1 (+2)                           |
+| **Plasma Gun (super charge)**  | inf     | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2), Piercing 1 (+2) |  
+| **Melta**                      | 6″      | 3           | 3+     | 5/6        | Devastating 2 (+2), Piercing 1 (+2)       |
+| **Fists**                      | Melee   | 4           | 3+     | 3/4        | -                                         |  
   
 ---  
   
