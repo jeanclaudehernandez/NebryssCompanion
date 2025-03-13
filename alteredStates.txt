@@ -1,8 +1,12 @@
 # **Altered States**  
 
-| **Name**          | **Effect**                                                                 |  
-|--------------------|---------------------------------------------------------------------------|  
-| **Entangled**      | The operative cannot perform actions that involve moving. At the start of its activation, roll **1D6 + APL**. On a **6+**, remove this state. |  
-| **Bleeding**       | At the start of the operative’s activation, it suffers **1D3 wounds**. Roll **1D6 + APL** at the end of its activation. On a **5+**, remove this state. |
-| **Burning**       | At the start of the operative’s activation, it suffers **1 wound**. After 3 Activations, remove this state. |
-| **Supressed**        | When this operative would activate, instead skip it's activation and remove this state. |
+| **Name**         | **Effect**                                                                                                                                                        |  
+|------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------|  
+| **Entangled**    | The operative cannot perform actions that involve moving. At the start of its activation, roll **1D6 + APL**. On a **6+**, remove this state.                     |  
+| **Bleeding**     | At the start of the operative’s activation, it suffers **1D3 wounds**. Roll **1D6 + APL** at the end of its activation. On a **5+**, remove this state.           |
+| **Burning**      | At the start of the operative’s activation, it suffers **1 wound**. After 3 Activations, remove this state.                                                       |
+| **Supressed**    | When this operative would activate, instead skip it's activation and remove this state.                                                                           |
+| **Mistbound**    | Operative treats all terrain as mist zone, if in a mistzone increase density. At the start of its activation, roll **1D6 + APL**. On a **5+**, remove this state. |
+| **Electrified**  | At the start of the operative’s activation, it suffers 1D3 wounds and cannot retain critical successes. To remove, spend 1AP to "ground" itself.                  |
+| **Corrupted**    | Operative loses 1APL and suffers 1 wound at the end of each activation. Roll **1D6 + APL** at the end of its activation. On a **6+**, remove this state.          |
+| **Disoriented**  | Worsen WS/BS by 1. Roll **1D6 + APL** at the end of its activation. On a **4+**, remove this state.                                                               |
