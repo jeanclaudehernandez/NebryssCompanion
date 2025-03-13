@@ -60,20 +60,20 @@
 **Items**:
 
 - **Mist Engines**:  
-  - Swiftwind Engine (₥5000)  
-  - Endurance Engine (₥4500)  
-  - Cargo Hauler Engine (₥4000)  
-  - Balanced Engine (₥5500)  
+  - Swiftwind Engine (₥500)  
+  - Endurance Engine (₥450)  
+  - Cargo Hauler Engine (₥400)  
+  - Balanced Engine (₥850)  
 - **Ship Hulls**:  
-  - Swiftwind Hull (₥8000)  
-  - Endurance Hull (₥7500)  
-  - Cargo Hauler Hull (₥7000)  
-  - Fortified Hull (₥9000)  
+  - Swiftwind Hull (₥800)  
+  - Endurance Hull (₥750)  
+  - Cargo Hauler Hull (₥700)  
+  - Fortified Hull (₥900)  
 - **Cannons**:  
-  - Light Deck Cannon (₥3000)  
-  - Heavy Broadside (₥5000)  
-  - Mistfire Cannon (₥6000)  
-  - Plasma Cannon (₥7000)  
+  - Light Deck Cannon (₥30)  
+  - Heavy Broadside (₥50)  
+  - Mistfire Cannon (₥60)  
+  - Plasma Cannon (₥700)  
 - **Cannonballs**:  
   - Standard Cannonballs (₥50)  
   - Explosive Cannonballs (₥100)  
