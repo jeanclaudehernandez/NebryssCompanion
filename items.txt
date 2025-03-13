@@ -43,6 +43,8 @@
 | **Signal Flare**        | 2.5    | A flare that can be used to signal for help or mark a location, visible through mist.                                                         |  
 | **Medical Supplies**    | 2      | A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.                           |
 | **Lockpick Set**        | 10     | A set of tools for bypassing locks and traps.                                                                                                 |
+| **Stoutbarrel Ale**     | 1      | Restores 1D3 wounds but imposes a **-1″ movement penalty** for the next reposition action the operative performs.                             |
+| **Custom Maps**         | 20     | Grants re-rolls for navigation checks in mist zones.                                                                                          |
 
 ---
 
