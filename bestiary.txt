@@ -346,7 +346,7 @@
 
 ---  
 
-## **Chaos Space Marine (Khorne Berzerker) (PR: 150)**  
+## **Chaos Space Marine (Khorne Berzerker) (PR: 151)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
