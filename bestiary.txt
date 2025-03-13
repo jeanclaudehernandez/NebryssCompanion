@@ -29,7 +29,19 @@
 - **b1.4**: Aetherwing
   - **b1.4.1**: Stats  
   - **b1.4.2**: Weapons (Aether Talons, Beak Gore)  
-  - **b1.4.3**: Abilities (Aether Dive, Primal Strength)  
+  - **b1.4.3**: Abilities (Aether Dive, Primal Strength)
+- **b1.5**: Aetherwing Bannerbearer
+  - **b1.5.1**: Stats  
+  - **b1.5.2**: Weapons (Aether Talons, Beak Gore)  
+  - **b1.5.3**: Abilities (Aether Dive, Banner of Resilience)  
+- **b1.6**: Aetherwing Flutist  
+  - **b1.6.1**: Stats  
+  - **b1.6.2**: Weapons (Aether Talons, Beak Gore)  
+  - **b1.6.3**: Abilities (Aether Dive, Flute of Fury)  
+- **b1.7**: Windblast Aetherwing  
+  - **b1.7.1**: Stats  
+  - **b1.7.2**: Weapons (Aether Talons, Windblast)  
+  - **b1.7.3**: Abilities (Aether Dive, Primal Strength)
 
 ### **Imperium**  
 
@@ -189,6 +201,93 @@
 |----------------------|-----------------|-------------|--------|------------|-------------------------|  
 | **Aether Talons**    | Melee           | 4           | 4+     | 3/4        | Rending (+2)            |  
 | **Beak Gore**        | Melee           | 3           | 4+     | 4/5        | Brutal (+2)             |  
+
+---  
+
+| **Ability**          | **Effect**                                               |  
+|----------------------|----------------------------------------------------------|  
+| **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
+| **Primal Strength**  | +1 Damage to successful Fight actions. --**impactful**   |  
+
+---  
+
+## **Aetherwing Bannerbearer (PR: 114)**
+
+**Faction**: Forces of Nature  
+**Subgroup**: Tzaangor  
+
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 7″              |  
+| **Wounds**           | 10              |  
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+| **Group Activation** | 1               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|--------|------------|-------------------------|  
+| **Aether Talons**    | Melee           | 4           | 4+     | 3/4        | Rending (+2)            |  
+| **Beak Gore**        | Melee           | 3           | 4+     | 4/5        | Brutal (+2)             |  
+
+---  
+
+| **Ability**          | **Effect**                                               |  
+|----------------------|----------------------------------------------------------|  
+| **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
+| **Banner of Resilience** | Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). --**impactful** |  
+
+---  
+
+## **Aetherwing Flutist (PR: 114)**
+
+**Faction**: Forces of Nature  
+**Subgroup**: Tzaangor  
+
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 7″              |  
+| **Wounds**           | 10              |  
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+| **Group Activation** | 1               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|--------|------------|-------------------------|  
+| **Aether Talons**    | Melee           | 4           | 4+     | 3/4        | Rending (+2)            |  
+| **Beak Gore**        | Melee           | 3           | 4+     | 4/5        | Brutal (+2)             |  
+
+---  
+
+| **Ability**          | **Effect**                                               |  
+|----------------------|----------------------------------------------------------|  
+| **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
+| **Flute of Fury**    | Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. --**impactful** |  
+
+---  
+
+## **Windblast Aetherwing (PR: 96)**
+
+**Faction**: Forces of Nature  
+**Subgroup**: Tzaangor  
+
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 7″              |  
+| **Wounds**           | 10              |  
+| **Save**             | 5+              |  
+| **APL**              | 2               |  
+| **Group Activation** | 1               |  
+
+---  
+
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**       |  
+|----------------------|-----------------|-------------|--------|------------|-------------------------|  
+| **Aether Talons**    | Melee           | 4           | 4+     | 3/4        | Rending (+2)            |  
+| **Windblast**        | 12″             | 3           | 4+     | 2/3        | Blast (1″) (+1), Push (2″) (+1) |  
 
 ---  
 
