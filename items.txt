@@ -9,7 +9,7 @@
 | **Longshot Rifle**            | 17     | (standard)A:3--RNG:inf--WS:3+--DMG:3/4--SR:Saturate.(Heavy)A:4--RNG:inf--WS3+DMG3/4--SR:Saturate(+1),Devasting 1(+1) |
 | **Inferno Bolter Rifle**      | 35     | A: 4 -- RNG: 12" -- WS: 3+ -- DMG: 3/4 -- SR: Lethal 5+ (+2), Burning(+1), Hot(-1).                                  |
 | **Voidstrike Pistol**         | 25     | A: 3 -- RNG: 8" -- WS: 3+ -- DMG: 3/4 -- SR: Piercing 1 (+2).                                                        |
-| **Nightstalker Sniper Rifle** | 50     | A: 2 -- RNG: inf -- WS: 2+ -- DMG: 4/5 -- SR: Devastating 2 (+2), Silent (+1)                                        |
+| **Nightstalker Sniper Rifle** | 50     | A: 3 -- RNG: inf -- WS: 2+ -- DMG: 4/5 -- SR: Devastating 2 (+2), Silent (+1)                                        |
 | **Stormchaser Assault Rifle** | 30     | A: 4 -- RNG: 14" -- WS: 3+ -- DMG: 2/4 -- SR: Ceaseless (+2).                                                        |
 
 ---
