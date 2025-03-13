@@ -1,31 +1,31 @@
 
 # **Weapon Shop**
 
-| **Name**                      | **₥**  | **Description**                                                                 |  
-|-------------------------------|--------|---------------------------------------------------------------------------------|  
-| **Mistforged Pistol**         | 15     | A: 3 -- RNG: 12" -- WS: 4+ -- DMG: 2/3 -- SR: Lethal 5+ (+2), Mist-Piercing (ignores mist-based penalties to hit)(+1). |  
-| **Chainsword**                | 12     | A: 4 -- RNG: Melee -- WS: 3+ -- DMG: 3/4 -- SR: Rending (+2).                        |  
-| **Plasma Rifle**              | 20     | A: 2 -- RNG: inf -- WS: 4+ -- DMG: 4/5 -- SR: Hot(-1).                  |  
-| **Longshot Rifle**            | 17     | A: 3 -- RNG: inf -- WS: 3+ -- DMG: 3/4 -- SR: Saturate.                         |
-| **Inferno Bolter Rifle**      | 35     | A: 4 -- RNG: 12" -- WS: 3+ -- DMG: 3/4 -- SR: Lethal 5+ (+2), Burning(+1), Hot(-1).|
-| **Voidstrike Pistol**         | 25     |A: 3 -- RNG: 8" -- WS: 3+ -- DMG: 3/4 -- SR: Piercing 1 (+2). |
-| **Nightstalker Sniper Rifle** | 50     |A: 2 -- RNG: inf -- WS: 2+ -- DMG: 4/5 -- SR: Devastating 2 (+2), Silent (+1)   |
-| **Stormchaser Assault Rifle** | 30     |A: 4 -- RNG: 14" -- WS: 3+ -- DMG: 2/4 -- SR: Ceaseless (+2).  |
+| **Name**                      | **₥**  | **Description**                                                                                                      |  
+|-------------------------------|--------|----------------------------------------------------------------------------------------------------------------------|  
+| **Mistforged Pistol**         | 15     | A: 3 -- RNG: 12" -- WS: 4+ -- DMG: 2/3 -- SR: Lethal 5+ (+2), Mist-Vision (ignores mist-based penalties to hit)(+1). |  
+| **Chainsword**                | 12     | A: 4 -- RNG: Melee -- WS: 3+ -- DMG: 3/4 -- SR: Rending (+2).                                                        |  
+| **Plasma Rifle**              | 20     | A: 2 -- RNG: inf -- WS: 4+ -- DMG: 4/5 -- SR: Hot(-1).                                                               |  
+| **Longshot Rifle**            | 17     | (standard)A:3--RNG:inf--WS:3+--DMG:3/4--SR:Saturate.(Heavy)A:4--RNG:inf--WS3+DMG3/4--SR:Saturate(+1),Devasting 1(+1) |
+| **Inferno Bolter Rifle**      | 35     | A: 4 -- RNG: 12" -- WS: 3+ -- DMG: 3/4 -- SR: Lethal 5+ (+2), Burning(+1), Hot(-1).                                  |
+| **Voidstrike Pistol**         | 25     | A: 3 -- RNG: 8" -- WS: 3+ -- DMG: 3/4 -- SR: Piercing 1 (+2).                                                        |
+| **Nightstalker Sniper Rifle** | 50     | A: 2 -- RNG: inf -- WS: 2+ -- DMG: 4/5 -- SR: Devastating 2 (+2), Silent (+1)                                        |
+| **Stormchaser Assault Rifle** | 30     | A: 4 -- RNG: 14" -- WS: 3+ -- DMG: 2/4 -- SR: Ceaseless (+2).                                                        |
 
 ---
 
 # **Armor Shop**
 
-| **Name**                | **₥**  | **Description**                                                                 |
-|-------------------------|--------|---------------------------------------------------------------------------------|
-| **Mistcloak**           | 8      | Save +1 in mist zones of density medium or higher. |  
-| **Mist-Resistant Armor**| 18     | Light armor, Reduces damage from mist anomalies by 1 (to a minimum of 1). |  
-| **Reinforced Carapace** | 22     | Heavy armor, Wounds +4, Movement -1" (min 4). |  
-| **Mistweave Plate**     | 25     | Medium armor, wounds +2, Re-roll one failed Save roll once per Battle. |
-| **Mistweave Shroud**    | 30     | Medium armor, Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle. |
-| **Swiftwind Harness**   | 25     | light, Wounds -1, Dash costs 0 AP.|
+| **Name**                | **₥**  | **Description**                                                                                       |
+|-------------------------|--------|-------------------------------------------------------------------------------------------------------|
+| **Mistcloak**           | 8      | Save +1 in mist zones of density medium or higher.                                                    |  
+| **Mist-Resistant Armor**| 18     | Light armor, Reduces damage from mist anomalies by 1 (to a minimum of 1).                             |  
+| **Reinforced Carapace** | 22     | Heavy armor, Wounds +4, Movement -1" (min 4).                                                         |  
+| **Mistweave Plate**     | 25     | Medium armor, wounds +2, Re-roll one failed Save roll once per Battle.                                |
+| **Mistweave Shroud**    | 30     | Medium armor, Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.         |
+| **Swiftwind Harness**   | 25     | light, Wounds -1, Dash costs 0 AP.                                                                    |
 | **Aegis Battleplate**   | 50     | Heavy armor,  Wounds +5, Save +2, Movement -2″ (min 3) and cannot be used with Fly or Climb abilities.|
-| **Mist-Tracker Goggles**| 12     | Goggles that highlight mist anomalies and hidden paths within 12". |
+| **Mist-Tracker Goggles**| 12     | Goggles that highlight mist anomalies and hidden paths within 12".                                    |
 
 ---
 
