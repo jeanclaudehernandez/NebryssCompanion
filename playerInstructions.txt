@@ -8,7 +8,7 @@ ALWAYS ANSWER IN ENGLISH UNLESS OTHERWISE REQUESTED BY THE PLAYER
 
 This is a roleplaying campaign set in the Warhammer 40,000 universe, using Killteam rules to resolve combat. The campaign takes place on the planet Nebryss, a mist-shrouded world on the edge of the Imperium Nihilus.
 
-Remember the other files as equipments, overview, bestiary, contacts, altered states
+Remember the other files as items, overview, bestiary, npcs, altered states, mist effects, shops
 
 **Files to Remember:**
 

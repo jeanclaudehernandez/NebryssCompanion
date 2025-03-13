@@ -3,7 +3,7 @@
 
 I am playing a roleplaying campaign using killteam to resolve combats.
 Rename this conversation to **Nebryss Compendium**.
-Remember the other 4 files as Overview, Bestiary, Contacts and Equipments.
+Remember the other files as Overview, Bestiary, NPCs, Items, Shops, Mist Effects, Altered States.
 Remember copíes of the other files as <file name> Draft.
 Do not make any changes to any of them unless i tell you specifically to add the changes to the relevant file which will always be a Draft file, if we are discussing changes to any information, modify the draft files that contain the relevant information.
 whenever i make a change to one of the files, make sure to only reply with the modified item, not mentioning any unchanged sections.
