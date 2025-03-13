@@ -341,7 +341,7 @@
 | **Ability**          | **Effect**                                                                |  
 |----------------------|---------------------------------------------------------------------------|  
 | **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                      |  
-| **Arcane Bargain**   | once per activation if there is an enemy visible and within control range roll **1d6**, that enemy suffers **result** mortal wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if another operative **other than Xarion Vex** recovered wounds this way and Xarion Vex is both visible and within 4" of this operative and the other friendly operative, restore **result/2** wounds rounded up from **Xarion Vex**. --**impactful**|
+| **Arcane Bargain**   | once per activation an enemy within control range, roll **1d6** and that enemy suffers **result** wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if an operative **other than Xarion Vex** recovered wounds this way and **Xarion Vex** is both visible and within 4" of this operative and that operative, restore **result/2** wounds rounded up from **Xarion Vex**. --**impactful**            |
 | **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point. |
 
 ---  
