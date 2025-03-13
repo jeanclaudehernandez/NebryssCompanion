@@ -18,8 +18,9 @@ for now only acknowledge that you understood all the content of the files.
 Bestiary and Equipment specific rules:
 the system is going to be using killteam for resolving combats, when generating creatures or equipments
 avoid using the shape symbols to indicate distances, instead use the inches numbers,
-also when weapons have 15" or more range, instead mark inf to represent infinite range. 
+also when weapons have 15" or more range, instead mark inf to represent infinite range.
 and when you give weapons a special rule that already exists in killteam, don't explain it.
 when i give you a creatures stats and don't include any abilities, dont add the ability section to that creature.
 when the creature stats or items descriptions include icons, change them to the current format of the bestiary or equipments
 when i ask you to create or add items or creatures, keep them in a draft state without commiting them to the bestiary or equipments
+when i ask you create or add creatures the bestiary, remember to create index entries for them as well as their stats, weapons and abilities
