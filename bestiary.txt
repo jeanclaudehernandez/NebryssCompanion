@@ -63,7 +63,19 @@
 - **b3.4**: Chaos Space Marine (Khorne Berzerker)  
   - **b3.4.1**: Stats  
   - **b3.4.2**: Weapons (Boltgun, Chainsword)  
-  - **b3.4.3**: Abilities (Mark of Khorne, Warp-fueled Rage)  
+  - **b3.4.3**: Abilities (Mark of Khorne, Warp-fueled Rage)
+- **b3.5**: Aspiring Champion  
+  - **b3.5.1**: Stats  
+  - **b3.5.2**: Weapons (Plasma Pistol, Power Sword)  
+  - **b3.5.3**: Abilities (Dark Zeal, Inspiring Terror)  
+- **b3.6**: Balefire Acolyte  
+  - **b3.6.1**: Stats  
+  - **b3.6.2**: Weapons (Balefire Bolt, Force Stave)  
+  - **b3.6.3**: Abilities (Psychic Dominion, Warpfire)  
+- **b3.7**: Gunner  
+  - **b3.7.1**: Stats  
+  - **b3.7.2**: Weapons (Plasma Gun, Melta)  
+  - **b3.7.3**: Abilities (Malicious Volleys, Overcharge)
   
 ---  
 
@@ -289,8 +301,6 @@
 | **Warpfire Maw**     | Melee   | 4           | 4+     | 2/3        | Lethal 5+ (+2)           |  
 | **Psychic Shriek**   | 6″      | 2           | 4+     | 1/2        | Psychic*, Ceaseless (+2) |
 
-*Psychic*: Resolve as mortal wounds on unmodified critical hits.  
-
 ---  
 
 | **Ability**          | **Effect**                                                                                              |  
@@ -346,7 +356,7 @@
 
 ---  
 
-## **Chaos Space Marine (Khorne Berzerker) (PR: 151)**  
+## **Khorne Berzerker (PR: 151)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
@@ -372,5 +382,94 @@
 |--------------------------|------------------------------------------------------------------------------|  
 | **Mark of Khorne**       | Re-roll one attack die per activation in melee. --**impactful**              |  
 | **Warp-fueled Rage**     | After defeating an enemy, gain **+1 Attack** next activation. --**impactful**|  
+  
+---  
+
+## **Aspiring Champion (PR: 162)**  
+  
+**Faction**: Abyssal Cabal  
+**Subgroup**: Chaos Space Marine  
+  
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 6″              |  
+| **Wounds**           | 16              |  
+| **Save**             | 3+              |  
+| **APL**              | 3               |  
+| **Group Activation** | 1               |  
+  
+---  
+  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**              |  
+|----------------------|---------|-------------|--------|------------|--------------------------------|  
+| **Plasma Pistol**    | 8″      | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2)       |  
+| **Power Sword**      | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)    |  
+  
+---  
+  
+| **Ability**              | **Effect**                                                         |  
+|--------------------------|--------------------------------------------------------------------|  
+| **Dark Zeal**            | Re-roll one attack or defense die per activation. --**impactful**  |  
+| **Inspiring Terror**     | Enemy operatives within 6″ worsen their WS by 1. --**impactful**   |  
+  
+---  
+
+## **Balefire Acolyte (PR: 158)**  
+  
+**Faction**: Abyssal Cabal  
+**Subgroup**: Chaos Space Marine  
+  
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 4″              |  
+| **Wounds**           | 14              |  
+| **Save**             | 4+              |  
+| **APL**              | 3               |  
+| **Group Activation** | 1               |  
+  
+---  
+  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**              |  
+|----------------------|---------|-------------|--------|------------|--------------------------------|  
+| **Balefire Bolt**    | 12″     | 3           | 4+     | 3/4        | Psychic*, Blast (2″) (+1)      |  
+| **Balefire blade**   | Melee   | 4           | 3+     | 3/4        | Life siphon*                   |  
+
+Life Siphon*: At the start of the Resolve Attack Dice step, you can select one friendly operative visible to and within 6" of this operative. For each attack dice you resolve during that step that inflicts damage, that friendly operative regains 1 lost wound, or D3 lost wounds if it was a critical success. You cannot use this weapon rule more than once per turning point.
+  
+---  
+  
+| **Ability**              | **Effect**                                                                                                                                            |  
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|  
+| **Psychic Dominion**     | **1AP:** Cast **Smite** (10″ range, 1D3 mortal wounds) or **Warpfire** (create a 3″ hazardous terrain patch (within 6" and visible)). --**impactful** |  
+| **Warpfire**             | Enemies in or moving through Warpfire suffer 1D3 wounds. --**impactful**                                                                              |  
+  
+---  
+
+## **Gunner (PR: 155)**  
+  
+**Faction**: Abyssal Cabal  
+**Subgroup**: Chaos Space Marine  
+  
+| **Attribute**        | **Value**       |  
+|----------------------|-----------------|  
+| **Movement**         | 4″              |  
+| **Wounds**           | 15              |  
+| **Save**             | 4+              |  
+| **APL**              | 3               |  
+| **Group Activation** | 1               |  
+  
+---  
+  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                    |  
+|----------------------|---------|-------------|--------|------------|--------------------------------------|  
+| **Plasma Gun**       | 14″     | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2)             |  
+| **Melta**            | 6″      | 3           | 3+     | 5/6        | Devastating 2 (+2), Piercing 1 (+1)  |  
+  
+---  
+  
+| **Ability**              | **Effect**                                                                |  
+|--------------------------|---------------------------------------------------------------------------|  
+| **Malicious Volleys**    | If stationary, shoot twice with the same weapon. --**impactful**          |  
+| **Overcharge**           | **1AP:** +1 Damage to next attack, but suffer 1 wound on a hit roll of 1. |  
   
 ---  
