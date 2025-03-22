@@ -7,7 +7,7 @@
 **race**: Human  
 **Origin**: Imperium of Man  (deserter)
 
-| **Attribute**       | **Value**       |  
+| **Attribute**        | **Value**       |  
 |----------------------|-----------------|  
 | **Movement**         | 6″              |  
 | **Wounds**           | 5               |  
@@ -23,10 +23,10 @@
 
 ---  
 
-| **Ability**          | **Effect**                                  |  
-|----------------------|--------------------------------------------|  
-| **Battlefield first aid**        | *1AP, Once per battle*: Heal 1D3 +1 wounds to a friendly operative within Control Range. This ability can only be used if there are no enemy operatives within 3″ of this operative or the target operative. |  
-| **Extended Mags** | Place an ammunition box marker within Control Range. Whenever a friendly operative performs a **Shoot** action within Control Range of the ammunition box marker, they add one attack dice but cannot retain critical successes from this. |  
+| **Ability**          | **Effect**                                                                                                                                      |  
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|  
+| **Battlefield first aid**        | *1AP, Once per battle*: Heal 1D3 +1 wounds to a friendly operative within Control Range. This ability can only be used if there are no enemy operatives within 3″ of this operative or the target operative.                                                                                                          |  
+| **Extended Mags** | Place an ammunition box marker within Control Range. Whenever a friendly operative performs a **Shoot** action within Control Range of the ammunition box marker, they add one attack dice but cannot retain critical successes from this.                                                                                         |  
 
 ---  
 

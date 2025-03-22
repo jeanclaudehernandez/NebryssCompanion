@@ -6,7 +6,7 @@
 **race**: Fellgor
 **Origin**: Nebryssian Liberation Republic (Traveler)
 
-| **Attribute**       | **Value**       |  
+| **Attribute**        | **Value**       |  
 |----------------------|-----------------|  
 | **Movement**         | 6″              |  
 | **Wounds**           | 8               |
@@ -24,10 +24,10 @@
 
 ---  
 
-| **Ability**          | **Effect**                                  |  
-|----------------------|--------------------------------------------|  
-| **Mist Veil**        | *1AP, Once per battle*: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured. |  
-| **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 mortal wound to restore 2D3 +1 wounds to another friendly operative within Control Range. |
+| **Ability**          | **Effect**                                                                                                                                  |  
+|----------------------|---------------------------------------------------------------------------------------------------------------------------------------------|  
+| **Mist Veil**        | *1AP, Once per battle*: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured.                                                                                                                                                            |  
+| **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 wound to restore 2D3 +1 wounds to another friendly operative within Control Range.              |
 
 ---  
 
