@@ -504,8 +504,8 @@
   
 | **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                       |  
 |----------------------------------|---------|-------------|--------|------------|-----------------------------------------|  
-| **Plasma Pistol (super charge)** | 10″     | 4           | 3+     | 4/5        | Piercing 1(+2) Hot (−1), Lethal 5+ (+2) |
-| **Plasma Pistol (standard)**     | 8″      | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)               |  
+| **Plasma Pistol (super charge)** | 12″     | 4           | 3+     | 4/5        | Piercing 1(+2) Hot (−1), Lethal 5+ (+2) |
+| **Plasma Pistol (standard)**     | 10″     | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)               |  
 | **Power Sword**                  | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)             |  
   
 ---  
