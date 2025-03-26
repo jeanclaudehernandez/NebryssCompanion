@@ -114,7 +114,7 @@
   
 ---  
 
-## **Murloc (PR: 68)**
+## **Murloc (PR: 70)**
 
 **Faction**: Forces of nature  
 **Subgroup**: Murloc  
@@ -602,7 +602,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
   
 ---  
 
-## **NLR Soldier (Human) (PR: 79)**
+## **NLR Soldier (Human) (PR: 76)**
 
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
@@ -611,7 +611,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 |---------------------|-----------|  
 | **Movement**        | 6″        |  
 | **Wounds**          | 7         |  
-| **Save**            | 6+        |  
+| **Save**            | 5+        |  
 | **APL**             | 2         |  
 
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
@@ -625,7 +625,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 ---  
 
-## **NLR Field Medic (Human) (PR: 76)**
+## **NLR Field Medic (Human) (PR: 81)**
 
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
@@ -634,7 +634,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 |---------------------|-----------|  
 | **Movement**        | 6″        |  
 | **Wounds**          | 6         |  
-| **Save**            | 6+        |  
+| **Save**            | 5+        |  
 | **APL**             | 2         |  
 
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
@@ -647,7 +647,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 ---  
 
-## **Fellgor Mist Shaman (PR: 82)**
+## **Fellgor Mist Shaman (PR: 96)**
 
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Fellgor  
@@ -655,8 +655,8 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 | **Attribute**       | **Value** |  
 |---------------------|-----------|  
 | **Movement**        | 6″        |  
-| **Wounds**          | 7         |  
-| **Save**            | 6+        |  
+| **Wounds**          | 10        |  
+| **Save**            | 5+        |  
 | **APL**             | 2         |  
 
 | **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**      |  
@@ -670,7 +670,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 ---  
 
-## **NLR Sergeant (Human) (PR: 85)**
+## **NLR Sergeant (Human) (PR: 94)**
 
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
