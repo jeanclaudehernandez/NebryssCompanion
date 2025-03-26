@@ -5,8 +5,8 @@
 **PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`
 
 - **Weapon Threat**: `(Attacks × min Damage x (7 − WS)) + Special Rules` highest value of all weapons.  
-  - **Special Rules**: Positive (e.g., *Lethal 5+*) = **+2**, Negative (e.g., *Heavy*) = **−1**.  
-- **Ability Score**: **+7 per impactful ability**.  
+  - **Special Rules**: some weapon rules indicate a modifier to weapon threat listed as (+X) or (-X).  
+- **Ability Score**: some abilities list a modifier value as (+X) or (-X).  
 
 ---  
 
@@ -114,7 +114,7 @@
   
 ---  
 
-## **Murloc (PR: 70)**
+## **Murloc (PR: 68)**
 
 **Faction**: Forces of nature  
 **Subgroup**: Murloc  
@@ -141,7 +141,7 @@
 | **Ability**          | **Effect**                                                                             |  
 |----------------------|----------------------------------------------------------------------------------------|  
 | **Amphibious Assault**| **1AP:** Swim 6″ through water or mist.                                               |  
-| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. --**impactful**                               |  
+| **Pack Tactics**     | +1 to WS/BS within 3″ of another Murloc. (+7)                               |  
 | **Primitive Cunning**| Free Dash once per Turning Point when within 6" of **Murloc King**.                    |
 | **Crab Shell Shield** | Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success.|
 
@@ -171,7 +171,7 @@
 +
 +| **Ability**          | **Effect**                                                            |  
 +|----------------------|-----------------------------------------------------------------------|  
-+| **Tidal Surge** | **1AP:** Push 2" all enemies within 6″. --**impactful**                    |  
++| **Tidal Surge** | **1AP:** Push 2" all enemies within 6″. (+7)                    |  
 +| **Primitive Cunning** | Free Dash once per Turning Point when within 6" of **Murloc King**.  |  
 
 ---  
@@ -200,8 +200,8 @@
 
 | **Ability**          | **Effect**                                                                           |  
 |----------------------|--------------------------------------------------------------------------------------|  
-| **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". --**impactful** |  
-| **Tidal Surge**      | **1AP:** Push 2" all enemies within 6". --**impactful**                              |
+| **King’s Command**   | Re-roll attack dice with result of  **1** for **Murlocs** within 6". (+7) |  
+| **Tidal Surge**      | **1AP:** Push 2" all enemies within 6". (+7)                              |
 
 ---  
 
@@ -230,7 +230,7 @@
 | **Ability**          | **Effect**                                               |  
 |----------------------|----------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
-| **Primal Strength**  | +1 Damage to successful Fight actions. --**impactful**   |  
+| **Primal Strength**  | +1 Damage to successful Fight actions. (+7)   |  
 
 ---  
 
@@ -259,7 +259,7 @@
 | **Ability**          | **Effect**                                               |  
 |----------------------|----------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
-| **Banner of Resilience** | Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). --**impactful** |  
+| **Banner of Resilience** | Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). (+7) |  
 
 ---  
 
@@ -288,11 +288,11 @@
 | **Ability**          | **Effect**                                               |  
 |----------------------|----------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
-| **Flute of Fury**    | Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. --**impactful** |  
+| **Flute of Fury**    | Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. (+7) |  
 
 ---  
 
-## **Windblast Aetherwing (PR: 96)**
+## **Windblast Aetherwing (PR: 114)**
 
 **Faction**: Forces of Nature  
 **Subgroup**: Tzaangor  
@@ -317,7 +317,7 @@
 | **Ability**          | **Effect**                                               |  
 |----------------------|----------------------------------------------------------|  
 | **Aether Dive**      | **1AP:** Fly 7″ over terrain.                            |  
-| **Primal Strength**  | +1 Damage to successful Fight actions. --**impactful**   |  
+| **Primal Strength**  | +1 Damage to successful Fight actions. (+7)   |  
 
 ---  
 
@@ -370,8 +370,8 @@
 | **Ability**              | **Effect**                                                                                                                                               |  
 |--------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------|  
 | **Combat Medicae**       | *1AP*: Heal **2D3 +2** wounds to a friendly operative within 3″.                                                                                         |  
-| **Genetic Augmentation** | *1AP*: Friendly operative within 6″ **+1 to WS** until the end of apothecary next activation. Does not stack with other WS/BS modifiers. --**impactful** |  
-| **Revitalizing Aura**    | All friendly operatives within 3″ reduce incoming damage by **1** (to a minimum of 1). --**impactful**                                                   |  
+| **Genetic Augmentation** | *1AP*: Friendly operative within 6″ **+1 to WS** until the end of apothecary next activation. Does not stack with other WS/BS modifiers. (+7) |  
+| **Revitalizing Aura**    | All friendly operatives within 3″ reduce incoming damage by **1** (to a minimum of 1). (+7)                                                   |  
 | **Desperate Charge**     | Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order.        |
 
 ---  
@@ -402,7 +402,7 @@
 | **Ability**              | **Effect**                                                |  
 |--------------------------|-----------------------------------------------------------|  
 | **Mistforged Precision** | Re-roll one attack roll in mist zones.                    |  
-| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  --**impactful**     |  
+| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  (+7)     |  
 
 ---  
 
@@ -430,8 +430,8 @@
 
 | **Ability**          | **Effect**                                                                                              |  
 |----------------------|---------------------------------------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                                                    |  
-| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. --**impactful** |
+| **Daemonic Flight**  | Fly 8″ over terrain. (+7)                                                                    |  
+| **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. (+7) |
 
 ---  
 
@@ -452,8 +452,8 @@
 
 | **Ability**          | **Effect**                                                                                                           |  
 |----------------------|----------------------------------------------------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                                                                 |  
-| **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6". --**impactful** |
+| **Daemonic Flight**  | Fly 8″ over terrain. (+7)                                                                                 |  
+| **Aegis of the Ninefold Deceit**   | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6". (+7) |
 | **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point.                                             |
 
 ---  
@@ -475,8 +475,8 @@
 
 | **Ability**          | **Effect**                                                                |  
 |----------------------|---------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. --**impactful**                                      |  
-| **Arcane Bargain**   | once per activation an enemy within control range, roll **1d6** and that enemy suffers **result** wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if an operative **other than Xarion Vex** recovered wounds this way and **Xarion Vex** is both visible and within 4" of this operative and that operative, restore **result/2** wounds rounded up from **Xarion Vex**. --**impactful**            |
+| **Daemonic Flight**  | Fly 8″ over terrain. (+7)                                      |  
+| **Arcane Bargain**   | once per activation an enemy within control range, roll **1d6** and that enemy suffers **result** wounds and restore **result** wounds from friendly operative that it's both visible and within 4", if an operative **other than Xarion Vex** recovered wounds this way and **Xarion Vex** is both visible and within 4" of this operative and that operative, restore **result/2** wounds rounded up from **Xarion Vex**. (+7)            |
 | **Ethereal Form**    | Remove this operative from the killzone at the end of the turning point. |
 
 ---  
@@ -505,12 +505,12 @@
   
 | **Ability**              | **Effect**                                                                   |  
 |--------------------------|------------------------------------------------------------------------------|  
-| **Mark of Khorne**       | Re-roll one attack die per activation in melee. --**impactful**              |  
-| **Warp-fueled Rage**     | After defeating an enemy, gain **+1 Attack** next activation. --**impactful**|  
+| **Mark of Khorne**       | Re-roll one attack die per activation in melee. (+7)              |  
+| **Warp-fueled Rage**     | After defeating an enemy, gain **+1 Attack** next activation. (+7)|  
   
 ---  
 
-## **Legionary Aspiring Champion (PR: 162)**  
+## **Legionary Aspiring Champion (PR: 195)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
@@ -535,12 +535,12 @@
   
 | **Ability**              | **Effect**                                                         |  
 |--------------------------|--------------------------------------------------------------------|  
-| **Dark Zeal**            | Re-roll one attack or defense die per activation. --**impactful**  |  
-| **Inspiring Terror**     | Enemy operatives within 6″ worsen their WS by 1. --**impactful**   |  
+| **Dark Zeal**            | Re-roll one attack or defense die per activation. (+7)  |  
+| **Inspiring Terror**     | Enemy operatives within 6″ worsen their WS by 1. (+7)   |  
   
 ---  
 
-## **Balefire Acolyte (PR: 158)**  
+## **Balefire Acolyte (PR: 141)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
@@ -566,8 +566,8 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
   
 | **Ability**              | **Effect**                                                                                                                                            |  
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Psychic Dominion**     | **1AP:** Cast **Smite** (10″ range, 1D3 mortal wounds) or **Warpfire** (create a 3″ hazardous terrain patch (within 6" and visible)). --**impactful** |  
-| **Warpfire**             | Enemies in or moving through Warpfire suffer 1D3 wounds. --**impactful**                                                                              |  
+| **Psychic Dominion**     | **1AP:** Cast **Smite** (10″ range, 1D3 mortal wounds) or **Warpfire** (create a 3″ hazardous terrain patch (within 6" and visible)). (+7) |  
+| **Warpfire**             | Enemies in or moving through Warpfire suffer 1D3 wounds. (+7)                                                                              |  
   
 ---  
 
@@ -597,7 +597,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
   
 | **Ability**              | **Effect**                                                                |  
 |--------------------------|---------------------------------------------------------------------------|  
-| **Malicious Volleys**    | If stationary, shoot twice with the same weapon. --**impactful**          |  
+| **Malicious Volleys**    | If stationary, shoot twice with the same weapon. (+7)          |  
 | **Overcharge**           | **1AP:** +1 Damage to next attack, but suffer 1 wound on a hit roll of 1. |  
   
 ---  
@@ -643,7 +643,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 | **Ability**              | **Effect**                                                                 |  
 |--------------------------|----------------------------------------------------------------------------|  
-| **Combat Triage**        | *1AP*: Heal **2D3 +1** wounds to a friendly operative within 3″. --**impactful** |  
+| **Combat Triage**        | *1AP*: Heal **2D3 +1** wounds to a friendly operative within 3″. (+7) |  
 
 ---  
 
@@ -666,11 +666,11 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|----------------------------------------------------------------------------|  
-| **Tidal Surge**      | *1AP*: Push all enemies within 6″ by 2″. --**impactful**                   |  
+| **Tidal Surge**      | *1AP*: Push all enemies within 6″ by 2″. (+7)                   |  
 
 ---  
 
-## **NLR Sergeant (Human) (PR: 94)**
+## **NLR Sergeant (Human) (PR: 106)**
 
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
@@ -689,7 +689,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 | **Ability**              | **Effect**                                                                 |  
 |--------------------------|----------------------------------------------------------------------------|  
-| **Inspiring Presence**   | Friendly operatives within 6″ re-roll **1s** on attack rolls. --**impactful** |  
+| **Inspiring Presence**   | Friendly operatives within 6″ re-roll **1s** on attack rolls. (+7) |  
 
 ---  
 
@@ -711,4 +711,4 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 
 | **Ability**          | **Effect**                                                                 |  
 |----------------------|----------------------------------------------------------------------------|  
-| **Markerlight**      | *1AP*: Designate a visible enemy. Allies gain **+1 to hit** against it until the end of the Turning Point. --**impactful** |  
+| **Markerlight**      | *1AP*: Designate a visible enemy. Allies gain **+1 to hit** against it until the end of the Turning Point. (+7) |  
