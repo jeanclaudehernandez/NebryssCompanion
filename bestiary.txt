@@ -16,78 +16,101 @@
 
 - **b1.1**: Murloc
   - **b1.1.1**: Stats  
-  - **b1.1.2**: Weapons (Rusty Spear, Coral Sword, Crude Net, Throwing Spear)  
-  - **b1.1.3**: Abilities (Amphibious Assault, Pack Tactics, Primitive Cunning, Crab Shell Shield)  
+  - **b1.1.2**: Weapons
+  - **b1.1.3**: Abilities
 - **b1.2**: Murloc Tidecaller
   - **b1.2.1**: Stats  
-  - **b1.2.2**: Weapons (Tidal Trident, Tidal Bolt)  
-  - **b1.2.3**: Abilities (Tidal Surge, Primitive Cunning)  
+  - **b1.2.2**: Weapons
+  - **b1.2.3**: Abilities
 - **b1.3**: Murloc King
   - **b1.3.1**: Stats  
-  - **b1.3.2**: Weapons (Royal Trident, Tidal Blast)  
-  - **b1.3.3**: Abilities (King’s Command, Tidal Surge)  
+  - **b1.3.2**: Weapons
+  - **b1.3.3**: Abilities
 - **b1.4**: Aetherwing
   - **b1.4.1**: Stats  
-  - **b1.4.2**: Weapons (Aether Talons, Beak Gore)  
-  - **b1.4.3**: Abilities (Aether Dive, Primal Strength)
+  - **b1.4.2**: Weapons
+  - **b1.4.3**: Abilities
 - **b1.5**: Aetherwing Bannerbearer
   - **b1.5.1**: Stats  
-  - **b1.5.2**: Weapons (Aether Talons, Beak Gore)  
-  - **b1.5.3**: Abilities (Aether Dive, Banner of Resilience)  
+  - **b1.5.2**: Weapons
+  - **b1.5.3**: Abilities
 - **b1.6**: Aetherwing Flutist  
   - **b1.6.1**: Stats  
-  - **b1.6.2**: Weapons (Aether Talons, Beak Gore)  
-  - **b1.6.3**: Abilities (Aether Dive, Flute of Fury)  
+  - **b1.6.2**: Weapons
+  - **b1.6.3**: Abilities
 - **b1.7**: Windblast Aetherwing  
   - **b1.7.1**: Stats  
-  - **b1.7.2**: Weapons (Aether Talons, Windblast)  
-  - **b1.7.3**: Abilities (Aether Dive, Primal Strength)
+  - **b1.7.2**: Weapons
+  - **b1.7.3**: Abilities
 
 ### **Imperium**  
 
 - **b2.1**: Intercessor Warrior
   - **b2.1.1**: Stats  
-  - **b2.1.2**: Weapons (Stalker Bolt Rifle, Fists)  
-  - **b2.1.3**: Abilities (N/A)  
-- **b2.2**: Apothecary Biologis  
+  - **b2.1.2**: Weapons
+  - **b2.1.3**: Abilities
+  - **b2.2**: Apothecary Biologis  
   - **b2.2.1**: Stats  
-  - **b2.2.2**: Weapons (Narthecium, Bolt Pistol)  
-  - **b2.2.3**: Abilities (Combat Medicae, Genetic Augmentation, Revitalizing Aura, Desperate Charge)  
+  - **b2.2.2**: Weapons
+  - **b2.2.3**: Abilities  
 - **b2.3**: Captain Marcus Valen  
   - **b2.3.1**: Stats  
-  - **b2.3.2**: Weapons (Lance of Sabatine, Mistforged Plasma Gun)  
-  - **b2.3.3**: Abilities (Mistforged Precision, Lancer’s Charge)  
+  - **b2.3.2**: Weapons
+  - **b2.3.3**: Abilities
 
 ### **Abyssal Cabal**  
 
 - **b3.1**: Screamer  
   - **b3.1.1**: Stats  
-  - **b3.1.2**: Weapons (Warpfire Maw, Psychic Shriek)  
-  - **b3.1.3**: Abilities (Daemonic Flight, Warpfire Trail)  
+  - **b3.1.2**: Weapons
+  - **b3.1.3**: Abilities
 - **b3.2**: Screecher Green  
   - **b3.2.1**: Stats  
-  - **b3.2.2**: Weapons (N/A)  
-  - **b3.2.3**: Abilities (Daemonic Flight, Aegis of the Ninefold Deceit, Ethereal Form)  
+  - **b3.2.2**: Weapons
+  - **b3.2.3**: Abilities  
 - **b3.3**: Screecher Purple  
   - **b3.3.1**: Stats  
-  - **b3.3.2**: Weapons (N/A)  
-  - **b3.3.3**: Abilities (Daemonic Flight, Arcane Bargain, Ethereal Form)
+  - **b3.3.2**: Weapons
+  - **b3.3.3**: Abilities
 - **b3.4**: Chaos Space Marine (Khorne Berzerker)  
   - **b3.4.1**: Stats  
-  - **b3.4.2**: Weapons (Boltgun, Chainsword)  
-  - **b3.4.3**: Abilities (Mark of Khorne, Warp-fueled Rage)
-- **b3.5**: Aspiring Champion  
+  - **b3.4.2**: Weapons
+  - **b3.4.3**: Abilities
+- **b3.5**: Legionary Aspiring Champion  
   - **b3.5.1**: Stats  
-  - **b3.5.2**: Weapons (Plasma Pistol, Power Sword)  
-  - **b3.5.3**: Abilities (Dark Zeal, Inspiring Terror)  
+  - **b3.5.2**: Weapons  
+  - **b3.5.3**: Abilities
 - **b3.6**: Balefire Acolyte  
   - **b3.6.1**: Stats  
-  - **b3.6.2**: Weapons (Balefire Bolt, Force Stave)  
-  - **b3.6.3**: Abilities (Psychic Dominion, Warpfire)  
-- **b3.7**: Gunner  
+  - **b3.6.2**: Weapons  
+  - **b3.6.3**: Abilities
+- **b3.7**: Legionary Gunner  
   - **b3.7.1**: Stats  
-  - **b3.7.2**: Weapons (Plasma Gun, Melta)  
-  - **b3.7.3**: Abilities (Malicious Volleys, Overcharge)
+  - **b3.7.2**: Weapons
+  - **b3.7.3**: Abilities
+
+### **Nebryssian Liberation Republic**
+
+- **b4.1**: NLR Soldier (Human)  
+  - **b4.1.1**: Stats  
+  - **b4.1.2**: Weapons  
+  - **b4.1.3**: Abilities  
+- **b4.2**: NLR Field Medic (Human)  
+  - **b4.2.1**: Stats  
+  - **b4.2.2**: Weapons  
+  - **b4.2.3**: Abilities  
+- **b4.3**: Fellgor Mist Shaman  
+  - **b4.3.1**: Stats  
+  - **b4.3.2**: Weapons  
+  - **b4.3.3**: Abilities  
+- **b4.4**: NLR Sergeant (Human)  
+  - **b4.4.1**: Stats  
+  - **b4.4.2**: Weapons  
+  - **b4.4.3**: Abilities  
+- **b4.5**: T’au Pathfinder  
+  - **b4.5.1**: Stats  
+  - **b4.5.2**: Weapons  
+  - **b4.5.3**: Abilities
   
 ---  
 
@@ -487,7 +510,7 @@
   
 ---  
 
-## **Aspiring Champion (PR: 162)**  
+## **Legionary Aspiring Champion (PR: 162)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
@@ -548,7 +571,7 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
   
 ---  
 
-## **Gunner (PR: 155)**  
+## **Legionary Gunner (PR: 155)**  
   
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
@@ -578,3 +601,114 @@ Life Siphon*: At the start of the Resolve Attack Dice step, you can select one f
 | **Overcharge**           | **1AP:** +1 Damage to next attack, but suffer 1 wound on a hit roll of 1. |  
   
 ---  
+
+## **NLR Soldier (Human) (PR: 79)**
+
+**Faction**: Nebryssian Liberation Republic  
+**Subgroup**: Human  
+
+| **Attribute**       | **Value** |  
+|---------------------|-----------|  
+| **Movement**        | 6″        |  
+| **Wounds**          | 7         |  
+| **Save**            | 6+        |  
+| **APL**             | 2         |  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
+|----------------------|---------|-------------|--------|------------|-------------------|  
+| **Lasgun**           | inf     | 3           | 4+     | 2/3        | -                 |  
+| **Bayonet**          | Melee   | 3           | 4+     | 2/3        | -                 |  
+
+| **Ability**          | **Effect**                                            |  
+|----------------------|-------------------------------------------------------|  
+| **Mist Resilience**  | In mist zones, gain **Cover** against ranged attacks. |  
+
+---  
+
+## **NLR Field Medic (Human) (PR: 76)**
+
+**Faction**: Nebryssian Liberation Republic  
+**Subgroup**: Human  
+
+| **Attribute**       | **Value** |  
+|---------------------|-----------|  
+| **Movement**        | 6″        |  
+| **Wounds**          | 6         |  
+| **Save**            | 6+        |  
+| **APL**             | 2         |  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
+|----------------------|---------|-------------|--------|------------|-------------------|  
+| **Mistforged Pistol**| 10"     | 3           | 4+     | 2/3        | Mist-Accuracy     |  
+
+| **Ability**              | **Effect**                                                                 |  
+|--------------------------|----------------------------------------------------------------------------|  
+| **Combat Triage**        | *1AP*: Heal **2D3 +1** wounds to a friendly operative within 3″. --**impactful** |  
+
+---  
+
+## **Fellgor Mist Shaman (PR: 82)**
+
+**Faction**: Nebryssian Liberation Republic  
+**Subgroup**: Fellgor  
+
+| **Attribute**       | **Value** |  
+|---------------------|-----------|  
+| **Movement**        | 6″        |  
+| **Wounds**          | 7         |  
+| **Save**            | 6+        |  
+| **APL**             | 2         |  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**      |  
+|----------------------|---------|-------------|--------|------------|------------------------|  
+| **Mist-Warp Staff**  | Melee   | 3           | 3+     | 2/3        | Psychic Push*          |  
+| **Mist Blast**       | 10″     | 3           | 4+     | 2/3        | Blast (1″), Psychic*   |  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|----------------------------------------------------------------------------|  
+| **Tidal Surge**      | *1AP*: Push all enemies within 6″ by 2″. --**impactful**                   |  
+
+---  
+
+## **NLR Sergeant (Human) (PR: 85)**
+
+**Faction**: Nebryssian Liberation Republic  
+**Subgroup**: Human  
+
+| **Attribute**       | **Value** |  
+|---------------------|-----------|  
+| **Movement**        | 6″        |  
+| **Wounds**          | 8         |  
+| **Save**            | 5+        |  
+| **APL**             | 2         |  
+
+| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**         |  
+|----------------------------------|---------|-------------|--------|------------|---------------------------|  
+| **Stormchaser Assault Rifle**    | 14"     | 4           | 4+     | 2/3        | Ceaseless (+2)            |  
+| **Chainsword**                   | Melee   | 3           | 3+     | 3/4        | Rending (+2)              |  
+
+| **Ability**              | **Effect**                                                                 |  
+|--------------------------|----------------------------------------------------------------------------|  
+| **Inspiring Presence**   | Friendly operatives within 6″ re-roll **1s** on attack rolls. --**impactful** |  
+
+---  
+
+## **T’au Pathfinder (PR: 85)**
+
+**Faction**: Nebryssian Liberation Republic  
+**Subgroup**: T’au  
+
+| **Attribute**       | **Value** |  
+|---------------------|-----------|  
+| **Movement**        | 6″        |  
+| **Wounds**          | 7         |  
+| **Save**            | 5+        |  
+| **APL**             | 2         |  
+
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**         |  
+|----------------------|---------|-------------|--------|------------|---------------------------|  
+| **Pulse Carbine**    | 18"     | 3           | 4+     | 2/3        | Balanced (+2)             |  
+
+| **Ability**          | **Effect**                                                                 |  
+|----------------------|----------------------------------------------------------------------------|  
+| **Markerlight**      | *1AP*: Designate a visible enemy. Allies gain **+1 to hit** against it until the end of the Turning Point. --**impactful** |  

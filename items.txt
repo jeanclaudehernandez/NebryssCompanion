@@ -8,7 +8,8 @@
 | **Chainsword**              | 12     | 4           | 3+     | 3/4        | Rending (+2)                                    | Human        |
 | **Chainsword (power cell)** | 15     | 4           | 3+     | 3/5        | Rending (+2)                                    | *Astartes    |
 | **Mistforged Saber**        | 25     | 4           | 3+     | 3/4        | Balanced (+2), mist-accuracy                    | Human        |  
-| **Arc Shock Gauntlets**     | 35     | 3           | 3+     | 2/4        | Stun (+1), Ceaseless (+2)                       | Universal    |  
+| **Arc Shock Gauntlets**     | 35     | 3           | 3+     | 2/4        | Stun (+1), Ceaseless (+2)                       | Universal    |
+| **Mist-Warp Staff**         | 40     | 3           | 3+     | 2/3        | Psychic Push (+1)                               | Fellgor      |
 | **Mistborn Whipblade**      | 80     | 5           | 3+     | 2/3        | Rending (+2), Agile (+1)                        | Human        |  
 | **Graviton Crusher**        | 120    | 3           | 2+     | 5/6        | Brutal (+2), shockwave 1"(+3), Fixed Result (-1)| Astartes     |
 | **Power Sword**             | 130    | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)                     | Astartes     |  
@@ -36,11 +37,12 @@
 | **Lasgun**                              | -      | inf     | 3           | 4+     | 2/3        | -                                                 | Human           |  
 | **Stub Pistol**                         | -      | 8″      | 4           | 4+     | 2/3        | -                                                 | Human           |
 | **Mistforged Pistol**                   | 15     | 10"     | 3           | 4+     | 2/3        | Lethal 5+ (+2), Mist-Accuracy                     | Human           |  
-| **Longshot Rifle**                      | 17     | inf     | 3           | 3+     | 3/4        | Saturate (+1)                                     | Human           |  
+| **Longshot Rifle**                      | 17     | inf     | 3           | 3+     | 3/4        | Saturate (+1)                                     | Human           |
+| **Pulse Carbine**                       | 25     | inf"    | 3           | 4+     | 2/3        | Balanced (+2)                                     | Human           |  
 | **Voidstrike Pistol**                   | 25     | 8"      | 3           | 3+     | 3/4        | Piercing 1 (+2)                                   | Astartes        |  
 | **Plasma Rifle (standard)**             | 20     | inf     | 2           | 4+     | 4/5        | Hot (-1)                                          | Astartes        |  
 | **Plasma Rifle (over change)**          | -      | inf     | 4           | 3+     | 4/5        | Hot (-1), piercing 1 (+2), break                  | Astartes        |
-| **Plasma Pistol (standard)**            | 50     | 8″      | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)                         | Universal       |
+| **Plasma Pistol (standard)**            | 50     | 8″      | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)                         | Universal       |  
 | **Plasma Pistol (super charge)**        | -      | 12"     | 4           | 3+     | 4/5        | Piercing 1(+2) Hot (−1), Lethal 5+ (+2)           | *Astartes       |
 | **Boltgun**                             | 60     | 14″     | 4           | 3+     | 3/4        | Relentless (+2)                                   | Astartes        |  
 | **Melta**                               | 50     | 6″      | 3           | 3+     | 5/6        | Devastating 2 (+2), Piercing 1 (+2)               | Astartes        |

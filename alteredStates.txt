@@ -28,3 +28,4 @@
 | **Penetrating x** (+2) | Subtract x from the targets saving stat for this action.                                                                               |
 | **Supressing**  (+3)   | Target operative and active operative roll **1D6 + APL** if active operative score is higher, target becomes supressed.                |
 | **Mist Dispersal**     | Clears mist in a 3" radius for one round.                                                                                              |
+| **Psychic Push**       | After attack, **if at least one attack dice inflicted damage**, move the target 2″. Roll one D6, on a **2-**, active suffers 1 wound.  |
