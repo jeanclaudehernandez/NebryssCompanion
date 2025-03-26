@@ -1,106 +1,129 @@
+# **Weapon Shop**  
 
-# **Weapon Shop**
+## **Melee Weapons**  
 
-| **Name**                      | **₥**  | **Description**                                                                                                      |  
-|-------------------------------|--------|----------------------------------------------------------------------------------------------------------------------|  
-| **Mistforged Pistol**         | 15     | A: 3 -- RNG: 12" -- WS: 4+ -- DMG: 2/3 -- SR: Lethal 5+ (+2), Mist-Vision (ignores mist-based penalties to hit)(+1). |  
-| **Chainsword**                | 12     | A: 4 -- RNG: Melee -- WS: 3+ -- DMG: 3/4 -- SR: Rending (+2).                                                        |  
-| **Plasma Rifle**              | 20     | A: 2 -- RNG: inf -- WS: 4+ -- DMG: 4/5 -- SR: Hot(-1).                                                               |  
-| **Longshot Rifle**            | 17     | (standard)A:3--RNG:inf--WS:3+--DMG:3/4--SR:Saturate.(Heavy)A:4--RNG:inf--WS3+DMG3/4--SR:Saturate(+1),Devasting 1(+1) |
-| **Inferno Bolter Rifle**      | 35     | A: 4 -- RNG: 12" -- WS: 3+ -- DMG: 3/4 -- SR: Lethal 5+ (+2), Burning(+1), Hot(-1).                                  |
-| **Voidstrike Pistol**         | 25     | A: 3 -- RNG: 8" -- WS: 3+ -- DMG: 3/4 -- SR: Piercing 1 (+2).                                                        |
-| **Nightstalker Sniper Rifle** | 50     | A: 3 -- RNG: inf -- WS: 2+ -- DMG: 4/5 -- SR: Devastating 2 (+2), Silent (+1) heavy(-1)                              |
-| **Stormchaser Assault Rifle** | 30     | A: 4 -- RNG: 14" -- WS: 3+ -- DMG: 2/4 -- SR: Ceaseless (+2).                                                        |
+| **Name**               | **₥**  | **Attacks** | **WS** | **Damage** | **Special Rules**                               | **Body**     |  
+|------------------------|--------|-------------|--------|------------|-------------------------------------------------|--------------|  
+| **Chainsword**         | 12     | 4           | 3+     | 3/4        | Rending (+2)                                    | Human        |  
+| **Mistforged Saber**   | 25     | 4           | 3+     | 3/4        | Balanced (+2), mist-accuracy                    | Human        |  
+| **Arc Shock Gauntlets**| 35     | 3           | 3+     | 2/4        | Stun (+1), Ceaseless (+2)                       | Universal    |  
+| **Mistborn Whipblade** | 80     | 5           | 3+     | 2/3        | Rending (+2), Agile (+1)                        | Human        |  
+| **Graviton Crusher**   | 120    | 3           | 2+     | 5/6        | Brutal (+2), shockwave 1"(+3), Fixed Result (-1)| Astartes     |  
 
----
+---  
 
-# **Armor Shop**
+## **Ranged Weapons**  
 
-| **Name**                | **₥**  | **Description**                                                                                       |
-|-------------------------|--------|-------------------------------------------------------------------------------------------------------|
-| **Mistcloak**           | 8      | Save +1 in mist zones of density medium or higher.                                                    |  
-| **Mist-Resistant Armor**| 18     | Light armor, Reduces damage from mist anomalies by 1 (to a minimum of 1).                             |  
-| **Reinforced Carapace** | 22     | Heavy armor, Wounds +4, Movement -1" (min 4).                                                         |  
-| **Mistweave Plate**     | 25     | Medium armor, wounds +2, Re-roll one failed Save roll once per Battle.                                |
-| **Mistweave Shroud**    | 30     | Medium armor, Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.         |
-| **Swiftwind Harness**   | 25     | light, Wounds -1, Dash costs 0 AP.                                                                    |
-| **Aegis Battleplate**   | 50     | Heavy armor,  Wounds +5, Save +2, Movement -2″ (min 3) and cannot be used with Fly or Climb abilities.|
-| **Mist-Tracker Goggles**| 12     | Goggles that highlight mist anomalies and hidden paths within 12".                                    |
+| **Name**                      | **₥**  | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                                 | **Body**     |  
+|-------------------------------|--------|---------|-------------|--------|------------|---------------------------------------------------|--------------|  
+| **Mistforged Pistol**         | 15     | 10"     | 3           | 4+     | 2/3        | Lethal 5+ (+2), Mist-Accuracy                     | Human        |  
+| **Longshot Rifle**            | 17     | inf     | 3           | 3+     | 3/4        | Saturate (+1)                                     | Human        |  
+| **Voidstrike Pistol**         | 25     | 8"      | 3           | 3+     | 3/4        | Piercing 1 (+2)                                   | Astartes     |  
+| **Plasma Rifle**              | 20     | inf     | 2           | 4+     | 4/5        | Hot (-1)                                          | Astartes     |  
+| **Pneumatic Harpoon**         | 40     | 12"     | 2           | 4+     | 4/5        | Drag 3", Heavy (-1)                               | Human        |  
+| **Stormchaser Assault Rifle** | 30     | 14"     | 4           | 3+     | 2/4        | Ceaseless (+2)                                    | Human        |  
+| **Nightstalker Sniper**       | 50     | inf     | 3           | 2+     | 4/5        | Devastating 2 (+2), Silent (+1), Heavy (-1)       | Human        |  
+| **Inferno Bolter Rifle**      | 35     | 12"     | 4           | 3+     | 3/4        | Lethal 5+ (+2), Burning (+1), Hot (-1)            | Astartes     |  
+| **Phase-Tech Rifle**          | 100    | inf     | 3           | 2+     | 4/5        | Piercing 1 (+2), Silent (+1), Mist-Accuracy       | Human        |  
+| **Voidrender Cannon**         | 150    | 18"     | 2           | 3+     | 5/7        | Devastating 3 (+3), Piercing 2 (+3), Heavy (-1)   | Astartes     |  
 
----
+---  
 
-# **Consumables Shop**  
+## **Armor Shop**  
+
+| **Name**                 | **₥**  | **Description**                                                                                       | **Race Req** |  
+|--------------------------|--------|-------------------------------------------------------------------------------------------------------|--------------|  
+| **Mistcloak**            | 8      | Save +1 in mist zones of density medium or higher.                                                    | Universal    |  
+| **Mist-Resistant Armor** | 18     | Reduces damage from mist anomalies by 1 (to a minimum of 1).                                          | Universal    |  
+| **Reinforced Carapace**  | 22     | Wounds +4, Movement -1" (min 4).                                                                      | Universal    |  
+| **Mistweave Plate**      | 25     | wounds +2, Re-roll one failed Save roll once per Battle.                                              | Human        |  
+| **Mistweave Shroud**     | 30     | Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.                       | Human        |  
+| **Swiftwind Harness**    | 25     | Wounds -1, Dash costs 0 AP.                                                                           | Human        |  
+| **Aegis Battleplate**    | 50     | Wounds +5, Save +2, Movement -2″ (min 3) and cannot be used with Fly or Climb abilities.              | Astartes     |  
+| **Mist-Tracker Goggles** | 12     | Goggles that highlight mist anomalies and hidden paths within 12".                                    | Universal    |  
+| **Stormweave Brigandine**| 45     | Wounds +3, Save +1 vs ranged attacks. Re-roll one failed Save per battle.                             | Human        |  
+| **Aetheric Pauldrons**   | 60     | Wounds +2, reduces damage from psychic attacks by 1.                                                  | Universal    |  
+| **Mistforged Cuirass**   | 75     | Wounds +4, Save +1, Movement -1". Reduce damage from mist bourne attacks.                             | Human        |  
+| **Voidwalker Exosuit**   | 200    | Wounds +8, Save 3+, Movement +2". Requires power cell (sold separately).                              | Astartes     |  
+| **Eclipse Shroud**       | 150    | Wounds +2, Save +1. Once per battle: operative is in Cover for 1 turning point only in mist zones.    | Universal    |  
+| **Titanfall Plate**      | 250    | Wounds +10, Save 3+, but Movement -3" and cannot Dash.                                                | Astartes     |  
+| **Mistlord Raiment**     | 180    | Wounds +5, Save +1. All mist-based healing effects are doubled for wearer (both target and performer).| Human        |  
+
+---  
+
+## **Consumables Shop**  
 
 | **Name**                | **₥**  | **Description**                                                                                                                               |  
 |-------------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------|  
 | **Mist Compass**        | 5      | Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost.                                                    |  
 | **Stimpack**            | 3      | Single-use injector, restores 1D3 wounds to the user. Combat: 1AP, cannot be used within Control Range of enemy operatives.                   |  
-| **Mist Grenade**        | 6      | A: 1 -- RNG: 6" -- WS: - -- DMG: 2/3 -- SR: Blast (3"), Mist Dispersal (clears mist in a 3" radius for one round).                            |  
+| **Mist Grenade**        | 6      | A: 1 -- RNG: 6" -- WS: - -- DMG: -/- -- SR: Blast (3"), Mist Dispersal.                                                                       |  
 | **Mist Lantern**        | 7      | A portable light source that pierces through dense mist, illuminating a 6" radius.                                                            |  
-| **Rations Pack**        | 2      | A week’s worth of preserved food and water, essential for long journeys.                                                                      |  
+| **Rations Pack**        | 2      | A week's worth of preserved food and water, essential for long journeys.                                                                      |  
 | **Medkit**              | 9      | Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives. |  
 | **Mist-Repellent Spray**| 3.5    | Single-use spray that clears mist in a 1" radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives.           |  
 | **Signal Flare**        | 2.5    | A flare that can be used to signal for help or mark a location, visible through mist.                                                         |  
-| **Medical Supplies**    | 2      | A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.                           |
-| **Lockpick Set**        | 10     | A set of tools for bypassing locks and traps.                                                                                                 |
-| **Stoutbarrel Ale**     | 1      | Restores 1D3 wounds but imposes a **-1″ movement penalty** for the next reposition action the operative performs.                             |
-| **Custom Maps**         | 20     | Grants re-rolls for navigation checks in mist zones.                                                                                          |
+| **Medical Supplies**    | 2      | A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.                           |  
+| **Lockpick Set**        | 10     | A set of tools for bypassing locks and traps.                                                                                                 |  
+| **Stoutbarrel Ale**     | 1      | Restores 1D3 wounds but imposes a **-1″ movement penalty** for the next reposition action the operative performs.                             |  
+| **Mist Maps**           | 20     | Grants re-rolls for navigation checks in mist zones.                                                                                          |
+| **Power Cell**          | 30     | Single-use energy core required to activate Voidwalker Exosuit for one mission. Provides 6 operational hours before depletion.                |  
 
----
+---  
 
-# **Ammunition Types**  
+## **Ammunition Types**  
 
 | **Name**                      | **₥** | **Qant** | **Type**        | **Description**                                                                 |  
 |-------------------------------|-------|----------|-----------------|---------------------------------------------------------------------------------|  
 | **Standard Bolter Rounds**    | 2     | 5        | Bolter          | Standard ammunition for bolter-type weapons.                                    |  
-| **Kraken Penetrator Rounds**  | 10    | 5        | Bolter          | High-penetration rounds, reduce target’s Save by 1, SR: Piercing 1.             |  
-| **Hellfire Rounds**           | 8     | 6        | Bolter          | Rounds filled with acidic compounds, SR: **burning**, **bleeding**.             |  
+| **Kraken Penetrator Rounds**  | 10    | 5        | Bolter          | High-penetration rounds, SR: Penetrating 1, Piercing 1.                         |  
+| **Hellfire Rounds**           | 8     | 6        | Bolter          | Rounds filled with acidic compounds, SR: **Burning**, **Bleeding**.             |  
 | **Standard Plasma Cells**     | 3     | 8        | Plasma          | Standard energy cells for plasma weapons.                                       |  
 | **Standard Rounds**           | 3     | 9        | Pistol/Rifle    | Basic ammunition for gunpowder-based pistols and rifles.                        |  
 | **Armor-Piercing Rounds**     | 5     | 8        | Rifle/Sniper    | Rounds designed to pierce armor, SR: Piercing 1.                                |  
 | **Hollow-Point Rounds**       | 3     | 10       | Pistol          | Rounds that expand on impact, dealing +1 Damage to unarmored targets.           |  
-| **Match Grade Rounds**        | 10    | 5        | Sniper          | Precision-engineered rounds, Reduce target’s Save by 1, SR: Devastating 2.      |  
-| **Incendiary Rounds**         | 4     | 8        | Rifle           | Rounds that ignite on impact, SR: **burning**                                   |  
-| **Fragmentation Rounds**      | 3     | 10       | Pistol/Rifle    | Rounds that explode on impact, SR: blast(1").                                   |
+| **Match Grade Rounds**        | 10    | 5        | Sniper          | Precision-engineered rounds, Penetrating 1, SR: Devastating 2.                  |  
+| **Incendiary Rounds**         | 4     | 8        | Rifle           | Rounds that ignite on impact, SR: **Burning**                                   |  
+| **Fragmentation Rounds**      | 3     | 10       | Pistol/Rifle    | Rounds that explode on impact, SR: blast(1").                                   |  
 
----
+---  
 
-# **Mist Engines**  
+## **Mist Engines**  
 
 | **Name**                | **₥** | **Optimal Conditions** | **Max Speed (″)** | **Max Weight (hull+cargo)**|  
-|------------------------ |-------|------------------------|-------------------|----------------------------|
-| **Entry Engine**        | 100   | W:100% M:-             | 35kmph / 4″       | 80                         |
-| **Swiftwind Engine**    | 500   | W:40%  M: light        | 120kmph / 12″     | 100                        |
-| **Endurance Engine**    | 450   | W:70%  M: light/medium | 60kmph / 7″       | 300                        |
-| **Cargo Hauler Engine** | 400   | W:90%  M: medium       | 35kmph / 4″       | 600                        |
-| **Balanced Engine**     | 850   | W:60%  M:-             | 90 kmph / 9″      | 175                        |
+|------------------------ |-------|------------------------|-------------------|----------------------------|  
+| **Entry Engine**        | 100   | W:100% M:-             | 35kmph / 4″       | 80                         |  
+| **Swiftwind Engine**    | 500   | W:40%  M: light        | 120kmph / 12″     | 100                        |  
+| **Endurance Engine**    | 450   | W:70%  M: light/medium | 60kmph / 7″       | 300                        |  
+| **Cargo Hauler Engine** | 400   | W:90%  M: medium       | 35kmph / 4″       | 600                        |  
+| **Balanced Engine**     | 850   | W:60%  M:-             | 90 kmph / 9″      | 175                        |  
 
----
+---  
 
-# **Ship Hulls**  
+## **Ship Hulls**  
 
-| **Name**               | **₥** | **Weight** | **Ship Wounds** | **Defense** | **Max Cargo** |
-|------------------------|-------|------------|-----------------|-------------|---------------|
-| **Entry Hull**         | 80    | 20         | 20              | 0           | 50            |
+| **Name**               | **₥** | **Weight** | **Ship Wounds** | **Defense** | **Max Cargo** |  
+|------------------------|-------|------------|-----------------|-------------|---------------|  
+| **Entry Hull**         | 80    | 20         | 20              | 0           | 50            |  
 | **Swiftwind Hull**     | 800   | 20         | 40              | 2           | 60            |  
 | **Endurance Hull**     | 750   | 150        | 80              | 4           | 100           |  
 | **Cargo Hauler Hull**  | 700   | 200        | 60              | 3           | 200           |  
 | **Fortified Hull**     | 900   | 350        | 120             | 5           | 80            |  
 
----
+---  
 
-# **Cannons**  
+## **Cannons**  
 
-| **Name**               | **₥** | **Ammo Type**         | **Weight** |
+| **Name**               | **₥** | **Ammo Type**         | **Weight** |  
 |------------------------|-------|-----------------------|------------|  
-| **Light Deck Cannon**  | 30    | Standard Cannonballs  |  15        |
-| **Heavy Broadside**    | 50    | Explosive Cannonballs |  40        |
-| **Mistfire Cannon**    | 60    | Mist-Infused Ammo     |  35        |
-| **Plasma Cannon**      | 700   | Plasma Charges        |  60        |
+| **Light Deck Cannon**  | 30    | Standard Cannonballs  |  15        |  
+| **Heavy Broadside**    | 50    | Explosive Cannonballs |  40        |  
+| **Mistfire Cannon**    | 60    | Mist-Infused Ammo     |  35        |  
+| **Plasma Cannon**      | 700   | Plasma Charges        |  60        |  
 
----
+---  
 
-# **Cannonballs**  
+## **Cannonballs**  
 
 | **Name**                 | **₥** | **Damage** |  
 |--------------------------|-------|------------|  
@@ -109,4 +132,11 @@
 | **Mist-Infused Ammo**    | 150   | 12/15      |  
 | **Plasma Charges**       | 200   | 20/25      |  
 
----
+---  
+
+## **Race Requirements Legend**
+
+- **Human**: Standard human-sized equipment  
+- **Astartes**: Power armor/bolt weapons (Space Marine compatible)  
+- **Universal**: Usable by all races  
+- **Fellgor**: Beastman-compatible gear (not currently present in this file)
