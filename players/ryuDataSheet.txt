@@ -6,12 +6,12 @@
 **Race**: Warp Anomaly (Mist Golem)  
 **Origin**: Nebryssian Mist  
 
-| **Attribute**        | **Value**       |  
-|----------------------|-----------------|  
-| **Movement**         | 4″              |  
-| **Wounds**           | 11              |  
-| **Save**             | 4+              |  
-| **APL**              | 2               |  
+| **Attribute**        | **Value** |  
+|----------------------|-----------|  
+| **Movement**         | 4″        |  
+| **Wounds**           | 11        |  
+| **Save**             | 4+        |  
+| **APL**              | 2         |  
 
 ---  
 
@@ -22,14 +22,15 @@
 
 ---  
 
-| **Ability**          | **Effect**                                                                                                                                 |  
-|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Mist Regeneration**| At the start of Grak'tuk's activation, if in a mist zone, roll **1D6** on a **4+** and heal wounds based on the mist density:              |
-|                      |   - **Light Mist**: heal **1 wound**.                                                                                                      |
-|                      |    - **Medium Mist**: heal **1D3 wounds**.                                                                                                 |  
-|                      |    - **Dense Mist**: heal **2D3 wounds**. --**impactful**                                                                                  |  
-| **Boulder Roll**     | **1AP**: move up to **6″** in a straight line and most move at least **3"**, this it is not possible, this cannot be used. Any operative within **1″** of this path suffers **1D3 wounds**. --**impactful**                                                                                                                   |  
-| **Living Stone**     | Reduce all incoming physical damage by **1** (to a minimum of 2). --**impactful**                                                          |  
+| **Ability**          | **Effect**                                                                                                                               |  
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------|  
+| **Mist Regeneration**| At the start of Grak'tuk's activation, if in a mist zone, roll **1D6** on a **4+** and heal wounds based on the mist density:            |
+|                      |   - **Light Mist**: heal **1 wound**.                                                                                                    |
+|                      |    - **Medium Mist**: heal **1D3 wounds**.                                                                                               |  
+|                      |    - **Dense Mist**: heal **2D3 wounds**. **(+7)**                                                                                       |  
+| **Boulder Roll**     | **1AP**: move up to **6″** in a straight line and most move at least **3"**, this it is not possible, this cannot be used. Any operative |
+|                      | within **1″** of this path suffers **1D3 wounds**. **(+7)**                                                                              |  
+| **Living Stone**     | Reduce all incoming physical damage by **1** (to a minimum of 2). **(+7)**                                                               |  
 
 ---  
 

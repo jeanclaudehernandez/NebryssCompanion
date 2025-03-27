@@ -30,3 +30,5 @@
 | **Mist Dispersal**     | Clears mist in a 3" radius for one round.                                                                                                                  | N/A             |
 | **Psychic Push**       | After attack, **if at least one attack dice inflicted damage**, move the target 2″. Roll one D6, on a **2-**, active suffers 1 wound.                      | N/A             |
 | **Life Siphon**        | Select 1 friendly operative visible and within 6". For each dice that deals damage, it heals 1 or 1D3 wounds if it was a critical. Once per turning point. | +2              |
+| **Quick Assault**      | *Once per battle*: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two successful or     | +7              |
+|                        |  critical hit dice in sequence and add 1dmg to both their damage characteristics.                                                                          |                 |

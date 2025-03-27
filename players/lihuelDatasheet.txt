@@ -7,12 +7,12 @@
 **race**: Human  
 **Origin**: Imperium of Man  (exiled)
 
-| **Attribute**        | **Value**       |  
-|----------------------|-----------------|  
-| **Movement**         | 6″              |  
-| **Wounds**           | 6               |  
-| **Save**             | 5+              |  
-| **APL**              | 2               |  
+| **Attribute**        | **Value** |  
+|----------------------|-----------|  
+| **Movement**         | 6″        |  
+| **Wounds**           | 6         |  
+| **Save**             | 5+        |  
+| **APL**              | 2         |  
 
 ---  
 
@@ -23,11 +23,14 @@
 
 ---  
 
-| **Ability**          | **Effect**                                                                                                                                                |  
-|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Unrelenting Agility** | *Once per battle*: this operative may perform  **Shoot** action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target of that shooting action survives, this operative gains **1AP** untill the end of the activation.  --**impactful**     |
-| **Quick Assault** | *Once per battle*: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two successful or critical hit dice in sequence and add 1dmg to both their damage characteristics. --**impactful**                                                                                            |
-| **Quick Nerves**    | When this operative has an engage order, it resolves dices first when retaliating                                                                          |
+| **Ability**          | **Effect**                                                                                                    |  
+|----------------------|---------------------------------------------------------------------------------------------------------------|  
+| **Unrelenting Agility** | *Once per battle*: this operative may perform  **Shoot** action within control range of an enemy operative |
+|                         | if that same operative was the target of previous charge action during this activation. If the target of   |
+|                         | that shooting action survives, this operative gains **1AP** untill the end of the activation. **(+7)**     |
+| **Quick Assault**       | *Once per battle*: if this operative hasn't done a shoot action during this activation and performed       |
+|                         | a charge action, it can resolve two dice in sequence and add 1dmg to both their damage. **(+7)**           |
+| **Quick Nerves**        | When this operative has an engage order, it resolves dices first when retaliating.                         |
 
 ---  
 
