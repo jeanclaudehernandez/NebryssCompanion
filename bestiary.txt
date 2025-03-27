@@ -367,7 +367,7 @@
 
 ---  
 
-## **Captain Marcus Valen (PR: 214)**
+## **Captain Marcus Valen (PR: 221)**
 
 **Faction**: Imperium  
 **Subgroup**: Space Marine  
@@ -389,10 +389,11 @@
 
 ---  
 
-| **Ability**              | **Effect**                                      |  
-|--------------------------|-------------------------------------------------|  
-| **Mistforged Precision** | Re-roll one attack roll in mist zones.          |  
-| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  **(+7)**  |  
+| **Ability**              | **Effect**                                                             |
+|--------------------------|------------------------------------------------------------------------|
+| **Mistforged Precision** | Re-roll one attack roll in mist zones.                                 |
+| **Lancer’s Charge**      | **1AP:** Free Charge + Fight action.  **(+7)**                         |
+| **Inspiring Presence**   | Friendly operatives within 6″ re-roll **1s** on attack rolls. **(+7)** |
 
 ---  
 
