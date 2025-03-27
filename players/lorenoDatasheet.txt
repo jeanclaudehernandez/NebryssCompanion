@@ -7,30 +7,30 @@
 **race**: Astartes (Mutated)  
 **Origin**: Abyssal Cabal (Deserter)  
 
-| **Attribute**        | **Value** |  
-|----------------------|-----------|  
-| **Movement**         | 4″        |  
-| **Wounds**           | 10        |  
-| **Save**             | 5+        |  
-| **APL**              | 2         |  
+| **Attribute**        | **Value** |
+|----------------------|-----------|
+| **Movement**         | 4″        |
+| **Wounds**           | 10        |
+| **Save**             | 5+        |
+| **APL**              | 2         |
 
 ---  
 
-| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                |  
-|----------------------|---------|-------------|--------|------------|----------------------------------|  
-| **Mist-Warp Staff**  | Melee   | 4           | 3+     | 2/3        |                                  |  
-| **Warpflame Blast**  | 12"     | 3           | 4+     | 2/3        | Blast (2″)(+2), PSYCHIC, hot(-1) |  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                |
+|----------------------|---------|-------------|--------|------------|----------------------------------|
+| **Mist-Warp Staff**  | Melee   | 4           | 3+     | 2/3        | -                                |
+| **Warpflame Blast**  | 12"     | 3           | 4+     | 2/3        | Blast (2″)(+2), PSYCHIC, hot(-1) |
 
 ---  
 
-| **Ability**          | **Effect**                                                                                                                                      |  
-|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Fractal Visions**  | *Once per Battle*: Reroll a failed shooting attack dice.                                                                                        |  
+| **Ability**          | **Effect**                                                                                                                                      |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Fractal Visions**  | *Once per Battle*: Reroll a failed shooting attack dice.                                                                                        |
 | **Mist Veilwalk**    | *1AP*: Teleport 6″ through mist zones. Roll 1D6; on a **4+**, change order to **Conceal Order**.                                                |
 | **Screaming Vortex** | *2AP, Once per battle*: place withint control range one Screecher(green or purple) operative within control range, cannot place it if there is  |
 |                      | an enemy visible and within 6". **(+7)**                                                                                                        |
 | **Heretic Astartes** | Once per long rest: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions. You cannot select the same       |
-|                      | PSYCHIC ranged weapon more than once. For the rest of the battle it can counteract regarless of order **(+7)**                                  |  
+|                      | PSYCHIC ranged weapon more than once. For the rest of the battle it can counteract regarless of order **(+7)**                                  |
 
 ---  
 

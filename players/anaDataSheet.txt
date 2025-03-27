@@ -6,26 +6,26 @@
 **race**: Fellgor
 **Origin**: Nebryssian Liberation Republic (Traveler)
 
-| **Attribute**        | **Value** |  
-|----------------------|-----------|  
-| **Movement**         | 6″        |  
+| **Attribute**        | **Value** |
+|----------------------|-----------|
+| **Movement**         | 6″        |
 | **Wounds**           | 8         |
-| **Save**             | 5+        |  
-| **APL**              | 2         |  
+| **Save**             | 5+        |
+| **APL**              | 2         |
 
 ---  
 
-| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|----------------------|-----------------|-------------|--------|------------|-------------------|  
-| **Claws**            | Melee           | 4           | 3+     | 2/3        | Rending (+2)      |  
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|----------------------|-----------------|-------------|--------|------------|-------------------|
+| **Claws**            | Melee           | 4           | 3+     | 2/3        | Rending (+2)      |
 | **Mist Blast**       | 10″             | 3           | 4+     | 2/3        | Psychic Push*     |
 
 ---  
 
-| **Ability**          | **Effect**                                                                                                                              |  
-|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|  
+| **Ability**          | **Effect**                                                                                                                              |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | **Mist Veil**        | *1AP, Once per battle*: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away |
-|                      | also treat it as Obscured.                                                                                                              |  
+|                      | also treat it as Obscured.                                                                                                              |
 | **The Wind’s Gift**  | *Once per battle*: This operative suffers 1 wound to restore 2D3 +1 wounds to another friendly operative within Control Range.          |
 
 ---  

@@ -7,24 +7,24 @@
 **race**: [Operative Name]
 **Origin**: [Operative faction of origin]
 
-| **Attribute**       | **Value**       |  
-|----------------------|-----------------|  
-| **Movement**         | [X]″            |  
-| **Wounds**           | [X]             |  
-| **Save**             | [X]+            |  
-| **APL**              | [X]             |  
+| **Attribute**        | **Value**       |
+|----------------------|-----------------|
+| **Movement**         | [X]″            |
+| **Wounds**           | [X]             |
+| **Save**             | [X]+            |
+| **APL**              | [X]             |
 
 ---  
 
-| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|----------------------|-----------------|-------------|--------|------------|-------------------|  
-| [Weapon Name]        | [Range]         | [X]         | [X]+   | [X]/[Y]    | [Rule]            |  
+| **Weapon**           | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|----------------------|-----------------|-------------|--------|------------|-------------------|
+| [Weapon Name]        | [Range]         | [X]         | [X]+   | [X]/[Y]    | [Rule]            |
 
 ---  
 
-| **Ability**          | **Effect**                                  |  
-|----------------------|--------------------------------------------|  
-| [Ability Name]       | [Description]                              |  
+| **Ability**          | **Effect**                                 |
+|----------------------|--------------------------------------------|
+| [Ability Name]       | [Description]                              |
 
 ---  
 
