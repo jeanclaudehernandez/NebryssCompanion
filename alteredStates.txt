@@ -15,17 +15,18 @@
 
 ## **Weapon Rules**
 
-| **Name**               | **Effect**                                                                                                                             |
-|------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
-| **Shockwave x"** (+3)  | If i critical dice is retained, weapon gains blast x" weapon rule. (melee weapons treat as shooting actions against secondary targets) |
-| **Agile**              | When resolving attack dices, resolve 1 dice before the fix secuence (if both weapons have this rule, active operative resolves first). |
-| **Fixed Result**  (-2) | Attacks made with this weapon can't reroll any dice.                                                                                   |
-| **Mist-Accuracy**      | This weapon isn't affect by mist's weapon skill penalties.                                                                             |
-| **Drag x"**            | If a critical dice is retained, move the enemy x" in the shortest possible direction towards the active operative.                     |
-| **Burning**  (+1)      | If damage is made to the target during this action, apply burning status to the target.                                                |
-| **Bleeding** (+1)      | If damage is made to the target during this action, apply bleeding status to the target.                                               |
-| **Electrify** (+2)     | If damage is made to the target during this action, apply Electrified status to the target.                                            |
-| **Penetrating x** (+2) | Subtract x from the targets saving stat for this action.                                                                               |
-| **Supressing**  (+3)   | Target operative and active operative roll **1D6 + APL** if active operative score is higher, target becomes supressed.                |
-| **Mist Dispersal**     | Clears mist in a 3" radius for one round.                                                                                              |
-| **Psychic Push**       | After attack, **if at least one attack dice inflicted damage**, move the target 2″. Roll one D6, on a **2-**, active suffers 1 wound.  |
+| **Name**               | **Effect**                                                                                                                                                 | **PR Modifier** |
+|------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
+| **Shockwave x"**       | If i critical dice is retained, weapon gains blast x" weapon rule. (melee weapons treat as shooting actions against secondary targets)                     | +3              |
+| **Agile**              | When resolving attack dices, resolve 1 dice before the fix secuence (if both weapons have this rule, active operative resolves first).                     | N/A             |
+| **Fixed Result**       | Attacks made with this weapon can't reroll any dice.                                                                                                       | -2              |
+| **Mist-Accuracy**      | This weapon isn't affect by mist's weapon skill penalties.                                                                                                 | N/A             |
+| **Drag x"**            | If a critical dice is retained, move the enemy x" in the shortest possible direction towards the active operative.                                         | N/A             |
+| **Burning**            | If damage is made to the target during this action, apply burning status to the target.                                                                    | +1              |
+| **Bleeding**           | If damage is made to the target during this action, apply bleeding status to the target.                                                                   | +1              |
+| **Electrify**          | If damage is made to the target during this action, apply Electrified status to the target.                                                                | +2              |
+| **Penetrating x**      | Subtract x from the targets saving stat for this action.                                                                                                   | +2              |
+| **Supressing**         | Target operative and active operative roll **1D6 + APL** if active operative score is higher, target becomes supressed.                                    | +3              |
+| **Mist Dispersal**     | Clears mist in a 3" radius for one round.                                                                                                                  | N/A             |
+| **Psychic Push**       | After attack, **if at least one attack dice inflicted damage**, move the target 2″. Roll one D6, on a **2-**, active suffers 1 wound.                      | N/A             |
+| **Life Siphon**        | Select 1 friendly operative visible and within 6". For each dice that deals damage, it heals 1 or 1D3 wounds if it was a critical. Once per turning point. | +2              |
