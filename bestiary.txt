@@ -119,28 +119,28 @@
 **Faction**: Forces of nature  
 **Subgroup**: Murloc  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 6         |  
-| **Save**      | 6+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 6         |
+| **Save**      | 6+        |
 | **APL**       | 1         |
 
 ---  
 
-| **Weapon**         | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|--------------------|-----------------|-------------|--------|------------|-------------------|  
+| **Weapon**         | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|--------------------|-----------------|-------------|--------|------------|-------------------|
 | **Rusty Spear**    | Melee           | 3           | 4+     | 2/3        | -                 |
-| **Coral Sword**    | Melee           | 4           | 4+     | 1/2        | Ceaseless(+1)     |  
+| **Coral Sword**    | Melee           | 4           | 4+     | 1/2        | Ceaseless(+1)     |
 | **Crude Net**      | 6″              | 2           | 5+     | 1/2        | Entangle (+1)     |
 | **Throwing Spear** | 8″              | 4           | 5+     | 2/3        | -                 |
   
 ---  
 
-| **Ability**            | **Effect**                                                                             |  
-|------------------------|----------------------------------------------------------------------------------------|  
-| **Amphibious Assault** | **1AP:** Swim 6″ through water or mist.                                                |  
-| **Pack Tactics**       | +1 to WS/BS within 3″ of another Murloc. **(+7)**                                      |  
+| **Ability**            | **Effect**                                                                             |
+|------------------------|----------------------------------------------------------------------------------------|
+| **Amphibious Assault** | **1AP:** Swim 6″ through water or mist.                                                |
+| **Pack Tactics**       | +1 to WS/BS within 3″ of another Murloc. **(+7)**                                      |
 | **Primitive Cunning**  | Free Dash once per Turning Point when within 6" of **Murloc King**.                    |
 | **Crab Shell Shield**  | Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success. |
 
@@ -151,26 +151,26 @@
 +**Faction**: Forces of nature  
 +**Subgroup**: Murloc  
 +
-+| **Attribute** | **Value** |  
-+|---------------|-----------|  
-+| **Movement**  | 6″        |  
-+| **Wounds**    | 8         |  
-+| **Save**      | 5+        |  
++| **Attribute** | **Value** |
++|---------------|-----------|
++| **Movement**  | 6″        |
++| **Wounds**    | 8         |
++| **Save**      | 5+        |
 +| **APL**       | 2         |
 +
 +---  
 +
-+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-+|-------------------|-----------------|-------------|--------|------------|-------------------|  
-+| **Tidal Trident** | Melee           | 3           | 4+     | 2/3        | Punishing (+2)    |  
-+| **Tidal Bolt**    | 12″             | 3           | 5+     | 2/3        | Blast (1″) (+1)   |  
++| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
++|-------------------|-----------------|-------------|--------|------------|-------------------|
++| **Tidal Trident** | Melee           | 3           | 4+     | 2/3        | Punishing (+2)    |
++| **Tidal Bolt**    | 12″             | 3           | 5+     | 2/3        | Blast (1″) (+1)   |
 +
 +---  
 +
-+| **Ability**           | **Effect**                                                          |  
-+|-----------------------|---------------------------------------------------------------------|  
-+| **Tidal Surge**       | **1AP:** Push 2" all enemies within 6″. **(+7)**                    |  
-+| **Primitive Cunning** | Free Dash once per Turning Point when within 6" of **Murloc King**. |  
++| **Ability**           | **Effect**                                                          |
++|-----------------------|---------------------------------------------------------------------|
++| **Tidal Surge**       | **1AP:** Push 2" all enemies within 6″. **(+7)**                    |
++| **Primitive Cunning** | Free Dash once per Turning Point when within 6" of **Murloc King**. |
 
 ---  
 
@@ -179,25 +179,25 @@
 **Faction**: Forces of nature  
 **Subgroup**: Murloc  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 12        |  
-| **Save**      | 5+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 12        |
+| **Save**      | 5+        |
 | **APL**       | 2         |
 
 ---  
 
-| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**               |  
-|-------------------|-----------------|-------------|--------|------------|---------------------------------|  
-| **Royal Trident** | Melee           | 4           | 3+     | 3/4        | Lethal 5+ (+2), Shock (+2)      |  
-| **Tidal Blast**   | 6″              | 3           | 4+     | 2/3        | Blast (1″) (+1), Ceaseless (+2) |  
+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**               |
+|-------------------|-----------------|-------------|--------|------------|---------------------------------|
+| **Royal Trident** | Melee           | 4           | 3+     | 3/4        | Lethal 5+ (+2), Shock (+2)      |
+| **Tidal Blast**   | 6″              | 3           | 4+     | 2/3        | Blast (1″) (+1), Ceaseless (+2) |
 
 ---  
 
-| **Ability**        | **Effect**                                                                    |  
-|--------------------|-------------------------------------------------------------------------------|  
-| **King’s Command** | Re-roll attack dice with result of  **1** for **Murlocs** within 6". **(+7)** |  
+| **Ability**        | **Effect**                                                                    |
+|--------------------|-------------------------------------------------------------------------------|
+| **King’s Command** | Re-roll attack dice with result of  **1** for **Murlocs** within 6". **(+7)** |
 | **Tidal Surge**    | **1AP:** Push 2" all enemies within 6". **(+7)**                              |
 
 ---  
@@ -207,26 +207,26 @@
 **Faction**: Forces of nature  
 **Subgroup**: Tzaangor  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 7″        |  
-| **Wounds**    | 10        |  
-| **Save**      | 5+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 7″        |
+| **Wounds**    | 10        |
+| **Save**      | 5+        |
 | **APL**       | 2         |
 
 ---  
 
-| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-------------------|-----------------|-------------|--------|------------|-------------------|  
-| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |  
-| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |  
+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-------------------|-----------------|-------------|--------|------------|-------------------|
+| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |
+| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |
 
 ---  
 
-| **Ability**         | **Effect**                                      |  
-|---------------------|-------------------------------------------------|  
-| **Aether Dive**     | **1AP:** Fly 7″ over terrain.                   |  
-| **Primal Strength** | +1 Damage to successful Fight actions. **(+7)** |  
+| **Ability**         | **Effect**                                      |
+|---------------------|-------------------------------------------------|
+| **Aether Dive**     | **1AP:** Fly 7″ over terrain.                   |
+| **Primal Strength** | +1 Damage to successful Fight actions. **(+7)** |
 
 ---  
 
@@ -235,26 +235,26 @@
 **Faction**: Forces of Nature  
 **Subgroup**: Tzaangor  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 7″        |  
-| **Wounds**    | 10        |  
-| **Save**      | 5+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 7″        |
+| **Wounds**    | 10        |
+| **Save**      | 5+        |
 | **APL**       | 2         |
 
 ---  
 
-| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-------------------|-----------------|-------------|--------|------------|-------------------|  
-| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |  
-| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |  
+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-------------------|-----------------|-------------|--------|------------|-------------------|
+| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |
+| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |
 
 ---  
 
-| **Ability**              | **Effect**                                                                              |  
-|--------------------------|-----------------------------------------------------------------------------------------|  
-| **Aether Dive**          | **1AP:** Fly 7″ over terrain.                                                           |  
-| **Banner of Resilience** | Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). **(+7)** |  
+| **Ability**              | **Effect**                                                                              |
+|--------------------------|-----------------------------------------------------------------------------------------|
+| **Aether Dive**          | **1AP:** Fly 7″ over terrain.                                                           |
+| **Banner of Resilience** | Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). **(+7)** |
 
 ---  
 
@@ -263,26 +263,26 @@
 **Faction**: Forces of Nature  
 **Subgroup**: Tzaangor  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 7″        |  
-| **Wounds**    | 10        |  
-| **Save**      | 5+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 7″        |
+| **Wounds**    | 10        |
+| **Save**      | 5+        |
 | **APL**       | 2         |
 
 ---  
 
-| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-------------------|-----------------|-------------|--------|------------|-------------------|  
-| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |  
-| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |  
+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-------------------|-----------------|-------------|--------|------------|-------------------|
+| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)      |
+| **Beak Gore**     | Melee           | 3           | 4+     | 4/5        | Brutal (+2)       |
 
 ---  
 
-| **Ability**       | **Effect**                                                                               |  
-|-------------------|------------------------------------------------------------------------------------------|  
-| **Aether Dive**   | **1AP:** Fly 7″ over terrain.                                                            |  
-| **Flute of Fury** | Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. **(+7)** |  
+| **Ability**       | **Effect**                                                                               |
+|-------------------|------------------------------------------------------------------------------------------|
+| **Aether Dive**   | **1AP:** Fly 7″ over terrain.                                                            |
+| **Flute of Fury** | Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. **(+7)** |
 
 ---  
 
@@ -291,26 +291,26 @@
 **Faction**: Forces of Nature  
 **Subgroup**: Tzaangor  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 7″        |  
-| **Wounds**    | 10        |  
-| **Save**      | 5+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 7″        |
+| **Wounds**    | 10        |
+| **Save**      | 5+        |
 | **APL**       | 2         |
 
 ---  
 
-| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**             |  
-|-------------------|-----------------|-------------|--------|------------|-------------------------------|  
-| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)                  |  
-| **Windblast**     | 12″             | 3           | 4+     | 2/3        | Blast (1″) (+1), Push 2″ (+1) |  
+| **Weapon**        | **RNG**         | **Attacks** | **WS** | **Damage** | **Special Rules**             |
+|-------------------|-----------------|-------------|--------|------------|-------------------------------|
+| **Aether Talons** | Melee           | 4           | 4+     | 3/4        | Rending (+2)                  |
+| **Windblast**     | 12″             | 3           | 4+     | 2/3        | Blast (1″) (+1), Push 2″ (+1) |
 
 ---  
 
-| **Ability**         | **Effect**                                        |  
-|---------------------|---------------------------------------------------|  
-| **Aether Dive**     | **1AP:** Fly 7″ over terrain.                     |  
-| **Primal Strength** | +1 Damage to successful Fight actions. **(+7)**   |  
+| **Ability**         | **Effect**                                        |
+|---------------------|---------------------------------------------------|
+| **Aether Dive**     | **1AP:** Fly 7″ over terrain.                     |
+| **Primal Strength** | +1 Damage to successful Fight actions. **(+7)**   |
 
 ---  
 
@@ -319,17 +319,17 @@
 **Faction**: Imperium  
 **Subgroup**: Space Marine  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 14        |  
-| **Save**      | 3+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 14        |
+| **Save**      | 3+        |
 | **APL**       | 3         |
 
 ---  
 
-| **Weapon**                      | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                            |  
-|---------------------------------|---------|-------------|--------|------------|----------------------------------------------|  
+| **Weapon**                      | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                            |
+|---------------------------------|---------|-------------|--------|------------|----------------------------------------------|
 | **Stalker Bolt Rifle (mobile)** | 10"     | 4           | 3+     | 3/4        | Piercing Crits 1 (+2),                       |
 | **Stalker Bolt Rifle (heavy)**  | 14"     | 4           | 3+     | 3/5        | Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)  |
 | **Chainsword**                  | Melee   | 4           | 3+     | 3/4        | Rending (+2)                                 |
@@ -342,27 +342,27 @@
 **Faction**: Imperium
 **Subgroup**: Space Marine
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 4″        |  
-| **Wounds**    | 18        |  
-| **Save**      | 3+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 4″        |
+| **Wounds**    | 18        |
+| **Save**      | 3+        |
 | **APL**       | 3         |
 
 ---  
 
-| **Weapon**      | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-----------------|---------|-------------|--------|------------|-------------------|  
-| **Narthecium**  | Melee   | 4           | 3+     | 3/4        | Rending(+2),      |  
-| **Bolt Pistol** | 8″      | 4           | 3+     | 3/4        | -                 |  
+| **Weapon**      | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-----------------|---------|-------------|--------|------------|-------------------|
+| **Narthecium**  | Melee   | 4           | 3+     | 3/4        | Rending(+2),      |
+| **Bolt Pistol** | 8″      | 4           | 3+     | 3/4        | -                 |
 
 ---  
 
-| **Ability**              | **Effect**                                                                                                                                        |  
-|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Combat Medicae**       | *1AP*: Heal **2D3 +2** wounds to a friendly operative within 3″.                                                                                  |  
-| **Genetic Augmentation** | *1AP*: Friendly operative within 6″ **+1 to WS** until the end of apothecary next activation. Does not stack with other WS/BS modifiers. **(+7)** |  
-| **Revitalizing Aura**    | All friendly operatives within 3″ reduce incoming damage by **1** (to a minimum of 1). **(+7)**                                                   |  
+| **Ability**              | **Effect**                                                                                                                                        |
+|--------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Combat Medicae**       | *1AP*: Heal **2D3 +2** wounds to a friendly operative within 3″.                                                                                  |
+| **Genetic Augmentation** | *1AP*: Friendly operative within 6″ **+1 to WS** until the end of apothecary next activation. Does not stack with other WS/BS modifiers. **(+7)** |
+| **Revitalizing Aura**    | All friendly operatives within 3″ reduce incoming damage by **1** (to a minimum of 1). **(+7)**                                                   |
 | **Desperate Charge**     | Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order. |
 
 ---  
@@ -372,20 +372,20 @@
 **Faction**: Imperium  
 **Subgroup**: Space Marine  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 18        |  
-| **Save**      | 3+        |  
-| **APL**       | 3         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 18        |
+| **Save**      | 3+        |
+| **APL**       | 3         |
 
 ---  
 
-| **Weapon**                              | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                        |  
-|-----------------------------------------|---------|-------------|--------|------------|------------------------------------------|  
-| **Lance of Sabatine**                   | Melee   | 5           | 3+     | 5/7        | Brutal (+2), Rending (+2)                |  
+| **Weapon**                              | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                        |
+|-----------------------------------------|---------|-------------|--------|------------|------------------------------------------|
+| **Lance of Sabatine**                   | Melee   | 5           | 3+     | 5/7        | Brutal (+2), Rending (+2)                |
 | **Mistforged Plasma Gun (standard)**    | 8″      | 4           | 3+     | 3/5        | Balanced (+2), Piercing 1 (+2),          |
-| **Mistforged Plasma Gun (super charge)**| 10″     | 4           | 3+     | 4/5        | Balanced (+2), Piercing 1 (+2), Hot (−1) |  
+| **Mistforged Plasma Gun (super charge)**| 10″     | 4           | 3+     | 4/5        | Balanced (+2), Piercing 1 (+2), Hot (−1) |
 
 ---  
 
@@ -402,25 +402,25 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Daemon  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 8″        |  
-| **Wounds**    | 5         |  
-| **Save**      | 6+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 8″        |
+| **Wounds**    | 5         |
+| **Save**      | 6+        |
 | **APL**       | 1         |
 
 ---  
 
-| **Weapon**         | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**        |  
-|--------------------|---------|-------------|--------|------------|--------------------------|  
-| **Warpfire Maw**   | Melee   | 4           | 4+     | 2/3        | Lethal 5+ (+2)           |  
+| **Weapon**         | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**        |
+|--------------------|---------|-------------|--------|------------|--------------------------|
+| **Warpfire Maw**   | Melee   | 4           | 4+     | 2/3        | Lethal 5+ (+2)           |
 | **Psychic Shriek** | 6″      | 2           | 4+     | 1/2        | Psychic*, Ceaseless (+2) |
 
 ---  
 
-| **Ability**          | **Effect**                                                                                       |  
-|----------------------|--------------------------------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. **(+7)**                                                                    |  
+| **Ability**          | **Effect**                                                                                       |
+|----------------------|--------------------------------------------------------------------------------------------------|
+| **Daemonic Flight**  | Fly 8″ over terrain. **(+7)**                                                                    |
 | **Warpfire Trail**   | After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. **(+7)** |
 
 ---  
@@ -430,18 +430,18 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Daemon  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 8″        |  
-| **Wounds**    | 1         |  
-| **Save**      | 3+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 8″        |
+| **Wounds**    | 1         |
+| **Save**      | 3+        |
 | **APL**       | 1         |
 
 ---  
 
-| **Ability**                      | **Effect**                                                                                      |  
-|----------------------------------|-------------------------------------------------------------------------------------------------|  
-| **Daemonic Flight**              | Fly 8″ over terrain. **(+7)**                                                                   |  
+| **Ability**                      | **Effect**                                                                                      |
+|----------------------------------|-------------------------------------------------------------------------------------------------|
+| **Daemonic Flight**              | Fly 8″ over terrain. **(+7)**                                                                   |
 | **Aegis of the Ninefold Deceit** | Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6". **(+7)** |
 | **Ethereal Form**                | Remove this operative from the killzone at the end of the turning point.                        |
 
@@ -452,18 +452,18 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Daemon  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 8″        |  
-| **Wounds**    | 1         |  
-| **Save**      | 3+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 8″        |
+| **Wounds**    | 1         |
+| **Save**      | 3+        |
 | **APL**       | 1         |
 
 ---  
 
-| **Ability**          | **Effect**                                                               |  
-|----------------------|--------------------------------------------------------------------------|  
-| **Daemonic Flight**  | Fly 8″ over terrain. **(+7)**                                            |  
+| **Ability**          | **Effect**                                                               |
+|----------------------|--------------------------------------------------------------------------|
+| **Daemonic Flight**  | Fly 8″ over terrain. **(+7)**                                            |
 | **Arcane Bargain**   | once per activation an enemy within control range, roll **1d6** and that |
 |                      | enemy suffers **result** wounds and restore **result** wounds from       |
 |                      | friendly operative that it's both visible and within 4", if an operative |
@@ -479,26 +479,26 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
   
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 14        |  
-| **Save**      | 4+        |  
-| **APL**       | 3         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 14        |
+| **Save**      | 4+        |
+| **APL**       | 3         |
   
 ---  
   
-| **Weapon**     | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|----------------|---------|-------------|--------|------------|-------------------|  
-| **Boltgun**    | 14″     | 4           | 3+     | 3/4        | Relentless (+2)   |  
-| **Chainsword** | Melee   | 4           | 3+     | 3/5        | Rending (+2)      |  
+| **Weapon**     | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|----------------|---------|-------------|--------|------------|-------------------|
+| **Boltgun**    | 14″     | 4           | 3+     | 3/4        | Relentless (+2)   |
+| **Chainsword** | Melee   | 4           | 3+     | 3/5        | Rending (+2)      |
   
 ---  
   
-| **Ability**          | **Effect**                                                             |  
-|----------------------|------------------------------------------------------------------------|  
-| **Mark of Khorne**   | Re-roll one attack die per activation in melee. **(+7)**               |  
-| **Warp-fueled Rage** | After defeating an enemy, gain **+1 Attack** next activation. **(+7)** |  
+| **Ability**          | **Effect**                                                             |
+|----------------------|------------------------------------------------------------------------|
+| **Mark of Khorne**   | Re-roll one attack die per activation in melee. **(+7)**               |
+| **Warp-fueled Rage** | After defeating an enemy, gain **+1 Attack** next activation. **(+7)** |
   
 ---  
 
@@ -507,27 +507,27 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
   
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 16        |  
-| **Save**      | 3+        |  
-| **APL**       | 3         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 16        |
+| **Save**      | 3+        |
+| **APL**       | 3         |
   
 ---  
   
-| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                       |  
-|----------------------------------|---------|-------------|--------|------------|-----------------------------------------|  
+| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                       |
+|----------------------------------|---------|-------------|--------|------------|-----------------------------------------|
 | **Plasma Pistol (super charge)** | 12″     | 4           | 3+     | 4/5        | Piercing 1(+2) Hot (−1), Lethal 5+ (+2) |
-| **Plasma Pistol (standard)**     | 10″     | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)               |  
-| **Power Sword**                  | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)             |  
+| **Plasma Pistol (standard)**     | 10″     | 4           | 3+     | 3/5        | Piercing 1 (+2), Hot (−1)               |
+| **Power Sword**                  | Melee   | 5           | 3+     | 4/5        | Rending (+2), Balanced (+1)             |
   
 ---  
   
-| **Ability**              | **Effect**                                                 |  
-|--------------------------|------------------------------------------------------------|  
-| **Dark Zeal**            | Re-roll one attack or defense die per activation. **(+7)** |  
-| **Inspiring Terror**     | Enemy operatives within 6″ worsen their WS by 1. **(+7)**  |  
+| **Ability**              | **Effect**                                                 |
+|--------------------------|------------------------------------------------------------|
+| **Dark Zeal**            | Re-roll one attack or defense die per activation. **(+7)** |
+| **Inspiring Terror**     | Enemy operatives within 6″ worsen their WS by 1. **(+7)**  |
   
 ---  
 
@@ -536,26 +536,26 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
   
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 4″        |  
-| **Wounds**    | 14        |  
-| **Save**      | 4+        |  
-| **APL**       | 3         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 4″        |
+| **Wounds**    | 14        |
+| **Save**      | 4+        |
+| **APL**       | 3         |
   
 ---  
   
-| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**         |  
-|----------------------|---------|-------------|--------|------------|---------------------------|  
-| **Balefire Bolt**    | 12″     | 3           | 4+     | 3/4        | Psychic*, Blast (2″) (+1) |  
-| **Balefire blade**   | Melee   | 4           | 3+     | 3/4        | Life siphon (+2)          |  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**         |
+|----------------------|---------|-------------|--------|------------|---------------------------|
+| **Balefire Bolt**    | 12″     | 3           | 4+     | 3/4        | Psychic*, Blast (2″) (+1) |
+| **Balefire blade**   | Melee   | 4           | 3+     | 3/4        | Life siphon (+2)          |
   
 ---  
   
-| **Ability**          | **Effect**                                                                                                                                      |  
-|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|  
-| **Psychic Dominion** | **1AP:** Cast **Smite** (10″ range, 1D3 mortal wounds) or **Warpfire** (create a 3″ hazardous terrain patch (within 6" and visible)). **(+7)**  |  
-| **Warpfire**         | Enemies in or moving through Warpfire suffer 1D3 wounds. **(+7)**                                                                               |  
+| **Ability**          | **Effect**                                                                                                                                      |
+|----------------------|-------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Psychic Dominion** | **1AP:** Cast **Smite** (10″ range, 1D3 mortal wounds) or **Warpfire** (create a 3″ hazardous terrain patch (within 6" and visible)). **(+7)**  |
+| **Warpfire**         | Enemies in or moving through Warpfire suffer 1D3 wounds. **(+7)**                                                                               |
   
 ---  
 
@@ -564,28 +564,28 @@
 **Faction**: Abyssal Cabal  
 **Subgroup**: Chaos Space Marine  
   
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 4″        |  
-| **Wounds**    | 15        |  
-| **Save**      | 4+        |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 4″        |
+| **Wounds**    | 15        |
+| **Save**      | 4+        |
 | **APL**       | 3         |
   
 ---  
   
-| **Weapon**                    | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                         |  
-|-------------------------------|---------|-------------|--------|------------|-------------------------------------------|  
+| **Weapon**                    | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**                         |
+|-------------------------------|---------|-------------|--------|------------|-------------------------------------------|
 | **Plasma Gun (standard)**     | 14″     | 4           | 3+     | 3/5        | Pïercing 1 (+2)                           |
-| **Plasma Gun (super charge)** | inf     | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2), Piercing 1 (+2) |  
+| **Plasma Gun (super charge)** | inf     | 4           | 3+     | 4/5        | Hot (−1), Lethal 5+ (+2), Piercing 1 (+2) |
 | **Melta**                     | 6″      | 3           | 3+     | 5/6        | Devastating 2 (+2), Piercing 1 (+2)       |
-| **Fists**                     | Melee   | 4           | 3+     | 3/4        | -                                         |  
+| **Fists**                     | Melee   | 4           | 3+     | 3/4        | -                                         |
   
 ---  
   
-| **Ability**           | **Effect**                                                                |  
-|-----------------------|---------------------------------------------------------------------------|  
-| **Malicious Volleys** | If stationary, shoot twice with the same weapon. **(+7)**                 |  
-| **Overcharge**        | **1AP:** +1 Damage to next attack, but suffer 1 wound on a hit roll of 1. |  
+| **Ability**           | **Effect**                                                                |
+|-----------------------|---------------------------------------------------------------------------|
+| **Malicious Volleys** | If stationary, shoot twice with the same weapon. **(+7)**                 |
+| **Overcharge**        | **1AP:** +1 Damage to next attack, but suffer 1 wound on a hit roll of 1. |
   
 ---  
 
@@ -594,21 +594,21 @@
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 7         |  
-| **Save**      | 5+        |  
-| **APL**       | 2         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 7         |
+| **Save**      | 5+        |
+| **APL**       | 2         |
 
-| **Weapon**  | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-------------|---------|-------------|--------|------------|-------------------|  
-| **Lasgun**  | inf     | 3           | 4+     | 2/3        | -                 |  
-| **Bayonet** | Melee   | 3           | 4+     | 2/3        | -                 |  
+| **Weapon**  | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-------------|---------|-------------|--------|------------|-------------------|
+| **Lasgun**  | inf     | 3           | 4+     | 2/3        | -                 |
+| **Bayonet** | Melee   | 3           | 4+     | 2/3        | -                 |
 
-| **Ability**          | **Effect**                                            |  
-|----------------------|-------------------------------------------------------|  
-| **Mist Resilience**  | In mist zones, gain **Cover** against ranged attacks. |  
+| **Ability**          | **Effect**                                            |
+|----------------------|-------------------------------------------------------|
+| **Mist Resilience**  | In mist zones, gain **Cover** against ranged attacks. |
 
 ---  
 
@@ -617,20 +617,20 @@
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 6         |  
-| **Save**      | 5+        |  
-| **APL**       | 2         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 6         |
+| **Save**      | 5+        |
+| **APL**       | 2         |
 
-| **Weapon**            | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-----------------------|---------|-------------|--------|------------|-------------------|  
-| **Mistforged Pistol** | 10"     | 3           | 4+     | 2/3        | Mist-Accuracy     |  
+| **Weapon**            | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-----------------------|---------|-------------|--------|------------|-------------------|
+| **Mistforged Pistol** | 10"     | 3           | 4+     | 2/3        | Mist-Accuracy     |
 
-| **Ability**       | **Effect**                                                                 |  
-|-------------------|----------------------------------------------------------------------------|  
-| **Combat Triage** | *1AP*: Heal **2D3 +1** wounds to a friendly operative within 3″. **(+7)**  |  
+| **Ability**       | **Effect**                                                                 |
+|-------------------|----------------------------------------------------------------------------|
+| **Combat Triage** | *1AP*: Heal **2D3 +1** wounds to a friendly operative within 3″. **(+7)**  |
 
 ---  
 
@@ -639,21 +639,21 @@
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Fellgor  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 10        |  
-| **Save**      | 5+        |  
-| **APL**       | 2         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 10        |
+| **Save**      | 5+        |
+| **APL**       | 2         |
 
-| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**    |  
-|----------------------|---------|-------------|--------|------------|----------------------|  
-| **Mist-Warp Staff**  | Melee   | 3           | 3+     | 2/3        | Psychic Push*        |  
-| **Mist Blast**       | 10″     | 3           | 4+     | 2/3        | Blast (1″), Psychic* |  
+| **Weapon**           | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules**    |
+|----------------------|---------|-------------|--------|------------|----------------------|
+| **Mist-Warp Staff**  | Melee   | 3           | 3+     | 2/3        | Psychic Push*        |
+| **Mist Blast**       | 10″     | 3           | 4+     | 2/3        | Blast (1″), Psychic* |
 
-| **Ability**          | **Effect**                                        |  
-|----------------------|---------------------------------------------------|  
-| **Tidal Surge**      | *1AP*: Push all enemies within 6″ by 2″. **(+7)** |  
+| **Ability**          | **Effect**                                        |
+|----------------------|---------------------------------------------------|
+| **Tidal Surge**      | *1AP*: Push all enemies within 6″ by 2″. **(+7)** |
 
 ---  
 
@@ -662,21 +662,21 @@
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: Human  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 8         |  
-| **Save**      | 5+        |  
-| **APL**       | 2         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 8         |
+| **Save**      | 5+        |
+| **APL**       | 2         |
 
-| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|----------------------------------|---------|-------------|--------|------------|-------------------|  
-| **Stormchaser Assault Rifle**    | 14"     | 4           | 4+     | 2/3        | Ceaseless (+2)    |  
-| **Chainsword**                   | Melee   | 3           | 3+     | 3/4        | Rending (+2)      |  
+| **Weapon**                       | **RNG** | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|----------------------------------|---------|-------------|--------|------------|-------------------|
+| **Stormchaser Assault Rifle**    | 14"     | 4           | 4+     | 2/3        | Ceaseless (+2)    |
+| **Chainsword**                   | Melee   | 3           | 3+     | 3/4        | Rending (+2)      |
 
-| **Ability**            | **Effect**                                                             |  
-|------------------------|------------------------------------------------------------------------|  
-| **Inspiring Presence** | Friendly operatives within 6″ re-roll **1s** on attack rolls. **(+7)** |  
+| **Ability**            | **Effect**                                                             |
+|------------------------|------------------------------------------------------------------------|
+| **Inspiring Presence** | Friendly operatives within 6″ re-roll **1s** on attack rolls. **(+7)** |
 
 ---  
 
@@ -685,17 +685,17 @@
 **Faction**: Nebryssian Liberation Republic  
 **Subgroup**: T’au  
 
-| **Attribute** | **Value** |  
-|---------------|-----------|  
-| **Movement**  | 6″        |  
-| **Wounds**    | 7         |  
-| **Save**      | 5+        |  
-| **APL**       | 2         |  
+| **Attribute** | **Value** |
+|---------------|-----------|
+| **Movement**  | 6″        |
+| **Wounds**    | 7         |
+| **Save**      | 5+        |
+| **APL**       | 2         |
 
-| **Weapon**        | **RNG**  | **Attacks** | **WS** | **Damage** | **Special Rules** |  
-|-------------------|----------|-------------|--------|------------|-------------------|  
-| **Pulse Carbine** | inf"     | 3           | 4+     | 2/3        | Balanced (+2)     |  
+| **Weapon**        | **RNG**  | **Attacks** | **WS** | **Damage** | **Special Rules** |
+|-------------------|----------|-------------|--------|------------|-------------------|
+| **Pulse Carbine** | inf"     | 3           | 4+     | 2/3        | Balanced (+2)     |
 
-| **Ability**     | **Effect**                                                                                                          |  
-|-----------------|---------------------------------------------------------------------------------------------------------------------|  
-| **Markerlight** | *1AP*: Designate a visible enemy. Allies gain **Balanced** against it until the end of the Turning Point. **(+7)**  |  
+| **Ability**     | **Effect**                                                                                                          |
+|-----------------|---------------------------------------------------------------------------------------------------------------------|
+| **Markerlight** | *1AP*: Designate a visible enemy. Allies gain **Balanced** against it until the end of the Turning Point. **(+7)**  |
