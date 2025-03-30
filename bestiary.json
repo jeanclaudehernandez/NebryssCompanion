@@ -1,5 +1,6 @@
 [
   {
+    "id": 1,
     "name": "Murloc",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
@@ -31,6 +32,7 @@
     ]
   },
   {
+    "id": 2,
     "name": "Murloc Tidecaller",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
@@ -54,6 +56,7 @@
     ]
   },
   {
+    "id": 3,
     "name": "Murloc King",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
@@ -77,6 +80,7 @@
     ]
   },
   {
+    "id": 4,
     "name": "Aetherwing",
     "faction": "Forces of Nature",
     "subgroup": "Tzaangor",
@@ -100,6 +104,7 @@
     ]
   },
   {
+    "id": 5,
     "name": "Aetherwing Bannerbearer",
     "faction": "Forces of Nature",
     "subgroup": "Tzaangor",
@@ -123,6 +128,7 @@
     ]
   },
   {
+    "id": 6,
     "name": "Aetherwing Flutist",
     "faction": "Forces of Nature",
     "subgroup": "Tzaangor",
@@ -146,6 +152,7 @@
     ]
   },
   {
+    "id": 7,
     "name": "Windblast Aetherwing",
     "faction": "Forces of Nature",
     "subgroup": "Tzaangor",
@@ -169,6 +176,7 @@
     ]
   },
   {
+    "id": 8,
     "name": "Intercessor Warrior",
     "faction": "Imperium",
     "subgroup": "Space Marine",
@@ -183,6 +191,7 @@
     "abilities": []
   },
   {
+    "id": 9,
     "name": "Apothecary Biologis",
     "faction": "Imperium",
     "subgroup": "Space Marine",
@@ -214,6 +223,7 @@
     ]
   },
   {
+    "id": 10,
     "name": "Captain Marcus Valen",
     "faction": "Imperium",
     "subgroup": "Space Marine",
@@ -241,6 +251,7 @@
     ]
   },
   {
+    "id": 11,
     "name": "Screamer",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
@@ -264,6 +275,7 @@
     ]
   },
   {
+    "id": 12,
     "name": "Screecher Green",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
@@ -291,6 +303,7 @@
     ]
   },
   {
+    "id": 13,
     "name": "Screecher Purple",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
@@ -318,6 +331,7 @@
     ]
   },
   {
+    "id": 14,
     "name": "Khorne Berzerker",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
@@ -341,6 +355,7 @@
     ]
   },
   {
+    "id": 15,
     "name": "Legionary Aspiring Champion",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
@@ -351,7 +366,7 @@
       "Save": "3+",
       "APL": 3
     },
-    "weapons": [30,  8],
+    "weapons": [30, 8],
     "abilities": [
       {
         "name": "Dark Zeal",
@@ -364,6 +379,7 @@
     ]
   },
   {
+    "id": 16,
     "name": "Balefire Acolyte",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
@@ -387,6 +403,7 @@
     ]
   },
   {
+    "id": 17,
     "name": "Legionary Gunner",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
@@ -410,6 +427,7 @@
     ]
   },
   {
+    "id": 18,
     "name": "NLR Soldier (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
@@ -429,6 +447,7 @@
     ]
   },
   {
+    "id": 19,
     "name": "NLR Field Medic (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
@@ -448,6 +467,7 @@
     ]
   },
   {
+    "id": 20,
     "name": "Fellgor Mist Shaman",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Fellgor",
@@ -467,6 +487,7 @@
     ]
   },
   {
+    "id": 21,
     "name": "NLR Sergeant (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
@@ -486,6 +507,7 @@
     ]
   },
   {
+    "id": 22,
     "name": "T’au Pathfinder",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "T’au",
