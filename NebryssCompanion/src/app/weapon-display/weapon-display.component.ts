@@ -1,8 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, HostBinding, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-weapon-display',
+  selector: '[app-weapon-row]',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './weapon-display.component.html',
@@ -12,43 +12,40 @@ export class WeaponDisplayComponent implements OnInit {
   @Input() weaponId!: number;
   @Input() weaponsData: any;
   @Input() weaponRulesData: any[] = [];
-  
+  @HostBinding('class') class = 'weapon-row';
+  @HostBinding('role') role = 'row';
+  @Output() tooltipShow = new EventEmitter<{event: MouseEvent, description: string}>();
+  @Output() tooltipHide = new EventEmitter<void>();
   weapon: any;
   profiles: any[] = [];
+  activeProfile: any;
   activeTooltip: string | null = null;
-  tooltipX = 0;
-  tooltipY = 0;
 
   ngOnInit(): void {
     if (this.weaponsData) {
       this.weapon = this.getWeaponById(this.weaponId, this.weaponsData);
       if (this.weapon) {
         this.profiles = this.weapon.profiles || [];
+        this.activeProfile = this.profiles[0]; // Default to first profile
       }
     }
+  }
+
+  onRuleHover(event: MouseEvent, rule: any): void {
+    this.tooltipShow.emit({
+      event,
+      description: this.getRuleDisplay(rule).description
+    });
+  }
+
+  onRuleLeave(): void {
+    this.tooltipHide.emit();
   }
 
   private getWeaponById(id: number, weapons: any): any {
     const allWeapons = [...(weapons.melee || []), ...(weapons.ranged || [])];
     return allWeapons.find(w => w.id === id) || null;
   }
-
-  
-  showTooltip(event: MouseEvent, description: string): void {
-    this.activeTooltip = description;
-    
-    // Let CSS handle the positioning
-    const tooltip = document.querySelector('.custom-tooltip') as HTMLElement;
-    if (tooltip) {
-      tooltip.style.left = `${event.clientX}px`;
-      tooltip.style.top = `${event.clientY - 40}px`;
-    }
-  }
-
-  hideTooltip(): void {
-    this.activeTooltip = null;
-  }
-
 
   getRuleDisplay(rule: any): { name: string, description: string } {
     const ruleDef = this.weaponRulesData.find(r => r.id === rule.ruleId);
@@ -59,7 +56,6 @@ export class WeaponDisplayComponent implements OnInit {
       };
     }
 
-    // Replace x with modValue if present
     let name = ruleDef.name;
     let description = ruleDef.effect;
     

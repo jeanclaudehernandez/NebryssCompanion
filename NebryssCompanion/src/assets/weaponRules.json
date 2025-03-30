@@ -2,13 +2,13 @@
   {
   "id": 1,
   "name": "Shockwave x inches",
-  "effect": "If a critical dice is retained, weapon gains blast x inches weapon rule. (melee weapons treat as shooting actions against secondary targets)",
+  "effect": "If a critical dice is retained, weapon gains blast <x> inches weapon rule. (melee weapons treat as shooting actions against secondary targets)",
   "prModifier": 3
   },
   {
   "id": 2,
   "name": "Agile",
-  "effect": "When resolving attack dices, resolve 1 dice before the fix sequence (if both weapons have this rule, active operative resolves first).",
+  "effect": "When resolving attack dices, resolve 1 dice before the fight sequence (if both weapons have this rule, active operative resolves first).",
   "prModifier": null
   },
   {
@@ -26,7 +26,7 @@
   {
   "id": 5,
   "name": "Drag x inches",
-  "effect": "If a critical dice is retained, move the enemy x inches in the shortest possible direction towards the active operative.",
+  "effect": "If a critical dice is retained, move the enemy <x> inches in the shortest possible direction towards the active operative.",
   "prModifier": null
   },
   {
@@ -116,7 +116,7 @@
   {
   "id": 21,
   "name": "Lethal x+",
-  "effect": "Critical hits are scored on unmodified rolls of x+ instead of 6.",
+  "effect": "Critical hits are scored on unmodified rolls of <x>+ instead of 6.",
   "prModifier": 2
   },
   {
@@ -140,7 +140,7 @@
   {
   "id": 25,
   "name": "Devastating x",
-  "effect": "Deal x wounds on critical hits.",
+  "effect": "Deal <x> wounds on critical hits.",
   "prModifier": 2
   },
   {
@@ -151,8 +151,8 @@
   },
   {
   "id": 27,
-  "name": "Piercing Crits x",
-  "effect": "After rolling attack dice, weapon gains Piercing X if any critical hits are retainted.",
+  "name": "Piercing Crits <x>",
+  "effect": "After rolling attack dice, weapon gains Piercing <x> if any critical hits are retainted.",
   "prModifier": 2
   },
   {
@@ -169,14 +169,14 @@
   },
   {
   "id": 30,
-  "name": "Blast x inches",
-  "effect": "All operatives within x inches of the target are also attacked.",
+  "name": "Blast <x> inches",
+  "effect": "All operatives within <x> inches of the target are also attacked.",
   "prModifier": "X"
   },
   {
   "id": 31,
-  "name": "Push x inches",
-  "effect": "Move the target x″ away after a successful hit.",
+  "name": "Push <x> inches",
+  "effect": "Move the target <x> inches away after a successful hit.",
   "prModifier": 1
   },
   {
@@ -193,9 +193,9 @@
   },
   {
     "id": 34,
-    "name": "Piercing X",
-    "effect": "Before rolling defense dice, the defending operatives rolls X less dice",
-    "prModifier": "X*2"
+    "name": "Piercing x",
+    "effect": "Before rolling defense dice, the defending operatives rolls <x> less dice",
+    "prModifier": "x*2"
   },
   {
     "id": 35,

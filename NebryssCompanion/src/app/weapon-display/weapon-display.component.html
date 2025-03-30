@@ -1,41 +1,19 @@
-<div *ngIf="weapon" class="weapon-card">
-  <h4>{{ weapon.name }}</h4>
-  <div *ngFor="let profile of profiles" class="profile">
-    <h5 *ngIf="profile.profileName">{{ profile.profileName }} Profile</h5>
-    
-    <table class="profile-table">
-      <tr>
-        <th>Range</th>
-        <th>Attacks</th>
-        <th>WS/BS</th>
-        <th>Damage</th>
-        <th>Body</th>
-      </tr>
-      <tr>
-        <td>{{ profile.rng || '-' }}</td>
-        <td>{{ profile.attacks }}</td>
-        <td>{{ profile.ws }}</td>
-        <td>{{ profile.damage.min }}-{{ profile.damage.max }}</td>
-        <td>{{ profile.body }}</td>
-      </tr>
-    </table>
-    
-    <div *ngIf="profile.specialRules?.length" class="special-rules">
-      <h6>Special Rules:</h6>
-      <div class="rules-list">
-        <span *ngFor="let rule of profile.specialRules; let last = last" 
-              class="rule-item">
-          <span class="rule-text"
-                (mouseenter)="showTooltip($event, getRuleDisplay(rule).description)"
-                (mouseleave)="hideTooltip()">
-            {{ getRuleDisplay(rule).name }}
-          </span>
-          <span *ngIf="!last">, </span>
-        </span>
-      </div>
-      <div class="custom-tooltip" *ngIf="activeTooltip" [class.active]="!!activeTooltip">
-        {{ activeTooltip }}
-      </div>
-    </div>
-  </div>
-</div>
+
+<td>
+  {{ weapon.name }}
+  <span *ngIf="profiles.length > 1">({{ activeProfile.profileName || 'default' }})</span>
+</td>
+<td>{{ activeProfile.rng ? activeProfile.rng : activeProfile.rng === null ? '-' : 'melee' }}</td>
+<td>{{ activeProfile.attacks }}</td>
+<td>{{ activeProfile.ws }}</td>
+<td>{{ activeProfile.damage.min }}-{{ activeProfile.damage.max }}</td>
+<td>
+  <span *ngFor="let rule of activeProfile.specialRules; let last = last" class="rule-item">
+    <span class="rule-text"
+          (mouseenter)="onRuleHover($event, rule)"
+          (mouseleave)="onRuleLeave()">
+      {{ getRuleDisplay(rule).name }}
+    </span>
+    <span *ngIf="!last">, </span>
+  </span>
+</td>
