@@ -205,5 +205,38 @@
         },
         "items": []
       }
+    },
+    {
+      "name": "Techmarine Varek Bastion",
+      "race": "Astartes (Techmarine)",
+      "origin": "Imperium - Adeptus Astartes (Techmarine)",
+      "attributes": {
+        "Movement": 5,
+        "Wounds": 10,
+        "Save": "4+",
+        "APL": 2
+      },
+      "weapons": [51, 52],
+      "abilities": [
+        {
+          "name": "Fortify",
+          "effect": "1AP: Place a deployable within 3 inches. Max 2 per game."
+        },
+        {
+          "name": "Rites of Repair",
+          "effect": "1AP: Restore 1D3 wounds to a construct."
+        }
+      ],
+      "progression": {
+        "mistrals": {
+          "digital": 0,
+          "physical": { "1s": 0, "5s": 0, "10s": 0, "20s": 0, "50s": 0, "100s": 0 }
+        },
+        "items": []
+      },
+      "deployables": [
+        { "id": 57, "quant": 2 },
+        { "id": 58, "quant": 2 }
+      ]
     }
   ]
