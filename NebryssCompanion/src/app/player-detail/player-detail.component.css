@@ -1,0 +1,8 @@
+.player-detail-container {
+    padding: 0.5rem; /* Reduced from 1rem */
+  }
+  
+  .ability, .item {
+    padding: 0.5rem; /* Reduced from 1rem */
+    margin-bottom: 0.5rem; /* Reduced from 1rem */
+  }

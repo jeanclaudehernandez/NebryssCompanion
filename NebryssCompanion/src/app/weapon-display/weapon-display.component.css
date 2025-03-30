@@ -1,21 +1,40 @@
-.tooltip {
-    position: relative;
-    cursor: help;
-    border-bottom: 1px dotted #666;
-  }
-  
-.tooltip:hover::after {
-content: attr(title);
-position: absolute;
-left: 0;
-top: 100%;
-z-index: 100;
-background: rgba(0, 0, 0, 0.8);
-color: white;
-padding: 8px 12px;
-border-radius: 4px;
-font-size: 0.9em;
-white-space: pre-wrap;
-min-width: 200px;
-max-width: 400px;
+.special-rules {
+  position: relative;
+  margin: 0.25rem 0;
+}
+
+.rules-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  align-items: center;
+}
+
+.rule-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.rule-text {
+  cursor: help;
+  border-bottom: 1px dotted #666;
+}
+
+.custom-tooltip {
+  position: fixed;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  max-width: 300px;
+  pointer-events: none;
+  transform: translate(-50%, -100%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.custom-tooltip.active {
+  opacity: 1;
 }

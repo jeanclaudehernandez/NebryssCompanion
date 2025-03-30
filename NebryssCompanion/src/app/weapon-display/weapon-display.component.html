@@ -1,11 +1,7 @@
 <div *ngIf="weapon" class="weapon-card">
   <h4>{{ weapon.name }}</h4>
-  <div *ngIf="weapon.price !== undefined && weapon.price !== null" class="price">
-    Price: {{ weapon.price }}
-  </div>
-  
   <div *ngFor="let profile of profiles" class="profile">
-    <h5>{{ profile.profileName || 'Default' }} Profile</h5>
+    <h5 *ngIf="profile.profileName">{{ profile.profileName }} Profile</h5>
     
     <table class="profile-table">
       <tr>
@@ -26,13 +22,20 @@
     
     <div *ngIf="profile.specialRules?.length" class="special-rules">
       <h6>Special Rules:</h6>
-      <ul>
-        <li *ngFor="let rule of profile.specialRules" 
-            [title]="getRuleDisplay(rule).description"
-            class="tooltip">
-          {{ getRuleDisplay(rule).name }}
-        </li>
-      </ul>
+      <div class="rules-list">
+        <span *ngFor="let rule of profile.specialRules; let last = last" 
+              class="rule-item">
+          <span class="rule-text"
+                (mouseenter)="showTooltip($event, getRuleDisplay(rule).description)"
+                (mouseleave)="hideTooltip()">
+            {{ getRuleDisplay(rule).name }}
+          </span>
+          <span *ngIf="!last">, </span>
+        </span>
+      </div>
+      <div class="custom-tooltip" *ngIf="activeTooltip" [class.active]="!!activeTooltip">
+        {{ activeTooltip }}
+      </div>
     </div>
   </div>
 </div>

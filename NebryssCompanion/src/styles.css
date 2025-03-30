@@ -116,3 +116,71 @@ body {
     margin-top: 0;
     color: #3498db;
   }
+
+/* Global Spacing Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Compact Layout Adjustments */
+body {
+  line-height: 1.3; /* Reduced from default 1.5 */
+  padding: 0.5rem; /* Reduced body padding */
+}
+
+/* Player Cards */
+.player-card {
+  padding: 0.5rem; /* Reduced from 1rem */
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
+}
+
+/* Tables */
+table {
+  border-collapse: collapse;
+  margin: 0.25rem 0; /* Reduced from 0.5rem */
+}
+
+th, td {
+  padding: 0.25rem 0.5rem; /* Reduced from 0.5rem */
+}
+
+/* Weapon Cards */
+.weapon-card {
+  padding: 0.5rem; /* Reduced from 1rem */
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
+}
+
+.profile {
+  padding: 0.5rem; /* Reduced from 1rem */
+  margin-bottom: 0.5rem; /* Reduced from 1rem */
+}
+
+/* Lists */
+ul, ol {
+  padding-left: 1rem; /* Reduced from 1.5rem */
+}
+
+li {
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem */
+}
+
+/* Headings */
+h1 { font-size: 1.5rem; margin: 0.5rem 0; }
+h2 { font-size: 1.3rem; margin: 0.4rem 0; }
+h3 { font-size: 1.1rem; margin: 0.3rem 0; }
+h4 { font-size: 1rem; margin: 0.2rem 0; }
+h5 { font-size: 0.9rem; margin: 0.2rem 0; }
+h6 { font-size: 0.8rem; margin: 0.1rem 0; }
+
+/* Grid Gaps */
+.player-grid {
+  gap: 0.5rem; /* Reduced from 1rem */
+}
+
+/* Tooltips */
+.custom-tooltip {
+  padding: 0.25rem 0.5rem; /* Reduced from 0.5rem */
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+}
