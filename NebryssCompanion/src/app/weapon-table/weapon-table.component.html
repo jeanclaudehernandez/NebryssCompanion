@@ -32,9 +32,10 @@
               <td>
                 <span *ngFor="let rule of profile.specialRules; let last = last" class="rule-item">
                     <span class="rule-text"
-                        #ruleText
-                        (mouseenter)="showTooltip($event, getRuleDisplay(rule).description, ruleText)"
-                        (mouseleave)="hideTooltip()">
+                        [matTooltip]="getRuleDisplay(rule).description"
+                        matTooltipPosition="above"
+                        matTooltipClass="weapon-tooltip"
+                        [matTooltipDisabled]="!getRuleDisplay(rule).description">
                         {{ getRuleDisplay(rule).name }}
                     </span>
                     <span *ngIf="!last">, </span>
@@ -45,10 +46,4 @@
         </ng-container>
       </tbody>
     </table>
-    <div #tooltip class="custom-tooltip" 
-        [class.active]="!!activeTooltip"
-        [style.left.px]="tooltipPosition.x"
-        [style.top.px]="tooltipPosition.y">
-        {{ activeTooltip }}
-    </div>
 </div>

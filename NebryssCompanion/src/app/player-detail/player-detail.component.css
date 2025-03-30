@@ -38,16 +38,6 @@
   border-bottom: none;
 }
 
-.custom-tooltip {
-  position: fixed; /* Keep this for overlay context */
-  z-index: 9999; /* Ensure it's above everything */
-  background: rgba(0, 0, 0, 0.9);
-  color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 0.9em;
-  max-width: 300px;
-  pointer-events: none;
-  transform: translate(10px, 10px); /* Adjust as needed */
-  /* Remove any top/left/bottom/right properties */
+.player-card:hover{
+  transform: none;
 }

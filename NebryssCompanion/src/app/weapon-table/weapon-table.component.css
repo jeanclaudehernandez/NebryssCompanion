@@ -1,80 +1,51 @@
 .table-container {
-    overflow-x: auto;
-    margin: 1rem 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .weapons-table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 600px;
-    font-size: 0.9rem;
-  }
-  
-  .weapons-table th {
-    background-color: #f5f5f5;
-    position: sticky;
-    top: 0;
-    padding: 0.75rem;
-    text-align: left;
-    border-bottom: 2px solid #ddd;
-  }
-  
-  .weapons-table td {
-    padding: 0.5rem;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .weapons-table tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .rule-item {
-    display: inline;
-  }
-  
-  .rule-text {
-    cursor: help;
-    border-bottom: 1px dotted #666;
-    transition: all 0.2s ease;
-  }
-  
-  .rule-text:hover {
-    color: #0066cc;
-    border-bottom-color: currentColor;
-  }
+  position: relative; /* Add this to create a positioning context */
+  overflow-x: auto;
+  margin: 1rem 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 
-  .custom-tooltip {
-    position: fixed; /* Changed from absolute to fixed */
-    transform: translateX(-50%); /* Helps with centering */
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    pointer-events: none;
-    max-width: 300px;
-    opacity: 0;
-    transition: opacity 0.2s ease;
-    text-align: center; /* Center tooltip text */
-  }
+.weapons-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+  font-size: 0.9rem;
+}
   
-  .custom-tooltip::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 10px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid rgba(0, 0, 0, 0.9);
-  }
+.weapons-table th {
+  background-color: #f5f5f5;
+  position: sticky;
+  top: 0;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  z-index: 2; /* Ensures header stays above table but below tooltips */
+}
   
-  .custom-tooltip.top::after {
-    bottom: auto;
-    top: -5px;
-    border-top: none;
-    border-bottom: 5px solid rgba(0, 0, 0, 0.9);
-  }
+.weapons-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
+  
+.weapons-table tr:last-child td {
+    border-bottom: none;
+}
+  
+.rule-text {
+  cursor: help;
+  border-bottom: 1px dotted #666;
+  transition: all 0.2s ease;
+}
+  
+.rule-text:hover {
+  color: #0066cc;
+  border-bottom-color: currentColor;
+}
+
+.weapon-tooltip {
+  white-space: pre-line;
+  max-width: 300px;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
