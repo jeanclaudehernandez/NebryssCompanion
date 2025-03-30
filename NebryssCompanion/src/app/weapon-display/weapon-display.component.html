@@ -1,0 +1,38 @@
+<div *ngIf="weapon" class="weapon-card">
+  <h4>{{ weapon.name }}</h4>
+  <div *ngIf="weapon.price !== undefined && weapon.price !== null" class="price">
+    Price: {{ weapon.price }}
+  </div>
+  
+  <div *ngFor="let profile of profiles" class="profile">
+    <h5>{{ profile.profileName || 'Default' }} Profile</h5>
+    
+    <table class="profile-table">
+      <tr>
+        <th>Range</th>
+        <th>Attacks</th>
+        <th>WS/BS</th>
+        <th>Damage</th>
+        <th>Body</th>
+      </tr>
+      <tr>
+        <td>{{ profile.rng || '-' }}</td>
+        <td>{{ profile.attacks }}</td>
+        <td>{{ profile.ws }}</td>
+        <td>{{ profile.damage.min }}-{{ profile.damage.max }}</td>
+        <td>{{ profile.body }}</td>
+      </tr>
+    </table>
+    
+    <div *ngIf="profile.specialRules?.length" class="special-rules">
+      <h6>Special Rules:</h6>
+      <ul>
+        <li *ngFor="let rule of profile.specialRules" 
+            [title]="getRuleDisplay(rule).description"
+            class="tooltip">
+          {{ getRuleDisplay(rule).name }}
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

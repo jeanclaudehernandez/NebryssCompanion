@@ -1,0 +1,21 @@
+.tooltip {
+    position: relative;
+    cursor: help;
+    border-bottom: 1px dotted #666;
+  }
+  
+.tooltip:hover::after {
+content: attr(title);
+position: absolute;
+left: 0;
+top: 100%;
+z-index: 100;
+background: rgba(0, 0, 0, 0.8);
+color: white;
+padding: 8px 12px;
+border-radius: 4px;
+font-size: 0.9em;
+white-space: pre-wrap;
+min-width: 200px;
+max-width: 400px;
+}
