@@ -1,0 +1,205 @@
+[
+  {
+    "name": "Wendy",
+    "race": "Human",
+    "origin": "Imperium of Man (deserter)",
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 6,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [23, 1],
+    "abilities": [
+      {
+        "name": "Battlefield first aid",
+        "effect": "1AP, Once per battle: Heal 1D3 +1 wounds to a friendly operative within Control Range. Can only be used if there are no enemy operatives within 3″ of this operative or the target."
+      },
+      {
+        "name": "Extended Mags",
+        "effect": "Place an ammunition box marker within Control Range. Whenever a friendly operative performs a Shoot action within Control Range of the ammunition box marker, they add one attack dice but cannot retain critical successes from it. "
+      }
+    ],
+    "progression": {
+      "mistrals": {
+        "digital": 0,
+        "physical": {
+          "1s": 0,
+          "5s": 0,
+          "10s": 0,
+          "20s": 0,
+          "50s": 0,
+          "100s": 0
+        }
+      },
+      "items": [
+        {
+          "name": "Medical Supplies",
+          "description": "Standard battlefield medical kit",
+          "quant": "2/5"
+        }
+      ]
+    }
+  },
+  {
+    "name": "Thennur",
+    "race": "Fellgor",
+    "origin": "Nebryssian Liberation Republic (Traveler)",
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [18, 50],
+    "abilities": [
+      {
+        "name": "Mist Veil",
+        "effect": "1AP, Once per battle: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured."
+      },
+      {
+        "name": "The Wind’s Gift",
+        "effect": "Once per battle: This operative suffers 1 wound to restore 2D3 +1 wounds to another friendly operative within 6 inches, cannot perform this action while within control range of an enemy."
+      }
+    ],
+    "progression": {
+      "mistrals": {
+        "digital": 0,
+        "physical": {
+          "1s": 0,
+          "5s": 0,
+          "10s": 0,
+          "20s": 0,
+          "50s": 0,
+          "100s": 0
+        }
+      },
+      "items": [
+        {
+          "name": "Mist Compass",
+          "description": "Navigates through dense mist zones",
+          "quant": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "Akrina Voss",
+    "race": "Human",
+    "origin": "Imperium of Man (exiled)",
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 6,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [17, 24],
+    "abilities": [
+      {
+        "name": "Unrelenting Agility",
+        "effect": "Once per battle: this operative may perform Shoot action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target survives, this operative gains 1AP until the end of the activation. "
+      },
+      {
+        "name": "Quick Assault",
+        "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two dice in sequence and add 1dmg to both their damage. "
+      }
+    ],
+    "progression": {
+      "mistrals": {
+        "digital": 0,
+        "physical": {
+          "1s": 0,
+          "5s": 0,
+          "10s": 0,
+          "20s": 0,
+          "50s": 0,
+          "100s": 0
+        }
+      },
+      "items": []
+    }
+  },
+  {
+    "name": "Xarion Vex, the Shattered Oracle",
+    "race": "Astartes (Mutated)",
+    "origin": "Abyssal Cabal (Deserter)",
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [16, 49],
+    "abilities": [
+      {
+        "name": "Fractal Visions",
+        "effect": "Once per Battle: Reroll a failed shooting attack dice."
+      },
+      {
+        "name": "Mist Veilwalk",
+        "effect": "1AP: Teleport 6″ through mist zones. Roll 1D6; on a 4+, change order to Conceal Order."
+      }
+    ],
+    "progression": {
+      "mistrals": {
+        "digital": 0,
+        "physical": {
+          "1s": 0,
+          "5s": 0,
+          "10s": 0,
+          "20s": 0,
+          "50s": 0,
+          "100s": 0
+        }
+      },
+      "items": [
+        {
+          "name": "Shattered Mirror",
+          "description": "Holds echoes of unmade futures",
+          "quant": 1
+        },
+        {
+          "name": "Mist-Tracker Goggles",
+          "description": "Enhanced mist navigation",
+          "quant": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "Tellurius",
+    "race": "Warp Anomaly (Mist Golem)",
+    "origin": "Nebryssian Mist",
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 11,
+      "Save": "4+",
+      "APL": 2
+    },
+    "weapons": [22, 48],
+    "abilities": [
+      {
+        "name": "Mist Regeneration",
+        "effect": "At the start of activation, if in a mist zone, roll 1D6 on a 4+ and heal wounds based on mist density: Light Mist (1 wound), Medium Mist (1D3 wounds), Dense Mist (2D3 wounds)."
+      },
+      {
+        "name": "Boulder Roll",
+        "effect": "1AP: Move up to 6″ in a straight line. Operatives within 1″ of the path suffer 1D3 wounds."
+      }
+    ],
+    "progression": {
+      "mistrals": {
+        "digital": 0,
+        "physical": {
+          "1s": 0,
+          "5s": 0,
+          "10s": 0,
+          "20s": 0,
+          "50s": 0,
+          "100s": 0
+        }
+      },
+      "items": []
+    }
+  }
+]
