@@ -421,7 +421,7 @@
     "weapons": []
   },
   {
-    "id": 53,
+    "id": 58,
     "name": "Autogun Turret",
     "description": "Fixed in place, targets closest enemy.",
     "weapons": [51]

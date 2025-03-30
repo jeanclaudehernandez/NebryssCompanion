@@ -48,4 +48,23 @@
       <p *ngIf="item.quant">Quantity: {{ item.quant }}</p>
     </div>
   </div>
+
+  <div class="deployables" *ngIf="player.deployables?.length">
+    <h3>Deployables</h3>
+    <div *ngFor="let deployableEntry of player.deployables">
+      {{getItemById(deployableEntry.id) | json}}
+      <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
+        <div class="deployable">
+          <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
+          <p>{{ deployable.description }}</p>
+          <app-weapon-table 
+            *ngIf="deployable.weapons?.length"
+            [weaponIds]="deployable.weapons"
+            [weaponsData]="weaponsData"
+            [weaponRulesData]="weaponRulesData">
+          </app-weapon-table>
+        </div>
+      </ng-container>
+    </div>
+  </div>
 </div>

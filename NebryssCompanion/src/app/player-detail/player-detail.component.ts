@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent],
+  imports: [CommonModule, WeaponTableComponent, JsonPipe],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })

@@ -41,3 +41,19 @@
 .player-card:hover{
   transform: none;
 }
+
+.deployables {
+  margin-top: 1.5rem;
+}
+
+.deployable {
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.deployable h4 {
+  margin-top: 0;
+  color: #333;
+}
