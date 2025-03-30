@@ -1,8 +1,14 @@
 <div class="player-card">
-  <h2>{{ player.name }}</h2>
+  <h2>{{ character.name }}</h2>
   <div class="player-info">
-    <p><strong>Race:</strong> {{ player.race }}</p>
-    <p><strong>Origin:</strong> {{ player.origin }}</p>
+    <div *ngIf="characterType === 'player'">
+      <p><strong>Race:</strong> {{ character.race }}
+      <p><strong>Origin:</strong> {{ character.origin }}</p>
+    </div>
+    <div *ngIf="characterType === 'mob'">
+      <p><strong>Subgroup:</strong> {{ character.subgroup }}</p>
+      <p><strong>PR:</strong> {{ character.pr }}</p>
+    </div>
   </div>
   
   <div class="attributes">
@@ -15,10 +21,10 @@
         <th>APL</th>
       </tr>
       <tr>
-        <td>{{ player.attributes.Movement }}</td>
-        <td>{{ player.attributes.Wounds }}</td>
-        <td>{{ player.attributes.Save }}</td>
-        <td>{{ player.attributes.APL }}</td>
+        <td>{{ character.attributes.Movement }}</td>
+        <td>{{ character.attributes.Wounds }}</td>
+        <td>{{ character.attributes.Save }}</td>
+        <td>{{ character.attributes.APL }}</td>
       </tr>
     </table>
   </div>
@@ -26,7 +32,7 @@
   <div class="weapons">
     <h3>Weapons</h3>
       <app-weapon-table 
-        [weaponIds]="player.weapons"
+        [weaponIds]="character.weapons"
         [weaponsData]="weaponsData"
         [weaponRulesData]="weaponRulesData">
       </app-weapon-table>
@@ -34,25 +40,24 @@
   
   <div class="abilities">
     <h3>Abilities</h3>
-    <div *ngFor="let ability of player.abilities" class="ability">
+    <div *ngFor="let ability of character.abilities" class="ability">
       <h4>{{ ability.name }}</h4>
       <p>{{ ability.effect }}</p>
     </div>
   </div>
   
-  <div class="items" *ngIf="player.progression?.items?.length">
+  <div class="items" *ngIf="character.progression?.items?.length">
     <h3>Items</h3>
-    <div *ngFor="let item of player.progression.items" class="item">
+    <div *ngFor="let item of character.progression.items" class="item">
       <h4>{{ item.name }}</h4>
       <p>{{ item.description }}</p>
       <p *ngIf="item.quant">Quantity: {{ item.quant }}</p>
     </div>
   </div>
 
-  <div class="deployables" *ngIf="player.deployables?.length">
+  <div class="deployables" *ngIf="character.deployables?.length">
     <h3>Deployables</h3>
-    <div *ngFor="let deployableEntry of player.deployables">
-      {{getItemById(deployableEntry.id) | json}}
+    <div *ngFor="let deployableEntry of character.deployables">
       <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
         <div class="deployable">
           <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
@@ -63,6 +68,15 @@
             [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRulesData">
           </app-weapon-table>
+          <ng-container *ngIf="deployable.type === 'mob'">
+            @let mob = getMobById(deployable.bestiaryId);
+            <app-player-detail
+            [character]="mob"
+            [weaponsData]="weaponsData"
+            [itemsData]="itemsData"
+            [weaponRulesData]="weaponRulesData"
+            ></app-player-detail>
+          </ng-container>   
         </div>
       </ng-container>
     </div>

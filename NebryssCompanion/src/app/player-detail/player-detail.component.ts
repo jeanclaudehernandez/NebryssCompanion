@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
+import { DataService } from '../data.service';
 
 @Component({
   selector: 'app-player-detail',
@@ -10,7 +11,8 @@ import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
   styleUrls: ['./player-detail.component.css']
 })
 export class PlayerDetailComponent implements OnInit {
-  @Input() player: any;
+  @Input() character: any;
+  @Input() characterType: 'player' | 'mob' = 'player';
   @Input() weaponsData: any;
   @Input() weaponRulesData: any[] = [];
   @Input() itemsData: any[] = [];
@@ -18,8 +20,13 @@ export class PlayerDetailComponent implements OnInit {
   tooltipX = 0;
   tooltipY = 0;
 
+  constructor(private dataService: DataService, private changeDectector: ChangeDetectorRef) {}
+
   ngOnInit(): void {
-    // Initialization if needed
+  }
+
+  getMobById(bestiaryId: number): any {
+    return this.dataService.getBestiaryById(bestiaryId);
   }
 
 

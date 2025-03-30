@@ -18,7 +18,7 @@
                 {{ weapon.name }}
                 <span *ngIf="weapon.profiles.length > 1">({{ profile.profileName || 'default' }})</span>
               </td>
-              <td>{{ profile.rng || '-' }}</td>
+              <td>{{ profile.rng ? profile.rng : profile.rng === null ? '-' : 'melee' }}</td>
               <td>{{ profile.attacks }}</td>
               <td>{{ profile.ws }}</td>
               <td>

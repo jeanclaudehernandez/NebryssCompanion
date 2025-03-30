@@ -958,7 +958,7 @@
           "profileName": "",
           "rng": 8,
           "attacks": 3,
-          "ws": "5+",
+          "ws": "3+",
           "damage": { "min": 1, "max": 2 },
           "specialRules": [],
           "body": "Construct"

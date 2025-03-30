@@ -417,14 +417,28 @@
   {
     "id": 57,
     "name": "Light Barricade",
+    "type": "construct",
     "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
     "weapons": []
   },
   {
     "id": 58,
     "name": "Autogun Turret",
+    "type": "construct",
     "description": "Fixed in place, targets closest enemy.",
-    "weapons": [51]
+    "weapons": [53]
+  }, 
+  {
+    "id": 59,
+    "name": "Screecher Green",
+    "type": "mob",
+    "bestiaryId": 12
+  },
+  {
+    "id": 60,
+    "name": "Screecher Purple",
+    "type": "mob",
+    "bestiaryId": 13
   }
 ]
 }

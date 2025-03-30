@@ -140,7 +140,19 @@
         {
           "name": "Mist Veilwalk",
           "effect": "1AP: Teleport 6″ through mist zones. Roll 1D6; on a 4+, change order to Conceal Order."
+        },
+        {
+          "name": "Screaming Vortex",
+          "effect": "1AP: Once per Battle. Summon one of your deployables within control range."
+        },
+        {
+          "name": "Heretic Astartes",
+          "effect": "Once per battle: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions. You cannot select the same psychic ranged weapon more than once. For the rest of the battle it can counteract regarless of order."
         }
+      ],
+      "deployables": [
+        { "id": 59, "quant": 1 },
+        { "id": 60, "quant": 1 }
       ],
       "progression": {
         "mistrals": {
@@ -225,7 +237,16 @@
         {
           "name": "Rites of Repair",
           "effect": "1AP: Restore 1D3 wounds to a construct."
+        },
+        {
+          "name": "Techmarine Astartes",
+          "effect": "Once per battle: This operative gains 1AP and it can perform either two Shoot actions, two Fight actions or two Fortity actions. You must select at least one PISTOL weapon to perform two shoot actions this way. For the rest of the battle it can counteract regarless of order."
         }
+        
+      ],
+      "deployables": [
+        { "id": 57, "quant": 2 },
+        { "id": 58, "quant": 2 }
       ],
       "progression": {
         "mistrals": {
@@ -233,10 +254,6 @@
           "physical": { "1s": 0, "5s": 0, "10s": 0, "20s": 0, "50s": 0, "100s": 0 }
         },
         "items": []
-      },
-      "deployables": [
-        { "id": 57, "quant": 2 },
-        { "id": 58, "quant": 2 }
-      ]
+      }
     }
   ]

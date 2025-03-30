@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { WeaponDisplayComponent } from '../weapon-display/weapon-display.component';
 import {MatTooltipModule} from '@angular/material/tooltip';
 
 interface Weapon {
@@ -34,7 +33,6 @@ interface RuleDefinition {
   standalone: true,
   imports: [
     CommonModule,
-    WeaponDisplayComponent,
     MatTooltipModule
   ],
   templateUrl: './weapon-table.component.html',
