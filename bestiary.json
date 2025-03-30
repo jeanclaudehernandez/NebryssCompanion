@@ -10,40 +10,7 @@
       "Save": "6+",
       "APL": 1
     },
-    "weapons": [
-      {
-        "name": "Rusty Spear",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "-"
-      },
-      {
-        "name": "Coral Sword",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 1, "max": 2 },
-        "specialRules": "Ceaseless(+1)"
-      },
-      {
-        "name": "Crude Net",
-        "rng": "6″",
-        "attacks": 2,
-        "ws": "5+",
-        "damage": { "min": 1, "max": 2 },
-        "specialRules": "Entangle (+1)"
-      },
-      {
-        "name": "Throwing Spear",
-        "rng": "8″",
-        "attacks": 4,
-        "ws": "5+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "-"
-      }
-    ],
+    "weapons": [10, 11, 40, 41],
     "abilities": [
       {
         "name": "Amphibious Assault",
@@ -74,24 +41,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Tidal Trident",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Punishing (+2)"
-      },
-      {
-        "name": "Tidal Bolt",
-        "rng": "12″",
-        "attacks": 3,
-        "ws": "5+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Blast (1″) (+1)"
-      }
-    ],
+    "weapons": [12, 42],
     "abilities": [
       {
         "name": "Tidal Surge",
@@ -114,24 +64,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Royal Trident",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Lethal 5+ (+2), Shock (+2)"
-      },
-      {
-        "name": "Tidal Blast",
-        "rng": "6″",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Blast (1″) (+1), Ceaseless (+2)"
-      }
-    ],
+    "weapons": [13, 43],
     "abilities": [
       {
         "name": "King’s Command",
@@ -154,24 +87,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Aether Talons",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      },
-      {
-        "name": "Beak Gore",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Brutal (+2)"
-      }
-    ],
+    "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -194,24 +110,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Aether Talons",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      },
-      {
-        "name": "Beak Gore",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Brutal (+2)"
-      }
-    ],
+    "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -234,24 +133,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Aether Talons",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      },
-      {
-        "name": "Beak Gore",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Brutal (+2)"
-      }
-    ],
+    "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -274,24 +156,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Aether Talons",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      },
-      {
-        "name": "Windblast",
-        "rng": "12″",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Blast (1″) (+1), Push 2″ (+1)"
-      }
-    ],
+    "weapons": [19, 44],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -314,40 +179,7 @@
       "Save": "3+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Stalker Bolt Rifle (mobile)",
-        "rng": "10\"",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Piercing Crits 1 (+2)"
-      },
-      {
-        "name": "Stalker Bolt Rifle (heavy)",
-        "rng": "14\"",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 5 },
-        "specialRules": "Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)"
-      },
-      {
-        "name": "Chainsword",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      },
-      {
-        "name": "Fists",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "-"
-      }
-    ],
+    "weapons": [33, 2],
     "abilities": []
   },
   {
@@ -361,24 +193,7 @@
       "Save": "3+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Narthecium",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending(+2)"
-      },
-      {
-        "name": "Bolt Pistol",
-        "rng": "8″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "-"
-      }
-    ],
+    "weapons": [9, 24],
     "abilities": [
       {
         "name": "Combat Medicae",
@@ -409,32 +224,7 @@
       "Save": "3+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Lance of Sabatine",
-        "rng": "Melee",
-        "attacks": 5,
-        "ws": "3+",
-        "damage": { "min": 5, "max": 7 },
-        "specialRules": "Brutal (+2), Rending (+2)"
-      },
-      {
-        "name": "Mistforged Plasma Gun (standard)",
-        "rng": "8″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 5 },
-        "specialRules": "Balanced (+2), Piercing 1 (+2)"
-      },
-      {
-        "name": "Mistforged Plasma Gun (super charge)",
-        "rng": "10″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Balanced (+2), Piercing 1 (+2), Hot (−1)"
-      }
-    ],
+    "weapons": [15, 47],
     "abilities": [
       {
         "name": "Mistforged Precision",
@@ -461,24 +251,7 @@
       "Save": "6+",
       "APL": 1
     },
-    "weapons": [
-      {
-        "name": "Warpfire Maw",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Lethal 5+ (+2)"
-      },
-      {
-        "name": "Psychic Shriek",
-        "rng": "6″",
-        "attacks": 2,
-        "ws": "4+",
-        "damage": { "min": 1, "max": 2 },
-        "specialRules": "Psychic*, Ceaseless (+2)"
-      }
-    ],
+    "weapons": [21, 45],
     "abilities": [
       {
         "name": "Daemonic Flight",
@@ -555,24 +328,7 @@
       "Save": "4+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Boltgun",
-        "rng": "14″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Relentless (+2)"
-      },
-      {
-        "name": "Chainsword",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 5 },
-        "specialRules": "Rending (+2)"
-      }
-    ],
+    "weapons": [31, 2],
     "abilities": [
       {
         "name": "Mark of Khorne",
@@ -595,32 +351,7 @@
       "Save": "3+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Plasma Pistol (super charge)",
-        "rng": "12″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Piercing 1(+2) Hot (−1), Lethal 5+ (+2)"
-      },
-      {
-        "name": "Plasma Pistol (standard)",
-        "rng": "10″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 5 },
-        "specialRules": "Piercing 1 (+2), Hot (−1)"
-      },
-      {
-        "name": "Power Sword",
-        "rng": "Melee",
-        "attacks": 5,
-        "ws": "3+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Rending (+2), Balanced (+1)"
-      }
-    ],
+    "weapons": [30,  8],
     "abilities": [
       {
         "name": "Dark Zeal",
@@ -643,24 +374,7 @@
       "Save": "4+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Balefire Bolt",
-        "rng": "12″",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Psychic*, Blast (2″) (+1)"
-      },
-      {
-        "name": "Balefire blade",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Life siphon (+2)"
-      }
-    ],
+    "weapons": [46, 14],
     "abilities": [
       {
         "name": "Psychic Dominion",
@@ -683,40 +397,7 @@
       "Save": "4+",
       "APL": 3
     },
-    "weapons": [
-      {
-        "name": "Plasma Gun (standard)",
-        "rng": "14″",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 5 },
-        "specialRules": "Piercing 1 (+2)"
-      },
-      {
-        "name": "Plasma Gun (super charge)",
-        "rng": "inf",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 4, "max": 5 },
-        "specialRules": "Hot (−1), Lethal 5+ (+2), Piercing 1 (+2)"
-      },
-      {
-        "name": "Melta",
-        "rng": "6″",
-        "attacks": 3,
-        "ws": "3+",
-        "damage": { "min": 5, "max": 6 },
-        "specialRules": "Devastating 2 (+2), Piercing 1 (+2)"
-      },
-      {
-        "name": "Fists",
-        "rng": "Melee",
-        "attacks": 4,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "-"
-      }
-    ],
+    "weapons": [29, 32, 2],
     "abilities": [
       {
         "name": "Malicious Volleys",
@@ -739,24 +420,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Lasgun",
-        "rng": "inf",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "-"
-      },
-      {
-        "name": "Bayonet",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "-"
-      }
-    ],
+    "weapons": [23, 1],
     "abilities": [
       {
         "name": "Mist Resilience",
@@ -775,16 +439,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Mistforged Pistol",
-        "rng": "10\"",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Mist-Accuracy"
-      }
-    ],
+    "weapons": [25],
     "abilities": [
       {
         "name": "Combat Triage",
@@ -803,24 +458,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Mist-Warp Staff",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "3+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Psychic Push*"
-      },
-      {
-        "name": "Mist Blast",
-        "rng": "10″",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Blast (1″), Psychic*"
-      }
-    ],
+    "weapons": [5, 50],
     "abilities": [
       {
         "name": "Tidal Surge",
@@ -839,24 +477,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Stormchaser Assault Rifle",
-        "rng": "14\"",
-        "attacks": 4,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Ceaseless (+2)"
-      },
-      {
-        "name": "Chainsword",
-        "rng": "Melee",
-        "attacks": 3,
-        "ws": "3+",
-        "damage": { "min": 3, "max": 4 },
-        "specialRules": "Rending (+2)"
-      }
-    ],
+    "weapons": [35, 2],
     "abilities": [
       {
         "name": "Inspiring Presence",
@@ -875,16 +496,7 @@
       "Save": "5+",
       "APL": 2
     },
-    "weapons": [
-      {
-        "name": "Pulse Carbine",
-        "rng": "inf\"",
-        "attacks": 3,
-        "ws": "4+",
-        "damage": { "min": 2, "max": 3 },
-        "specialRules": "Balanced (+2)"
-      }
-    ],
+    "weapons": [27],
     "abilities": [
       {
         "name": "Markerlight",
