@@ -1,0 +1,95 @@
+{
+  "shops": [
+    {
+      "name": "Herbwhisper’s Apothecary",
+      "owner": 6,
+      "location": "Zephyria’s Sky Bazaar (9.2.5.3)",
+      "items": [
+        { "id": 16, "price": 5, "type": "item" },
+        { "id": 17, "price": 3, "type": "item" },
+        { "id": 18, "price": 6, "type": "item" },
+        { "id": 19, "price": 7, "type": "item" },
+        { "id": 20, "price": 2, "type": "item" },
+        { "id": 21, "price": 9, "type": "item" },
+        { "id": 22, "price": 3.5, "type": "item" },
+        { "id": 24, "price": 2, "type": "item" }
+      ]
+    },
+    {
+      "name": "Ironveil’s Ward",
+      "owner": 7,
+      "location": "Zephyria’s Sky Bazaar (9.2.5.4)",
+      "items": [
+        { "id": 1, "price": 8, "type": "item" },
+        { "id": 2, "price": 18, "type": "item" },
+        { "id": 3, "price": 22, "type": "item" },
+        { "id": 4, "price": 25, "type": "item" },
+        { "id": 5, "price": 30, "type": "item" },
+        { "id": 6, "price": 25, "type": "item" },
+        { "id": 7, "price": 50, "type": "item" }
+      ]
+    },
+    {
+      "name": "Blackhammer’s Arsenal",
+      "owner": 8,
+      "location": "Zephyria’s Sky Bazaar (9.2.5.5)",
+      "items": [
+        { "id": 25, "price": 15, "type": "weapon" },
+        { "id": 2, "price": 12, "type": "weapon" }, 
+        { "id": 29, "price": 20, "type": "weapon" },
+        { "id": 26, "price": 17, "type": "weapon" },
+        { "id": 37, "price": 35, "type": "weapon" },
+        { "id": 28, "price": 25, "type": "weapon" },
+        { "id": 36, "price": 50, "type": "weapon" },
+        { "id": 35, "price": 30, "type": "weapon" } 
+      ]
+    },
+    {
+      "name": "Anchorforge’s Drydock",
+      "owner": 9,
+      "location": "Zephyria’s Sky Bazaar (9.2.5.6)",
+      "items": [
+        { "id": 40, "price": 500, "type": "item" },
+        { "id": 41, "price": 450, "type": "item" },
+        { "id": 42, "price": 400, "type": "item" },
+        { "id": 43, "price": 850, "type": "item" },
+        { "id": 45, "price": 800, "type": "item" },
+        { "id": 46, "price": 750, "type": "item" },
+        { "id": 47, "price": 700, "type": "item" },
+        { "id": 48, "price": 900, "type": "item" },
+        { "id": 49, "price": 30, "type": "item" }, 
+        { "id": 50, "price": 50, "type": "item" }, 
+        { "id": 51, "price": 60, "type": "item" }, 
+        { "id": 52, "price": 700, "type": "item" },
+        { "id": 53, "price": 50, "type": "item" }, 
+        { "id": 54, "price": 100, "type": "item" },
+        { "id": 55, "price": 150, "type": "item" },
+        { "id": 56, "price": 200, "type": "item" } 
+      ]
+    },
+    {
+      "name": "The Stoutbarrel Tavern",
+      "owner": 10,
+      "location": "Zephyria (9.2.6.2)",
+      "items": [
+        { "id": 20, "price": 2, "type": "item" },
+        { "id": 17, "price": 3, "type": "item" },
+        { "id": 22, "price": 3.5, "type": "item" },
+        { "id": 23, "price": 2.5, "type": "item" },
+        { "id": 26, "price": 1, "type": "item" }
+      ]
+    },
+    {
+      "name": "Skyguide’s Emporium",
+      "owner": 11,
+      "location": "Zephyria’s Sky Bazaar (freelance stall)",
+      "items": [
+        { "id": 16, "price": 5, "type": "item" },
+        { "id": 8, "price": 12, "type": "item" },
+        { "id": 25, "price": 10, "type": "item" },
+        { "id": 19, "price": 7, "type": "item" },
+        { "id": 27, "price": 20, "type": "item" }
+      ]
+    }
+  ]
+}
