@@ -1,0 +1,895 @@
+[
+  {
+    "name": "Murloc",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 68,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 6,
+      "Save": "6+",
+      "APL": 1
+    },
+    "weapons": [
+      {
+        "name": "Rusty Spear",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "-"
+      },
+      {
+        "name": "Coral Sword",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 1, "max": 2 },
+        "specialRules": "Ceaseless(+1)"
+      },
+      {
+        "name": "Crude Net",
+        "rng": "6″",
+        "attacks": 2,
+        "ws": "5+",
+        "damage": { "min": 1, "max": 2 },
+        "specialRules": "Entangle (+1)"
+      },
+      {
+        "name": "Throwing Spear",
+        "rng": "8″",
+        "attacks": 4,
+        "ws": "5+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "-"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Amphibious Assault",
+        "effect": "1AP: Swim 6″ through water or mist."
+      },
+      {
+        "name": "Pack Tactics",
+        "effect": "+1 to WS/BS within 3″ of another Murloc. (+7)"
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash once per Turning Point when within 6\" of Murloc King."
+      },
+      {
+        "name": "Crab Shell Shield",
+        "effect": "Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success."
+      }
+    ]
+  },
+  {
+    "name": "Murloc Tidecaller",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 88,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 8,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Tidal Trident",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Punishing (+2)"
+      },
+      {
+        "name": "Tidal Bolt",
+        "rng": "12″",
+        "attacks": 3,
+        "ws": "5+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Blast (1″) (+1)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP: Push 2\" all enemies within 6″. (+7)"
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash once per Turning Point when within 6\" of Murloc King."
+      }
+    ]
+  },
+  {
+    "name": "Murloc King",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 135,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 12,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Royal Trident",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Lethal 5+ (+2), Shock (+2)"
+      },
+      {
+        "name": "Tidal Blast",
+        "rng": "6″",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Blast (1″) (+1), Ceaseless (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "King’s Command",
+        "effect": "Re-roll attack dice with result of 1 for Murlocs within 6\". (+7)"
+      },
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP: Push 2\" all enemies within 6\". (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Aetherwing",
+    "faction": "Forces of Nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": "7″",
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Aether Talons",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      },
+      {
+        "name": "Beak Gore",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Brutal (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7″ over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Aetherwing Bannerbearer",
+    "faction": "Forces of Nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": "7″",
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Aether Talons",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      },
+      {
+        "name": "Beak Gore",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Brutal (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7″ over terrain."
+      },
+      {
+        "name": "Banner of Resilience",
+        "effect": "Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Aetherwing Flutist",
+    "faction": "Forces of Nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": "7″",
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Aether Talons",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      },
+      {
+        "name": "Beak Gore",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Brutal (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7″ over terrain."
+      },
+      {
+        "name": "Flute of Fury",
+        "effect": "Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Windblast Aetherwing",
+    "faction": "Forces of Nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": "7″",
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Aether Talons",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      },
+      {
+        "name": "Windblast",
+        "rng": "12″",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Blast (1″) (+1), Push 2″ (+1)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7″ over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Intercessor Warrior",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 145,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 14,
+      "Save": "3+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Stalker Bolt Rifle (mobile)",
+        "rng": "10\"",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Piercing Crits 1 (+2)"
+      },
+      {
+        "name": "Stalker Bolt Rifle (heavy)",
+        "rng": "14\"",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": "Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)"
+      },
+      {
+        "name": "Chainsword",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      },
+      {
+        "name": "Fists",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "-"
+      }
+    ],
+    "abilities": []
+  },
+  {
+    "name": "Apothecary Biologis",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 159,
+    "attributes": {
+      "Movement": "4″",
+      "Wounds": 18,
+      "Save": "3+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Narthecium",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending(+2)"
+      },
+      {
+        "name": "Bolt Pistol",
+        "rng": "8″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "-"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Combat Medicae",
+        "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3″."
+      },
+      {
+        "name": "Genetic Augmentation",
+        "effect": "1AP: Friendly operative within 6″ +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. (+7)"
+      },
+      {
+        "name": "Revitalizing Aura",
+        "effect": "All friendly operatives within 3″ reduce incoming damage by 1 (to a minimum of 1). (+7)"
+      },
+      {
+        "name": "Desperate Charge",
+        "effect": "Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order."
+      }
+    ]
+  },
+  {
+    "name": "Captain Marcus Valen",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 221,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 18,
+      "Save": "3+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Lance of Sabatine",
+        "rng": "Melee",
+        "attacks": 5,
+        "ws": "3+",
+        "damage": { "min": 5, "max": 7 },
+        "specialRules": "Brutal (+2), Rending (+2)"
+      },
+      {
+        "name": "Mistforged Plasma Gun (standard)",
+        "rng": "8″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": "Balanced (+2), Piercing 1 (+2)"
+      },
+      {
+        "name": "Mistforged Plasma Gun (super charge)",
+        "rng": "10″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Balanced (+2), Piercing 1 (+2), Hot (−1)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Mistforged Precision",
+        "effect": "Re-roll one attack roll in mist zones."
+      },
+      {
+        "name": "Lancer’s Charge",
+        "effect": "1AP: Free Charge + Fight action. (+7)"
+      },
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6″ re-roll 1s on attack rolls. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Screamer",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 65,
+    "attributes": {
+      "Movement": "8″",
+      "Wounds": 5,
+      "Save": "6+",
+      "APL": 1
+    },
+    "weapons": [
+      {
+        "name": "Warpfire Maw",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Lethal 5+ (+2)"
+      },
+      {
+        "name": "Psychic Shriek",
+        "rng": "6″",
+        "attacks": 2,
+        "ws": "4+",
+        "damage": { "min": 1, "max": 2 },
+        "specialRules": "Psychic*, Ceaseless (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly 8″ over terrain. (+7)"
+      },
+      {
+        "name": "Warpfire Trail",
+        "effect": "After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Screecher Green",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 75,
+    "attributes": {
+      "Movement": "8″",
+      "Wounds": 1,
+      "Save": "3+",
+      "APL": 1
+    },
+    "weapons": [],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly 8″ over terrain. (+7)"
+      },
+      {
+        "name": "Aegis of the Ninefold Deceit",
+        "effect": "Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6\". (+7)"
+      },
+      {
+        "name": "Ethereal Form",
+        "effect": "Remove this operative from the killzone at the end of the turning point."
+      }
+    ]
+  },
+  {
+    "name": "Screecher Purple",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 75,
+    "attributes": {
+      "Movement": "8″",
+      "Wounds": 1,
+      "Save": "3+",
+      "APL": 1
+    },
+    "weapons": [],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly 8″ over terrain. (+7)"
+      },
+      {
+        "name": "Arcane Bargain",
+        "effect": "Once per activation an enemy within control range, roll 1d6 and that enemy suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4\", if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4\" of this operative and that operative, restore result/2 wounds rounded up from Summoner. (+7)"
+      },
+      {
+        "name": "Ethereal Form",
+        "effect": "Remove this operative from the killzone at the end of the turning point."
+      }
+    ]
+  },
+  {
+    "name": "Khorne Berzerker",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 151,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 14,
+      "Save": "4+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Boltgun",
+        "rng": "14″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Relentless (+2)"
+      },
+      {
+        "name": "Chainsword",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": "Rending (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Mark of Khorne",
+        "effect": "Re-roll one attack die per activation in melee. (+7)"
+      },
+      {
+        "name": "Warp-fueled Rage",
+        "effect": "After defeating an enemy, gain +1 Attack next activation. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Legionary Aspiring Champion",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 195,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 16,
+      "Save": "3+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Plasma Pistol (super charge)",
+        "rng": "12″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Piercing 1(+2) Hot (−1), Lethal 5+ (+2)"
+      },
+      {
+        "name": "Plasma Pistol (standard)",
+        "rng": "10″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": "Piercing 1 (+2), Hot (−1)"
+      },
+      {
+        "name": "Power Sword",
+        "rng": "Melee",
+        "attacks": 5,
+        "ws": "3+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Rending (+2), Balanced (+1)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Dark Zeal",
+        "effect": "Re-roll one attack or defense die per activation. (+7)"
+      },
+      {
+        "name": "Inspiring Terror",
+        "effect": "Enemy operatives within 6″ worsen their WS by 1. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Balefire Acolyte",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 143,
+    "attributes": {
+      "Movement": "4″",
+      "Wounds": 14,
+      "Save": "4+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Balefire Bolt",
+        "rng": "12″",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Psychic*, Blast (2″) (+1)"
+      },
+      {
+        "name": "Balefire blade",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Life siphon (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Dominion",
+        "effect": "1AP: Cast Smite (10″ range, 1D3 mortal wounds) or Warpfire (create a 3″ hazardous terrain patch within 6\" and visible). (+7)"
+      },
+      {
+        "name": "Warpfire",
+        "effect": "Enemies in or moving through Warpfire suffer 1D3 wounds. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Legionary Gunner",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 155,
+    "attributes": {
+      "Movement": "4″",
+      "Wounds": 15,
+      "Save": "4+",
+      "APL": 3
+    },
+    "weapons": [
+      {
+        "name": "Plasma Gun (standard)",
+        "rng": "14″",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": "Piercing 1 (+2)"
+      },
+      {
+        "name": "Plasma Gun (super charge)",
+        "rng": "inf",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": "Hot (−1), Lethal 5+ (+2), Piercing 1 (+2)"
+      },
+      {
+        "name": "Melta",
+        "rng": "6″",
+        "attacks": 3,
+        "ws": "3+",
+        "damage": { "min": 5, "max": 6 },
+        "specialRules": "Devastating 2 (+2), Piercing 1 (+2)"
+      },
+      {
+        "name": "Fists",
+        "rng": "Melee",
+        "attacks": 4,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "-"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Malicious Volleys",
+        "effect": "If stationary, shoot twice with the same weapon. (+7)"
+      },
+      {
+        "name": "Overcharge",
+        "effect": "1AP: +1 Damage to next attack, but suffer 1 wound on a hit roll of 1."
+      }
+    ]
+  },
+  {
+    "name": "NLR Soldier (Human)",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 76,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 7,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Lasgun",
+        "rng": "inf",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "-"
+      },
+      {
+        "name": "Bayonet",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "-"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Mist Resilience",
+        "effect": "In mist zones, gain Cover against ranged attacks."
+      }
+    ]
+  },
+  {
+    "name": "NLR Field Medic (Human)",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 81,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 6,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Mistforged Pistol",
+        "rng": "10\"",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Mist-Accuracy"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Combat Triage",
+        "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3″. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "Fellgor Mist Shaman",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Fellgor",
+    "pr": 96,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 10,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Mist-Warp Staff",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "3+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Psychic Push*"
+      },
+      {
+        "name": "Mist Blast",
+        "rng": "10″",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Blast (1″), Psychic*"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP: Push all enemies within 6″ by 2″. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "NLR Sergeant (Human)",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 106,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 8,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Stormchaser Assault Rifle",
+        "rng": "14\"",
+        "attacks": 4,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Ceaseless (+2)"
+      },
+      {
+        "name": "Chainsword",
+        "rng": "Melee",
+        "attacks": 3,
+        "ws": "3+",
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": "Rending (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6″ re-roll 1s on attack rolls. (+7)"
+      }
+    ]
+  },
+  {
+    "name": "T’au Pathfinder",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T’au",
+    "pr": 85,
+    "attributes": {
+      "Movement": "6″",
+      "Wounds": 7,
+      "Save": "5+",
+      "APL": 2
+    },
+    "weapons": [
+      {
+        "name": "Pulse Carbine",
+        "rng": "inf\"",
+        "attacks": 3,
+        "ws": "4+",
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": "Balanced (+2)"
+      }
+    ],
+    "abilities": [
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point. (+7)"
+      }
+    ]
+  }
+]
