@@ -359,6 +359,21 @@
           "body": "Mist Golem"
         }
       ]
+    },
+    {
+      "id": 51,
+      "name": "Servo-Hammer",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": { "min": 2, "max": 4 },
+          "specialRules": [{ "ruleId": 19, "modValue": null }],
+          "body": "Astartes"
+        }
+      ]
     }
   ],
   "ranged": [
@@ -915,6 +930,22 @@
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 12, "modValue": null }],
           "body": "Spell -Mist"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "name": "Bolt Pistol",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 8,
+          "attacks": 3,
+          "ws": "4+",
+          "damage": { "min": 2, "max": 3 },
+          "specialRules": [],
+          "body": "Astartes"
         }
       ]
     }
