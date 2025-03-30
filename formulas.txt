@@ -1,0 +1,18 @@
+# formulas
+
+**Revised Power Rating (PR) Formula**  
+**PR** = `(Wounds × 2.2) + [(6 − Save) × 7] + Weapon Threat + Ability Score + (Movement × 4) + (APL × 6)`
+
+- **Weapon Threat**: `(Attacks × min Damage x (7 − WS)) + Special Rules` highest value of all weapons.  
+  - **Special Rules**: some weapon rules indicate a modifier to weapon threat listed as (+X) or (-X).  
+- **Ability Score**: some abilities list a modifier value as (+X) or (-X).  
+
+## **Body Requirements Legend**
+
+- **Human**: Standard human-sized equipment  
+- **Astartes**: Power armor/bolt weapons (Space Marine compatible)  
+- **Universal**: Usable by all races  
+- **Fellgor**: Beastman-compatible gear
+- **Names with (*)**: Profile only usable by that body type
+
+---  
