@@ -412,5 +412,19 @@
       "price": 200,
       "damage": "20/25"
     }
-  ]
+  ],
+  "deployables": [
+  {
+    "id": 57,
+    "name": "Light Barricade",
+    "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
+    "weapons": []
+  },
+  {
+    "id": 53,
+    "name": "Autogun Turret",
+    "description": "Fixed in place, targets closest enemy.",
+    "weapons": [51]
+  }
+]
 }

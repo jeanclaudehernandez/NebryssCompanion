@@ -948,6 +948,22 @@
           "body": "Astartes"
         }
       ]
+    },
+    {
+      "id": 53,
+      "name": "Autogun Turret",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 8,
+          "attacks": 3,
+          "ws": "5+",
+          "damage": { "min": 1, "max": 2 },
+          "specialRules": [],
+          "body": "Construct"
+        }
+      ]
     }
   ]
 }
