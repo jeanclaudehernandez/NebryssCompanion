@@ -1,0 +1,955 @@
+{
+  "melee": [
+    {
+      "name": "Bayonet",
+      "price": 10,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Chainsword",
+      "price": 12,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Rending (+2)",
+          "body": "Human"
+        },
+        {
+          "profileName": "power cell",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 5
+          },
+          "specialRules": "Rending (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Mistforged Saber",
+      "price": 25,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Balanced (+2), mist-accuracy",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Arc Shock Gauntlets",
+      "price": 35,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 4
+          },
+          "specialRules": "Stun (+1), Ceaseless (+2)",
+          "body": "Universal"
+        }
+      ]
+    },
+    {
+      "name": "Mist-Warp Staff",
+      "price": 40,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Psychic Push",
+          "body": "Fellgor"
+        }
+      ]
+    },
+    {
+      "name": "Mistborn Whipblade",
+      "price": 80,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 5,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Rending (+2), Agile (+1)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Graviton Crusher",
+      "price": 120,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "2+",
+          "damage": {
+            "min": 5,
+            "max": 6
+          },
+          "specialRules": "Brutal (+2), shockwave 1\"(+3), Fixed Result (-1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Power Sword",
+      "price": 130,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 5,
+          "ws": "3+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Rending (+2), Balanced (+1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Narthecium",
+      "price": 150,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Rending (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Rusty Spear",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Murloc"
+        }
+      ]
+    },
+    {
+      "name": "Coral Sword",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "4+",
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": "Ceaseless (+1)",
+          "body": "Murloc"
+        }
+      ]
+    },
+    {
+      "name": "Tidal Trident",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Punishing (+2)",
+          "body": "Murloc"
+        }
+      ]
+    },
+    {
+      "name": "Royal Trident",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Lethal 5+ (+2), Shock (+2)",
+          "body": "Murloc"
+        }
+      ]
+    },
+    {
+      "name": "Balefire Blade",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Life Siphon*",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Lance of Sabatine",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 5,
+          "ws": "3+",
+          "damage": {
+            "min": 5,
+            "max": 7
+          },
+          "specialRules": "Brutal (+2), Rending (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Mist-Warp Staff",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Leg Blade",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Quick Assault*",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Claws",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Rending (+2)",
+          "body": "Fellgor"
+        }
+      ]
+    },
+    {
+      "name": "Aether Talons",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "4+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Rending (+2)",
+          "body": "Aetherwing"
+        }
+      ]
+    },
+    {
+      "name": "Beak Gore",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Brutal (+2)",
+          "body": "Aetherwing"
+        }
+      ]
+    },
+    {
+      "name": "Warpfire Maw",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 4,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Lethal 5+ (+2)",
+          "body": "Screamer"
+        }
+      ]
+    },
+    {
+      "name": "Stone Fists",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Brutal (+2)",
+          "body": "Mist Golem"
+        }
+      ]
+    }
+  ],
+  "ranged": [
+    {
+      "name": "Lasgun",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "inf",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Stub Pistol",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "8″",
+          "attacks": 4,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Mistforged Pistol",
+      "price": 15,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "10\"",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Lethal 5+ (+2), Mist-Accuracy",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Longshot Rifle",
+      "price": 17,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "inf",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Saturate (+1)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Pulse Carbine",
+      "price": 25,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "inf\"",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Balanced (+2)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Voidstrike Pistol",
+      "price": 25,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "8\"",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Piercing 1 (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Plasma Rifle",
+      "price": 20,
+      "profiles": [
+        {
+          "profileName": "standard",
+          "rng": "inf",
+          "attacks": 2,
+          "ws": "4+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Hot (-1)",
+          "body": "Astartes"
+        },
+        {
+          "profileName": "over change",
+          "rng": "inf",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Hot (-1), piercing 1 (+2), break",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Plasma Pistol",
+      "price": 50,
+      "profiles": [
+        {
+          "profileName": "standard",
+          "rng": "8″",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 5
+          },
+          "specialRules": "Piercing 1 (+2), Hot (−1)",
+          "body": "Universal"
+        },
+        {
+          "profileName": "super charge",
+          "rng": "12\"",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Piercing 1(+2) Hot (−1), Lethal 5+ (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Boltgun",
+      "price": 60,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "14″",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Relentless (+2)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Melta",
+      "price": 50,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "6″",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 5,
+            "max": 6
+          },
+          "specialRules": "Devastating 2 (+2), Piercing 1 (+2)",
+          "body": "Astartes"
+        },
+        {
+          "profileName": "heavy",
+          "rng": "6″",
+          "attacks": 3,
+          "ws": "3+",
+          "damage": {
+            "min": 5,
+            "max": 6
+          },
+          "specialRules": "Devastating 2 (+2), Piercing 1 (+2), heavy(-1)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Stalker Bolt Rifle",
+      "price": 35,
+      "profiles": [
+        {
+          "profileName": "mobile",
+          "rng": "10″",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Piercing Crits 1 (+2)",
+          "body": "Astartes"
+        },
+        {
+          "profileName": "heavy",
+          "rng": "14\"",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 5
+          },
+          "specialRules": "Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Pneumatic Harpoon",
+      "price": 40,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12\"",
+          "attacks": 2,
+          "ws": "4+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Drag 3\", Heavy (-1)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Stormchaser Assault Rifle",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "14\"",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 2,
+            "max": 4
+          },
+          "specialRules": "Ceaseless (+2)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Nightstalker Sniper",
+      "price": 50,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "inf",
+          "attacks": 3,
+          "ws": "2+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Devastating 2 (+2), Silent (+1), Heavy (-1)",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Inferno Bolter Rifle",
+      "price": 35,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12\"",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Lethal 5+ (+2), Burning (+1), Hot (-1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Phase-Tech Rifle",
+      "price": 100,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "inf",
+          "attacks": 3,
+          "ws": "2+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Piercing 1 (+2), Silent (+1), Mist-Accuracy",
+          "body": "Human"
+        }
+      ]
+    },
+    {
+      "name": "Voidrender Cannon",
+      "price": 150,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "18\"",
+          "attacks": 2,
+          "ws": "3+",
+          "damage": {
+            "min": 5,
+            "max": 7
+          },
+          "specialRules": "Devastating 3 (+3), Piercing 2 (+3), Heavy (-1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Crude Net",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "6″",
+          "attacks": 2,
+          "ws": "5+",
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": "Entangle (+1)",
+          "body": "Universal"
+        }
+      ]
+    },
+    {
+      "name": "Throwing Spear",
+      "price": 5,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "8″",
+          "attacks": 4,
+          "ws": "5+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Breaks",
+          "body": "Universal"
+        }
+      ]
+    },
+    {
+      "name": "Tidal Bolt",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12″",
+          "attacks": 3,
+          "ws": "5+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Blast (1″) (+1)",
+          "body": "Spell -Mist"
+        }
+      ]
+    },
+    {
+      "name": "Tidal Blast",
+      "price": 40,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "6″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Blast (1″) (+1), Ceaseless (+2)",
+          "body": "Spell -Mist"
+        }
+      ]
+    },
+    {
+      "name": "Windblast",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Blast (1″) (+1), Push (2″) (+1)",
+          "body": "Spell -Mist"
+        }
+      ]
+    },
+    {
+      "name": "Psychic Shriek",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "6″",
+          "attacks": 2,
+          "ws": "4+",
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": "Psychic*, Ceaseless (+2)",
+          "body": "Spell -Screamer"
+        }
+      ]
+    },
+    {
+      "name": "Balefire Bolt",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": "Psychic*, Blast (2″) (+1)",
+          "body": "Spell -Psyker"
+        }
+      ]
+    },
+    {
+      "name": "Mistforged Plasma Gun",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "standard",
+          "rng": "8″",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 3,
+            "max": 5
+          },
+          "specialRules": "Balanced (+2), Piercing 1 (+2)",
+          "body": "Astartes"
+        },
+        {
+          "profileName": "super charge",
+          "rng": "10″",
+          "attacks": 4,
+          "ws": "3+",
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": "Balanced (+2), Piercing 1 (+2), Hot (−1)",
+          "body": "Astartes"
+        }
+      ]
+    },
+    {
+      "name": "Mist Slam",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "3″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "-",
+          "body": "Mist Golem"
+        }
+      ]
+    },
+    {
+      "name": "Warpflame Blast",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "12″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Blast (2″)(+2), PSYCHIC, Hot (-1)",
+          "body": "Spell -Psyker"
+        }
+      ]
+    },
+    {
+      "name": "Mist Blast",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "default",
+          "rng": "10″",
+          "attacks": 3,
+          "ws": "4+",
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": "Psychic Push*",
+          "body": "Spell -Mist"
+        }
+      ]
+    }
+  ]
+}

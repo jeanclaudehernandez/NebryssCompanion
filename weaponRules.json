@@ -170,7 +170,7 @@
   {
   "id": 30,
   "name": "Blast x inches",
-  "effect": "All operatives within x″ of the target are also attacked.",
+  "effect": "All operatives within x inches of the target are also attacked.",
   "prModifier": "+X"
   },
   {

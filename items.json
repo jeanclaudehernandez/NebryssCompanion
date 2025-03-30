@@ -1,0 +1,360 @@
+{
+  "armor": [
+    {
+      "name": "Mistcloak",
+      "price": 8,
+      "description": "Save +1 in mist zones of density medium or higher.",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Mist-Resistant Armor",
+      "price": 18,
+      "description": "Reduces damage from mist anomalies by 1 (to a minimum of 1).",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Reinforced Carapace",
+      "price": 22,
+      "description": "Wounds +4, Movement -1\" (min 4).",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Mistweave Plate",
+      "price": 25,
+      "description": "wounds +2, Re-roll one failed Save roll once per Battle.",
+      "raceReq": "Human"
+    },
+    {
+      "name": "Mistweave Shroud",
+      "price": 30,
+      "description": "Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.",
+      "raceReq": "Human"
+    },
+    {
+      "name": "Swiftwind Harness",
+      "price": 25,
+      "description": "Wounds -1, Dash costs 0 AP.",
+      "raceReq": "Human"
+    },
+    {
+      "name": "Aegis Battleplate",
+      "price": 50,
+      "description": "Wounds +5, Save +2, Movement -2″ (min 3) and cannot be used with Fly or Climb abilities.",
+      "raceReq": "Astartes"
+    },
+    {
+      "name": "Mist-Tracker Goggles",
+      "price": 12,
+      "description": "Goggles that highlight mist anomalies and hidden paths within 12\".",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Stormweave Brigandine",
+      "price": 45,
+      "description": "Wounds +3, Save +1 vs ranged attacks. Re-roll one failed Save per battle.",
+      "raceReq": "Human"
+    },
+    {
+      "name": "Aetheric Pauldrons",
+      "price": 60,
+      "description": "Wounds +2, reduces damage from psychic attacks by 1.",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Mistforged Cuirass",
+      "price": 75,
+      "description": "Wounds +4, Save +1, Movement -1\". Reduce damage from mist bourne attacks.",
+      "raceReq": "Human"
+    },
+    {
+      "name": "Voidwalker Exosuit",
+      "price": 200,
+      "description": "Wounds +8, Save 3+, Movement +2\". Requires power cell (sold separately).",
+      "raceReq": "Astartes"
+    },
+    {
+      "name": "Eclipse Shroud",
+      "price": 150,
+      "description": "Wounds +2, Save +1. Once per battle: operative is in Cover for 1 turning point only in mist zones.",
+      "raceReq": "Universal"
+    },
+    {
+      "name": "Titanfall Plate",
+      "price": 250,
+      "description": "Wounds +10, Save 3+, but Movement -3\" and cannot Dash.",
+      "raceReq": "Astartes"
+    },
+    {
+      "name": "Mistlord Raiment",
+      "price": 180,
+      "description": "Wounds +5, Save +1. All mist-based healing effects are doubled for wearer (both target and performer).",
+      "raceReq": "Human"
+    }
+  ],
+  "consumables": [
+    {
+      "name": "Mist Compass",
+      "price": 5,
+      "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost."
+    },
+    {
+      "name": "Stimpack",
+      "price": 3,
+      "description": "Single-use injector, restores 1D3 wounds to the user. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+    },
+    {
+      "name": "Mist Grenade",
+      "price": 6,
+      "description": "A: 1 -- RNG: 6\" -- WS: - -- DMG: -/- -- SR: Blast (3\"), Mist Dispersal."
+    },
+    {
+      "name": "Mist Lantern",
+      "price": 7,
+      "description": "A portable light source that pierces through dense mist, illuminating a 6\" radius."
+    },
+    {
+      "name": "Rations Pack",
+      "price": 2,
+      "description": "A week's worth of preserved food and water, essential for long journeys."
+    },
+    {
+      "name": "Medkit",
+      "price": 9,
+      "description": "Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+    },
+    {
+      "name": "Mist-Repellent Spray",
+      "price": 3.5,
+      "description": "Single-use spray that clears mist in a 1\" radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+    },
+    {
+      "name": "Signal Flare",
+      "price": 2.5,
+      "description": "A flare that can be used to signal for help or mark a location, visible through mist."
+    },
+    {
+      "name": "Medical Supplies",
+      "price": 2,
+      "description": "A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities."
+    },
+    {
+      "name": "Lockpick Set",
+      "price": 10,
+      "description": "A set of tools for bypassing locks and traps."
+    },
+    {
+      "name": "Stoutbarrel Ale",
+      "price": 1,
+      "description": "Restores 1D3 wounds but imposes a -1″ movement penalty for the next reposition action the operative performs."
+    },
+    {
+      "name": "Mist Maps",
+      "price": 20,
+      "description": "Grants re-rolls for navigation checks in mist zones."
+    },
+    {
+      "name": "Power Cell",
+      "price": 30,
+      "description": "Single-use energy core required to activate Voidwalker Exosuit for one mission. Provides 6 operational hours before depletion."
+    }
+  ],
+  "ammunition": [
+    {
+      "name": "Standard Bolter Rounds",
+      "price": 2,
+      "quantity": 5,
+      "type": "Bolter",
+      "description": "Standard ammunition for bolter-type weapons."
+    },
+    {
+      "name": "Kraken Penetrator Rounds",
+      "price": 10,
+      "quantity": 5,
+      "type": "Bolter",
+      "description": "High-penetration rounds, SR: Penetrating 1, Piercing 1."
+    },
+    {
+      "name": "Hellfire Rounds",
+      "price": 8,
+      "quantity": 6,
+      "type": "Bolter",
+      "description": "Rounds filled with acidic compounds, SR: Burning, Bleeding."
+    },
+    {
+      "name": "Standard Plasma Cells",
+      "price": 3,
+      "quantity": 8,
+      "type": "Plasma",
+      "description": "Standard energy cells for plasma weapons."
+    },
+    {
+      "name": "Standard Rounds",
+      "price": 3,
+      "quantity": 9,
+      "type": "Pistol/Rifle",
+      "description": "Basic ammunition for gunpowder-based pistols and rifles."
+    },
+    {
+      "name": "Armor-Piercing Rounds",
+      "price": 5,
+      "quantity": 8,
+      "type": "Rifle/Sniper",
+      "description": "Rounds designed to pierce armor, SR: Piercing 1."
+    },
+    {
+      "name": "Hollow-Point Rounds",
+      "price": 3,
+      "quantity": 10,
+      "type": "Pistol",
+      "description": "Rounds that expand on impact, dealing +1 Damage to unarmored targets."
+    },
+    {
+      "name": "Match Grade Rounds",
+      "price": 10,
+      "quantity": 5,
+      "type": "Sniper",
+      "description": "Precision-engineered rounds, Penetrating 1, SR: Devastating 2."
+    },
+    {
+      "name": "Incendiary Rounds",
+      "price": 4,
+      "quantity": 8,
+      "type": "Rifle",
+      "description": "Rounds that ignite on impact, SR: Burning"
+    },
+    {
+      "name": "Fragmentation Rounds",
+      "price": 3,
+      "quantity": 10,
+      "type": "Pistol/Rifle",
+      "description": "Rounds that explode on impact, SR: blast(1\")."
+    }
+  ],
+  "mistEngines": [
+    {
+      "name": "Entry Engine",
+      "price": 100,
+      "optimalConditions": "W:100% M:-",
+      "maxSpeed": "35kmph / 4″",
+      "maxWeight": 80
+    },
+    {
+      "name": "Swiftwind Engine",
+      "price": 500,
+      "optimalConditions": "W:40%  M: light",
+      "maxSpeed": "120kmph / 12″",
+      "maxWeight": 100
+    },
+    {
+      "name": "Endurance Engine",
+      "price": 450,
+      "optimalConditions": "W:70%  M: light/medium",
+      "maxSpeed": "60kmph / 7″",
+      "maxWeight": 300
+    },
+    {
+      "name": "Cargo Hauler Engine",
+      "price": 400,
+      "optimalConditions": "W:90%  M: medium",
+      "maxSpeed": "35kmph / 4″",
+      "maxWeight": 600
+    },
+    {
+      "name": "Balanced Engine",
+      "price": 850,
+      "optimalConditions": "W:60%  M:-",
+      "maxSpeed": "90 kmph / 9″",
+      "maxWeight": 175
+    }
+  ],
+  "shipHulls": [
+    {
+      "name": "Entry Hull",
+      "price": 80,
+      "weight": 20,
+      "shipWounds": 20,
+      "defense": 0,
+      "maxCargo": 50
+    },
+    {
+      "name": "Swiftwind Hull",
+      "price": 800,
+      "weight": 20,
+      "shipWounds": 40,
+      "defense": 2,
+      "maxCargo": 60
+    },
+    {
+      "name": "Endurance Hull",
+      "price": 750,
+      "weight": 150,
+      "shipWounds": 80,
+      "defense": 4,
+      "maxCargo": 100
+    },
+    {
+      "name": "Cargo Hauler Hull",
+      "price": 700,
+      "weight": 200,
+      "shipWounds": 60,
+      "defense": 3,
+      "maxCargo": 200
+    },
+    {
+      "name": "Fortified Hull",
+      "price": 900,
+      "weight": 350,
+      "shipWounds": 120,
+      "defense": 5,
+      "maxCargo": 80
+    }
+  ],
+  "cannons": [
+    {
+      "name": "Light Deck Cannon",
+      "price": 30,
+      "ammoType": "Standard Cannonballs",
+      "weight": 15
+    },
+    {
+      "name": "Heavy Broadside",
+      "price": 50,
+      "ammoType": "Explosive Cannonballs",
+      "weight": 40
+    },
+    {
+      "name": "Mistfire Cannon",
+      "price": 60,
+      "ammoType": "Mist-Infused Ammo",
+      "weight": 35
+    },
+    {
+      "name": "Plasma Cannon",
+      "price": 700,
+      "ammoType": "Plasma Charges",
+      "weight": 60
+    }
+  ],
+  "cannonballs": [
+    {
+      "name": "Standard Cannonballs",
+      "price": 50,
+      "damage": "4/6"
+    },
+    {
+      "name": "Explosive Cannonballs",
+      "price": 100,
+      "damage": "8/10"
+    },
+    {
+      "name": "Mist-Infused Ammo",
+      "price": 150,
+      "damage": "12/15"
+    },
+    {
+      "name": "Plasma Charges",
+      "price": 200,
+      "damage": "20/25"
+    }
+  ]
+}
