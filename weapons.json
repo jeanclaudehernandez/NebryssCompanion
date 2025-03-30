@@ -29,7 +29,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Rending (+2)",
+          "specialRules": "Rending",
           "body": "Human"
         },
         {
@@ -40,7 +40,7 @@
             "min": 3,
             "max": 5
           },
-          "specialRules": "Rending (+2)",
+          "specialRules": "Rending",
           "body": "Astartes"
         }
       ]
@@ -57,7 +57,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Balanced (+2), mist-accuracy",
+          "specialRules": "Balanced, mist-accuracy",
           "body": "Human"
         }
       ]
@@ -74,7 +74,7 @@
             "min": 2,
             "max": 4
           },
-          "specialRules": "Stun (+1), Ceaseless (+2)",
+          "specialRules": "Stun, Ceaseless",
           "body": "Universal"
         }
       ]
@@ -108,7 +108,7 @@
             "min": 2,
             "max": 3
           },
-          "specialRules": "Rending (+2), Agile (+1)",
+          "specialRules": "Rending, Agile",
           "body": "Human"
         }
       ]
@@ -125,7 +125,7 @@
             "min": 5,
             "max": 6
           },
-          "specialRules": "Brutal (+2), shockwave 1\"(+3), Fixed Result (-1)",
+          "specialRules": "Brutal , shockwave 1 inch, Fixed Result ",
           "body": "Astartes"
         }
       ]
@@ -142,7 +142,7 @@
             "min": 4,
             "max": 5
           },
-          "specialRules": "Rending (+2), Balanced (+1)",
+          "specialRules": "Rending , Balanced ",
           "body": "Astartes"
         }
       ]
@@ -159,7 +159,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Rending (+2)",
+          "specialRules": "Rending ",
           "body": "Astartes"
         }
       ]
@@ -193,7 +193,7 @@
             "min": 1,
             "max": 2
           },
-          "specialRules": "Ceaseless (+1)",
+          "specialRules": "Ceaseless ",
           "body": "Murloc"
         }
       ]
@@ -210,7 +210,7 @@
             "min": 2,
             "max": 3
           },
-          "specialRules": "Punishing (+2)",
+          "specialRules": "Punishing ",
           "body": "Murloc"
         }
       ]
@@ -227,7 +227,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Lethal 5+ (+2), Shock (+2)",
+          "specialRules": "Lethal 5+ , Shock ",
           "body": "Murloc"
         }
       ]
@@ -261,7 +261,7 @@
             "min": 5,
             "max": 7
           },
-          "specialRules": "Brutal (+2), Rending (+2)",
+          "specialRules": "Brutal , Rending ",
           "body": "Astartes"
         }
       ]
@@ -295,7 +295,7 @@
             "min": 2,
             "max": 3
           },
-          "specialRules": "Quick Assault*",
+          "specialRules": "Quick Assault",
           "body": "Human"
         }
       ]
@@ -312,7 +312,7 @@
             "min": 2,
             "max": 3
           },
-          "specialRules": "Rending (+2)",
+          "specialRules": "Rending ",
           "body": "Fellgor"
         }
       ]
@@ -329,7 +329,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Rending (+2)",
+          "specialRules": "Rending ",
           "body": "Aetherwing"
         }
       ]
@@ -346,7 +346,7 @@
             "min": 4,
             "max": 5
           },
-          "specialRules": "Brutal (+2)",
+          "specialRules": "Brutal ",
           "body": "Aetherwing"
         }
       ]
@@ -363,7 +363,7 @@
             "min": 2,
             "max": 3
           },
-          "specialRules": "Lethal 5+ (+2)",
+          "specialRules": "Lethal 5+ ",
           "body": "Screamer"
         }
       ]
@@ -380,7 +380,7 @@
             "min": 3,
             "max": 4
           },
-          "specialRules": "Brutal (+2)",
+          "specialRules": "Brutal ",
           "body": "Mist Golem"
         }
       ]
@@ -393,7 +393,7 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "inf",
+          "rng": null,
           "attacks": 3,
           "ws": "4+",
           "damage": {
@@ -411,7 +411,7 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "8″",
+          "rng": 8,
           "attacks": 4,
           "ws": "4+",
           "damage": {
@@ -429,14 +429,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "10\"",
+          "rng": 10,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Lethal 5+ (+2), Mist-Accuracy",
+          "specialRules": "Lethal 5+ , Mist-Accuracy",
           "body": "Human"
         }
       ]
@@ -447,14 +447,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "inf",
+          "rng": null,
           "attacks": 3,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Saturate (+1)",
+          "specialRules": "Saturate ",
           "body": "Human"
         }
       ]
@@ -465,14 +465,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "inf\"",
+          "rng": null,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Balanced (+2)",
+          "specialRules": "Balanced ",
           "body": "Human"
         }
       ]
@@ -483,14 +483,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "8\"",
+          "rng": 8,
           "attacks": 3,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Piercing 1 (+2)",
+          "specialRules": "Piercing 1 ",
           "body": "Astartes"
         }
       ]
@@ -501,26 +501,26 @@
       "profiles": [
         {
           "profileName": "standard",
-          "rng": "inf",
+          "rng": null,
           "attacks": 2,
           "ws": "4+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Hot (-1)",
+          "specialRules": "Hot ",
           "body": "Astartes"
         },
         {
-          "profileName": "over change",
-          "rng": "inf",
+          "profileName": "over charge",
+          "rng": null,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Hot (-1), piercing 1 (+2), break",
+          "specialRules": "Hot , piercing 1 , break",
           "body": "Astartes"
         }
       ]
@@ -531,26 +531,26 @@
       "profiles": [
         {
           "profileName": "standard",
-          "rng": "8″",
+          "rng": 8,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 5
           },
-          "specialRules": "Piercing 1 (+2), Hot (−1)",
+          "specialRules": "Piercing 1",
           "body": "Universal"
         },
         {
           "profileName": "super charge",
-          "rng": "12\"",
+          "rng": 12,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Piercing 1(+2) Hot (−1), Lethal 5+ (+2)",
+          "specialRules": "Piercing 1, Lethal 5+ ",
           "body": "Astartes"
         }
       ]
@@ -561,14 +561,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "14″",
+          "rng": 14,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Relentless (+2)",
+          "specialRules": "Relentless ",
           "body": "Astartes"
         }
       ]
@@ -579,26 +579,26 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "6″",
+          "rng": 6,
           "attacks": 3,
           "ws": "3+",
           "damage": {
             "min": 5,
             "max": 6
           },
-          "specialRules": "Devastating 2 (+2), Piercing 1 (+2)",
+          "specialRules": "Devastating 2 , Piercing 1 ",
           "body": "Astartes"
         },
         {
           "profileName": "heavy",
-          "rng": "6″",
+          "rng": 6,
           "attacks": 3,
           "ws": "3+",
           "damage": {
             "min": 5,
             "max": 6
           },
-          "specialRules": "Devastating 2 (+2), Piercing 1 (+2), heavy(-1)",
+          "specialRules": "Devastating 2, Piercing 1, heavy",
           "body": "Human"
         }
       ]
@@ -609,26 +609,26 @@
       "profiles": [
         {
           "profileName": "mobile",
-          "rng": "10″",
+          "rng": 10,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Piercing Crits 1 (+2)",
+          "specialRules": "Piercing Crits 1",
           "body": "Astartes"
         },
         {
           "profileName": "heavy",
-          "rng": "14\"",
+          "rng": 14,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 5
           },
-          "specialRules": "Piercing 1 (+2), Lethal 5+ (+2), Heavy (−1)",
+          "specialRules": "Piercing 1, Lethal 5+, Heavy",
           "body": "Astartes"
         }
       ]
@@ -639,14 +639,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12\"",
+          "rng": 12,
           "attacks": 2,
           "ws": "4+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Drag 3\", Heavy (-1)",
+          "specialRules": "Drag 3 inches, Heavy ",
           "body": "Human"
         }
       ]
@@ -657,14 +657,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "14\"",
+          "rng": 14,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 2,
             "max": 4
           },
-          "specialRules": "Ceaseless (+2)",
+          "specialRules": "Ceaseless",
           "body": "Human"
         }
       ]
@@ -675,14 +675,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "inf",
+          "rng": null,
           "attacks": 3,
           "ws": "2+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Devastating 2 (+2), Silent (+1), Heavy (-1)",
+          "specialRules": "Devastating 2, Silent, Heavy",
           "body": "Human"
         }
       ]
@@ -693,14 +693,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12\"",
+          "rng": 12,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Lethal 5+ (+2), Burning (+1), Hot (-1)",
+          "specialRules": "Lethal 5+, Burning, Hot",
           "body": "Astartes"
         }
       ]
@@ -711,14 +711,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "inf",
+          "rng": null,
           "attacks": 3,
           "ws": "2+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Piercing 1 (+2), Silent (+1), Mist-Accuracy",
+          "specialRules": "Piercing 1 , Silent , Mist-Accuracy",
           "body": "Human"
         }
       ]
@@ -729,14 +729,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "18\"",
+          "rng": null,
           "attacks": 2,
           "ws": "3+",
           "damage": {
             "min": 5,
             "max": 7
           },
-          "specialRules": "Devastating 3 (+3), Piercing 2 (+3), Heavy (-1)",
+          "specialRules": "Devastating 3, Piercing 2, Heavy",
           "body": "Astartes"
         }
       ]
@@ -747,14 +747,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "6″",
+          "rng": 6,
           "attacks": 2,
           "ws": "5+",
           "damage": {
             "min": 1,
             "max": 2
           },
-          "specialRules": "Entangle (+1)",
+          "specialRules": "Entangle ",
           "body": "Universal"
         }
       ]
@@ -765,7 +765,7 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "8″",
+          "rng": 8,
           "attacks": 4,
           "ws": "5+",
           "damage": {
@@ -783,14 +783,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12″",
+          "rng": 12,
           "attacks": 3,
           "ws": "5+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Blast (1″) (+1)",
+          "specialRules": "Blast 1 inch ",
           "body": "Spell -Mist"
         }
       ]
@@ -801,14 +801,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "6″",
+          "rng": 6,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Blast (1″) (+1), Ceaseless (+2)",
+          "specialRules": "Blast 1 inch , Ceaseless ",
           "body": "Spell -Mist"
         }
       ]
@@ -819,14 +819,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12″",
+          "rng": 12,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Blast (1″) (+1), Push (2″) (+1)",
+          "specialRules": "Blast 1 inch , Push 2 inches ",
           "body": "Spell -Mist"
         }
       ]
@@ -837,14 +837,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "6″",
+          "rng": 6,
           "attacks": 2,
           "ws": "4+",
           "damage": {
             "min": 1,
             "max": 2
           },
-          "specialRules": "Psychic*, Ceaseless (+2)",
+          "specialRules": "Psychic, Ceaseless ",
           "body": "Spell -Screamer"
         }
       ]
@@ -855,14 +855,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12″",
+          "rng": 12,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 3,
             "max": 4
           },
-          "specialRules": "Psychic*, Blast (2″) (+1)",
+          "specialRules": "Psychic, Blast 2 inches ",
           "body": "Spell -Psyker"
         }
       ]
@@ -873,26 +873,26 @@
       "profiles": [
         {
           "profileName": "standard",
-          "rng": "8″",
+          "rng": 8,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 3,
             "max": 5
           },
-          "specialRules": "Balanced (+2), Piercing 1 (+2)",
+          "specialRules": "Balanced, Piercing 1",
           "body": "Astartes"
         },
         {
           "profileName": "super charge",
-          "rng": "10″",
+          "rng": 10,
           "attacks": 4,
           "ws": "3+",
           "damage": {
             "min": 4,
             "max": 5
           },
-          "specialRules": "Balanced (+2), Piercing 1 (+2), Hot (−1)",
+          "specialRules": "Balanced , Piercing 1 , Hot",
           "body": "Astartes"
         }
       ]
@@ -903,7 +903,7 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "3″",
+          "rng": 3,
           "attacks": 3,
           "ws": "4+",
           "damage": {
@@ -921,14 +921,14 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "12″",
+          "rng": 12,
           "attacks": 3,
           "ws": "4+",
           "damage": {
             "min": 2,
             "max": 3
           },
-          "specialRules": "Blast (2″)(+2), PSYCHIC, Hot (-1)",
+          "specialRules": "Blast 2 inches, Psychic, Hot ",
           "body": "Spell -Psyker"
         }
       ]
@@ -939,7 +939,7 @@
       "profiles": [
         {
           "profileName": "default",
-          "rng": "10″",
+          "rng": 10,
           "attacks": 3,
           "ws": "4+",
           "damage": {
