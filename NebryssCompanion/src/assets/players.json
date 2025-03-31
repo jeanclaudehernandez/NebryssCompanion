@@ -7,8 +7,10 @@
         "Movement": 6,
         "Wounds": 6,
         "Save": "5+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "human"]
       },
+      
       "weapons": [23, 1],
       "abilities": [
         {
@@ -50,7 +52,8 @@
         "Movement": 6,
         "Wounds": 9,
         "Save": "5+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "human"]
       },
       "weapons": [18, 50],
       "abilities": [
@@ -93,7 +96,8 @@
         "Movement": 7,
         "Wounds": 6,
         "Save": "5+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "human"]
       },
       "weapons": [17, 24],
       "abilities": [
@@ -129,7 +133,8 @@
         "Movement": 5,
         "Wounds": 10,
         "Save": "5+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "astartes"]
       },
       "weapons": [16, 49],
       "abilities": [
@@ -190,7 +195,8 @@
         "Movement": 4,
         "Wounds": 11,
         "Save": "4+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "golem"]
       },
       "weapons": [22, 48],
       "abilities": [
@@ -226,7 +232,8 @@
         "Movement": 5,
         "Wounds": 10,
         "Save": "4+",
-        "APL": 2
+        "APL": 2,
+        "body": ["universal", "astartes"]
       },
       "weapons": [51, 52],
       "abilities": [
