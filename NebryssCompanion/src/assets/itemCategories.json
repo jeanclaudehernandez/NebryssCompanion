@@ -1,0 +1,58 @@
+[
+    { 
+      "id": 1,
+      "name": "Armor", 
+      "key": "armor",
+      "headers": ["Name", "Price", "Description", "Race Requirement"],
+      "keys": ["name", "price", "description", "raceReq"]
+    },
+    { 
+      "id": 2,
+      "name": "Consumables", 
+      "key": "consumables",
+      "headers": ["Name", "Price", "Description"],
+      "keys": ["name", "price", "description"]
+    },
+    { 
+      "id": 3,
+      "name": "Ammunition", 
+      "key": "ammunition",
+      "headers": ["Name", "Price", "Quantity", "Type", "Description"],
+      "keys": ["name", "price", "quantity", "type", "description"]
+    },
+    { 
+      "id": 4,
+      "name": "Mist Engines", 
+      "key": "mistEngines",
+      "headers": ["Name", "Price", "Optimal Conditions", "Max Speed", "Max Weight"],
+      "keys": ["name", "price", "optimalConditions", "maxSpeed", "maxWeight"]
+    },
+    { 
+      "id": 5,
+      "name": "Ship Hulls", 
+      "key": "shipHulls",
+      "headers": ["Name", "Price", "Weight", "Ship Wounds", "Defense", "Max Cargo"],
+      "keys": ["name", "price", "weight", "shipWounds", "defense", "maxCargo"]
+    },
+    { 
+      "id": 6,
+      "name": "Cannons", 
+      "key": "cannons",
+      "headers": ["Name", "Price", "Ammo Type", "Weight"],
+      "keys": ["name", "price", "ammoType", "weight"]
+    },
+    { 
+      "id": 7,
+      "name": "Cannonballs", 
+      "key": "cannonballs",
+      "headers": ["Name", "Price", "Damage"],
+      "keys": ["name", "price", "damage"]
+    },
+    { 
+      "id": 8,
+      "name": "Deployables", 
+      "key": "deployables",
+      "headers": ["Name", "Type", "Description"],
+      "keys": ["name", "type", "description"]
+    }
+]

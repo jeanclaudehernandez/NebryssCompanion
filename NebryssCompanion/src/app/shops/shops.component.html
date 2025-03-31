@@ -1,0 +1,29 @@
+<div class="shops-container">
+    <h2>Shops</h2>
+    <div *ngFor="let shop of shops" class="shop-card">
+      <h3>{{ shop.name }}</h3>
+      <p class="location">{{ shop.location }}</p>
+      <p class="owner">Owner ID: {{ shop.owner }}</p>
+      
+      <div *ngFor="let categoryId of shop.categories">
+        @let category = findCategory(categoryId);
+        
+        <app-generic-table 
+          [title]="category.name"
+          [data]="getShopItemsWithPrices(shop, category.key) || []"
+          [headers]="category.headers"
+          [headerKeys]="category.keys">
+        </app-generic-table>
+      </div>
+      
+        <div *ngIf="hasWeapons(shop)" class="weapons-section">
+            <h4>Weapons</h4>
+            <app-weapon-table 
+                [weaponIds]="getWeaponIds(shop)"
+                [weaponsData]="weaponsData"
+                [weaponRulesData]="weaponRulesData"
+                [displayPrice]="true">
+            </app-weapon-table>
+        </div>
+    </div>
+</div>

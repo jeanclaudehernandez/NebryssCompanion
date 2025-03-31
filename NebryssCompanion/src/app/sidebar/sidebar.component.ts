@@ -9,25 +9,15 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops'>();
   isOpen = false;
 
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }
 
-  showPlayers() {
-    this.viewChange.emit('players');
-    this.isOpen = false;
-  }
-
-  showBestiary() {
-    this.viewChange.emit('bestiary');
-    this.isOpen = false;
-  }
-
-  showItems() {
-    this.viewChange.emit('items');
-    this.isOpen = false;
+  changeView(view: 'players' | 'bestiary' | 'items' | 'shops') {
+    this.viewChange.emit(view);
+    this.toggleMenu();
   }
 }

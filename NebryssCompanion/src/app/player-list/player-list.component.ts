@@ -30,6 +30,7 @@ export class PlayerListComponent implements OnInit {
       this.weaponsData = data.weapons;
       this.itemsData = data.items;
       this.weaponRulesData = data.weaponRules;
+      console.log(this.players);
     });
   }
 

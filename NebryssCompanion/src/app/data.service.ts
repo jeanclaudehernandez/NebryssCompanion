@@ -11,11 +11,15 @@ export class DataService {
   private itemsUrl = 'assets/items.json';
   private weaponRulesUrl = 'assets/weaponRules.json';
   private bestiaryUrl = 'assets/bestiary.json';
+  private shopsUrl = 'assets/shops.json';
+  private itemCategoriesUrl = 'assets/itemCategories.json';
   private players: any[] = [];
   private weapons: any = {};
   private bestiary: any[] = [];
   private weaponsRules: any[] = [];
   private items: any = {};
+  private shops: any[] = [];
+  private itemCategories: any[] = [];
 
   constructor(private http: HttpClient) { }
 
@@ -24,6 +28,13 @@ export class DataService {
       return of(this.players)
     }
     return this.http.get<any[]>(this.playersUrl).pipe(tap((result) => this.players = result));
+  }
+
+  getitemCategories(): Observable<any[]> {
+    if(this.itemCategories.length) {
+      return of(this.itemCategories)
+    }
+    return this.http.get<any[]>(this.itemCategoriesUrl).pipe(tap((result) => this.itemCategories = result));
   }
 
   getBestiary(): Observable<any[]> {
@@ -54,19 +65,40 @@ export class DataService {
     return this.http.get<any[]>(this.weaponRulesUrl).pipe(tap((result) => this.weaponsRules = result));
   }
 
+  getShops(): Observable<any[]> {
+    if (this.shops.length) return of(this.shops);
+    return this.http.get<any[]>(this.shopsUrl).pipe(tap(result => this.shops = result));
+  }
+
+  getShopWeapons(shopId: string): any[] {
+    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    if(!shop) { return [] }
+    return shop.items.filter((item: any) => item.type === 'weapon')
+  }
+
+  getShopItems(shopId: string): any[] {
+    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    if(!shop) { return [] }
+    return shop.items.filter((item: any) => item.type === 'item')
+  }
+
   getAllData(): Observable<{
     players: any[],
     weapons: any,
     items: any,
     weaponRules: any[],
-    bestiary: any[]
+    bestiary: any[],
+    shops: any[],
+    itemCategories: any[]
   }> {
     return forkJoin({
       players: this.getPlayers(),
       weapons: this.getWeapons(),
       items: this.getItems(),
       weaponRules: this.getWeaponRules(),
-      bestiary: this.getBestiary()
+      bestiary: this.getBestiary(),
+      shops: this.getShops(),
+      itemCategories: this.getitemCategories()
     });
   }
 
@@ -79,9 +111,10 @@ export class DataService {
     if (!this.items) return null;
     
     // Search through all item categories
-    for (const category of Object.values(this.items)) {
+    for (const categoryKey in this.items) {
+      const category = this.items[categoryKey];
       const foundItem = (category as any[]).find((item: any) => item.id === id);
-      if (foundItem) return foundItem;
+      if (foundItem) return {...foundItem, itemCategory: categoryKey};
     }
     return null;
   }

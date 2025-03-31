@@ -7,6 +7,7 @@ import { DataService } from './data.service';
 import { BestiaryComponent } from './bestiary/bestiary.component';
 import { FormsModule } from '@angular/forms';
 import { ItemsComponent } from './items/items.component';
+import { ShopsComponent } from './shops/shops.component';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +19,8 @@ import { ItemsComponent } from './items/items.component';
     PlayerListComponent,
     SidebarComponent,
     FormsModule,
-    BestiaryComponent
+    BestiaryComponent,
+    ShopsComponent
   ],
   template: `
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
@@ -27,16 +29,17 @@ import { ItemsComponent } from './items/items.component';
       <app-player-list *ngIf="currentView === 'players'"></app-player-list>
       <app-bestiary *ngIf="currentView === 'bestiary'"></app-bestiary>
       <app-items *ngIf="currentView === 'items'"></app-items>
+      <app-shops *ngIf="currentView === 'shops'"></app-shops>
     </div>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' = 'players';
 
   constructor() {}
 
-  onViewChange(view: 'players' | 'bestiary' | 'items') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops') {
     this.currentView = view;
   }
 }
