@@ -136,7 +136,7 @@
         "APL": 2,
         "body": ["universal", "astartes"]
       },
-      "weapons": [16, 49],
+      "weapons": [5, 49],
       "abilities": [
         {
           "name": "Fractal Visions",

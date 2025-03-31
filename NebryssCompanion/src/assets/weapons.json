@@ -82,10 +82,18 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": 3,
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 12, "modValue": null }],
-          "body": "Fellgor"
+          "body": "human"
+        },
+        {
+          "profileName": "astartes",
+          "attacks": 4,
+          "ws": 3,
+          "damage": { "min": 2, "max": 3 },
+          "specialRules": [],
+          "body": "astartes"
         }
       ]
     },
@@ -170,7 +178,7 @@
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Murloc"
+          "body": "universal"
         }
       ]
     },
@@ -185,7 +193,7 @@
           "ws": 4,
           "damage": { "min": 1, "max": 2 },
           "specialRules": [{ "ruleId": 18, "modValue": null }],
-          "body": "Murloc"
+          "body": "universal"
         }
       ]
     },
@@ -200,7 +208,7 @@
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 20, "modValue": null }],
-          "body": "Murloc"
+          "body": "universal"
         }
       ]
     },
@@ -218,7 +226,7 @@
             { "ruleId": 21, "modValue": 5 },
             { "ruleId": 22, "modValue": null }
           ],
-          "body": "Murloc"
+          "body": "human"
         }
       ]
     },
@@ -256,21 +264,6 @@
       ]
     },
     {
-      "id": 16,
-      "name": "Mist-Warp Staff",
-      "price": 0,
-      "profiles": [
-        {
-          "profileName": "",
-          "attacks": 4,
-          "ws": 3,
-          "damage": { "min": 2, "max": 3 },
-          "specialRules": [],
-          "body": "astartes"
-        }
-      ]
-    },
-    {
       "id": 17,
       "name": "Leg Blade",
       "price": 0,
@@ -296,7 +289,7 @@
           "ws": 3,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
-          "body": "Fellgor"
+          "body": "fellgor"
         }
       ]
     },
