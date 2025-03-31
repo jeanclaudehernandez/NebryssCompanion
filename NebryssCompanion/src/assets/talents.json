@@ -1,0 +1,128 @@
+[
+    {
+        "id": "combat",
+        "name": "Combat Talents",
+        "description": "Offensive enhancements",
+        "talents": [{
+            "id": "c1",
+            "name": "Brutal Strikes",
+            "cost": 1,
+            "effect": "Critical hits in melee deal +1 damage",
+            "prModifier": 1,
+            "requirements": []
+        }, {
+            "id": "c2",
+            "name": "Overwatch Tactics",
+            "cost": 3,
+            "effect": "After killing an enemy with a shoot action, reposition costs 0AP during this activation, limit movement to 4 inches",
+            "prModifier": null,
+            "requirements": []
+        }, {
+            "id": "c3",
+            "name": "Chain Killer",
+            "cost": 5,
+            "effect": "gain 1AP for the rest of the battle, after eliminating 3+ enemies in a single activation",
+            "prModifier": 2,
+            "stackLimit": 1,
+            "requirements": []
+        }, {
+            "id": "c4",
+            "name": "Trained eye",
+            "cost": 2,
+            "effect": "Improve by 1 the WS of ranged weapons of a selected type",
+            "prModifier": 2,
+            "requirements": []
+        }, {
+            "id": "c5",
+            "name": "Obliterator",
+            "cost": 2,
+            "effect": "Weapons with torrent or blast rules gain lethal 5+",
+            "prModifier": 2,
+            "requirements": []
+        }]
+    },{
+        "id": "magic",
+        "name": "Warp Talents",
+        "description": "Warp and mist manipulation talents",
+        "talents": [{
+            "id": "m1",
+            "name": "Mist-Sight",
+            "cost": 1,
+            "effect": "Ignore Obscured penalties in light mist zones",
+            "prModifier": null,
+            "requirements": []
+        },{
+            "id": "m2",
+            "name": "Addept Magician",
+            "cost": 2,
+            "effect": "Improve WS of PSYCHIC weapons by 1",
+            "prModifier": 2,
+            "requirements": ["m1"]
+        },{
+            "id": "m3",
+            "name": "Ethreal Support",
+            "cost": 1,
+            "effect": "Once per battle: Add +1d3 to a healing PSYCHIC ability",
+            "prModifier": 2,
+            "requirements": ["m1"]
+        }]
+    },{
+        "id": "support",
+        "name": "Support Talents",
+        "description": "Healing and team coordination",
+        "talents": [{
+            "id": "s1",
+            "name": "Field Medic",
+            "cost": 1,
+            "effect": "Add +1 to all healing actions (except psychic)",
+            "prModifier": null,
+            "requirements": []
+        }, {
+            "id": "s2",
+            "name": "Shared Resolve",
+            "cost": 2,
+            "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within 3 inches may re-roll 1 defense die per Turning Point",
+            "prModifier": 1,
+            "requirements": []
+        }, {
+            "id": "s3",
+            "name": "Rallying Cry",
+            "cost": 3,
+            "effect": "Once Per Battle: Remove 1 altered state from all allies within 3 inches (must remove the same state from all allies)",
+            "prModifier": 2,
+            "requirements": ["s2"]
+        }]
+    },{
+        "id": "attributeUpgrades",
+        "description": "Characters grow in strength",
+        "talents": [{
+            "id": "att1",
+            "name": "+1 Movement",
+            "cost": 2,
+            "effect": "+1 inch to Movement characteristic",
+            "maxStacks": 3,
+            "prModifier": null
+        }, {
+            "id": "att2",
+            "name": "+2 Wounds",
+            "cost": 3,
+            "effect": "+2 Wounds",
+            "maxStacks": 2,
+            "prModifier": null
+        }, {
+            "id": "att3",
+            "name": "-1 Save",
+            "cost": 4,
+            "effect": "Improve Save characteristic by 1",
+            "maxStacks": 1,
+            "prModifier": 2
+        }, {
+            "id": "att4",
+            "name": "+1 APL",
+            "cost": 5,
+            "effect": "Permanent +1 Action Point Limit",
+            "maxStacks": 1,
+            "prModifier": 7
+        }]
+    }
+]
