@@ -1,0 +1,33 @@
+<!-- bestiary.component.html -->
+<div class="bestiary-select-container">
+    <h2>Select Bestiary Creature</h2>
+
+    <div class="filter-group">
+        <label>Faction:</label>
+        <select [(ngModel)]="selectedFaction" (change)="onFactionSelected()">
+        <option [value]="null">All Factions</option>
+        <option *ngFor="let faction of factions" [value]="faction">
+            {{ faction }}
+        </option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Creature:</label>
+        <select [(ngModel)]="selectedCreatureId" (change)="onCreatureSelected()">
+        <option [value]="null">Select a creature</option>
+        <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
+            {{ creature.name }} ({{ creature.subgroup }})
+        </option>
+        </select>
+    </div>
+</div>
+  
+<app-player-detail 
+    *ngIf="selectedCreature"
+    [character]="selectedCreature"
+    [weaponsData]="weaponsData"
+    [characterType]="'mob'"
+    [itemsData]="itemsData"
+    [weaponRulesData]="weaponRulesData">
+</app-player-detail>
