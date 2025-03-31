@@ -1,99 +1,71 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, forkJoin, of, tap } from 'rxjs';
+import playersData from '../assets/players.json';
+import weaponsData from '../assets/weapons.json';
+import itemsData from '../assets/items.json';
+import weaponRulesData from '../assets/weaponRules.json';
+import bestiaryData from '../assets/bestiary.json';
+import shopsData from '../assets/shops.json';
+import itemCategoriesData from '../assets/itemCategories.json';
+import npcsData from '../assets/npcs.json';
+import loreData from '../assets/lore.json';
+import talentsData from '../assets/talents.json';
+import { Observable, of } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root' // This makes it available application-wide
+  providedIn: 'root'
 })
 export class DataService {
-  private playersUrl = 'assets/players.json';
-  private weaponsUrl = 'assets/weapons.json';
-  private itemsUrl = 'assets/items.json';
-  private weaponRulesUrl = 'assets/weaponRules.json';
-  private bestiaryUrl = 'assets/bestiary.json';
-  private shopsUrl = 'assets/shops.json';
-  private itemCategoriesUrl = 'assets/itemCategories.json';
-  private npcsUrl = 'assets/npcs.json';
-  private loreUrl = 'assets/lore.json';
-  private talentsUrl = 'assets/talents.json';
-  private players: any[] = [];
-  private weapons: any = {};
-  private bestiary: any[] = [];
-  private weaponsRules: any[] = [];
-  private items: any = {};
-  private shops: any[] = [];
-  private itemCategories: any[] = [];
-  private npcs: any[] = [];
-  private lore: any = {};
-  private talents: any[] = [];
+  private players: any[] = playersData;
+  private weapons: any = weaponsData;
+  private bestiary: any[] = bestiaryData;
+  private weaponsRules: any[] = weaponRulesData;
+  private items: any = itemsData;
+  private shops: any[] = shopsData;
+  private itemCategories: any[] = itemCategoriesData;
+  private npcs: any[] = npcsData;
+  private lore: any = loreData;
+  private talents: any[] = talentsData;
 
-  constructor(private http: HttpClient) { }
+  constructor() { }
 
   getPlayers(): Observable<any[]> {
-    if(this.players.length) {
-      return of(this.players)
-    }
-    return this.http.get<any[]>(this.playersUrl).pipe(tap((result) => this.players = result));
+    return of(this.players);
   }
 
   getNpcs(): Observable<any[]> {
-    if(this.npcs.length) {
-      return of(this.npcs)
-    }
-    return this.http.get<any[]>(this.npcsUrl).pipe(tap((result) => this.npcs = result));
+    return of(this.npcs);
   }
 
-
   getitemCategories(): Observable<any[]> {
-    if(this.itemCategories.length) {
-      return of(this.itemCategories)
-    }
-    return this.http.get<any[]>(this.itemCategoriesUrl).pipe(tap((result) => this.itemCategories = result));
+    return of(this.itemCategories);
   }
 
   getBestiary(): Observable<any[]> {
-    if(this.bestiary.length) {
-      return of(this.bestiary)
-    }
-    return this.http.get<any[]>(this.bestiaryUrl).pipe(tap((result) => this.bestiary = result));
+    return of(this.bestiary);
   }
 
   getWeapons(): Observable<any> {
-    if(Object.keys(this.weapons).length) {
-      return of(this.weapons)
-    }
-    return this.http.get<any>(this.weaponsUrl).pipe(tap((result) => this.weapons = result));
+    return of(this.weapons);
   }
 
   getItems(): Observable<any> {
-    if(Object.keys(this.items).length) {
-      return of(this.items)
-    }
-    return this.http.get<any>(this.itemsUrl).pipe(tap((result) => this.items = result));
+    return of(this.items);
   }
 
   getWeaponRules(): Observable<any[]> {
-    if(this.weaponsRules.length) {
-      return of(this.weaponsRules)
-    }
-    return this.http.get<any[]>(this.weaponRulesUrl).pipe(tap((result) => this.weaponsRules = result));
+    return of(this.weaponsRules);
   }
 
   getShops(): Observable<any[]> {
-    if (this.shops.length) return of(this.shops);
-    return this.http.get<any[]>(this.shopsUrl).pipe(tap(result => this.shops = result));
+    return of(this.shops);
   }
 
   getLore(): Observable<any> {
-    if (Object.keys(this.lore).length) { return of(this.lore)}
-    return this.http.get<any[]>(this.loreUrl).pipe(tap(result => this.lore = result));
+    return of(this.lore);
   }
 
   getTalents(): Observable<any[]> {
-    if(this.talents.length) {
-      return of(this.talents);
-    }
-    return this.http.get<any[]>(this.talentsUrl).pipe(tap((result) => this.talents = result));
+    return of(this.talents);
   }
 
   getAllData(): Observable<{
@@ -106,15 +78,15 @@ export class DataService {
     shops: any[],
     itemCategories: any[]
   }> {
-    return forkJoin({
-      players: this.getPlayers(),
-      npcs: this.getNpcs(),
-      weapons: this.getWeapons(),
-      items: this.getItems(),
-      weaponRules: this.getWeaponRules(),
-      bestiary: this.getBestiary(),
-      shops: this.getShops(),
-      itemCategories: this.getitemCategories()
+    return of({
+      players: this.players,
+      npcs: this.npcs,
+      weapons: this.weapons,
+      items: this.items,
+      weaponRules: this.weaponsRules,
+      bestiary: this.bestiary,
+      shops: this.shops,
+      itemCategories: this.itemCategories
     });
   }
 
@@ -137,23 +109,23 @@ export class DataService {
 
   getBestiaryById(id: number): any {
     if(this.bestiary.length === 0) return null;
-    return this.bestiary.filter((beast) => beast.id === id)[0] || null;
+    return this.bestiary.find((beast) => beast.id === id) || null;
   }
 
   getShopWeapons(shopId: number): any[] {
-    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    const shop = this.shops.find((shop) => shop.id === shopId);
     if(!shop) { return [] }
-    return shop.items.filter((item: any) => item.type === 'weapon')
+    return shop.items.filter((item: any) => item.type === 'weapon');
   }
 
   getShopItems(shopId: number): any[] {
-    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    const shop = this.shops.find((shop) => shop.id === shopId);
     if(!shop) { return [] }
-    return shop.items.filter((item: any) => item.type === 'item')
+    return shop.items.filter((item: any) => item.type === 'item');
   }
 
   getNpcByd(id: number): any {
-    return this.npcs.filter((npc) => npc.id == id)[0];
+    return this.npcs.find((npc) => npc.id == id);
   }
 
   getTalentById(id: string): any {

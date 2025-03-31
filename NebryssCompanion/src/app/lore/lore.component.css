@@ -99,3 +99,7 @@
   .island-entry {
     margin-bottom: 10px;
   }
+
+  .player-card:hover {
+    transform: none;
+  }
