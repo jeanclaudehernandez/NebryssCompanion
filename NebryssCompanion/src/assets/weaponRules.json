@@ -145,7 +145,7 @@
   },
   {
   "id": 26,
-  "name": "Heavy",
+  "name": "Heavy(dash only)",
   "effect": "This weapon can't be used in the same activation as a move action.",
   "prModifier": -1
   },
