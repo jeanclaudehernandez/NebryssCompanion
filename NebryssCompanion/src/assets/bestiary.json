@@ -48,7 +48,7 @@
     "abilities": [
       {
         "name": "Tidal Surge",
-        "effect": "1AP: Push 2\" all enemies within 6 inches. ", 
+        "effect": "1AP: Push 2 inches all enemies within 6 inches. ", 
         "prModifier": 7
       },
       {
