@@ -64,7 +64,9 @@ export class WeaponTableComponent {
     
     if (rule.modValue !== null && rule.modValue !== undefined) {
       name = name.replace(/<x>/g, rule.modValue.toString());
-      description = description.replace(/<x>/g, rule.modValue.toString());
+      name = name.replace(/[x][+]/g, rule.modValue.toString() + "+");
+      name = name.replace(/[ ][x]/g, rule.modValue.toString());
+      description = description.replace(/<x>/g, " " + rule.modValue.toString());
     }
 
     return { name, description };
