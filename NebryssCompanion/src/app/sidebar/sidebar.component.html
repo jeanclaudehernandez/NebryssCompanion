@@ -1,0 +1,8 @@
+<div class="burger-menu" (click)="toggleMenu()">☰</div>
+
+<nav class="sidebar" [class.open]="isOpen">
+  <div class="menu-content">
+    <div class="menu-item" (click)="showPlayers()">Players</div>
+    <div class="menu-item" (click)="showBestiary()">Bestiary</div>
+  </div>
+</nav>

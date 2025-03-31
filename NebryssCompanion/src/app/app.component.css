@@ -1,0 +1,19 @@
+.content-area {
+    margin-left: 0;
+    transition: margin-left 0.3s;
+    padding: 20px;
+  }
+  .menu-open {
+    margin-left: 250px;
+  }
+  .bestiary-select-container {
+    margin: 20px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  select {
+    padding: 8px;
+    margin-top: 10px;
+    width: 300px;
+  }
