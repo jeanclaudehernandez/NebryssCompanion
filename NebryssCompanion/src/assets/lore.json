@@ -1,0 +1,287 @@
+{
+    "planetOverview": {
+      "planet": {
+        "name": "Nebryss",
+        "imgUrl": "assets/worldMap.png",
+        "location":  "Edge of the Imperium Nihilus, making warp travel and reinforcements difficult.",
+        "geography":  "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare.",
+        "theMist":  "A warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
+        "mistTradeRoutes": {
+          "description": "Formed by stable mist zones, these routes are crucial for travel and commerce.",
+          "importance": "Control over mist trade routes is key to power."
+        }
+      },
+      "currency": {
+        "name": "Mistral Coin",
+        "appearance": "Made of a shimmering, mist-resistant alloy, the coin features intricate engravings of swirling mist patterns on one side and the iconic golden spires of Zephyria on the other.",
+        "value": "Mistrals (₥) are widely accepted across Nebryss, though their value can fluctuate depending on mist trade route stability and faction influence.",
+        "usage": {
+          "physicalCoins": "Used in less advanced settlements, remote islands, and areas where digital infrastructure is unreliable.",
+          "digitalTransactions": "In technologically advanced areas like Zephyria, some places even have banks and can handle digital transactions, allowing for seamless trade and high-value exchanges."
+        },
+        "culturalSignificance": "The coin symbolizes the interconnectedness of Nebryss’s factions and the importance of the mist in shaping the planet’s economy."
+      },
+      "mistEffects": {
+        "densityLevels": {
+          "denserMist": "Provides more power to mist engines but increases risks of anomalies and attacks.",
+          "lighterMist": "Requires more efficient engines but offers safer navigation."
+        },
+        "navigation": "Ships primarily fly above the mist but can dip below for tactical or emergency reasons (extremely dangerous).",
+        "mistWeavingTechnology": {
+          "overview": "Mist-weaving is an ancient and mystical practice unique to the Nebryssian Liberation Republic, rooted in the planet’s connection to the enigmatic mist.",
+          "howItWorks": {
+            "ritualsAndSacrifice": "Mist-weaving requires elaborate rituals, often involving chants, offerings, and the use of sacred artifacts.",
+            "temporaryMistZones": {
+              "escape": "Mist zones can be used to obscure NLR forces, allowing them to retreat from overwhelming enemy forces or evade pursuit.",
+              "ambush": "Mist zones can be deployed to disorient and isolate enemy targets, creating opportunities for precise, high-stakes strikes."
+            },
+            "limitations": "Mist-weaving is a slow and laborious process, requiring significant time and resources."
+          },
+          "limitationsAndRisks": {
+            "psychicStrain": "Mist-weaving takes a heavy toll on the Mistweaver’s mind and body.",
+            "culturalSecrecy": "The NLR guards mist-weaving technology fiercely, ensuring that no other faction can replicate it."
+          },
+          "culturalSignificance": "Mist-weaving is central to NLR identity, symbolizing their connection to the planet and their ancestors."
+        }
+      },
+      "technologyAndInfrastructure": {
+        "flyingShipsAndMistEngines": {
+          "description": "The backbone of Nebryssian civilization.",
+          "mistEngines": {
+            "gildedAccordsRole": "The Accord’s Mistforges in Zephyria and Luminos produce roughly 40% of all mist engines on Nebryss.",
+            "otherFactions": "The remaining 60% of mist engines are produced by other factions or independent manufacturers."
+          },
+          "optimizationCategories": {
+            "speed": "Faster travel but sacrifices endurance and cargo space.",
+            "endurance": "Built for long journeys and resilience but slower.",
+            "cargoCapacity": "Maximized for transport but at the cost of speed and durability."
+          }
+        },
+        "weapons": {
+          "description": "A mix of medieval and advanced technology.",
+          "types": [
+            "Gunpowder-based firearms and cannons are common.",
+            "Plasma guns and lasguns exist alongside traditional weapons.",
+            "Close combat weapons like swords and chainswords remain widely used."
+          ]
+        }
+      },
+      "dailyLife": {
+        "settlements": "Range from medieval-style fortresses and wooden towns to technologically advanced cities.",
+        "transportation": "Horses and large flightless birds are the main inland transport, as vehicles are extremely rare."
+      },
+      "factions": [
+        {
+          "name": "The Imperium of Man",
+          "control": "30%",
+          "goal": "Conquer and bring Nebryss into full compliance.",
+          "challenges": "Struggles with supply lines due to its remote location.",
+          "mistKnowledge": "Some within the Imperium know of its warp origins, but this information is heavily censored.",
+          "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture.",
+          "notableIslands": [
+            {
+              "name": "Fortress Sanctus",
+              "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
+              "imgUrl": "assets/fortressSanctus.jpeg"
+            },
+            {
+              "name": "Stormwatch",
+              "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
+              "imgUrl": "assets/stormwatch.jpeg"
+            }
+          ]
+        },
+        {
+          "name": "The Gilded Accord",
+          "control": "12% (but holds the best trade routes)",
+          "role": "A federation of independent city-states, thriving on commerce and technology.",
+          "neutrality": "Profits from the war by selling weapons and mist engines to all factions.",
+          "peopleIdentity": "People refer to themselves by their home island (e.g., Zephyrians from Zephyria).",
+          "capital": {
+            "name": "Zephyria",
+            "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
+            "imgUrl": "assets/zephyria.jpeg",
+            "notableFeatures": [
+              {
+                "name": "Sky Bazaar",
+                "description": "A sprawling, multi-tiered marketplace where all factions trade.",
+                "shops": [
+                  {
+                    "name": "Herbwhisper’s Apothecary",
+                    "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+                    "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
+                  },
+                  {
+                    "name": "Ironveil’s Ward",
+                    "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+                    "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
+                  },
+                  {
+                    "name": "Blackhammer’s Arsenal",
+                    "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+                    "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
+                  }
+                ]
+              },
+              {
+                "name": "Mistforge",
+                "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
+              },
+              {
+                "name": "Anchorforge’s Drydock",
+                "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers.",
+                "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
+              },
+              {
+                "name": "The Stoutbarrel Tavern",
+                "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
+                "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
+              }
+            ]
+          },
+          "notableIslands": [
+            {
+              "name": "Luminos",
+              "imgUrl": "",
+              "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture."
+            }
+          ],
+          "iconography": "Golden spires, flowing mist patterns, symbols of wind and wealth.",
+          "notableOrganizations": [
+            {
+              "name": "The Fogbound Cartographers",
+              "description": "An elite guild of navigators and pilots within the Gilded Accord."
+            }
+          ]
+        },
+        {
+          "name": "The Abyssal Cabal",
+          "control": "30%",
+          "role": "A Chaos-worshipping faction seeking to harness the true power of the mist.",
+          "recruitment": "Filled with exiles and heretics from other factions.",
+          "mistKnowledge": "Fully understands the mist’s warp nature and seeks to exploit it.",
+          "iconography": "Generic Chaos-worshipping symbols.",
+          "notableLocations": [
+            {
+              "name": "Maledictum Prime",
+              "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
+              "imgUrl": "assets/maledictumPrime.jpeg",
+              "features": [
+                {
+                  "name": "The Veilrend Spire",
+                  "description": "A towering obsidian monolith at Maledictum Prime’s heart, where the Cabal conducts warp rituals to harness the mist’s power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "The Nebryssian Liberation Republic",
+          "control": "20%",
+          "role": "A resistance force fighting for the planet’s independence.",
+          "mistKnowledge": "Believes mist-weaving is partly magical and a connection to their ancestors.",
+          "mistweavers": "Shamans who unknowingly channel the mist to create new mist zones at the cost of their lives.",
+          "peopleIdentity": "Proudly call themselves Nebryssians, seeing themselves as the true inheritors of the planet.",
+          "iconography": "Animals, plants, mist symbols, and freedom imagery (broken chains, doves, open hands).",
+          "capital": {
+            "name": "Misthaven",
+            "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
+            "imgUrl": "",
+            "keyFeatures": [
+              {
+                "name": "The Veiled Citadel",
+                "description": "The NLR’s central stronghold, camouflaged within the mist and accessible only to those who know the secret paths."
+              },
+              {
+                "name": "The Mistweaver’s Grove",
+                "description": "A sacred grove where Mistweavers commune with the mist, drawing power from its enigmatic energies."
+              },
+              {
+                "name": "The Silent Market",
+                "description": "A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence."
+              }
+            ]
+          },
+          "goals": [
+            "Secure Nebryss’s independence from all external forces.",
+            "Protect and expand their mist-weaving knowledge.",
+            "Unite the planet’s factions under a banner of freedom."
+          ],
+          "challenges": [
+            "Constant pressure from the Imperium and Abyssal Cabal.",
+            "The high cost of mist-weaving, which often results in the death of Mistweavers.",
+            "Balancing their ideals with the need to cooperate with factions like the Gilded Accord."
+          ]
+        },
+        {
+          "name": "The Crimson Corsairs",
+          "control": "8% (mainly mobile)",
+          "role": "A pirate faction raiding mist trade routes indiscriminately.",
+          "tactics": "Ambush-based hit-and-run attacks, vanishing into the mist before retaliation.",
+          "iconography": "Crimson sails, skulls, jagged blades, and winged serpents.",
+          "culture": "The Corsairs are a loose coalition of independent captains, each with their own agenda.",
+          "baseOfOperations": "The Corsairs have no permanent base, operating from hidden coves, abandoned islands, and their own ships.",
+          "fleetComposition": [
+            "The Corsairs’ fleets are small and agile, consisting of fast raiders and heavily armed flagships.",
+            "Ships are often modified with mist-resistant technology, allowing them to navigate denser mist zones and evade pursuit."
+          ]
+        }
+      ],
+      "struggleForNebryss": [
+        "The Imperium fights to claim the world for the Emperor.",
+        "The NLR battles for independence from all external forces.",
+        "The Abyssal Cabal seeks to unleash the true power of the mist.",
+        "The Gilded Accord remains neutral, profiting from the ongoing war.",
+        "The Crimson Corsairs raid and plunder wherever they can.",
+        "The Mist itself remains an enigmatic force—its true purpose and origins still shrouded in mystery."
+      ],
+      "storyHooks": [
+        {
+          "name": "The Sky Bazaar Conspiracy",
+          "premise": "A hidden conspiracy within the Gilded Accord’s Sky Bazaar threatens to destabilize the faction.",
+          "keyElements": "Hidden alliances, double-crossing informants, moral dilemmas.",
+          "potentialImpact": "Shifts the balance of power and marks the players as influential disruptors."
+        },
+        {
+          "name": "The Corsair’s Gambit",
+          "premise": "The Crimson Corsairs plan a daring coup to seize control of a crucial mist trade route hub.",
+          "keyElements": "Ambush and infiltration, uncertain loyalties, consequences of power.",
+          "potentialImpact": "Creates a new power player or weakens the Corsairs, depending on the players’ actions."
+        },
+        {
+          "name": "The Mistforge Sabotage",
+          "premise": "Mysterious malfunctions and acts of sabotage threaten to cripple the Gilded Accord’s Mistforge.",
+          "keyElements": "Intrigue, multiple suspects, race against time.",
+          "potentialImpact": "Weakens the Accord or hands an advantage to a rival faction."
+        }
+      ],
+      "mistBasedGameplayMechanics": [
+        {
+          "name": "Mist Density Effects",
+          "description": "Denser mist boosts mist engines but increases risks; lighter mist is safer but less powerful."
+        },
+        {
+          "name": "Mist Anomalies",
+          "description": "Random events during combat, such as reality distortions, warp surges, or mistborn monsters."
+        },
+        {
+          "name": "Mistweaving Tactics",
+          "description": "NLR Mistweavers can create temporary mist zones or summon constructs, but at great personal cost."
+        }
+      ],
+      "potentialEndgameScenarios": [
+        {
+          "name": "The Mistheart Revealed",
+          "description": "The players discover the Mistheart, a sentient warp entity at the center of the mist."
+        },
+        {
+          "name": "Inquisitorial Showdown",
+          "description": "Veyra Mortis and Alaric Dresdan’s conflict escalates into a full-blown shadow war."
+        },
+        {
+          "name": "The Mist’s Awakening",
+          "description": "The mist becomes unstable, threatening to engulf the planet unless the players intervene."
+        }
+      ]
+    }
+}

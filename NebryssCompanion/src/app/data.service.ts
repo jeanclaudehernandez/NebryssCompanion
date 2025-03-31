@@ -13,7 +13,8 @@ export class DataService {
   private bestiaryUrl = 'assets/bestiary.json';
   private shopsUrl = 'assets/shops.json';
   private itemCategoriesUrl = 'assets/itemCategories.json';
-  private npcsUrl = 'assets/npcs.json'
+  private npcsUrl = 'assets/npcs.json';
+  private loreUrl = 'assets/lore.json';
   private players: any[] = [];
   private weapons: any = {};
   private bestiary: any[] = [];
@@ -22,6 +23,7 @@ export class DataService {
   private shops: any[] = [];
   private itemCategories: any[] = [];
   private npcs: any[] = [];
+  private lore: any = {};
 
   constructor(private http: HttpClient) { }
 
@@ -39,9 +41,6 @@ export class DataService {
     return this.http.get<any[]>(this.npcsUrl).pipe(tap((result) => this.npcs = result));
   }
 
-  getNpcByd(id: number): any {
-    return this.npcs.filter((npc) => npc.id == id)[0];
-  }
 
   getitemCategories(): Observable<any[]> {
     if(this.itemCategories.length) {
@@ -83,16 +82,9 @@ export class DataService {
     return this.http.get<any[]>(this.shopsUrl).pipe(tap(result => this.shops = result));
   }
 
-  getShopWeapons(shopId: number): any[] {
-    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
-    if(!shop) { return [] }
-    return shop.items.filter((item: any) => item.type === 'weapon')
-  }
-
-  getShopItems(shopId: number): any[] {
-    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
-    if(!shop) { return [] }
-    return shop.items.filter((item: any) => item.type === 'item')
+  getLore(): Observable<any> {
+    if (Object.keys(this.lore).length) { return of(this.lore)}
+    return this.http.get<any[]>(this.loreUrl).pipe(tap(result => this.lore = result));
   }
 
   getAllData(): Observable<{
@@ -137,5 +129,21 @@ export class DataService {
   getBestiaryById(id: number): any {
     if(this.bestiary.length === 0) return null;
     return this.bestiary.filter((beast) => beast.id === id)[0] || null;
+  }
+
+  getShopWeapons(shopId: number): any[] {
+    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    if(!shop) { return [] }
+    return shop.items.filter((item: any) => item.type === 'weapon')
+  }
+
+  getShopItems(shopId: number): any[] {
+    const shop = this.shops.filter((shop) => shop.id=== shopId)[0];
+    if(!shop) { return [] }
+    return shop.items.filter((item: any) => item.type === 'item')
+  }
+
+  getNpcByd(id: number): any {
+    return this.npcs.filter((npc) => npc.id == id)[0];
   }
 }
