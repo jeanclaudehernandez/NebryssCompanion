@@ -8,10 +8,10 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -23,18 +23,18 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
-          "body": "Human"
+          "body": "universal"
         },
         {
           "profileName": "power cell",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 5 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -46,13 +46,13 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [
             { "ruleId": 16, "modValue": null },
             { "ruleId": 4, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -64,13 +64,13 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 4 },
           "specialRules": [
             { "ruleId": 17, "modValue": null },
             { "ruleId": 18, "modValue": null }
           ],
-          "body": "Universal"
+          "body": "universal"
         }
       ]
     },
@@ -82,7 +82,7 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 12, "modValue": null }],
           "body": "Fellgor"
@@ -97,13 +97,13 @@
         {
           "profileName": "",
           "attacks": 5,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [
             { "ruleId": 15, "modValue": null },
             { "ruleId": 2, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -115,14 +115,14 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "2+",
+          "ws": 2,
           "damage": { "min": 5, "max": 6 },
           "specialRules": [
             { "ruleId": 19, "modValue": null },
             { "ruleId": 1, "modValue": 1 },
             { "ruleId": 3, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -134,13 +134,13 @@
         {
           "profileName": "",
           "attacks": 5,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 15, "modValue": null },
             { "ruleId": 16, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -152,10 +152,10 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -167,7 +167,7 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
           "body": "Murloc"
@@ -182,7 +182,7 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 1, "max": 2 },
           "specialRules": [{ "ruleId": 18, "modValue": null }],
           "body": "Murloc"
@@ -197,7 +197,7 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 20, "modValue": null }],
           "body": "Murloc"
@@ -212,7 +212,7 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [
             { "ruleId": 21, "modValue": 5 },
@@ -230,10 +230,10 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 13, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -245,13 +245,13 @@
         {
           "profileName": "",
           "attacks": 5,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 5, "max": 7 },
           "specialRules": [
             { "ruleId": 19, "modValue": null },
             { "ruleId": 15, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -263,10 +263,10 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -278,10 +278,10 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 14, "modValue": null }],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -293,7 +293,7 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
           "body": "Fellgor"
@@ -308,7 +308,7 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 15, "modValue": null }],
           "body": "Aetherwing"
@@ -323,7 +323,7 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [{ "ruleId": 19, "modValue": null }],
           "body": "Aetherwing"
@@ -338,7 +338,7 @@
         {
           "profileName": "",
           "attacks": 4,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 21, "modValue": 5 }],
           "body": "Screamer"
@@ -353,10 +353,10 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 19, "modValue": null }],
-          "body": "Mist Golem"
+          "body": "golem"
         }
       ]
     },
@@ -368,10 +368,10 @@
         {
           "profileName": "",
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 4 },
           "specialRules": [{ "ruleId": 19, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     }
@@ -386,10 +386,10 @@
           "profileName": "",
           "rng": null,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -402,10 +402,10 @@
           "profileName": "",
           "rng": 8,
           "attacks": 4,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -418,13 +418,13 @@
           "profileName": "",
           "rng": 10,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [
             { "ruleId": 21, "modValue": 5 },
             { "ruleId": 4, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -437,10 +437,10 @@
           "profileName": "",
           "rng": null,
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 23, "modValue": null }],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -453,10 +453,10 @@
           "profileName": "",
           "rng": null,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 16, "modValue": null }],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -469,10 +469,10 @@
           "profileName": "",
           "rng": 8,
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 34, "modValue": 1 }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -485,23 +485,23 @@
           "profileName": "",
           "rng": null,
           "attacks": 2,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [{ "ruleId": 35, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         },
         {
           "profileName": "over charge",
           "rng": null,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 35, "modValue": null },
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 33, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -514,22 +514,22 @@
           "profileName": "",
           "rng": 8,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 5 },
           "specialRules": [{ "ruleId": 34, "modValue": 1 }],
-          "body": "Universal"
+          "body": "universal"
         },
         {
           "profileName": "super charge",
           "rng": 12,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 21, "modValue": 5 }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -542,10 +542,10 @@
           "profileName": "",
           "rng": 14,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 24, "modValue": null }],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -558,26 +558,26 @@
           "profileName": "",
           "rng": 6,
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 5, "max": 6 },
           "specialRules": [
             { "ruleId": 25, "modValue": 2 },
             { "ruleId": 34, "modValue": 1 }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         },
         {
           "profileName": "heavy",
           "rng": 6,
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 5, "max": 6 },
           "specialRules": [
             { "ruleId": 25, "modValue": 2 },
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 26, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -590,23 +590,23 @@
           "profileName": "",
           "rng": 10,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [{ "ruleId": 27, "modValue": 1 }],
-          "body": "Astartes"
+          "body": "astartes"
         },
         {
           "profileName": "heavy",
           "rng": 14,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 5 },
           "specialRules": [
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 21, "modValue": 5 },
             { "ruleId": 26, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -619,13 +619,13 @@
           "profileName": "",
           "rng": 12,
           "attacks": 2,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 5, "modValue": 3 },
             { "ruleId": 26, "modValue": null }
           ],
-          "body": "Human"
+          "body": "universal"
         }
       ]
     },
@@ -638,10 +638,10 @@
           "profileName": "",
           "rng": 14,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 2, "max": 4 },
           "specialRules": [{ "ruleId": 18, "modValue": null }],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -654,14 +654,14 @@
           "profileName": "",
           "rng": null,
           "attacks": 3,
-          "ws": "2+",
+          "ws": 2,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 25, "modValue": 2 },
             { "ruleId": 28, "modValue": null },
             { "ruleId": 26, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -674,14 +674,14 @@
           "profileName": "",
           "rng": 12,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [
             { "ruleId": 21, "modValue": 5 },
             { "ruleId": 6, "modValue": null },
             { "ruleId": 35, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -694,14 +694,14 @@
           "profileName": "",
           "rng": null,
           "attacks": 3,
-          "ws": "2+",
+          "ws": 2,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 28, "modValue": null },
             { "ruleId": 4, "modValue": null }
           ],
-          "body": "Human"
+          "body": "human"
         }
       ]
     },
@@ -714,14 +714,14 @@
           "profileName": "",
           "rng": null,
           "attacks": 2,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 5, "max": 7 },
           "specialRules": [
             { "ruleId": 25, "modValue": 3 },
             { "ruleId": 34, "modValue": 2 },
             { "ruleId": 26, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -734,10 +734,10 @@
           "profileName": "",
           "rng": 6,
           "attacks": 2,
-          "ws": "5+",
+          "ws": 5,
           "damage": { "min": 1, "max": 2 },
           "specialRules": [{ "ruleId": 29, "modValue": null }],
-          "body": "Universal"
+          "body": "universal"
         }
       ]
     },
@@ -750,10 +750,10 @@
           "profileName": "",
           "rng": 8,
           "attacks": 4,
-          "ws": "5+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 33, "modValue": null }],
-          "body": "Universal"
+          "body": "universal"
         }
       ]
     },
@@ -766,10 +766,10 @@
           "profileName": "",
           "rng": 12,
           "attacks": 3,
-          "ws": "5+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 30, "modValue": 1 }],
-          "body": "Spell -Mist"
+          "body": "spell"
         }
       ]
     },
@@ -782,13 +782,13 @@
           "profileName": "",
           "rng": 6,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [
             { "ruleId": 30, "modValue": 1 },
             { "ruleId": 18, "modValue": null }
           ],
-          "body": "Spell -Mist"
+          "body": "spell -Mist"
         }
       ]
     },
@@ -801,13 +801,13 @@
           "profileName": "",
           "rng": 12,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [
             { "ruleId": 30, "modValue": 1 },
             { "ruleId": 31, "modValue": 2 }
           ],
-          "body": "Spell -Mist"
+          "body": "spell"
         }
       ]
     },
@@ -820,13 +820,13 @@
           "profileName": "",
           "rng": 6,
           "attacks": 2,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 1, "max": 2 },
           "specialRules": [
             { "ruleId": 32, "modValue": null },
             { "ruleId": 18, "modValue": null }
           ],
-          "body": "Spell -Screamer"
+          "body": "spell"
         }
       ]
     },
@@ -839,13 +839,13 @@
           "profileName": "",
           "rng": 12,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 3, "max": 4 },
           "specialRules": [
             { "ruleId": 32, "modValue": null },
             { "ruleId": 30, "modValue": 2 }
           ],
-          "body": "Spell -Psyker"
+          "body": "spell"
         }
       ]
     },
@@ -858,26 +858,26 @@
           "profileName": "",
           "rng": 8,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 3, "max": 5 },
           "specialRules": [
             { "ruleId": 16, "modValue": null },
             { "ruleId": 34, "modValue": 1 }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         },
         {
           "profileName": "super charge",
           "rng": 10,
           "attacks": 4,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 4, "max": 5 },
           "specialRules": [
             { "ruleId": 16, "modValue": null },
             { "ruleId": 34, "modValue": 1 },
             { "ruleId": 35, "modValue": null }
           ],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -890,7 +890,7 @@
           "profileName": "",
           "rng": 3,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
           "body": "Mist Golem"
@@ -906,14 +906,14 @@
           "profileName": "",
           "rng": 12,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [
             { "ruleId": 30, "modValue": 2 },
             { "ruleId": 32, "modValue": null },
             { "ruleId": 35, "modValue": null }
           ],
-          "body": "Spell -Psyker"
+          "body": "spell"
         }
       ]
     },
@@ -926,10 +926,10 @@
           "profileName": "",
           "rng": 10,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [{ "ruleId": 12, "modValue": null }],
-          "body": "Spell -Mist"
+          "body": "spell"
         }
       ]
     },
@@ -942,10 +942,10 @@
           "profileName": "",
           "rng": 8,
           "attacks": 3,
-          "ws": "4+",
+          "ws": 4,
           "damage": { "min": 2, "max": 3 },
           "specialRules": [],
-          "body": "Astartes"
+          "body": "astartes"
         }
       ]
     },
@@ -958,10 +958,10 @@
           "profileName": "",
           "rng": 8,
           "attacks": 3,
-          "ws": "3+",
+          "ws": 3,
           "damage": { "min": 1, "max": 2 },
           "specialRules": [],
-          "body": "Construct"
+          "body": "construct"
         }
       ]
     }
