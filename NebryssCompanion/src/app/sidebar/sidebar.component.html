@@ -1,6 +1,6 @@
-<div class="burger-menu" (click)="toggleMenu()">☰</div>
+<div #burger class="burger-menu" (click)="toggleMenu()">☰</div>
 
-<nav class="sidebar" [class.open]="isOpen">
+<nav #sidebar class="sidebar" [class.open]="isOpen">
   <div class="menu-content">
     <div class="menu-item" (click)="changeView('players')">Players</div>
     <div class="menu-item" (click)="changeView('bestiary')">Bestiary</div>
