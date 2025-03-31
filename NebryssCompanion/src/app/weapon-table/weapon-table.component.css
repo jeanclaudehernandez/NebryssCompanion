@@ -18,7 +18,7 @@
   position: sticky;
   top: 0;
   padding: 0.75rem;
-  text-align: left;
+  /*text-align: left;*/
   border-bottom: 2px solid #ddd;
   z-index: 2; /* Ensures header stays above table but below tooltips */
 }

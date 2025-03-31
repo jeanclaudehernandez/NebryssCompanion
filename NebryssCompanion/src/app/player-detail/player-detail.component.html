@@ -20,12 +20,14 @@
         <th>Wounds</th>
         <th>Save</th>
         <th>APL</th>
+        <th>Weapon Types</th>
       </tr>
       <tr>
         <td>{{ character.attributes.Movement }}"</td>
         <td>{{ character.attributes.Wounds }}</td>
         <td>{{ character.attributes.Save }}+</td>
         <td>{{ character.attributes.APL }}</td>
+        <td> {{ bodyString }} </td>
       </tr>
     </table>
   </div>
@@ -35,7 +37,9 @@
       <app-weapon-table 
         [weaponIds]="character.weapons"
         [weaponsData]="weaponsData"
-        [weaponRulesData]="weaponRulesData">
+        [weaponRulesData]="weaponRulesData"
+        [isCharacterDisplayPage]="true"
+        [characterBody]="character.attributes.body">
       </app-weapon-table>
   </div>
   

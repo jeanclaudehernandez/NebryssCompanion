@@ -46,12 +46,18 @@ export class WeaponTableComponent {
   @Input() weaponRulesData: RuleDefinition[] = [];
   @Input() displayPrice: boolean = false;
   @Input() displayBody: boolean = false;
+  @Input() isCharacterDisplayPage: boolean = false;
+  @Input() characterBody: string[] = [];
   
   // Remove all tooltip-related properties and methods
   
   getWeaponById(id: number): Weapon | null {
     const allWeapons = [...(this.weaponsData.melee || []), ...(this.weaponsData.ranged || [])];
     return allWeapons.find(w => w.id === id) || null;
+  }
+
+  filterByBody(weaponProfile: any) {
+    return !!this.characterBody.filter((body) => body == weaponProfile.body).length;
   }
 
   getRuleDisplay(rule: WeaponRule): { name: string, description: string } {

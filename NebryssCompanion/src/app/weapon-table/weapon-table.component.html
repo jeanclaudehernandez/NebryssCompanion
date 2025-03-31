@@ -16,35 +16,37 @@
         <ng-container *ngFor="let weaponId of weaponIds">
           <ng-container *ngIf="getWeaponById(weaponId) as weapon">
             <tr *ngFor="let profile of weapon.profiles">
-              <td>
-                {{ weapon.name }}
-                <span *ngIf="weapon.profiles.length > 1">({{ profile.profileName || 'default' }})</span>
-              </td>
-              <td *ngIf="displayPrice">{{weapon.price || '-'}}</td>
-              <td>{{ profile.rng ? profile.rng : profile.rng === null ? '-' : 'melee' }}</td>
-              <td>{{ profile.attacks }}</td>
-              <td>{{ profile.ws }}</td>
-              <td>
-                <span *ngIf="profile.damage.min === profile.damage.max">
-                  {{ profile.damage.min }}
-                </span>
-                <span *ngIf="profile.damage.min !== profile.damage.max">
-                  {{ profile.damage.min }}-{{ profile.damage.max }}
-                </span>
-              </td>
-              <td>
-                <span *ngFor="let rule of profile.specialRules; let last = last" class="rule-item">
-                    <span class="rule-text"
-                        [matTooltip]="getRuleDisplay(rule).description"
-                        matTooltipPosition="above"
-                        matTooltipClass="weapon-tooltip"
-                        [matTooltipDisabled]="!getRuleDisplay(rule).description">
-                        {{ getRuleDisplay(rule).name }}
-                    </span>
-                    <span *ngIf="!last">, </span>
-                </span>
-              </td>
-              <td *ngIf="displayBody">{{profile.body}}</td>
+              <ng-container *ngIf="filterByBody(profile) || !isCharacterDisplayPage">
+                <td>
+                  {{ weapon.name }}
+                  <span *ngIf="weapon.profiles.length > 1">({{ profile.profileName || 'default' }})</span>
+                </td>
+                <td *ngIf="displayPrice">{{weapon.price || '-'}}</td>
+                <td>{{ profile.rng ? profile.rng : profile.rng === null ? '-' : 'melee' }}</td>
+                <td>{{ profile.attacks }}</td>
+                <td>{{ profile.ws }}</td>
+                <td>
+                  <span *ngIf="profile.damage.min === profile.damage.max">
+                    {{ profile.damage.min }}
+                  </span>
+                  <span *ngIf="profile.damage.min !== profile.damage.max">
+                    {{ profile.damage.min }}-{{ profile.damage.max }}
+                  </span>
+                </td>
+                <td>
+                  <span *ngFor="let rule of profile.specialRules; let last = last" class="rule-item">
+                      <span class="rule-text"
+                          [matTooltip]="getRuleDisplay(rule).description"
+                          matTooltipPosition="above"
+                          matTooltipClass="weapon-tooltip"
+                          [matTooltipDisabled]="!getRuleDisplay(rule).description">
+                          {{ getRuleDisplay(rule).name }}
+                      </span>
+                      <span *ngIf="!last">, </span>
+                  </span>
+                </td>
+                <td *ngIf="displayBody">{{profile.body}}</td>
+              </ng-container>
             </tr>
           </ng-container>
         </ng-container>

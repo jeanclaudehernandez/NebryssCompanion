@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
@@ -10,19 +10,21 @@ import { DataService } from '../data.service';
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
-export class PlayerDetailComponent implements OnInit {
+export class PlayerDetailComponent implements OnChanges {
   @Input() character: any;
   @Input() characterType: 'player' | 'mob' = 'player';
   @Input() weaponsData: any;
   @Input() weaponRulesData: any[] = [];
   @Input() itemsData: any[] = [];
+  bodyString = "";
   activeTooltip: string | null = null;
   tooltipX = 0;
   tooltipY = 0;
 
-  constructor(private dataService: DataService, private changeDectector: ChangeDetectorRef) {}
+  constructor(private dataService: DataService) {}
 
-  ngOnInit(): void {
+  ngOnChanges(): void {
+    this.bodyString = this.character.attributes.body.reduce((body: string, acc: string) => body + " " + acc, "")
   }
 
   getMobById(bestiaryId: number): any {

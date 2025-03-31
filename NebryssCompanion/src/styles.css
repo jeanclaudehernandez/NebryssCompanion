@@ -64,7 +64,7 @@ body {
   .attributes th, .attributes td, 
   .profile-table th, .profile-table td {
     padding: 8px;
-    text-align: left;
+    /*text-align: left;*/
     border-bottom: 1px solid #ddd;
   }
   
@@ -143,6 +143,7 @@ table {
 
 th, td {
   padding: 0.25rem 0.5rem; /* Reduced from 0.5rem */
+  text-align: center;
 }
 
 /* Weapon Cards */

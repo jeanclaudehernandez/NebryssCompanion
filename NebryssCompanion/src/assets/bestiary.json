@@ -9,7 +9,8 @@
       "Movement": 6,
       "Wounds": 6,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal"]
     },
     "weapons": [10, 11, 40, 41],
     "abilities": [
@@ -42,7 +43,8 @@
       "Movement": 6,
       "Wounds": 8,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal"]
     },
     "weapons": [12, 42],
     "abilities": [
@@ -67,7 +69,8 @@
       "Movement": 6,
       "Wounds": 12,
       "Save": 4,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal"]
     },
     "weapons": [13, 43],
     "abilities": [
@@ -93,7 +96,8 @@
       "Movement": 7,
       "Wounds": 10,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "aetherwing"]
     },
     "weapons": [19, 20],
     "abilities": [
@@ -118,7 +122,8 @@
       "Movement": 7,
       "Wounds": 10,
       "Save": 4,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "aetherwing"]
     },
     "weapons": [19, 20],
     "abilities": [
@@ -143,7 +148,8 @@
       "Movement": 7,
       "Wounds": 10,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "aetherwing"]
     },
     "weapons": [19, 20],
     "abilities": [
@@ -168,7 +174,8 @@
       "Movement": 7,
       "Wounds": 10,
       "Save": 4,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "aetherwing"]
     },
     "weapons": [19, 44],
     "abilities": [
@@ -193,7 +200,8 @@
       "Movement": 6,
       "Wounds": 14,
       "Save": 3,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [33, 2],
     "abilities": []
@@ -208,7 +216,8 @@
       "Movement": 4,
       "Wounds": 18,
       "Save": 3,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [9, 24],
     "abilities": [
@@ -242,7 +251,8 @@
       "Movement": 6,
       "Wounds": 18,
       "Save": 3,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [15, 47],
     "abilities": [
@@ -272,7 +282,8 @@
       "Movement": 8,
       "Wounds": 5,
       "Save": 6,
-      "APL": 1
+      "APL": 1,
+      "body": ["universal"]
     },
     "weapons": [21, 45],
     "abilities": [
@@ -298,7 +309,8 @@
       "Movement": 8,
       "Wounds": 1,
       "Save": 3,
-      "APL": 1
+      "APL": 1,
+      "body": ["universal"]
     },
     "weapons": [],
     "abilities": [
@@ -328,7 +340,8 @@
       "Movement": 8,
       "Wounds": 1,
       "Save": 3,
-      "APL": 1
+      "APL": 1,
+      "body": ["universal"]
     },
     "weapons": [],
     "abilities": [
@@ -358,7 +371,8 @@
       "Movement": 6,
       "Wounds": 14,
       "Save": 4,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [31, 2],
     "abilities": [
@@ -384,7 +398,8 @@
       "Movement": 6,
       "Wounds": 16,
       "Save": 3,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [30, 8],
     "abilities": [
@@ -410,7 +425,8 @@
       "Movement": 4,
       "Wounds": 14,
       "Save": 4,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [46, 14],
     "abilities": [
@@ -434,7 +450,8 @@
       "Movement": 4,
       "Wounds": 15,
       "Save": 4,
-      "APL": 3
+      "APL": 3,
+      "body": ["universal", "astartes"]
     },
     "weapons": [29, 32, 2],
     "abilities": [
@@ -458,7 +475,8 @@
       "Movement": 6,
       "Wounds": 7,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "human"]
     },
     "weapons": [23, 1],
     "abilities": [
@@ -470,7 +488,7 @@
   },
   {
     "id": 19,
-    "name": "NLR Field Medic (Human)",
+    "name": "NLR Field Medic",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
     "pr": 75,
@@ -478,7 +496,8 @@
       "Movement": 6,
       "Wounds": 6,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "human"]
     },
     "weapons": [25],
     "abilities": [
@@ -499,7 +518,8 @@
       "Movement": 6,
       "Wounds": 10,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "human", "fellgor"]
     },
     "weapons": [5, 50],
     "abilities": [
@@ -512,7 +532,7 @@
   },
   {
     "id": 21,
-    "name": "NLR Sergeant (Human)",
+    "name": "NLR Sergeant",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
     "pr": 106,
@@ -520,7 +540,8 @@
       "Movement": 6,
       "Wounds": 8,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "human"]
     },
     "weapons": [35, 2],
     "abilities": [
@@ -541,7 +562,8 @@
       "Movement": 6,
       "Wounds": 7,
       "Save": 5,
-      "APL": 2
+      "APL": 2,
+      "body": ["universal", "human"]
     },
     "weapons": [27],
     "abilities": [
