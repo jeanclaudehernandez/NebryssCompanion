@@ -4,7 +4,7 @@
     "name": "Murloc",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
-    "pr": 68,
+    "pr": 81,
     "attributes": {
       "Movement": 6,
       "Wounds": 6,
@@ -293,7 +293,7 @@
     "name": "Screecher Green",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
-    "pr": 75,
+    "pr": 68,
     "attributes": {
       "Movement": 8,
       "Wounds": 1,
@@ -323,7 +323,7 @@
     "name": "Screecher Purple",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
-    "pr": 75,
+    "pr": 74,
     "attributes": {
       "Movement": 8,
       "Wounds": 1,
@@ -453,7 +453,7 @@
     "name": "NLR Soldier (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 76,
+    "pr": 83,
     "attributes": {
       "Movement": 6,
       "Wounds": 7,
@@ -473,7 +473,7 @@
     "name": "NLR Field Medic (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 81,
+    "pr": 75,
     "attributes": {
       "Movement": 6,
       "Wounds": 6,
@@ -536,7 +536,7 @@
     "name": "T’au Pathfinder",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "T’au",
-    "pr": 85,
+    "pr": 78,
     "attributes": {
       "Movement": 6,
       "Wounds": 7,
