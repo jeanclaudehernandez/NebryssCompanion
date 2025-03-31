@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatDialogModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
@@ -14,11 +15,18 @@ export class SidebarComponent {
   @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents'>();
   isOpen = false;
 
+  constructor(private matDialog: MatDialog) {}
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
     if (this.isOpen && !this.isClickInside(event)) {
       this.isOpen = false;
     }
+    this.matDialog.openDialogs.forEach((dialog) => {
+      if(!dialog.disableClose) {
+        dialog.close();
+      }
+    });
   }
 
   private isClickInside(event: MouseEvent): boolean {

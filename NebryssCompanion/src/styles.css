@@ -195,3 +195,10 @@ h6 { font-size: 0.8rem; margin: 0.1rem 0; }
   z-index: 1000;
   pointer-events: auto;
 }
+
+.image-dialog-container .mat-dialog-container {
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  overflow: hidden;
+}

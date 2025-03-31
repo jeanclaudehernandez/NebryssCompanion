@@ -2,10 +2,11 @@ import { Component, ViewEncapsulation } from '@angular/core';
 import { DataService } from '../data.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
+import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 
 @Component({
   selector: 'app-lore',
-  imports: [CommonModule, NgFor, CapitalCasePipe],
+  imports: [CommonModule, NgFor, CapitalCasePipe, ImageViewerComponent],
   standalone: true,
   templateUrl: './lore.component.html',
   styleUrls: ['./lore.component.css'],
@@ -13,7 +14,13 @@ import { CapitalCasePipe } from '../capital-case.pipe';
 })
 export class LoreComponent {
   loreData: any;
-  loreSections: {title: string, content: any, key: string}[] = [];
+  loreSections: {
+    title: string,
+    content: any,
+    key: string,
+    imgUrl?: string,
+    thumbnail?: string
+  }[] = [];
   public Array = Array;
   public Object = Object;
   public standardFactionSections = [
@@ -59,7 +66,9 @@ export class LoreComponent {
       {
         title: 'Planet',
         content: overview.planet,
-        key: 'planet'
+        key: 'planet',
+        imgUrl: overview.planet.imgUrl,
+        thumbnail: overview.planet.thumbnail
       },
       {
         title: 'Currency',
@@ -127,7 +136,7 @@ export class LoreComponent {
   formatObjectContent(obj: any): string {
     let html = '';
     for (const key in obj) {
-      if (typeof obj[key] === 'string' && key != 'imgUrl') {
+      if (typeof obj[key] === 'string' && key != 'imgUrl' && key != 'thumbnail') {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3><p>${obj[key]}</p></div>`;
       } else if (Array.isArray(obj[key])) {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3>`;
@@ -141,9 +150,7 @@ export class LoreComponent {
         html += `</div>`;
       } else if (typeof obj[key] === 'object') {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3>${this.formatObjectContent(obj[key])}</div>`;
-      } else if (key === 'imgUrl' && obj[key]) {
-        html += `<img class="location-image" src="${obj[key]}"/>`;
-      }
+      } 
     }
     return html;
   }

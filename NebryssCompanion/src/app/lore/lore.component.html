@@ -1,9 +1,14 @@
 <div class="lore-container">
-    <h1>{{loreData?.planetOverview?.name}}</h1>
-    
     <div *ngFor="let section of loreSections" class="lore-section">
       <ng-container *ngIf="!isProhibitedSection(section.key)">
-        <h2>{{section.title}}</h2>
+        <h2 style="text-align: center;">{{section.title}}</h2>
+        <div style="width:100%; display:flex; justify-content:space-around" *ngIf="section.imgUrl">
+            <app-image-viewer 
+                [imageUrl]="section.imgUrl"
+                [thumbnailUrl]="section.thumbnail"
+                [altText]="section.title"
+            ></app-image-viewer>
+        </div>
         <div class="player-card" *ngIf="section.title !== 'Factions'" [innerHTML]="formatLoreContent(section.content)"></div>
         <div *ngIf="section.title === 'Factions'" class="factions-container">
             <div *ngFor="let faction of section.content.factions" class="faction-card">
@@ -50,7 +55,12 @@
                 <div class="faction-info" *ngIf="faction.capital">
                     <h4>Capital</h4>
                     <p><strong>{{faction.capital.name}}</strong>: {{faction.capital.description}}</p>
-                    <img class="location-image" *ngIf="faction.capital.imgUrl" [src]="faction.capital.imgUrl"/>
+                    <app-image-viewer 
+                        *ngIf="faction.capital.imgUrl"
+                        [imageUrl]="faction.capital.imgUrl"
+                        [thumbnailUrl]="faction.capital.thumbnail"
+                        [altText]="faction.capital.name"
+                    ></app-image-viewer>
                     <div *ngIf="faction.capital.notableFeatures" class="sub-features">
                     <h5>Notable Features:</h5>
                     <ul>
@@ -73,7 +83,12 @@
                 <div class="faction-info" *ngIf="faction.notableIslands">
                     <h4>Notable Islands</h4>
                     <div class="island-entry" *ngFor="let island of faction.notableIslands; let last = last;">
-                        <img class="location-image" *ngIf="island.imgUrl" [src]="island.imgUrl"/>
+                        <app-image-viewer 
+                            *ngIf="island.imgUrl"
+                            [imageUrl]="island.imgUrl"
+                            [thumbnailUrl]="island.thumbnail"
+                            [altText]="island.name"
+                        ></app-image-viewer>
                         <strong>{{island.name}}</strong>: {{island.description}}
                         <hr *ngIf="!last">
                     </div>

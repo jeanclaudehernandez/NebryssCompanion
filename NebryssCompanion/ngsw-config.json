@@ -5,6 +5,7 @@
     {
       "name": "app",
       "installMode": "prefetch",
+      "updateMode": "prefetch",
       "resources": {
         "files": [
           "/favicon.ico",
@@ -12,18 +13,53 @@
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
-          "/*.js"
+          "/*.js",
+          "/**/*.json"
         ]
       }
     },
     {
-      "name": "assets",
-      "installMode": "lazy",
+      "name": "known-images",
+      "installMode": "prefetch",
       "updateMode": "prefetch",
       "resources": {
-        "files": [
-          "/**/*.(svg|cur|jpg|jpeg|png|apng|webp|avif|gif|otf|ttf|woff|woff2)"
+        "urls": [
+          "https://iili.io/3R2Be6u.png",
+          "https://iili.io/3R2BjZ7.jpg",
+          "https://iili.io/3R2BhjS.jpg",
+          "https://iili.io/3R2BOGe.jpg",
+          "https://iili.io/3R2BXu2.jpg",
+          "https://iili.io/3R2Be6u.th.png",
+          "https://iili.io/3R2BjZ7.th.jpg",
+          "https://iili.io/3R2BhjS.th.jpg",
+          "https://iili.io/3R2BOGe.th.jpg",
+          "https://iili.io/3R2BXu2.th.jpg"
         ]
+      }
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api",
+      "urls": [
+        "/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 100,
+        "maxAge": "30d",
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "external-images",
+      "urls": [
+        "https://iili.io/**"
+      ],
+      "cacheConfig": {
+        "maxSize": 1000,
+        "maxAge": "30d",
+        "strategy": "performance",
+        "timeout": "1s"
       }
     }
   ]
