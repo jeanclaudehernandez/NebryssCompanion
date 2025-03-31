@@ -53,7 +53,7 @@
         "Wounds": 9,
         "Save": 5,
         "APL": 2,
-        "body": ["universal", "human", "spell"]
+        "body": ["universal", "human", "spell", "fellgor"]
       },
       "weapons": [18, 50],
       "abilities": [
