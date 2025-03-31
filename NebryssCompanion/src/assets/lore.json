@@ -2,7 +2,7 @@
     "planetOverview": {
       "planet": {
         "name": "Nebryss",
-        "imgUrl": "assets/worldMap.png",
+        "imgUrl": "assets/images/worldMap.png",
         "location":  "Edge of the Imperium Nihilus, making warp travel and reinforcements difficult.",
         "geography":  "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare.",
         "theMist":  "A warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
@@ -83,12 +83,12 @@
             {
               "name": "Fortress Sanctus",
               "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
-              "imgUrl": "assets/fortressSanctus.jpeg"
+              "imgUrl": "assets/images/fortressSanctus.jpeg"
             },
             {
               "name": "Stormwatch",
               "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
-              "imgUrl": "assets/stormwatch.jpeg"
+              "imgUrl": "assets/images/stormwatch.jpeg"
             }
           ]
         },
@@ -102,7 +102,7 @@
           "capital": {
             "name": "Zephyria",
             "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
-            "imgUrl": "assets/zephyria.jpeg",
+            "imgUrl": "assets/images/zephyria.jpeg",
             "notableFeatures": [
               {
                 "name": "Sky Bazaar",
@@ -150,7 +150,7 @@
           "capital": {
             "name": "Maledictum Prime",
             "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-            "imgUrl": "assets/maledictumPrime.jpeg",
+            "imgUrl": "assets/images/maledictumPrime.jpeg",
             "notableFeatures": [
               {
                 "name": "The Veilrend Spire",
