@@ -11,7 +11,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   template: `
     <div class="items-container">
       <!-- Weapons Section -->
-      <h2>Weapons</h2>
+      <h2 style="margin-left: 50px;">Weapons</h2>
       <app-weapon-table 
         [weaponIds]="allWeaponIds" 
         [weaponsData]="weaponsData" 

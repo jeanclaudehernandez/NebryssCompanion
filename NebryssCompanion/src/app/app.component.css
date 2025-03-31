@@ -1,7 +1,6 @@
 .content-area {
     margin-left: 0;
     transition: margin-left 0.3s;
-    padding: 20px;
 }
 
 .menu-open {
