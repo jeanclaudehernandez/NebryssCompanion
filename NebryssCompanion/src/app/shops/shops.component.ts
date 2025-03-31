@@ -22,6 +22,7 @@ export class ShopsComponent {
   weaponRulesData: any[] = [];
   itemsCategories: any[] = [];
   shops: any[] = [];
+  npcs: any [] = [];
   isLoading = true;
   shopCategories: any[] = [];
 
@@ -35,6 +36,10 @@ export class ShopsComponent {
       this.shops = response.shops;
       this.itemsCategories = response.itemCategories;
     });
+  }
+
+  getOwnerName(owner: number) {
+    return this.dataService.getNpcByd(owner).name;
   }
 
   getWeaponIds(shop: any) {

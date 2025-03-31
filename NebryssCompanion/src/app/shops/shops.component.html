@@ -3,7 +3,7 @@
     <div *ngFor="let shop of shops" class="shop-card">
       <h3>{{ shop.name }}</h3>
       <p class="location">{{ shop.location }}</p>
-      <p class="owner">Owner ID: {{ shop.owner }}</p>
+      <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
       
       <div *ngFor="let categoryId of shop.categories">
         @let category = findCategory(categoryId);

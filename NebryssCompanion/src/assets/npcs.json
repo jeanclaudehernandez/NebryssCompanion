@@ -1,6 +1,4 @@
-{
-  "contacts": {
-    "imperium": [
+[
       {
         "id": 1,
         "name": "Inquisitor Veyra Mortis",
@@ -41,9 +39,7 @@
         ],
         "personality": "Diplomatic, honorable, and compassionate, with a focus on strategic thinking and alliance-building.",
         "location": "Fortress Sanctus, frequently travels to Stormwatch"
-      }
-    ],
-    "gildedAccord": [
+      },
       {
         "id": 4,
         "name": "Thalos Grenn",
@@ -114,9 +110,7 @@
         "role": "A freelance guide who leads tourists through Zephyria’s most famous landmarks and hidden gems.",
         "personality": "Spirited, adventurous, and deeply knowledgeable about Zephyria’s history and culture.",
         "location": "Zephyria"
-      }
-    ],
-    "nebryssianLiberationRepublic": [
+      },
       {
         "id": 12,
         "name": "Commander Elara Voss",
@@ -134,9 +128,7 @@
         "role": "A revered Mistweaver who has survived multiple rituals, earning him the title “The Unbroken.”",
         "personality": "Wise, enigmatic, and deeply spiritual.",
         "location": "Mistweaver’s Grove"
-      }
-    ],
-    "crimsonCorsairs": [
+      },
       {
         "id": 14,
         "name": "Lady Seraphine <The Siren> Voss",
@@ -161,5 +153,3 @@
         "motivations": "Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality."
       }
     ]
-  }
-}
