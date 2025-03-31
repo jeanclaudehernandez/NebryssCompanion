@@ -2,7 +2,8 @@
     "planetOverview": {
       "planet": {
         "name": "Nebryss",
-        "imgUrl": "assets/images/worldMap.png",
+        "imgUrl": "https://iili.io/3R2Be6u.png",
+        "thumbnail":"https://iili.io/3R2Be6u.th.png",
         "location":  "Edge of the Imperium Nihilus, making warp travel and reinforcements difficult.",
         "geography":  "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare.",
         "theMist":  "A warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
@@ -83,12 +84,14 @@
             {
               "name": "Fortress Sanctus",
               "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
-              "imgUrl": "assets/images/fortressSanctus.jpeg"
+              "imgUrl": "https://iili.io/3R2BjZ7.jpg",
+              "thumbnail":"https://iili.io/3R2BjZ7.th.jpg"
             },
             {
               "name": "Stormwatch",
               "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
-              "imgUrl": "assets/images/stormwatch.jpeg"
+              "imgUrl": "https://iili.io/3R2BhjS.jpg",
+              "thumbnail":"https://iili.io/3R2BhjS.th.jpg"
             }
           ]
         },
@@ -102,7 +105,8 @@
           "capital": {
             "name": "Zephyria",
             "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
-            "imgUrl": "assets/images/zephyria.jpeg",
+            "imgUrl": "https://iili.io/3R2BOGe.jpg",
+            "thumbnail":"https://iili.io/3R2BOGe.th.jpg",
             "notableFeatures": [
               {
                 "name": "Sky Bazaar",
@@ -150,7 +154,8 @@
           "capital": {
             "name": "Maledictum Prime",
             "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-            "imgUrl": "assets/images/maledictumPrime.jpeg",
+            "imgUrl": "https://iili.io/3R2BXu2.jpg",
+            "thumbnail":"https://iili.io/3R2BXu2.th.jpg",
             "notableFeatures": [
               {
                 "name": "The Veilrend Spire",
