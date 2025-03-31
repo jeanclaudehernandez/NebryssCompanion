@@ -27,7 +27,7 @@ import { LoreComponent } from './lore/lore.component';
   template: `
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
     
-    <div class="content-area">
+    <div class="content-area" #contentArea>
       <app-player-list *ngIf="currentView === 'players'"></app-player-list>
       <app-bestiary *ngIf="currentView === 'bestiary'"></app-bestiary>
       <app-items *ngIf="currentView === 'items'"></app-items>
@@ -44,5 +44,8 @@ export class AppComponent {
 
   onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore') {
     this.currentView = view;
+    window.scrollTo({
+      top: 0,
+    });
   }
 }
