@@ -13,10 +13,10 @@ import { CapitalCasePipe } from '../capital-case.pipe';
 })
 export class LoreComponent {
   loreData: any;
-  loreSections: {title: string, content: any}[] = [];
+  loreSections: {title: string, content: any, key: string}[] = [];
   public Array = Array;
   public Object = Object;
-  public standardSections = [
+  public standardFactionSections = [
     'name',
     'goals',
     'challenges',
@@ -27,6 +27,11 @@ export class LoreComponent {
     'control',
     'role',
     'notableOrganizations'
+  ];
+  public prohibitedSections = [
+    'storyHooks',
+    'potentialEndgameScenarios',
+    'mistBasedGameplayMechanics',
   ];
 
   constructor(private dataService: DataService) {}
@@ -39,8 +44,11 @@ export class LoreComponent {
   }
 
   isStandardSection(section: string) {
-    console.log(section);
-    return !!this.standardSections.find((standard) => standard == section )
+    return !!this.standardFactionSections.find((standard) => standard == section )
+  }
+
+  isProhibitedSection(section: string) {
+    return !!this.prohibitedSections.find((prohibited) => prohibited == section);
   }
 
   prepareLoreSections() {
@@ -50,39 +58,48 @@ export class LoreComponent {
     this.loreSections = [
       {
         title: 'Planet',
-        content: overview.planet
+        content: overview.planet,
+        key: 'planet'
       },
       {
         title: 'Currency',
-        content: overview.currency
+        content: overview.currency,
+        key: 'currency'
       },
       {
         title: 'Mist Effects',
-        content: overview.mistEffects
+        content: overview.mistEffects,
+        key: 'mistEffects'
       },
       {
         title: 'Technology and Infrastructure',
-        content: overview.technologyAndInfrastructure
+        content: overview.technologyAndInfrastructure,
+        key: 'technologyAndInfrastructure'
       },
       {
         title: 'Daily Life',
-        content: overview.dailyLife
+        content: overview.dailyLife,
+        key: 'dailyLife'
       },
       {
         title: 'Factions',
-        content: {factions: overview.factions}
+        content: {factions: overview.factions},
+        key: 'factions'
       },
       {
         title: 'Struggle for Nebryss',
-        content: {struggle: overview.struggleForNebryss}
+        content: {struggle: overview.struggleForNebryss},
+        key: 'struggleForNebryss'
       },
       {
         title: 'Story Hooks',
-        content: {hooks: overview.storyHooks}
+        content: {hooks: overview.storyHooks},
+        key: 'storyHooks'
       },
       {
         title: 'Potential Endgame Scenarios',
-        content: {endgames: overview.potentialEndgameScenarios}
+        content: {endgames: overview.potentialEndgameScenarios},
+        key: 'potentialEndgameScenarios'
       }
     ];
   }

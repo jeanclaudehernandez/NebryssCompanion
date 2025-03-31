@@ -2,93 +2,96 @@
     <h1>{{loreData?.planetOverview?.name}}</h1>
     
     <div *ngFor="let section of loreSections" class="lore-section">
-      <h2>{{section.title}}</h2>
-      <div class="player-card" *ngIf="section.title !== 'Factions'" [innerHTML]="formatLoreContent(section.content)"></div>
-      <div *ngIf="section.title === 'Factions'" class="factions-container">
-        <div *ngFor="let faction of section.content.factions" class="faction-card">
-          <h3>{{faction.name}} (Controls {{faction.control}})</h3>
-          
-          <div class="faction-details">
-            <div class="faction-role">
-              <h4>Role</h4>
-              <p>{{faction.role}}</p>
-            </div>
+      <ng-container *ngIf="!isProhibitedSection(section.key)">
+        <h2>{{section.title}}</h2>
+        <div class="player-card" *ngIf="section.title !== 'Factions'" [innerHTML]="formatLoreContent(section.content)"></div>
+        <div *ngIf="section.title === 'Factions'" class="factions-container">
+            <div *ngFor="let faction of section.content.factions" class="faction-card">
+            <h3>{{faction.name}} (Controls {{faction.control}})</h3>
             
-            <div class="faction-info" *ngIf="faction.mistKnowledge">
-              <h4>Mist Knowledge</h4>
-              <p>{{faction.mistKnowledge}}</p>
-            </div>
-            
-            <div class="faction-info" *ngIf="faction.peopleIdentity">
-              <h4>People Identity</h4>
-              <p>{{faction.peopleIdentity}}</p>
-            </div>
-            
-            <div class="faction-info" *ngIf="faction.goals">
-              <h4>Goals</h4>
-              <ul>
-                <li *ngFor="let goal of faction.goals">{{goal}}</li>
-              </ul>
-            </div>
-            
-            <div class="faction-info" *ngIf="faction.challenges">
-              <h4>Challenges</h4>
-              <ul *ngIf="Array.isArray(faction.challenges)">
-                <li *ngFor="let challenge of faction.challenges">{{challenge}}</li>
-              </ul>
-              <p *ngIf="!Array.isArray(faction.challenges)">{{faction.challenges}}</p>
-            </div>
-
-            <ng-container *ngFor="let section of Object.keys(faction)">
-                <div class="faction-info" *ngIf="!isStandardSection(section)">
-                    <h4>{{section | capitalCase}}</h4>
-                    <p>{{faction[section]}}</p>
+            <div class="faction-details">
+                <div class="faction-role">
+                <h4>Role</h4>
+                <p>{{faction.role}}</p>
                 </div>
-            </ng-container>
-
-            <div class="faction-info" *ngIf="faction.capital">
-                <h4>Capital</h4>
-                <p><strong>{{faction.capital.name}}</strong>: {{faction.capital.description}}</p>
-                <img class="location-image" *ngIf="faction.capital.imgUrl" [src]="faction.capital.imgUrl"/>
-                <div *ngIf="faction.capital.notableFeatures" class="sub-features">
-                  <h5>Notable Features:</h5>
-                  <ul>
-                    <li *ngFor="let feature of faction.capital.notableFeatures">
-                      <strong>{{feature.name}}</strong>: {{feature.description}}
-                      <div *ngIf="feature.shops" class="shops-list">
-                        <h6>Shops:</h6>
-                        <ul>
-                          <li *ngFor="let shop of feature.shops">
-                            <strong>{{shop.name}}</strong> - {{shop.description}}<br>
-                            <em>Owner: {{shop.owner}}</em>
-                          </li>
-                        </ul>
-                      </div>
-                    </li>
-                  </ul>
+                
+                <div class="faction-info" *ngIf="faction.mistKnowledge">
+                <h4>Mist Knowledge</h4>
+                <p>{{faction.mistKnowledge}}</p>
                 </div>
-              </div>
-              
-            <div class="faction-info" *ngIf="faction.notableIslands">
-                <h4>Notable Islands</h4>
-                  <div class="island-entry" *ngFor="let island of faction.notableIslands; let last = last;">
-                      <img class="location-image" *ngIf="island.imgUrl" [src]="island.imgUrl"/>
-                      <strong>{{island.name}}</strong>: {{island.description}}
-                      <hr *ngIf="!last">
-                  </div>
-              </div>
-            </div>
-
-            <div class="faction-info" *ngIf="faction.notableOrganizations">
-                <h4>Notable Organizations</h4>
+                
+                <div class="faction-info" *ngIf="faction.peopleIdentity">
+                <h4>People Identity</h4>
+                <p>{{faction.peopleIdentity}}</p>
+                </div>
+                
+                <div class="faction-info" *ngIf="faction.goals">
+                <h4>Goals</h4>
                 <ul>
-                    <li *ngFor="let organization of faction.notableOrganizations">
-                        <strong>{{organization.name}}</strong>
-                        <em>{{organization.description}}</em>
-                    </li>
+                    <li *ngFor="let goal of faction.goals">{{goal}}</li>
                 </ul>
+                </div>
+                
+                <div class="faction-info" *ngIf="faction.challenges">
+                <h4>Challenges</h4>
+                <ul *ngIf="Array.isArray(faction.challenges)">
+                    <li *ngFor="let challenge of faction.challenges">{{challenge}}</li>
+                </ul>
+                <p *ngIf="!Array.isArray(faction.challenges)">{{faction.challenges}}</p>
+                </div>
+
+                <ng-container *ngFor="let section of Object.keys(faction)">
+                    <div class="faction-info" *ngIf="!isStandardSection(section)">
+                        <h4>{{section | capitalCase}}</h4>
+                        <p>{{faction[section]}}</p>
+                    </div>
+                </ng-container>
+
+                <div class="faction-info" *ngIf="faction.capital">
+                    <h4>Capital</h4>
+                    <p><strong>{{faction.capital.name}}</strong>: {{faction.capital.description}}</p>
+                    <img class="location-image" *ngIf="faction.capital.imgUrl" [src]="faction.capital.imgUrl"/>
+                    <div *ngIf="faction.capital.notableFeatures" class="sub-features">
+                    <h5>Notable Features:</h5>
+                    <ul>
+                        <li *ngFor="let feature of faction.capital.notableFeatures">
+                        <strong>{{feature.name}}</strong>: {{feature.description}}
+                        <div *ngIf="feature.shops" class="shops-list">
+                            <h6>Shops:</h6>
+                            <ul>
+                            <li *ngFor="let shop of feature.shops">
+                                <strong>{{shop.name}}</strong> - {{shop.description}}<br>
+                                <em>Owner: {{shop.owner}}</em>
+                            </li>
+                            </ul>
+                        </div>
+                        </li>
+                    </ul>
+                    </div>
+                </div>
+                
+                <div class="faction-info" *ngIf="faction.notableIslands">
+                    <h4>Notable Islands</h4>
+                    <div class="island-entry" *ngFor="let island of faction.notableIslands; let last = last;">
+                        <img class="location-image" *ngIf="island.imgUrl" [src]="island.imgUrl"/>
+                        <strong>{{island.name}}</strong>: {{island.description}}
+                        <hr *ngIf="!last">
+                    </div>
+                </div>
+                </div>
+
+                <div class="faction-info" *ngIf="faction.notableOrganizations">
+                    <h4>Notable Organizations</h4>
+                    <ul>
+                        <li *ngFor="let organization of faction.notableOrganizations">
+                            <strong>{{organization.name}}</strong>
+                            <em>{{organization.description}}</em>
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-      </div>
+      </ng-container>
+      
     </div>
   </div>
