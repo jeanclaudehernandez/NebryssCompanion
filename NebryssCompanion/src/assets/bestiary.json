@@ -6,28 +6,29 @@
     "subgroup": "Murloc",
     "pr": 68,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 6,
-      "Save": "6+",
-      "APL": 1
+      "Save": 5,
+      "APL": 2
     },
     "weapons": [10, 11, 40, 41],
     "abilities": [
       {
         "name": "Amphibious Assault",
-        "effect": "1AP: Swim 6″ through water or mist."
+        "effect": "1AP: Swim 6 inches through water or mist."
       },
       {
         "name": "Pack Tactics",
-        "effect": "+1 to WS/BS within 3″ of another Murloc. (+7)"
+        "effect": "+1 to WS/BS within 3 inches of another Murloc. ", 
+        "prModifier": 7
       },
       {
         "name": "Primitive Cunning",
-        "effect": "Free Dash once per Turning Point when within 6\" of Murloc King."
+        "effect": "Free Dash once per Turning Point when within 6 inches of Murloc King."
       },
       {
         "name": "Crab Shell Shield",
-        "effect": "Improve Save by 1 (to 5+). When defending, retain one failed attack dice as a success."
+        "effect": "Improve Save by 1 (to 5+). When retaliating, retain one failed attack dice as a success."
       }
     ]
   },
@@ -38,20 +39,21 @@
     "subgroup": "Murloc",
     "pr": 88,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 8,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [12, 42],
     "abilities": [
       {
         "name": "Tidal Surge",
-        "effect": "1AP: Push 2\" all enemies within 6″. (+7)"
+        "effect": "1AP: Push 2\" all enemies within 6 inches. ", 
+        "prModifier": 7
       },
       {
         "name": "Primitive Cunning",
-        "effect": "Free Dash once per Turning Point when within 6\" of Murloc King."
+        "effect": "Free Dash once per Turning Point when within 6 inches of Murloc King."
       }
     ]
   },
@@ -62,20 +64,22 @@
     "subgroup": "Murloc",
     "pr": 135,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 12,
-      "Save": "5+",
+      "Save": 4,
       "APL": 2
     },
     "weapons": [13, 43],
     "abilities": [
       {
         "name": "King’s Command",
-        "effect": "Re-roll attack dice with result of 1 for Murlocs within 6\". (+7)"
+        "effect": "Re-roll attack dice with result of 1 for Murlocs within 6 inches. ",
+        "prModifier": 7
       },
       {
         "name": "Tidal Surge",
-        "effect": "1AP: Push 2\" all enemies within 6\". (+7)"
+        "effect": "1AP: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
       }
     ]
   },
@@ -86,20 +90,21 @@
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
-      "Movement": "7″",
+      "Movement": 7,
       "Wounds": 10,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
-        "effect": "1AP: Fly 7″ over terrain."
+        "effect": "1AP: Fly over terrain."
       },
       {
         "name": "Primal Strength",
-        "effect": "+1 Damage to successful Fight actions. (+7)"
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
       }
     ]
   },
@@ -110,20 +115,21 @@
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
-      "Movement": "7″",
+      "Movement": 7,
       "Wounds": 10,
-      "Save": "5+",
+      "Save": 4,
       "APL": 2
     },
     "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
-        "effect": "1AP: Fly 7″ over terrain."
+        "effect": "1AP: Fly 7 over terrain."
       },
       {
         "name": "Banner of Resilience",
-        "effect": "Friendly operatives within 6″ reduce incoming damage by 1 (to a minimum of 1). (+7)"
+        "effect": "Friendly operatives within 6 inches reduce incoming damage by 1 (to a minimum of 2). ",
+        "prModifier": 7
       }
     ]
   },
@@ -134,20 +140,21 @@
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
-      "Movement": "7″",
+      "Movement": 7,
       "Wounds": 10,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [19, 20],
     "abilities": [
       {
         "name": "Aether Dive",
-        "effect": "1AP: Fly 7″ over terrain."
+        "effect": "1AP: Fly over terrain."
       },
       {
         "name": "Flute of Fury",
-        "effect": "Friendly operatives within 6″ gain +1 to WS until the end of the Turning Point. (+7)"
+        "effect": "Friendly operatives within 6 inches gain +1 to WS until the end of the Turning Point. ",
+        "prModifier": 7
       }
     ]
   },
@@ -158,20 +165,21 @@
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
-      "Movement": "7″",
+      "Movement": 7,
       "Wounds": 10,
-      "Save": "5+",
+      "Save": 4,
       "APL": 2
     },
     "weapons": [19, 44],
     "abilities": [
       {
         "name": "Aether Dive",
-        "effect": "1AP: Fly 7″ over terrain."
+        "effect": "1AP: Fly over terrain."
       },
       {
         "name": "Primal Strength",
-        "effect": "+1 Damage to successful Fight actions. (+7)"
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
       }
     ]
   },
@@ -182,9 +190,9 @@
     "subgroup": "Space Marine",
     "pr": 145,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 14,
-      "Save": "3+",
+      "Save": 3,
       "APL": 3
     },
     "weapons": [33, 2],
@@ -197,24 +205,26 @@
     "subgroup": "Space Marine",
     "pr": 159,
     "attributes": {
-      "Movement": "4″",
+      "Movement": 4,
       "Wounds": 18,
-      "Save": "3+",
+      "Save": 3,
       "APL": 3
     },
     "weapons": [9, 24],
     "abilities": [
       {
         "name": "Combat Medicae",
-        "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3″."
+        "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3 inches."
       },
       {
         "name": "Genetic Augmentation",
-        "effect": "1AP: Friendly operative within 6″ +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. (+7)"
+        "effect": "1AP: Friendly operative within 6 inches +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. ",
+        "prModifier": 7
       },
       {
         "name": "Revitalizing Aura",
-        "effect": "All friendly operatives within 3″ reduce incoming damage by 1 (to a minimum of 1). (+7)"
+        "effect": "All friendly operatives within 3 inches reduce incoming damage by 1 (to a minimum of 1). ",
+        "prModifier": 7
       },
       {
         "name": "Desperate Charge",
@@ -229,9 +239,9 @@
     "subgroup": "Space Marine",
     "pr": 221,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 18,
-      "Save": "3+",
+      "Save": 3,
       "APL": 3
     },
     "weapons": [15, 47],
@@ -242,11 +252,13 @@
       },
       {
         "name": "Lancer’s Charge",
-        "effect": "1AP: Free Charge + Fight action. (+7)"
+        "effect": "1AP: Free Charge + Fight action. ",
+        "prModifier": 7
       },
       {
         "name": "Inspiring Presence",
-        "effect": "Friendly operatives within 6″ re-roll 1s on attack rolls. (+7)"
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
       }
     ]
   },
@@ -257,20 +269,22 @@
     "subgroup": "Daemon",
     "pr": 65,
     "attributes": {
-      "Movement": "8″",
+      "Movement": 8,
       "Wounds": 5,
-      "Save": "6+",
+      "Save": 6,
       "APL": 1
     },
     "weapons": [21, 45],
     "abilities": [
       {
         "name": "Daemonic Flight",
-        "effect": "Fly 8″ over terrain. (+7)"
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
       },
       {
         "name": "Warpfire Trail",
-        "effect": "After moving, leave a 1″-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. (+7)"
+        "effect": "After moving, leave a 1inche-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. ",
+        "prModifier": 4
       }
     ]
   },
@@ -281,20 +295,22 @@
     "subgroup": "Daemon",
     "pr": 75,
     "attributes": {
-      "Movement": "8″",
+      "Movement": 8,
       "Wounds": 1,
-      "Save": "3+",
+      "Save": 3,
       "APL": 1
     },
     "weapons": [],
     "abilities": [
       {
         "name": "Daemonic Flight",
-        "effect": "Fly 8″ over terrain. (+7)"
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
       },
       {
         "name": "Aegis of the Ninefold Deceit",
-        "effect": "Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6\". (+7)"
+        "effect": "Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6 inches. ",
+        "prModifier": 4
       },
       {
         "name": "Ethereal Form",
@@ -309,20 +325,22 @@
     "subgroup": "Daemon",
     "pr": 75,
     "attributes": {
-      "Movement": "8″",
+      "Movement": 8,
       "Wounds": 1,
-      "Save": "3+",
+      "Save": 3,
       "APL": 1
     },
     "weapons": [],
     "abilities": [
       {
         "name": "Daemonic Flight",
-        "effect": "Fly 8″ over terrain. (+7)"
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
       },
       {
         "name": "Arcane Bargain",
-        "effect": "Once per activation an enemy within control range, roll 1d6 and that enemy suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4\", if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4\" of this operative and that operative, restore result/2 wounds rounded up from Summoner. (+7)"
+        "effect": "Once per activation an enemy within control range, roll 1d6 and that enemy suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative and that operative, restore result/2 wounds rounded up from Summoner. ",
+        "prModifier": 7
       },
       {
         "name": "Ethereal Form",
@@ -337,20 +355,22 @@
     "subgroup": "Chaos Space Marine",
     "pr": 151,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 14,
-      "Save": "4+",
+      "Save": 4,
       "APL": 3
     },
     "weapons": [31, 2],
     "abilities": [
       {
         "name": "Mark of Khorne",
-        "effect": "Re-roll one attack die per activation in melee. (+7)"
+        "effect": "Re-roll one attack die per activation in melee.",
+        "prModifier": 3
       },
       {
         "name": "Warp-fueled Rage",
-        "effect": "After defeating an enemy, gain +1 Attack next activation. (+7)"
+        "effect": "After defeating an enemy, gain +1 Attack next activation.",
+        "prModifier": 4
       }
     ]
   },
@@ -361,20 +381,22 @@
     "subgroup": "Chaos Space Marine",
     "pr": 195,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 16,
-      "Save": "3+",
+      "Save": 3,
       "APL": 3
     },
     "weapons": [30, 8],
     "abilities": [
       {
         "name": "Dark Zeal",
-        "effect": "Re-roll one attack or defense die per activation. (+7)"
+        "effect": "Re-roll one attack or defense die per turning point. ",
+        "prModifier": 4
       },
       {
         "name": "Inspiring Terror",
-        "effect": "Enemy operatives within 6″ worsen their WS by 1. (+7)"
+        "effect": "Enemy operatives within 6 inches worsen their WS by 1. ",
+        "prModifier": 7
       }
     ]
   },
@@ -385,20 +407,20 @@
     "subgroup": "Chaos Space Marine",
     "pr": 143,
     "attributes": {
-      "Movement": "4″",
+      "Movement": 4,
       "Wounds": 14,
-      "Save": "4+",
+      "Save": 4,
       "APL": 3
     },
     "weapons": [46, 14],
     "abilities": [
       {
         "name": "Psychic Dominion",
-        "effect": "1AP: Cast Smite (10″ range, 1D3 mortal wounds) or Warpfire (create a 3″ hazardous terrain patch within 6\" and visible). (+7)"
+        "effect": "1AP: Cast Smite (10 inches range, 1D3 mortal wounds) or Warpfire (create a 3 inches hazardous terrain patch within 6 inches and visible). ", "prModifier": 7
       },
       {
         "name": "Warpfire",
-        "effect": "Enemies in or moving through Warpfire suffer 1D3 wounds. (+7)"
+        "effect": "Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
       }
     ]
   },
@@ -409,16 +431,16 @@
     "subgroup": "Chaos Space Marine",
     "pr": 155,
     "attributes": {
-      "Movement": "4″",
+      "Movement": 4,
       "Wounds": 15,
-      "Save": "4+",
+      "Save": 4,
       "APL": 3
     },
     "weapons": [29, 32, 2],
     "abilities": [
       {
         "name": "Malicious Volleys",
-        "effect": "If stationary, shoot twice with the same weapon. (+7)"
+        "effect": "If stationary, shoot twice with the same weapon. ", "prModifier": 7
       },
       {
         "name": "Overcharge",
@@ -433,9 +455,9 @@
     "subgroup": "Human",
     "pr": 76,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 7,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [23, 1],
@@ -453,16 +475,17 @@
     "subgroup": "Human",
     "pr": 81,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 6,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [25],
     "abilities": [
       {
         "name": "Combat Triage",
-        "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3″. (+7)"
+        "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3 inches. ",
+        "prModifier": 7
       }
     ]
   },
@@ -473,16 +496,17 @@
     "subgroup": "Fellgor",
     "pr": 96,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 10,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [5, 50],
     "abilities": [
       {
         "name": "Tidal Surge",
-        "effect": "1AP: Push all enemies within 6″ by 2″. (+7)"
+        "effect": "1AP: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
       }
     ]
   },
@@ -493,16 +517,17 @@
     "subgroup": "Human",
     "pr": 106,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 8,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [35, 2],
     "abilities": [
       {
         "name": "Inspiring Presence",
-        "effect": "Friendly operatives within 6″ re-roll 1s on attack rolls. (+7)"
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
       }
     ]
   },
@@ -513,16 +538,16 @@
     "subgroup": "T’au",
     "pr": 85,
     "attributes": {
-      "Movement": "6″",
+      "Movement": 6,
       "Wounds": 7,
-      "Save": "5+",
+      "Save": 5,
       "APL": 2
     },
     "weapons": [27],
     "abilities": [
       {
         "name": "Markerlight",
-        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point. (+7)"
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.", "prModifier": 7
       }
     ]
   }
