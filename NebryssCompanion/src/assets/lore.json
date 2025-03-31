@@ -147,19 +147,17 @@
           "recruitment": "Filled with exiles and heretics from other factions.",
           "mistKnowledge": "Fully understands the mist’s warp nature and seeks to exploit it.",
           "iconography": "Generic Chaos-worshipping symbols.",
-          "notableLocations": [
-            {
-              "name": "Maledictum Prime",
-              "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-              "imgUrl": "assets/maledictumPrime.jpeg",
-              "features": [
-                {
-                  "name": "The Veilrend Spire",
-                  "description": "A towering obsidian monolith at Maledictum Prime’s heart, where the Cabal conducts warp rituals to harness the mist’s power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
-                }
-              ]
-            }
-          ]
+          "capital": {
+            "name": "Maledictum Prime",
+            "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
+            "imgUrl": "assets/maledictumPrime.jpeg",
+            "notableFeatures": [
+              {
+                "name": "The Veilrend Spire",
+                "description": "A towering obsidian monolith at Maledictum Prime’s heart, where the Cabal conducts warp rituals to harness the mist’s power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
+              }
+            ]
+          }
         },
         {
           "name": "The Nebryssian Liberation Republic",
