@@ -21,7 +21,7 @@
             "id": "c3",
             "name": "Chain Killer",
             "cost": 5,
-            "effect": "gain 1AP for the rest of the battle, after eliminating 3+ enemies in a single activation",
+            "effect": "Gain 1AP for the rest of the battle, after eliminating 3+ enemies in a single activation",
             "prModifier": 2,
             "stackLimit": 1,
             "requirements": []

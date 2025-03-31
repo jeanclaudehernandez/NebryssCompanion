@@ -11,7 +11,7 @@ import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener } 
 export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents'>();
   isOpen = false;
 
   @HostListener('document:click', ['$event'])
@@ -31,7 +31,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore') {
+  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }

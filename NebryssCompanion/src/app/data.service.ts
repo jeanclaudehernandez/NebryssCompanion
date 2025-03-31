@@ -15,6 +15,7 @@ export class DataService {
   private itemCategoriesUrl = 'assets/itemCategories.json';
   private npcsUrl = 'assets/npcs.json';
   private loreUrl = 'assets/lore.json';
+  private talentsUrl = 'assets/talents.json';
   private players: any[] = [];
   private weapons: any = {};
   private bestiary: any[] = [];
@@ -24,6 +25,7 @@ export class DataService {
   private itemCategories: any[] = [];
   private npcs: any[] = [];
   private lore: any = {};
+  private talents: any[] = [];
 
   constructor(private http: HttpClient) { }
 
@@ -87,6 +89,13 @@ export class DataService {
     return this.http.get<any[]>(this.loreUrl).pipe(tap(result => this.lore = result));
   }
 
+  getTalents(): Observable<any[]> {
+    if(this.talents.length) {
+      return of(this.talents);
+    }
+    return this.http.get<any[]>(this.talentsUrl).pipe(tap((result) => this.talents = result));
+  }
+
   getAllData(): Observable<{
     players: any[],
     npcs: any[],
@@ -145,5 +154,11 @@ export class DataService {
 
   getNpcByd(id: number): any {
     return this.npcs.filter((npc) => npc.id == id)[0];
+  }
+
+  getTalentById(id: string): any {
+    if(!this.talents.length) return null;
+    const allTalents = this.talents.flatMap(category => category.talents);
+    return allTalents.find(talent => talent.id === id) || null;
   }
 }
