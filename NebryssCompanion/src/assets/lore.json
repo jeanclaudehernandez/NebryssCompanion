@@ -74,7 +74,8 @@
         {
           "name": "The Imperium of Man",
           "control": "30%",
-          "goal": "Conquer and bring Nebryss into full compliance.",
+          "role": "Imperium's effort to hold control over imperium nihilus",
+          "goals": ["Conquer and bring Nebryss into full compliance."],
           "challenges": "Struggles with supply lines due to its remote location.",
           "mistKnowledge": "Some within the Imperium know of its warp origins, but this information is heavily censored.",
           "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture.",
@@ -93,10 +94,11 @@
         },
         {
           "name": "The Gilded Accord",
-          "control": "12% (but holds the best trade routes)",
+          "control": "12% but holds the best trade routes",
           "role": "A federation of independent city-states, thriving on commerce and technology.",
           "neutrality": "Profits from the war by selling weapons and mist engines to all factions.",
           "peopleIdentity": "People refer to themselves by their home island (e.g., Zephyrians from Zephyria).",
+          "goals": ["Maintain Status as top trading faction", "Keep the war going"],
           "capital": {
             "name": "Zephyria",
             "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
@@ -158,6 +160,7 @@
           "name": "The Abyssal Cabal",
           "control": "30%",
           "role": "A Chaos-worshipping faction seeking to harness the true power of the mist.",
+          "goals": ["Bring full warp corruption over Nebryss and harness the power of the mist.", "Destruction of the Imperium of Man"],
           "recruitment": "Filled with exiles and heretics from other factions.",
           "mistKnowledge": "Fully understands the mist’s warp nature and seeks to exploit it.",
           "iconography": "Generic Chaos-worshipping symbols.",

@@ -1,10 +1,11 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { DataService } from '../data.service';
 import { CommonModule, NgFor } from '@angular/common';
+import { CapitalCasePipe } from '../capital-case.pipe';
 
 @Component({
   selector: 'app-lore',
-  imports: [CommonModule, NgFor],
+  imports: [CommonModule, NgFor, CapitalCasePipe],
   standalone: true,
   templateUrl: './lore.component.html',
   styleUrls: ['./lore.component.css'],
@@ -14,6 +15,19 @@ export class LoreComponent {
   loreData: any;
   loreSections: {title: string, content: any}[] = [];
   public Array = Array;
+  public Object = Object;
+  public standardSections = [
+    'name',
+    'goals',
+    'challenges',
+    'mistKnowledge',
+    'peopleIdentity',
+    'capital',
+    'notableIslands',
+    'control',
+    'role',
+    'notableOrganizations'
+  ];
 
   constructor(private dataService: DataService) {}
 
@@ -22,6 +36,11 @@ export class LoreComponent {
       this.loreData = data;
       this.prepareLoreSections();
     });
+  }
+
+  isStandardSection(section: string) {
+    console.log(section);
+    return !!this.standardSections.find((standard) => standard == section )
   }
 
   prepareLoreSections() {
