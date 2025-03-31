@@ -9,7 +9,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent {
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items'>();
   isOpen = false;
 
   toggleMenu() {
@@ -23,6 +23,11 @@ export class SidebarComponent {
 
   showBestiary() {
     this.viewChange.emit('bestiary');
+    this.isOpen = false;
+  }
+
+  showItems() {
+    this.viewChange.emit('items');
     this.isOpen = false;
   }
 }

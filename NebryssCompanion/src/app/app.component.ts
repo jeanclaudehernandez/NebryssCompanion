@@ -6,6 +6,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { DataService } from './data.service';
 import { BestiaryComponent } from './bestiary/bestiary.component';
 import { FormsModule } from '@angular/forms';
+import { ItemsComponent } from './items/items.component';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ import { FormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     HttpClientModule,
+    ItemsComponent,
     PlayerListComponent,
     SidebarComponent,
     FormsModule,
@@ -24,16 +26,17 @@ import { FormsModule } from '@angular/forms';
     <div class="content-area">
       <app-player-list *ngIf="currentView === 'players'"></app-player-list>
       <app-bestiary *ngIf="currentView === 'bestiary'"></app-bestiary>
+      <app-items *ngIf="currentView === 'items'"></app-items>
     </div>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' = 'players';
 
   constructor() {}
 
-  onViewChange(view: 'players' | 'bestiary') {
+  onViewChange(view: 'players' | 'bestiary' | 'items') {
     this.currentView = view;
   }
 }

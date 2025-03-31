@@ -265,7 +265,7 @@
       "price": 3,
       "quantity": 10,
       "type": "Pistol/Rifle",
-      "description": "Rounds that explode on impact, SR: blast(1\")."
+      "description": "Rounds that explode on impact, SR: blast 1 inch."
     }
   ],
   "mistEngines": [

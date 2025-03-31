@@ -5,6 +5,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 interface Weapon {
   id: number;
   name: string;
+  price: number;
   profiles: WeaponProfile[];
 }
 
@@ -15,6 +16,7 @@ interface WeaponProfile {
   ws: string;
   damage: { min: number; max: number };
   specialRules: WeaponRule[];
+  body: string;
 }
 
 interface WeaponRule {
@@ -42,6 +44,8 @@ export class WeaponTableComponent {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: { melee?: Weapon[]; ranged?: Weapon[] } = {};
   @Input() weaponRulesData: RuleDefinition[] = [];
+  @Input() displayPrice: boolean = false;
+  @Input() displayBody: boolean = false;
   
   // Remove all tooltip-related properties and methods
   

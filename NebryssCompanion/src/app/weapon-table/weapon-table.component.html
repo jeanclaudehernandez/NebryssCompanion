@@ -3,11 +3,13 @@
       <thead>
         <tr>
           <th>Weapon</th>
+          <th *ngIf="displayPrice">Price</th>
           <th>Range</th>
           <th>Attacks</th>
           <th>WS/BS</th>
           <th>Damage</th>
           <th>Special Rules</th>
+          <th *ngIf="displayBody">Body</th>
         </tr>
       </thead>
       <tbody>
@@ -18,6 +20,7 @@
                 {{ weapon.name }}
                 <span *ngIf="weapon.profiles.length > 1">({{ profile.profileName || 'default' }})</span>
               </td>
+              <td *ngIf="displayPrice">{{weapon.price || '-'}}</td>
               <td>{{ profile.rng ? profile.rng : profile.rng === null ? '-' : 'melee' }}</td>
               <td>{{ profile.attacks }}</td>
               <td>{{ profile.ws }}</td>
@@ -41,6 +44,7 @@
                     <span *ngIf="!last">, </span>
                 </span>
               </td>
+              <td *ngIf="displayBody">{{profile.body}}</td>
             </tr>
           </ng-container>
         </ng-container>
