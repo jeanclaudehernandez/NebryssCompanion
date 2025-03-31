@@ -4,6 +4,7 @@
     "name": "Herbwhisper’s Apothecary",
     "owner": 6,
     "location": "Zephyria’s Sky Bazaar",
+    "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
     "categories": [2],
     "items": [
       { "id": 16, "price": 5, "type": "item" },
@@ -21,6 +22,7 @@
     "name": "Ironveil’s Ward",
     "owner": 7,
     "location": "Zephyria’s Sky Bazaar",
+    "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
     "categories": [1],
     "items": [
       { "id": 1, "price": 8, "type": "item" },
@@ -37,6 +39,7 @@
     "name": "Blackhammer’s Arsenal",
     "owner": 8,
     "location": "Zephyria’s Sky Bazaar",
+    "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
     "items": [
       { "id": 25, "price": 15, "type": "weapon" },
       { "id": 2, "price": 12, "type": "weapon" }, 
@@ -53,6 +56,7 @@
     "name": "Anchorforge’s Drydock",
     "owner": 9,
     "location": "Zephyria’s Sky Bazaar",
+    "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers",
     "categories": [4, 5, 6, 7],
     "items": [
       { "id": 40, "price": 500, "type": "item" },
@@ -78,6 +82,7 @@
     "name": "The Stoutbarrel Tavern",
     "owner": 10,
     "location": "Zephyria",
+    "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
     "categories": [2],
     "items": [
       { "id": 20, "price": 2, "type": "item" },

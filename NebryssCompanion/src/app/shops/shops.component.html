@@ -4,7 +4,7 @@
       <h3>{{ shop.name }}</h3>
       <p class="location">{{ shop.location }}</p>
       <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
-      
+      <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
       <div *ngFor="let categoryId of shop.categories">
         @let category = findCategory(categoryId);
         

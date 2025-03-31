@@ -106,24 +106,7 @@
             "notableFeatures": [
               {
                 "name": "Sky Bazaar",
-                "description": "A sprawling, multi-tiered marketplace where all factions trade.",
-                "shops": [
-                  {
-                    "name": "Herbwhisper’s Apothecary",
-                    "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-                    "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
-                  },
-                  {
-                    "name": "Ironveil’s Ward",
-                    "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
-                    "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
-                  },
-                  {
-                    "name": "Blackhammer’s Arsenal",
-                    "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
-                    "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
-                  }
-                ]
+                "description": "A sprawling, multi-tiered marketplace where all factions trade."
               },
               {
                 "name": "Mistforge",
