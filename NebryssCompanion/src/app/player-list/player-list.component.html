@@ -12,7 +12,7 @@
       </div>
     </div>
     
-    <div *ngIf="selectedPlayer" class="player-detail-container">
+    <div *ngIf="selectedPlayer" class="player-detail-container" #playerDetailContainer>
       <app-player-detail 
         [character]="selectedPlayer"
         [weaponsData]="weaponsData"

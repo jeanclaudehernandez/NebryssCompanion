@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
@@ -16,6 +16,7 @@ import { HttpClientModule } from '@angular/common/http';
   styleUrls: ['./player-list.component.css']
 })
 export class PlayerListComponent implements OnInit {
+  @ViewChild('playerDetailContainer') playerDetailContainer!: ElementRef;
   players: any[] = [];
   weaponsData: any;
   itemsData: any;
@@ -35,5 +36,13 @@ export class PlayerListComponent implements OnInit {
 
   selectPlayer(player: any): void {
     this.selectedPlayer = player;
+    setTimeout(() => {
+      if (this.playerDetailContainer?.nativeElement) {
+        this.playerDetailContainer.nativeElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+      }
+    }, 0);
   }
 }
