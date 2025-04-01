@@ -654,7 +654,7 @@
     "abilities": [
       {
         "name": "Shadow Step",
-        "effect": "1AP: Teleport 6″ through shadows or mist zones. Treat as **Concealed** after teleporting.",
+        "effect": "1AP: Teleport 6 inches through shadows or mist zones. Treat as **Concealed** after teleporting.",
         "prModifier": 3
       },
       {
@@ -681,12 +681,12 @@
     "abilities": [
       {
         "name": "Umbral Aura",
-        "effect": "Enemies within 6″ worsen their Save by 1 in mist zones.",
+        "effect": "Enemies within 6 inches worsen their Save by 1 in mist zones.",
         "prModifier": 4
       },
       {
         "name": "Terrifying Visage",
-        "effect": "Once per battle: All enemies within 6″ gain **Disoriented** (ID 8) until the end of the Turning Point.",
+        "effect": "Once per battle: All enemies within 6 inches gain **Disoriented** (ID 8) until the end of the Turning Point.",
         "prModifier": 3
       }
     ]
@@ -708,12 +708,12 @@
     "abilities": [
       {
         "name": "Veil of Darkness",
-        "effect": "1AP: Create a 3″ mist zone. Allies within it gain **Silent** (weapon rule).",
+        "effect": "1AP: Create a 3 inch mist zone. Allies within it gain **Silent** (weapon rule).",
         "prModifier": 3
       },
       {
         "name": "Siphon Essence",
-        "effect": "PSYCHIC: 1AP: Target enemy within 12″ suffers 1D3 wounds. Heal equal to the damage dealt.",
+        "effect": "PSYCHIC: 1AP: Target enemy within 12 inches suffers 1D3 wounds. Heal equal to the damage dealt.",
         "prModifier": 4
       }
     ]
