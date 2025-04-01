@@ -37,6 +37,6 @@
   {
   "id": 8,
   "name": "Disoriented",
-  "effect": "Worsen WS/BS by 1. Roll 1D6 + APL at the end of its activation. On a 4+, remove this state."
+  "effect": "Worsen WS/BS by 1. Roll 1D6 + APL at the end of its activation. On a 6+, remove this state."
   }
 ]

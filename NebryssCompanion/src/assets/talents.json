@@ -27,7 +27,7 @@
             "requirements": []
         }, {
             "id": "c4",
-            "name": "Trained eye",
+            "name": "Trained shooter",
             "cost": 2,
             "effect": "Improve by 1 the WS of ranged weapons of a selected type",
             "prModifier": 2,
@@ -36,9 +36,32 @@
             "id": "c5",
             "name": "Obliterator",
             "cost": 2,
-            "effect": "Weapons with torrent or blast rules gain lethal 5+",
+            "effect": "Weapons with **torrent** or **blast** rules gain lethal 5+",
             "prModifier": 2,
             "requirements": []
+        }, {
+            "id": "c6",
+            "name": "Counter Strike",
+            "cost": 2,
+            "effect": "Once per Turning point: When retaliating, After parrying an attack, inmidiately resolve a successful hit as damaging.",
+            "prModifier": 3,
+            "requirements": ["c1"]
+        },
+        {
+            "id": "c7",
+            "name": "Mist Duelist",
+            "cost": 2,
+            "effect": "In mist zones, gain +1 WS and retain one additional critical success in melee combat.",
+            "prModifier": 4,
+            "requirements": ["c1"]
+        },
+        {
+            "id": "c8",
+            "name": "Bulletstorm",
+            "cost": 4,
+            "effect": "When using a weapon with **Torrent** or **Blast**, reroll one failed attack die per target.",
+            "prModifier": 2,
+            "requirements": ["c5"]
         }]
     },{
         "id": "magic",
@@ -65,7 +88,31 @@
             "effect": "Once per battle: Add +1d3 to a healing PSYCHIC ability",
             "prModifier": 2,
             "requirements": ["m1"]
-        }]
+        }, {
+            "id": "m4",
+            "name": "Mist Cloak",
+            "cost": 3,
+            "effect": "1AP: When in a mist zone, improve the save stat by 2 until the end of this operatives next activation.",
+            "prModifier": 4,
+            "requirements": ["m2"]
+        },
+        {
+            "id": "m5",
+            "name": "Reality Tear",
+            "cost": 5,
+            "effect": "Once per battle: Create a 3″ hazardous mist anomaly within 12″. Enemies in the harzardous zone or entering the hazardous zone suffer 1D3 wounds.",
+            "prModifier": 7,
+            "requirements": ["m2"]
+        },
+        {
+            "id": "m6",
+            "name": "Echoing Scream",
+            "cost": 5,
+            "effect": "Once per battle: Psychic attacks inflict **Disoriented** on targets (even if no damage was dealt). Lasts until end of Turning Point.",
+            "prModifier": 3,
+            "requirements": ["m2", "m5"]
+        }
+    ]
     },{
         "id": "support",
         "name": "Support Talents",
@@ -91,9 +138,34 @@
             "effect": "Once Per Battle: Remove 1 altered state from all allies within 3 inches (must remove the same state from all allies)",
             "prModifier": 2,
             "requirements": ["s2"]
-        }]
+        }, {
+            "id": "s4",
+            "name": "Guardian Aura",
+            "cost": 3,
+            "effect": "Allies within 3 inches reduce incoming damage by 1 (min 3). Does not stack with other damage reduction.",
+            "prModifier": 4,
+            "requirements": ["s2"]
+        },
+        {
+            "id": "s5",
+            "name": "Brass Collector",
+            "cost": 2,
+            "effect": "Once per day: Restore 1D3 ammunition of one specific type for all allies within 3 inches.",
+            "prModifier": 2,
+            "requirements": ["s1"]
+        },
+        {
+            "id": "s6",
+            "name": "Mist Navigator",
+            "cost": 1,
+            "effect": "You and allies within 3 inches at the start of the activation ignore mist movement penalties.",
+            "prModifier": 3,
+            "requirements": []
+        }
+    ]
     },{
         "id": "attributeUpgrades",
+        "name": "Attribute Upgrades",
         "description": "Characters grow in strength",
         "talents": [{
             "id": "att1",
@@ -111,7 +183,7 @@
             "prModifier": null
         }, {
             "id": "att3",
-            "name": "-1 Save",
+            "name": "Better Save",
             "cost": 4,
             "effect": "Improve Save characteristic by 1",
             "maxStacks": 1,
@@ -124,5 +196,35 @@
             "maxStacks": 1,
             "prModifier": 7
         }]
+    }, {
+        "id": "situationalUpgrades",
+        "name": "Situational",
+        "description": "Stat improvements that only apply undercertain circumstances",
+        "talents": [
+            {
+                "id": "su1",
+                "name": "Mist Resilience",
+                "cost": 1,
+                "effect": "Gain +2 Wounds while in mist zones. Stacks with other Wound bonuses.",
+                "maxStacks": 1,
+                "prModifier": 4
+            },
+            {
+                "id": "su2",
+                "name": "Precision Reflexes",
+                "cost": 4,
+                "effect": "Improve Save by 1. Does not stack with armor bonuses.",
+                "maxStacks": 1,
+                "prModifier": 5
+            },
+            {
+                "id": "su3",
+                "name": "Mist Synergy",
+                "cost": 2,
+                "effect": "Once per battle: Gain +1 APL while in **dense** mist. Lasts one Turning Point.",
+                "maxStacks": 1,
+                "prModifier": 3
+            }
+        ]
     }
 ]
