@@ -1,5 +1,4 @@
-{
-  "melee": [
+[
     {
       "id": 1,
       "name": "Bayonet",
@@ -7,6 +6,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -22,6 +22,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 4 },
@@ -30,6 +31,7 @@
         },
         {
           "profileName": "power cell",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 5 },
@@ -45,6 +47,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 4 },
@@ -63,6 +66,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 3,
           "damage": { "min": 2, "max": 4 },
@@ -81,6 +85,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -89,6 +94,7 @@
         },
         {
           "profileName": "astartes",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 2, "max": 3 },
@@ -104,6 +110,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 5,
           "ws": 3,
           "damage": { "min": 2, "max": 3 },
@@ -122,6 +129,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 2,
           "damage": { "min": 5, "max": 6 },
@@ -141,6 +149,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 5,
           "ws": 3,
           "damage": { "min": 4, "max": 5 },
@@ -159,6 +168,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 4 },
@@ -174,6 +184,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -189,6 +200,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 4,
           "damage": { "min": 1, "max": 2 },
@@ -204,6 +216,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -219,6 +232,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 4 },
@@ -237,6 +251,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 3, "max": 4 },
@@ -252,6 +267,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 5,
           "ws": 3,
           "damage": { "min": 5, "max": 7 },
@@ -270,6 +286,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -285,6 +302,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 2, "max": 3 },
@@ -300,6 +318,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 4,
           "damage": { "min": 3, "max": 4 },
@@ -315,6 +334,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 4, "max": 5 },
@@ -330,6 +350,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 4,
           "damage": { "min": 2, "max": 3 },
@@ -345,6 +366,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 3, "max": 4 },
@@ -360,6 +382,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 4,
           "damage": { "min": 2, "max": 4 },
@@ -375,6 +398,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 2,
           "ws": 5,
           "damage": { "min": 1, "max": 2 },
@@ -390,6 +414,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 1,
           "ws": 5,
           "damage": { "min": 0, "max": 1 },
@@ -405,6 +430,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 2,
           "ws": 4,
           "damage": { "min": 3, "max": 4 },
@@ -422,6 +448,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 4,
           "ws": 3,
           "damage": { "min": 2, "max": 3 },
@@ -440,6 +467,7 @@
       "profiles": [
         {
           "profileName": "",
+          "rng": 0,
           "attacks": 3,
           "ws": 2,
           "damage": { "min": 3, "max": 4 },
@@ -450,9 +478,7 @@
           "body": "universal"
         }
       ]
-    }
-  ],
-  "ranged": [
+    },
     {
       "id": 23,
       "name": "Lasgun",
@@ -1060,4 +1086,3 @@
       ]
     }
   ]
-}
