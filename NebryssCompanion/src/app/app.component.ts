@@ -43,12 +43,19 @@ import { TalentsComponent } from './talents/talents.component';
 export class AppComponent {
   currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents'  = 'players';
 
-  constructor() {}
+  constructor() {
+    const savedView = localStorage.getItem('lastView');
+    this.currentView = this.isValidView(savedView) ? savedView : 'players';
+  }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' ) {
+  private isValidView(view: string | null): view is AppComponent['currentView'] {
+    return view !== null && 
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'talents'].includes(view);
+  }
+
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents') {
     this.currentView = view;
-    window.scrollTo({
-      top: 0,
-    });
+    localStorage.setItem('lastView', view);
+    window.scrollTo({ top: 0 });
   }
 }
