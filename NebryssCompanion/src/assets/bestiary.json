@@ -175,7 +175,7 @@
       "Wounds": 10,
       "Save": 4,
       "APL": 2,
-      "body": ["universal", "aetherwing"]
+      "body": ["universal", "aetherwing", "spell"]
     },
     "weapons": [19, 44],
     "abilities": [
@@ -219,7 +219,7 @@
       "APL": 3,
       "body": ["universal", "astartes"]
     },
-    "weapons": [9, 24],
+    "weapons": [9, 52],
     "abilities": [
       {
         "name": "Combat Medicae",
@@ -283,7 +283,7 @@
       "Wounds": 5,
       "Save": 6,
       "APL": 1,
-      "body": ["universal"]
+      "body": ["universal", "screamer", "spell"]
     },
     "weapons": [21, 45],
     "abilities": [
@@ -426,7 +426,7 @@
       "Wounds": 14,
       "Save": 4,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": ["universal", "astartes", "spell"]
     },
     "weapons": [46, 14],
     "abilities": [
@@ -519,7 +519,7 @@
       "Wounds": 10,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human", "fellgor"]
+      "body": ["universal", "human", "fellgor", "spell"]
     },
     "weapons": [5, 50],
     "abilities": [

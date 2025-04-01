@@ -355,7 +355,7 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 21, "modValue": 5 }],
-        "body": "Screamer"
+        "body": "screamer"
       }
     ]
   },
@@ -955,9 +955,9 @@
       {
         "profileName": "",
         "rng": 8,
-        "attacks": 3,
+        "attacks": 4,
         "ws": 4,
-        "damage": { "min": 2, "max": 3 },
+        "damage": { "min": 3, "max": 4 },
         "specialRules": [],
         "body": "astartes"
       }
