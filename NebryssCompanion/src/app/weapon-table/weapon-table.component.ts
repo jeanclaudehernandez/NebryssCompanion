@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef, SimpleChanges, OnChanges } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
 
@@ -42,7 +42,7 @@ interface RuleDefinition {
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css']
 })
-export class WeaponTableComponent {
+export class WeaponTableComponent implements OnChanges {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: RuleDefinition[] = [];

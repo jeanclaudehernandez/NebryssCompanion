@@ -20,7 +20,7 @@ export class BestiaryComponent implements OnInit {
   selectedFaction: string = "null";
   filteredCreatures: any[] = [];
   itemsData: any;
-  weaponsData: any;
+  weaponsData: any[] = [];
   weaponRulesData: any[] = [];
 
   constructor(private dataService: DataService) {}

@@ -29,7 +29,7 @@
       },
       {
         "name": "Crab Shell Shield",
-        "effect": "Improve Save by 1 (to 5+). When retaliating, retain one failed attack dice as a success."
+        "effect": "Improve Save by 1. When retaliating, retain one failed attack dice as a success."
       }
     ]
   },
@@ -44,7 +44,7 @@
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["universal"]
+      "body": ["universal", "spell"]
     },
     "weapons": [12, 42],
     "abilities": [
@@ -70,7 +70,7 @@
       "Wounds": 12,
       "Save": 4,
       "APL": 2,
-      "body": ["universal"]
+      "body": ["universal", "spell", "human"]
     },
     "weapons": [13, 43],
     "abilities": [

@@ -786,7 +786,7 @@
           { "ruleId": 30, "modValue": 1 },
           { "ruleId": 18, "modValue": null }
         ],
-        "body": "spell -Mist"
+        "body": "spell"
       }
     ]
   },
