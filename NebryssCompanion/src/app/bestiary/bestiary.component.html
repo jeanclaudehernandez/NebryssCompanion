@@ -33,11 +33,13 @@
     </div>
 </div>
 
-<app-player-detail 
-    *ngIf="selectedCreature"
-    [character]="selectedCreature"
-    [weaponsData]="weaponsData"
-    [characterType]="'mob'"
-    [itemsData]="itemsData"
-    [weaponRulesData]="weaponRulesData">
-</app-player-detail>
+<div #mobDetailContainer>
+    <app-player-detail 
+        *ngIf="selectedCreature"
+        [character]="selectedCreature"
+        [weaponsData]="weaponsData"
+        [characterType]="'mob'"
+        [itemsData]="itemsData"
+        [weaponRulesData]="weaponRulesData">
+    </app-player-detail>
+</div>

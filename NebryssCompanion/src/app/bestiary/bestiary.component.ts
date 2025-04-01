@@ -1,5 +1,5 @@
 // bestiary.component.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, JsonPipe } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
@@ -13,6 +13,7 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./bestiary.component.css']
 })
 export class BestiaryComponent implements OnInit {
+  @ViewChild('mobDetailContainer') mobDetailContainer!: ElementRef;
   bestiary: any[] = [];
   selectedCreatureId: number | null = null;
   selectedCreature: any = null;
@@ -56,6 +57,7 @@ export class BestiaryComponent implements OnInit {
         if (creature) {
           this.selectedCreatureId = creature.id;
           this.selectedCreature = creature;
+          this.scrollToMob();
         }
       }
     });
@@ -106,5 +108,18 @@ export class BestiaryComponent implements OnInit {
       this.selectedCreature = null;
       localStorage.removeItem('bestiaryCreatureId');
     }
+    
+    this.scrollToMob();
+  }
+
+  scrollToMob(): void {
+    setTimeout(() => {
+      if (this.mobDetailContainer?.nativeElement) {
+        this.mobDetailContainer.nativeElement.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start'
+        });
+      }
+    }, 0);
   }
 }
