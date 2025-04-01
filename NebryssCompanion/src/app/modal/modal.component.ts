@@ -56,13 +56,9 @@ export class ModalComponent {
   constructor(private cdr: ChangeDetectorRef) {}
 
   setTemplate(template: TemplateRef<any>) {
-    console.log('Template element:', template.elementRef.nativeElement);
-    console.log('Template nodes:', template.createEmbeddedView(null).rootNodes);
-    
     if (this.viewContainerRef) {
       this.viewContainerRef.clear();
       const viewRef = this.viewContainerRef.createEmbeddedView(template);
-      console.log('Rendered nodes:', viewRef.rootNodes);
       this.cdr.detectChanges();
     }
   }

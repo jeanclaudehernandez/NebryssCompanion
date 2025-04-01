@@ -10,18 +10,23 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   imports: [CommonModule, WeaponTableComponent, GenericTableComponent],
   template: `
     <div class="items-container">
-      <!-- Weapons Section -->
-      <h2 style="margin-left: 50px;">Weapons</h2>
-      <app-weapon-table 
-        [weaponIds]="allWeaponIds" 
-        [weaponsData]="weaponsData" 
-        [weaponRulesData]="weaponRules"
-        [displayPrice]="true"
-        [displayBody]="true"></app-weapon-table>
+      <div class="weapons-section">
+        <h2 (click)="toggleWeaponsCollapsed()" style="cursor: pointer; margin-left: 50px;">
+          Weapons {{ weaponsCollapsed ? '▶' : '▼' }}
+        </h2>
+        <div *ngIf="!weaponsCollapsed">
+          <app-weapon-table 
+            [weaponIds]="allWeaponIds" 
+            [weaponsData]="weaponsData" 
+            [weaponRulesData]="weaponRules"
+            [displayPrice]="true"
+            [displayBody]="true"></app-weapon-table>
+        </div>
+      </div>
 
-      <!-- Other Items Sections -->
       <div *ngFor="let category of itemCategories">
         <app-generic-table 
+          [storageKey]="'items-category-' + category.key"
           [title]="category.name"
           [data]="itemsData[category.key] || []"
           [headers]="category.headers"
@@ -38,6 +43,7 @@ export class ItemsComponent {
   weaponRules: any[] = [];
   allWeaponIds: number[] = [];
   itemCategories: any[] = [];
+  weaponsCollapsed = true;
   
 
   constructor(private dataService: DataService) {}
@@ -50,6 +56,13 @@ export class ItemsComponent {
       this.weaponRules = data.weaponRules;
       this.itemCategories = data.itemCategories;
       this.allWeaponIds = this.weaponsData.map(w => w.id);
+      const saved = localStorage.getItem('items-weapons-collapsed');
+      this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
     });
+  }
+
+  toggleWeaponsCollapsed() {
+    this.weaponsCollapsed = !this.weaponsCollapsed;
+    localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
   }
 }

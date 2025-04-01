@@ -61,12 +61,20 @@ export class ShopsComponent {
   getShopItemsWithPrices(shop: any, categoryKey: string) {
     return this.dataService.getShopItems(shop.id).map((shopItem) => {
       const itemInfo = this.dataService.getItemById(shopItem.id);
-      console.log(itemInfo),
-      console.log(categoryKey)
       return {
         ...shopItem,
         ...itemInfo
       };
     }).filter((shopItem) => String(shopItem.itemCategory) == String(categoryKey));
+  }
+
+  isWeaponCollapsed(shopId: number): boolean {
+    const saved = localStorage.getItem(`shop-${shopId}-weapons-collapsed`);
+    return saved ? JSON.parse(saved) : true;
+  }
+
+  toggleWeaponCollapse(shopId: number): void {
+    const newState = !this.isWeaponCollapsed(shopId);
+    localStorage.setItem(`shop-${shopId}-weapons-collapsed`, JSON.stringify(newState));
   }
 }

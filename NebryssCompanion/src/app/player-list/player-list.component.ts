@@ -31,11 +31,25 @@ export class PlayerListComponent implements OnInit {
       this.weaponsData = data.weapons;
       this.itemsData = data.items;
       this.weaponRulesData = data.weaponRules;
+
+      const savedPlayerId = localStorage.getItem('selectedPlayerId');
+      if (savedPlayerId) {
+        const playerId = JSON.parse(savedPlayerId);
+        this.selectedPlayer = this.players.find(p => p.id === playerId);
+        if(this.selectedPlayer) {
+          this.scrollToPlayer();
+        }
+      }
     });
   }
 
   selectPlayer(player: any): void {
     this.selectedPlayer = player;
+    localStorage.setItem('selectedPlayerId', JSON.stringify(player.id));
+    this.scrollToPlayer();
+  }
+
+  scrollToPlayer(): void {
     setTimeout(() => {
       if (this.playerDetailContainer?.nativeElement) {
         this.playerDetailContainer.nativeElement.scrollIntoView({ 

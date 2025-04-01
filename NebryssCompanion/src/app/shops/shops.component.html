@@ -1,23 +1,27 @@
 <div class="shops-container">
-    <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
-    <div *ngFor="let shop of shops" class="shop-card">
-      <h3>{{ shop.name }}</h3>
-      <p class="location">{{ shop.location }}</p>
-      <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
-      <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
-      <div *ngFor="let categoryId of shop.categories">
-        @let category = findCategory(categoryId);
-        
-        <app-generic-table 
-          [title]="category.name"
-          [data]="getShopItemsWithPrices(shop, category.key) || []"
-          [headers]="category.headers"
-          [headerKeys]="category.keys">
-        </app-generic-table>
-      </div>
+  <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
+  <div *ngFor="let shop of shops" class="shop-card">
+    <h3>{{ shop.name }}</h3>
+    <p class="location">{{ shop.location }}</p>
+    <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
+    <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
+    <div *ngFor="let categoryId of shop.categories">
+      @let category = findCategory(categoryId);
       
-        <div *ngIf="hasWeapons(shop)" class="weapons-section">
-            <h4>Weapons</h4>
+      <app-generic-table 
+        [storageKey]="'shop-' + shop.id + '-category-' + category.id"
+        [title]="category.name"
+        [data]="getShopItemsWithPrices(shop, category.key) || []"
+        [headers]="category.headers"
+        [headerKeys]="category.keys">
+      </app-generic-table>
+    </div>
+    
+      <div *ngIf="hasWeapons(shop)" class="weapons-section">
+          <h4 (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
+            Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}
+          </h4>
+          <div *ngIf="!isWeaponCollapsed(shop.id)">
             <app-weapon-table 
                 [weaponIds]="getWeaponIds(shop)"
                 [weaponsData]="weaponsData"
@@ -25,6 +29,7 @@
                 [displayPrice]="true"
                 [displayBody]="true">
             </app-weapon-table>
-        </div>
-    </div>
+          </div>
+      </div>
+  </div>
 </div>
