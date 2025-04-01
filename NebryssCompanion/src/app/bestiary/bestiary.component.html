@@ -5,24 +5,34 @@
     <div class="filter-group">
         <label>Faction:</label>
         <select [(ngModel)]="selectedFaction" (change)="onFactionSelected()">
-        <option [value]="null">All Factions</option>
-        <option *ngFor="let faction of factions" [value]="faction">
-            {{ faction }}
-        </option>
+            <option [ngValue]="null">All Factions</option>
+            <option *ngFor="let faction of factions" [value]="faction">
+                {{ faction }}
+            </option>
+        </select>
+    </div>
+
+    <div class="filter-group">
+        <label>Sub Group:</label>
+        <select [(ngModel)]="selectedSubGroup" (change)="onSubGroupSelected()">
+            <option [ngValue]="null">All Sub Groups</option>
+            <option *ngFor="let subgroup of subgroups" [value]="subgroup">
+                {{ subgroup }}
+            </option>
         </select>
     </div>
 
     <div class="filter-group">
         <label>Creature:</label>
         <select [(ngModel)]="selectedCreatureId" (change)="onCreatureSelected()">
-        <option [value]="null">Select a creature</option>
-        <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
-            {{ creature.name }} ({{ creature.subgroup }})
-        </option>
+            <option [value]="null">Select a creature</option>
+            <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
+                {{ creature.name }} ({{ creature.subgroup }})
+            </option>
         </select>
     </div>
 </div>
-  
+
 <app-player-detail 
     *ngIf="selectedCreature"
     [character]="selectedCreature"

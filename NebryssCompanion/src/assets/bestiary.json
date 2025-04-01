@@ -89,7 +89,7 @@
   {
     "id": 4,
     "name": "Aetherwing",
-    "faction": "Forces of Nature",
+    "faction": "Forces of nature",
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
@@ -115,7 +115,7 @@
   {
     "id": 5,
     "name": "Aetherwing Bannerbearer",
-    "faction": "Forces of Nature",
+    "faction": "Forces of nature",
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
@@ -141,7 +141,7 @@
   {
     "id": 6,
     "name": "Aetherwing Flutist",
-    "faction": "Forces of Nature",
+    "faction": "Forces of nature",
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
@@ -167,7 +167,7 @@
   {
     "id": 7,
     "name": "Windblast Aetherwing",
-    "faction": "Forces of Nature",
+    "faction": "Forces of nature",
     "subgroup": "Tzaangor",
     "pr": 114,
     "attributes": {
