@@ -202,5 +202,29 @@
     "name": "hot",
     "effect": "After finishing the shoot action, on a failed roll of 1d6 against WS, operative suffers 2x result wounds",
     "prModifier": -2
+  },
+  {
+    "id": 36,
+    "name": "Plague Bite",
+    "effect": "If damage is made to the target during this action, apply <2> status to the target. If the target is already bleeding, worsen the effect to <3>.",
+    "prModifier": 1
+  },
+  {
+    "id": 37,
+    "name": "Noxious Cloud",
+    "effect": "All operatives within 2 inches of the target (including the attacker) suffer 1 wound at the end of the activation. Does not affect other Nurglings.",
+    "prModifier": -1
+  },
+  {
+    "id": 38,
+    "name": "Shadow Claws",
+    "effect": "After rolling attack dice, retain one additional normal success if the target is in a mist zone or Obscured.",
+    "prModifier": 2
+  },
+  {
+    "id": 39,
+    "name": "Soulrender",
+    "effect": "For each critical hit retained, heal 1 wound to the attacker.",
+    "prModifier": 3
   }
 ]

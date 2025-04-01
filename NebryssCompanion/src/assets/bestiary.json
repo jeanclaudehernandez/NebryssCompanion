@@ -572,5 +572,150 @@
         "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.", "prModifier": 7
       }
     ]
+  },
+  {
+    "id": 23,
+    "name": "Nurgling",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 45,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 4, 
+      "Save": 6, 
+      "APL": 1, 
+      "body": ["universal"]
+    },
+    "weapons": [54, 55], 
+    "abilities": [
+      {
+        "name": "Disgustingly Resilient",
+        "effect": "Roll 1D6 each time this operative loses a wound. On a 5+, ignore that wound.",
+        "prModifier": 2
+      },
+      {
+        "name": "Swarm of Filth",
+        "effect": "If another Nurgling is within 2 inches, improve WS by 1 for melee attacks.",
+        "prModifier": 1
+      },
+      {
+        "name": "Nurgle’s Gift",
+        "effect": "When this operative is destroyed, all enemies within 2 inches suffer 1 wound.",
+        "prModifier": null
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Mini-Terminator",
+    "faction": "Imperium",
+    "subgroup": "Astartes (Experimental)",
+    "pr": 45,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 5,
+      "Save": 3, 
+      "APL": 1,
+      "body": ["universal", "astartes"]
+    },
+    "weapons": [57, 56],
+    "abilities": [
+      {
+        "name": "Terminator Armor",
+        "effect": "Ignore movement penalties from terrain. Reduce damage taken from Blast weapons by 1 (to a min of 1).",
+        "prModifier": 2
+      },
+      {
+        "name": "Overclocked Systems",
+        "effect": "Once per battle: Gain +1 APL for one activation. After this activation, suffer 1 wound.",
+        "prModifier": 1
+      },
+      {
+        "name": "Bulky Frame",
+        "effect": "Cannot climb or perform Dash actions. Enemy operatives cannot move through this operative.",
+        "prModifier": -1
+      }
+    ]
+  },
+  {
+    "id": 25,
+    "name": "Mandrake Shadowstalker",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 65,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": ["universal"]
+    },
+    "weapons": [58],
+    "abilities": [
+      {
+        "name": "Shadow Step",
+        "effect": "1AP: Teleport 6″ through shadows or mist zones. Treat as **Concealed** after teleporting.",
+        "prModifier": 3
+      },
+      {
+        "name": "Soul Hunger",
+        "effect": "After defeating an enemy, heal 1D3 wounds.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 26,
+    "name": "Mandrake Nightfiend",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 85,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 3,
+      "body": ["universal"]
+    },
+    "weapons": [58, 59],
+    "abilities": [
+      {
+        "name": "Umbral Aura",
+        "effect": "Enemies within 6″ worsen their Save by 1 in mist zones.",
+        "prModifier": 4
+      },
+      {
+        "name": "Terrifying Visage",
+        "effect": "Once per battle: All enemies within 6″ gain **Disoriented** (ID 8) until the end of the Turning Point.",
+        "prModifier": 3
+      }
+    ]
+  },
+  {
+    "id": 27,
+    "name": "Mandrake Soulrend",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 75,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": ["universal"]
+    },
+    "weapons": [58],
+    "abilities": [
+      {
+        "name": "Veil of Darkness",
+        "effect": "1AP: Create a 3″ mist zone. Allies within it gain **Silent** (weapon rule).",
+        "prModifier": 3
+      },
+      {
+        "name": "Siphon Essence",
+        "effect": "PSYCHIC: 1AP: Target enemy within 12″ suffers 1D3 wounds. Heal equal to the damage dealt.",
+        "prModifier": 4
+      }
+    ]
   }
 ]

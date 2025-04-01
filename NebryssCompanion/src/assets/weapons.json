@@ -367,6 +367,89 @@
           "body": "astartes"
         }
       ]
+    },
+    {
+      "id": 54,
+      "name": "Tiny Claws",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 2,
+          "ws": 5,
+          "damage": { "min": 1, "max": 2 },
+          "specialRules": [{ "ruleId": 36, "modValue": null }],
+          "body": "universal"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "name": "Pustulent Spray",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 1,
+          "ws": 5,
+          "damage": { "min": 0, "max": 1 },
+          "specialRules": [{ "ruleId": 37, "modValue": null }],
+          "body": "universal"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "name": "Mini-Power Fist",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 2,
+          "ws": 4,
+          "damage": { "min": 3, "max": 4 },
+          "specialRules": [
+            { "ruleId": 20, "modValue": null }
+          ],
+          "body": "astartes"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "name": "Shadow Claws",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 4,
+          "ws": 3,
+          "damage": { "min": 2, "max": 3 },
+          "specialRules": [
+            { "ruleId": 38, "modValue": null }, 
+            { "ruleId": 28, "modValue": null } 
+          ],
+          "body": "universal"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "name": "Soulrender",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "attacks": 3,
+          "ws": 2,
+          "damage": { "min": 3, "max": 4 },
+          "specialRules": [
+            { "ruleId": 39, "modValue": null },
+            { "ruleId": 28, "modValue": null }
+          ],
+          "body": "universal"
+        }
+      ]
     }
   ],
   "ranged": [
@@ -955,6 +1038,24 @@
           "damage": { "min": 1, "max": 2 },
           "specialRules": [],
           "body": "construct"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "name": "Micro-Assault Cannon",
+      "price": 0,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 3,
+          "ws": 4,
+          "damage": { "min": 2, "max": 3 },
+          "specialRules": [
+            { "ruleId": 26, "modValue": null }
+          ],
+          "body": "astartes"
         }
       ]
     }
