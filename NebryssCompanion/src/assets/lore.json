@@ -175,7 +175,8 @@
           "capital": {
             "name": "Misthaven",
             "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
-            "imgUrl": "",
+            "imgUrl": "https://iili.io/3RFipWB.jpg",
+            "thumbnail": "https://iili.io/3RFipWB.th.jpg",
             "keyFeatures": [
               {
                 "name": "The Veiled Citadel",
