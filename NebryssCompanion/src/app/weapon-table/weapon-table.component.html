@@ -13,28 +13,27 @@
         </tr>
       </thead>
       <tbody>
-        <ng-container *ngFor="let weaponId of weaponIds">
-          <ng-container *ngIf="getWeaponById(weaponId) as weapon">
-            <tr *ngFor="let profile of weapon.profiles">
-              <ng-container *ngIf="filterByBody(profile) || !isCharacterDisplayPage">
+        <ng-container *ngFor="let entry of sortedProfiles">
+          <ng-container *ngIf="filterByBody(entry.profile) || !isCharacterDisplayPage">
+            <tr class="weapon-row">
                 <td>
-                  {{ weapon.name }}
-                  <span *ngIf="weapon.profiles.length > 1">({{ profile.profileName || 'default' }})</span>
+                  {{ entry.weapon.name }}
+                  <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
                 </td>
-                <td *ngIf="displayPrice">{{weapon.price || '-'}}</td>
-                <td>{{ profile.rng ? profile.rng : profile.rng === null ? '-' : 'melee' }}</td>
-                <td>{{ profile.attacks }}</td>
-                <td>{{ profile.ws }}</td>
+                <td *ngIf="displayPrice">{{entry.weapon.price || '-'}}</td>
+                <td>{{ entry.profile.rng | weaponRange}}</td>
+                <td>{{ entry.profile.attacks }}</td>
+                <td>{{ entry.profile.ws }}</td>
                 <td>
-                  <span *ngIf="profile.damage.min === profile.damage.max">
-                    {{ profile.damage.min }}
+                  <span *ngIf="entry.profile.damage.min === entry.profile.damage.max">
+                    {{ entry.profile.damage.min }}
                   </span>
-                  <span *ngIf="profile.damage.min !== profile.damage.max">
-                    {{ profile.damage.min }}-{{ profile.damage.max }}
+                  <span *ngIf="entry.profile.damage.min !== entry.profile.damage.max">
+                    {{ entry.profile.damage.min }}/{{ entry.profile.damage.max }}
                   </span>
                 </td>
                 <td>
-                  <span *ngFor="let rule of profile.specialRules; let last = last" class="rule-item">
+                  <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
                       <span class="rule-text"
                           [matTooltip]="getRuleDisplay(rule).description"
                           matTooltipPosition="above"
@@ -45,8 +44,7 @@
                       <span *ngIf="!last">, </span>
                   </span>
                 </td>
-                <td *ngIf="displayBody">{{profile.body}}</td>
-              </ng-container>
+                <td *ngIf="displayBody">{{entry.profile.body}}</td>
             </tr>
           </ng-container>
         </ng-container>

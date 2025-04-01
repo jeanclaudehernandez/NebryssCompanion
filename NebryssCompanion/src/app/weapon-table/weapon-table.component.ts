@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef, SimpleChanges } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
+import { WeaponRangePipe } from '../weapon-range.pipe';
 
 interface Weapon {
   id: number;
@@ -11,7 +12,7 @@ interface Weapon {
 
 interface WeaponProfile {
   profileName?: string;
-  rng?: string;
+  rng: number | null;
   attacks: number;
   ws: string;
   damage: { min: number; max: number };
@@ -35,25 +36,73 @@ interface RuleDefinition {
   standalone: true,
   imports: [
     CommonModule,
-    MatTooltipModule
+    MatTooltipModule,
+    WeaponRangePipe
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css']
 })
 export class WeaponTableComponent {
   @Input() weaponIds: number[] = [];
-  @Input() weaponsData: { melee?: Weapon[]; ranged?: Weapon[] } = {};
+  @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: RuleDefinition[] = [];
   @Input() displayPrice: boolean = false;
   @Input() displayBody: boolean = false;
   @Input() isCharacterDisplayPage: boolean = false;
   @Input() characterBody: string[] = [];
-  
-  // Remove all tooltip-related properties and methods
+  @Input() sortByRange: boolean = true;
+
+  sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
+      this.updateSortedProfiles();
+    }
+  }
+
+  private updateSortedProfiles(): void {
+    const allProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
+    
+    // Collect all profiles
+    this.weaponIds.forEach(weaponId => {
+      const weapon = this.getWeaponById(weaponId);
+      if (weapon) {
+        weapon.profiles.forEach(profile => {
+          allProfiles.push({ weapon, profile });
+        });
+      }
+    });
+
+    // Sort if enabled
+    this.sortedProfiles = this.sortByRange 
+      ? this.sortProfiles(allProfiles)
+      : allProfiles;
+  }
+
+  private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]) {
+    return [...profiles].sort((a, b) => {
+      const aRng = a.profile.rng;
+      const bRng = b.profile.rng;
+
+      // Melee (0) first
+      if (aRng === 0 && bRng !== 0) return -1;
+      if (bRng === 0 && aRng !== 0) return 1;
+
+      // Numeric ranges (ascending)
+      if (typeof aRng === 'number' && typeof bRng === 'number') {
+        return aRng - bRng;
+      }
+
+      // Handle null/undefined ranges last
+      if (aRng == null) return 1;
+      if (bRng == null) return -1;
+
+      return 0;
+    });
+  }
   
   getWeaponById(id: number): Weapon | null {
-    const allWeapons = [...(this.weaponsData.melee || []), ...(this.weaponsData.ranged || [])];
-    return allWeapons.find(w => w.id === id) || null;
+    return this.weaponsData.find(w => w.id === id) || null;
   }
 
   filterByBody(weaponProfile: any) {

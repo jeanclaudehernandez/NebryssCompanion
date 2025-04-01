@@ -34,7 +34,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 })
 export class ItemsComponent {
   itemsData: any = {};
-  weaponsData: any = {};
+  weaponsData: any[] = [];
   weaponRules: any[] = [];
   allWeaponIds: number[] = [];
   itemCategories: any[] = [];
@@ -48,12 +48,8 @@ export class ItemsComponent {
       
       this.weaponsData = data.weapons;
       this.weaponRules = data.weaponRules;
-      const allWeapons = [
-        ...(data.weapons.melee || []),
-        ...(data.weapons.ranged || [])
-      ];
       this.itemCategories = data.itemCategories;
-      this.allWeaponIds = allWeapons.map(w => w.id);
+      this.allWeaponIds = this.weaponsData.map(w => w.id);
     });
   }
 }

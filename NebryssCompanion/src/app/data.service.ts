@@ -16,7 +16,7 @@ import { Observable, of } from 'rxjs';
 })
 export class DataService {
   private players: any[] = playersData;
-  private weapons: any = weaponsData;
+  private weapons: any[] = weaponsData;
   private bestiary: any[] = bestiaryData;
   private weaponsRules: any[] = weaponRulesData;
   private items: any = itemsData;
@@ -44,7 +44,7 @@ export class DataService {
     return of(this.bestiary);
   }
 
-  getWeapons(): Observable<any> {
+  getWeapons(): Observable<any[]> {
     return of(this.weapons);
   }
 
@@ -91,8 +91,7 @@ export class DataService {
   }
 
   getWeaponById(id: number): any {
-    const allWeapons = [...(this.weapons.melee || []), ...(this.weapons.ranged || [])];
-    return allWeapons.find(w => w.id === id) || null;
+    return this.weapons.find(w => w.id === id) || null;
   }
 
   getItemById(id: number): any {
