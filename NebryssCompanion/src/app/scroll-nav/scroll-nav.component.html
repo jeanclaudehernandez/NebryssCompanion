@@ -1,0 +1,10 @@
+<button class="scroll-nav-btn" (click)="toggleMenu()">↓</button>
+
+<div class="dropdown-menu" [class.open]="isOpen">
+  <div class="menu-header">Jump to Section</div>
+  <div *ngFor="let section of sections" 
+       class="menu-item" 
+       (click)="scrollToSection(section.id)">
+    {{ section.title }}
+  </div>
+</div>

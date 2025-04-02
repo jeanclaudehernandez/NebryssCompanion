@@ -1,6 +1,6 @@
 <div class="shops-container">
   <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
-  <div *ngFor="let shop of shops" class="shop-card">
+  <div *ngFor="let shop of shops" class="shop-card" [id]="'shop-' + shop.id">
     <h3>{{ shop.name }}</h3>
     <p class="location">{{ shop.location }}</p>
     <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
@@ -33,3 +33,4 @@
       </div>
   </div>
 </div>
+<app-scroll-nav [sections]="scrollSections"></app-scroll-nav>

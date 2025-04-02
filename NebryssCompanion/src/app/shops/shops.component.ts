@@ -3,11 +3,17 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 
 @Component({
   selector: 'app-shops',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, GenericTableComponent],
+  imports: [
+    CommonModule,
+    WeaponTableComponent,
+    GenericTableComponent,
+    ScrollNavComponent
+  ],
   templateUrl: './shops.component.html',
   styleUrls: ['./shops.component.css']
 })
@@ -25,6 +31,7 @@ export class ShopsComponent {
   npcs: any [] = [];
   isLoading = true;
   shopCategories: any[] = [];
+  scrollSections: { title: string, id: string }[] = [];
 
   constructor(private dataService: DataService) {}
 
@@ -35,6 +42,10 @@ export class ShopsComponent {
       this.weaponRulesData = response.weaponRules;
       this.shops = response.shops;
       this.itemsCategories = response.itemCategories;
+      this.scrollSections = this.shops.map(shop => ({
+        title: shop.name,
+        id: `shop-${shop.id}`
+      }));
     });
   }
 
