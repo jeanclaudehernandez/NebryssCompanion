@@ -1,6 +1,6 @@
 <div class="talents-container">
     <h2>Talents</h2>
-    <div *ngFor="let category of talentCategories" class="talent-category">
+    <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
       <h3>{{category.name}}</h3>
       <p *ngIf="category.description">{{category.description}}</p>
       <div *ngFor="let talent of category.talents" class="talent-card">
@@ -12,3 +12,4 @@
       </div>
     </div>
 </div>
+<app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
