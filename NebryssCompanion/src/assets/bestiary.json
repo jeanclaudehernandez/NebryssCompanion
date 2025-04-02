@@ -4,7 +4,7 @@
     "name": "Murloc",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
-    "pr": 81,
+    "pr": 87,
     "attributes": {
       "Movement": 6,
       "Wounds": 6,
@@ -64,7 +64,7 @@
     "name": "Murloc King",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
-    "pr": 135,
+    "pr": 142,
     "attributes": {
       "Movement": 6,
       "Wounds": 12,
@@ -117,7 +117,7 @@
     "name": "Aetherwing Bannerbearer",
     "faction": "Forces of nature",
     "subgroup": "Tzaangor",
-    "pr": 114,
+    "pr": 121,
     "attributes": {
       "Movement": 7,
       "Wounds": 10,
@@ -169,7 +169,7 @@
     "name": "Windblast Aetherwing",
     "faction": "Forces of nature",
     "subgroup": "Tzaangor",
-    "pr": 114,
+    "pr": 121,
     "attributes": {
       "Movement": 7,
       "Wounds": 10,
@@ -195,7 +195,7 @@
     "name": "Intercessor Warrior",
     "faction": "Imperium",
     "subgroup": "Space Marine",
-    "pr": 145,
+    "pr": 144,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -277,7 +277,7 @@
     "name": "Screamer",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
-    "pr": 65,
+    "pr": 82,
     "attributes": {
       "Movement": 8,
       "Wounds": 5,
@@ -335,7 +335,7 @@
     "name": "Screecher Purple",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
-    "pr": 74,
+    "pr": 71,
     "attributes": {
       "Movement": 8,
       "Wounds": 1,
@@ -366,7 +366,7 @@
     "name": "Khorne Berzerker",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 151,
+    "pr": 145,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -393,7 +393,7 @@
     "name": "Legionary Aspiring Champion",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 195,
+    "pr": 192,
     "attributes": {
       "Movement": 6,
       "Wounds": 16,
@@ -445,7 +445,7 @@
     "name": "Legionary Gunner",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 155,
+    "pr": 150,
     "attributes": {
       "Movement": 4,
       "Wounds": 15,
@@ -470,7 +470,7 @@
     "name": "NLR Soldier (Human)",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 83,
+    "pr": 76,
     "attributes": {
       "Movement": 6,
       "Wounds": 7,
@@ -491,7 +491,7 @@
     "name": "NLR Field Medic",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 75,
+    "pr": 83,
     "attributes": {
       "Movement": 6,
       "Wounds": 6,
@@ -513,7 +513,7 @@
     "name": "Fellgor Mist Shaman",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Fellgor",
-    "pr": 96,
+    "pr": 104,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
@@ -535,7 +535,7 @@
     "name": "NLR Sergeant",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 106,
+    "pr": 118,
     "attributes": {
       "Movement": 6,
       "Wounds": 8,
@@ -557,7 +557,7 @@
     "name": "T’au Pathfinder",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "T’au",
-    "pr": 78,
+    "pr": 84,
     "attributes": {
       "Movement": 6,
       "Wounds": 7,
@@ -578,7 +578,7 @@
     "name": "Nurgling",
     "faction": "Abyssal Cabal",
     "subgroup": "Daemon",
-    "pr": 45,
+    "pr": 39,
     "attributes": {
       "Movement": 4,
       "Wounds": 4, 
@@ -610,7 +610,7 @@
     "name": "Mini-Terminator",
     "faction": "Imperium",
     "subgroup": "Astartes (Experimental)",
-    "pr": 45,
+    "pr": 72,
     "attributes": {
       "Movement": 3,
       "Wounds": 5,
@@ -642,7 +642,7 @@
     "name": "Mandrake Shadowstalker",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 65,
+    "pr": 100,
     "attributes": {
       "Movement": 7,
       "Wounds": 6,
@@ -669,7 +669,7 @@
     "name": "Mandrake Nightfiend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 85,
+    "pr": 134,
     "attributes": {
       "Movement": 7,
       "Wounds": 8,
@@ -696,7 +696,7 @@
     "name": "Mandrake Soulrend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 75,
+    "pr": 104,
     "attributes": {
       "Movement": 7,
       "Wounds": 7,
@@ -723,7 +723,7 @@
     "name": "Elder Treant",
     "faction": "Forces of nature",
     "subgroup": "Ent",
-    "pr": 180,
+    "pr": 168,
     "attributes": {
       "Movement": 3,
       "Wounds": 25,
@@ -753,7 +753,7 @@
     "name": "Mistborn Wisp",
     "faction": "Forces of nature",
     "subgroup": "Mistborn",
-    "pr": 95,
+    "pr": 86,
     "attributes": {
       "Movement": 8,
       "Wounds": 8,
@@ -783,7 +783,7 @@
     "name": "Grove Sentinel",
     "faction": "Forces of nature",
     "subgroup": "Ent",
-    "pr": 140,
+    "pr": 145,
     "attributes": {
       "Movement": 4,
       "Wounds": 18,
@@ -808,7 +808,7 @@
     "name": "Mistborn Leviathan",
     "faction": "Forces of nature",
     "subgroup": "Mistborn",
-    "pr": 220,
+    "pr": 240,
     "attributes": {
       "Movement": 6,
       "Wounds": 30,
