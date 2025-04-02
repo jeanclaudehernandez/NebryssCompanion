@@ -717,5 +717,119 @@
         "prModifier": 4
       }
     ]
+  },
+  {
+    "id": 28,
+    "name": "Elder Treant",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 180,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 25,
+      "Save": 3,
+      "APL": 2,
+      "body": ["universal", "plant"]
+    },
+    "weapons": [60, 61],
+    "abilities": [
+      {
+        "name": "Living Roots",
+        "effect": "1AP: Create a 3-inch hazardous terrain patch of entangling roots. Enemies moving through suffer 1D3 wounds."
+      },
+      {
+        "name": "Bark Armor",
+        "effect": "Reduce incoming damage by 1 (to a minimum of 1). Critical hits against this operative are scored on unmodified rolls of 5+.",
+        "prModifier": 5
+      },
+      {
+        "name": "Sylvan Regrowth",
+        "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+1 instead."
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Mistborn Wisp",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 95,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 8,
+      "Save": 6,
+      "APL": 2,
+      "body": ["universal", "mist", "spirit"]
+    },
+    "weapons": [62],
+    "abilities": [
+      {
+        "name": "Mistform",
+        "effect": "This operative is always treated as in Cover while in a mist zone. Can move through terrain and other operatives."
+      },
+      {
+        "name": "Density Shift",
+        "effect": "1AP: Increase mist density level in a 6-inch radius for one Turning Point. All operatives in the area gain **Obscured**.",
+        "prModifier": 4
+      },
+      {
+        "name": "Ethereal Strike",
+        "effect": "Critical hits inflict the **Bleeding** (ID 2) status. If the target is already Bleeding, worsen it to **Corrupted** (ID 7)."
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Grove Sentinel",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 140,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 18,
+      "Save": 4,
+      "APL": 2,
+      "body": ["universal", "plant"]
+    },
+    "weapons": [63],
+    "abilities": [
+      {
+        "name": "Guardian's Call",
+        "effect": "Once per battle, summon 1D3 **Sylvan Saplings** (PR 40) within 6 inches. Saplings activate after this operative."
+      },
+      {
+        "name": "Thorn Burst",
+        "effect": "When this operative is destroyed, all enemies within 3 inches suffer 1D3 wounds and gain **Bleeding** (ID 2)."
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Mistborn Leviathan",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 220,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 30,
+      "Save": 2,
+      "APL": 3,
+      "body": ["universal", "mist", "behemoth"]
+    },
+    "weapons": [64, 65],
+    "abilities": [
+      {
+        "name": "Mist Vortex",
+        "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 1, they suffer 1 wound."
+      },
+      {
+        "name": "Reality Tear",
+        "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift. Enemies entering or starting their activation in it suffer 1D6 wounds (6+ to avoid)."
+      },
+      {
+        "name": "Unyielding Fog",
+        "effect": "Mist zones within 12 inches cannot be dispersed. All mist effects are treated as Dense density."
+      }
+    ]
   }
 ]

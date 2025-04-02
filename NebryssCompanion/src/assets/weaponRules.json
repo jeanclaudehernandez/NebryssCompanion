@@ -1,7 +1,7 @@
 [
   {
   "id": 1,
-  "name": "Shockwave x inches",
+  "name": "Shockwave <x> inches",
   "effect": "If a critical dice is retained, weapon gains blast <x> inches weapon rule. (melee weapons treat as shooting actions against secondary targets)",
   "prModifier": 3
   },
@@ -25,32 +25,32 @@
   },
   {
   "id": 5,
-  "name": "Drag x inches",
+  "name": "Drag <x> inches",
   "effect": "If a critical dice is retained, move the enemy <x> inches in the shortest possible direction towards the active operative.",
   "prModifier": null
   },
   {
     "id": 6,
     "name": "Burning",
-    "effect": "If damage is made to the target during this action, apply <3> status to the target.",
+    "effect": "If damage is made to the target during this action, apply /3/ status to the target.",
     "prModifier": 1
   },
   {
     "id": 7,
     "name": "Bleeding",
-    "effect": "If damage is made to the target during this action, apply <2> status to the target.",
+    "effect": "If damage is made to the target during this action, apply /2/ status to the target.",
     "prModifier": 1
   },
   {
     "id": 8,
     "name": "Electrify",
-    "effect": "If damage is made to the target during this action, apply <6> status to the target.",
+    "effect": "If damage is made to the target during this action, apply /6/ status to the target.",
     "prModifier": 2
   },
   {
     "id": 10,
     "name": "Supressing",
-    "effect": "Target operative and active operative roll 1D6 + APL if active operative score is higher, target becomes <4>.",
+    "effect": "Target operative and active operative roll 1D6 + APL if active operative score is higher, apply /4/ status on target.",
     "prModifier": 4
   },
   {
@@ -115,7 +115,7 @@
   },
   {
   "id": 21,
-  "name": "Lethal x+",
+  "name": "Lethal <x>+",
   "effect": "Critical hits are scored on unmodified rolls of <x>+ instead of 6.",
   "prModifier": 2
   },
@@ -139,7 +139,7 @@
   },
   {
   "id": 25,
-  "name": "Devastating x",
+  "name": "Devastating <x>",
   "effect": "Deal <x> wounds on critical hits.",
   "prModifier": 2
   },
@@ -164,7 +164,7 @@
   {
     "id": 29,
     "name": "Entangle",
-    "effect": "Target becomes <1> on a successful hit.",
+    "effect": "If damage is made with a critical hit, apply /1/ status on target.",
     "prModifier": 1
   },
   {
@@ -193,7 +193,7 @@
   },
   {
     "id": 34,
-    "name": "Piercing x",
+    "name": "Piercing <x>",
     "effect": "Before rolling defense dice, the defending operatives rolls <x> less dice",
     "prModifier": "x*2"
   },
@@ -206,7 +206,7 @@
   {
     "id": 36,
     "name": "Plague Bite",
-    "effect": "If damage is made to the target during this action, apply <2> status to the target. If the target is already bleeding, worsen the effect to <3>.",
+    "effect": "If damage is made to the target during this action, apply /2/ status to the target. If the target is already bleeding, apply /3/ status.",
     "prModifier": 1
   },
   {
@@ -226,5 +226,29 @@
     "name": "Soulrender",
     "effect": "For each critical hit retained, heal 1 wound to the attacker.",
     "prModifier": 3
+  },
+  {
+    "id": 40,
+    "name": "Mist Resonance",
+    "effect": "Attacks made in mist zones gain +1 damage. If the mist is dense, also gain rending.",
+    "prModifier": 2
+  },
+  {
+    "id": 41,
+    "name": "Phase Shift",
+    "effect": "During a charge action, you may ignore movement penalties from terrain while in a mist zone. During the turning point you use this rule, when fighting or retaliating, the operative must use this weapon, after that fight or retalaitiong you may move 2 inches in any direction ignorening terrain.",
+    "prModifier": 3
+  },
+  {
+    "id": 42,
+    "name": "Vorpal Strike",
+    "effect": "If the target is slain, this operative gains 1AP on their next activation.",
+    "prModifier": 4
+  },
+  {
+    "id": 43,
+    "name": "Mistcloak Sync",
+    "effect": "While in a mist zone, the operative gains +1 Save. If the operative is cover, they cannot be targeted by ranged attacks beyond 6inches.",
+    "prModifier": 2
   }
 ]
