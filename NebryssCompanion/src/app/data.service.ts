@@ -140,4 +140,68 @@ export class DataService {
     const allTalents = this.talents.flatMap(category => category.talents);
     return allTalents.find(talent => talent.id === id) || null;
   }
+
+  validateBestiaryPR(): { id: number, name: string, currentPR: number, calculatedPR: number, valid: boolean }[] {
+    return this.bestiary.map(beast => {
+      const attributes = beast.attributes;
+      const wounds = attributes.Wounds;
+      const save = attributes.Save;
+      const movement = attributes.Movement;
+      const apl = attributes.APL;
+  
+      // Calculate base components of PR
+      const basePR = (wounds * 2.2) + ((6 - save) * 7) + (movement * 4) + (apl * 6);
+  
+      // Calculate Weapon Threat (highest among all weapon profiles)
+      let weaponThreat = 0;
+      if (beast.weapons && beast.weapons.length > 0) {
+        beast.weapons.forEach((weaponId: number) => {
+          const weapon = this.weapons.find((w: any) => w.id === weaponId);
+          if (weapon && weapon.profiles) {
+            weapon.profiles.forEach((profile: any) => {
+              const attacks = profile.attacks || 0;
+              const minDamage = profile.damage?.min || 0;
+              const ws = profile.ws || 0;
+              const threatFromStats = attacks * minDamage * (7 - ws);
+              let rulesSum = 0;
+              if (profile.specialRules) {
+                profile.specialRules.forEach((rule: any) => {
+                  const ruleDef = this.weaponsRules.find((r: any) => r.id === rule.ruleId);
+                  if (ruleDef && typeof ruleDef.prModifier === 'number') {
+                    rulesSum += ruleDef.prModifier;
+                  }
+                });
+              }
+              const totalThreat = threatFromStats + rulesSum;
+              if (totalThreat > weaponThreat) {
+                weaponThreat = totalThreat;
+              }
+            });
+          }
+        });
+      }
+  
+      // Calculate Ability Score (sum of prModifiers)
+      let abilityScore = 0;
+      if (beast.abilities) {
+        beast.abilities.forEach((ability: any) => {
+          if (typeof ability.prModifier === 'number') {
+            abilityScore += ability.prModifier;
+          }
+        });
+      }
+  
+      // Calculate total PR and round to nearest integer
+      const calculatedPR = Math.round(basePR + weaponThreat + abilityScore);
+      const currentPR = beast.pr;
+  
+      return {
+        id: beast.id,
+        name: beast.name,
+        currentPR: currentPR,
+        calculatedPR: calculatedPR,
+        valid: currentPR === calculatedPR
+      };
+    });
+  }
 }

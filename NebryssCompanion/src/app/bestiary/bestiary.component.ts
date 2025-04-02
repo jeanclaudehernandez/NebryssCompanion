@@ -62,6 +62,8 @@ export class BestiaryComponent implements OnInit {
           this.scrollToMob();
         }
       }
+
+      console.log(this.dataService.validateBestiaryPR());
     });
   }
 
