@@ -6,33 +6,11 @@ import { ModalService } from '../modal.service';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
+import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
 
-interface Weapon {
-  id: number;
-  name: string;
-  price: number;
-  profiles: WeaponProfile[];
-}
-
-interface WeaponProfile {
-  profileName?: string;
-  rng: number | null;
-  attacks: number;
-  ws: string;
-  damage: { min: number; max: number };
-  specialRules: WeaponRule[];
-  body: string;
-}
-
-interface WeaponRule {
-  ruleId: number;
-  modValue?: number;
-}
-
-interface RuleDefinition {
-  id: number;
-  name: string;
-  effect: string;
+interface ruleDisplay {
+  name: string,
+  description: string
 }
 
 @Component({
@@ -51,8 +29,8 @@ interface RuleDefinition {
 export class WeaponTableComponent implements OnChanges {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: Weapon[] = [];
-  @Input() weaponRulesData: RuleDefinition[] = [];
-  @Input() alteredStates: any[] = [];
+  @Input() weaponRulesData: WeaponRule[] = [];
+  @Input() alteredStates: AlteredState[] = [];
   @Input() displayPrice: boolean = false;
   @Input() displayBody: boolean = false;
   @Input() isCharacterDisplayPage: boolean = false;
@@ -88,7 +66,7 @@ export class WeaponTableComponent implements OnChanges {
       : allProfiles;
   }
 
-  private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]) {
+  private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]): {weapon: Weapon, profile: WeaponProfile}[] {
     return [...profiles].sort((a, b) => {
       const aRng = a.profile.rng;
       const bRng = b.profile.rng;
@@ -114,11 +92,11 @@ export class WeaponTableComponent implements OnChanges {
     return this.weaponsData.find(w => w.id === id) || null;
   }
 
-  filterByBody(weaponProfile: any) {
+  filterByBody(weaponProfile: any): boolean {
     return !!this.characterBody.filter((body) => body == weaponProfile.body).length;
   }
 
-  getRuleDisplay(rule: WeaponRule): { name: string, description: string } {
+  getRuleDisplay(rule: SpecialRule): ruleDisplay {
     const ruleDef = this.weaponRulesData.find(r => r.id === rule.ruleId);
     if (!ruleDef) {
       return {
@@ -167,7 +145,7 @@ export class WeaponTableComponent implements OnChanges {
     return { name, description };
   }
 
-  showRuleDetails(ruleDisplay: { name: string; description: string }) {
+  showRuleDetails(ruleDisplay: ruleDisplay) {
     console.log(ruleDisplay)
     const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
       data: {rule: ruleDisplay},

@@ -4,6 +4,7 @@ import { CommonModule, JsonPipe } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
+import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule } from '../model';
 
 @Component({
   selector: 'app-bestiary',
@@ -14,18 +15,18 @@ import { FormsModule } from '@angular/forms';
 })
 export class BestiaryComponent implements OnInit {
   @ViewChild('mobDetailContainer') mobDetailContainer!: ElementRef;
-  bestiary: any[] = [];
+  bestiary: BestiaryEntry[] = [];
   selectedCreatureId: number | null = null;
-  selectedCreature: any = null;
+  selectedCreature: BestiaryEntry | null = null;
   factions: string[] = [];
   subgroups: string[] = [];
   selectedFaction: string | null = null;
   selectedSubGroup: string | null = null;
-  filteredCreatures: any[] = [];
-  itemsData: any;
-  weaponsData: any[] = [];
-  weaponRulesData: any[] = [];
-  alteredStates: any[] = [];
+  filteredCreatures: BestiaryEntry[] = [];
+  itemsData!: Items;
+  weaponsData: Weapon[] = [];
+  weaponRulesData: WeaponRule[] = [];
+  alteredStates: AlteredState[] = [];
 
   constructor(private dataService: DataService) {}
 
@@ -106,7 +107,7 @@ export class BestiaryComponent implements OnInit {
 
   onCreatureSelected() {
     if (this.selectedCreatureId) {
-      this.selectedCreature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId));
+      this.selectedCreature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId)) || null;
       localStorage.setItem('bestiaryCreatureId', JSON.stringify(this.selectedCreatureId));
     } else {
       this.selectedCreature = null;

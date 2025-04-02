@@ -11,66 +11,67 @@ import loreData from '../assets/lore.json';
 import talentsData from '../assets/talents.json';
 import alteredStatesData from '../assets/alteredStates.json';
 import { Observable, of } from 'rxjs';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore } from './model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private players: any[] = playersData;
-  private weapons: any[] = weaponsData;
-  private bestiary: any[] = bestiaryData;
-  private weaponsRules: any[] = weaponRulesData;
-  private items: any = itemsData;
-  private shops: any[] = shopsData;
-  private itemCategories: any[] = itemCategoriesData;
-  private npcs: any[] = npcsData;
-  private lore: any = loreData;
-  private talents: any[] = talentsData;
-  private alteredStates: any[] = alteredStatesData;
+  private players: Player[] = playersData;
+  private weapons: Weapon[] = weaponsData;
+  private bestiary: BestiaryEntry[] = bestiaryData;
+  private weaponsRules: WeaponRule[] = weaponRulesData;
+  private items: Items = itemsData;
+  private shops: Shop[] = shopsData;
+  private itemCategories: ItemCategory[] = itemCategoriesData;
+  private npcs: NPC[] = npcsData;
+  private talents: TalentCategory[] = talentsData;
+  private alteredStates: AlteredState[] = alteredStatesData;
+  private lore: Lore = loreData;
 
   constructor() { }
 
-  getPlayers(): Observable<any[]> {
+  getPlayers(): Observable<Player[]> {
     return of(this.players);
   }
 
-  getNpcs(): Observable<any[]> {
+  getNpcs(): Observable<NPC[]> {
     return of(this.npcs);
   }
 
-  getitemCategories(): Observable<any[]> {
+  getitemCategories(): Observable<ItemCategory[]> {
     return of(this.itemCategories);
   }
 
-  getBestiary(): Observable<any[]> {
+  getBestiary(): Observable<BestiaryEntry[]> {
     return of(this.bestiary);
   }
 
-  getWeapons(): Observable<any[]> {
+  getWeapons(): Observable<Weapon[]> {
     return of(this.weapons);
   }
 
-  getItems(): Observable<any> {
+  getItems(): Observable<Items> {
     return of(this.items);
   }
 
-  getWeaponRules(): Observable<any[]> {
+  getWeaponRules(): Observable<WeaponRule[]> {
     return of(this.weaponsRules);
   }
 
-  getShops(): Observable<any[]> {
+  getShops(): Observable<Shop[]> {
     return of(this.shops);
   }
 
-  getLore(): Observable<any> {
+  getLore(): Observable<Lore> {
     return of(this.lore);
   }
 
-  getTalents(): Observable<any[]> {
+  getTalents(): Observable<TalentCategory[]> {
     return of(this.talents);
   }
 
-  getAlteredStates(): Observable<any[]> {
+  getAlteredStates(): Observable<AlteredState[]> {
     return of(this.alteredStates);
   }
 
@@ -107,7 +108,8 @@ export class DataService {
     
     // Search through all item categories
     for (const categoryKey in this.items) {
-      const category = this.items[categoryKey];
+      const key = categoryKey as keyof Items;
+      const category = this.items[key];
       const foundItem = (category as any[]).find((item: any) => item.id === id);
       if (foundItem) return {...foundItem, itemCategory: categoryKey};
     }

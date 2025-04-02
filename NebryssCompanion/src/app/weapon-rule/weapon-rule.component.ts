@@ -7,8 +7,8 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
   selector: 'app-weapon-rule-dialog',
   template: `
     <div class="modal-rule-content">
-      <h3>{{ data.rule?.name }}</h3>
-      <div class="rule-description" [innerHtml]="data.rule?.description | sanitizeHtml"></div>
+      <h3>{{ data.rule.name }}</h3>
+      <div class="rule-description" [innerHtml]="data.rule.description | sanitizeHtml"></div>
     </div>
   `,
   styles: [`
@@ -32,7 +32,7 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
   imports: [CommonModule, SanitizeHtmlPipe]
 })
 export class WeaponRuleDialogComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { rule: any}) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { rule: {name: string, description: string}}) {
     console.log(data)
   }
 }

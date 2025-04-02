@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { HttpClientModule } from '@angular/common/http';
+import { AlteredState, Items, Player, Weapon, WeaponRule } from '../model';
 
 @Component({
   selector: 'app-player-list',
@@ -17,12 +18,12 @@ import { HttpClientModule } from '@angular/common/http';
 })
 export class PlayerListComponent implements OnInit {
   @ViewChild('playerDetailContainer') playerDetailContainer!: ElementRef;
-  players: any[] = [];
-  weaponsData: any[] = [];
-  itemsData: any;
-  weaponRulesData: any[] = [];
-  alteredStates: any[] = [];
-  selectedPlayer: any = null;
+  players: Player[] = [];
+  weaponsData: Weapon[] = [];
+  itemsData!: Items;
+  weaponRulesData: WeaponRule[] = [];
+  alteredStates: AlteredState[] = [];
+  selectedPlayer: Player | null = null;
 
   constructor(private dataService: DataService) { }
 
@@ -36,7 +37,7 @@ export class PlayerListComponent implements OnInit {
       const savedPlayerId = localStorage.getItem('selectedPlayerId');
       if (savedPlayerId) {
         const playerId = JSON.parse(savedPlayerId);
-        this.selectedPlayer = this.players.find(p => p.id === playerId);
+        this.selectedPlayer = this.players.find(p => p.id === playerId) || null;
         if(this.selectedPlayer) {
           this.scrollToPlayer();
         }
@@ -44,7 +45,7 @@ export class PlayerListComponent implements OnInit {
     });
   }
 
-  selectPlayer(player: any): void {
+  selectPlayer(player: Player): void {
     this.selectedPlayer = player;
     localStorage.setItem('selectedPlayerId', JSON.stringify(player.id));
     this.scrollToPlayer();

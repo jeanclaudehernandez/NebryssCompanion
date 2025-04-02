@@ -4,6 +4,7 @@ import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { Lore } from '../model';
 
 @Component({
   selector: 'app-lore',
@@ -20,7 +21,7 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
   encapsulation: ViewEncapsulation.None
 })
 export class LoreComponent {
-  loreData: any;
+  loreData!: Lore;
   loreSections: {
     title: string,
     content: any,

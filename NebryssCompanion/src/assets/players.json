@@ -1,6 +1,6 @@
 [
     {
-      "id": "1",
+      "id": 1,
       "name": "Wendy",
       "race": "Human",
       "origin": "Imperium of Man (deserter)",
@@ -46,7 +46,7 @@
       }
     },
     {
-      "id": "2",
+      "id": 2,
       "name": "Thennur",
       "race": "Fellgor",
       "origin": "Nebryssian Liberation Republic (Traveler)",
@@ -91,7 +91,7 @@
       }
     },
     {
-      "id": "3",
+      "id": 3,
       "name": "Akrina Voss",
       "race": "Human",
       "origin": "Imperium of Man (exiled)",
@@ -129,7 +129,7 @@
       }
     },
     {
-      "id": "4",
+      "id": 4,
       "name": "Xarion Vex, the Shattered Oracle",
       "race": "Astartes (Mutated)",
       "origin": "Abyssal Cabal (Deserter)",
@@ -192,7 +192,7 @@
       }
     },
     {
-      "id": "5",
+      "id": 5,
       "name": "Tellurius",
       "race": "Warp Anomaly (Mist Golem)",
       "origin": "Nebryssian Mist",
@@ -230,7 +230,7 @@
       }
     },
     {
-      "id": "6",
+      "id": 6,
       "name": "Techmarine Varek Bastion",
       "race": "Astartes (Techmarine)",
       "origin": "Imperium - Adeptus Astartes (Techmarine)",

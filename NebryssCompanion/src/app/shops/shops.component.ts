@@ -4,6 +4,7 @@ import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { BestiaryEntry, ItemCategory, Items, NPC, Player, Shop, Weapon, WeaponRule } from '../model';
 
 @Component({
   selector: 'app-shops',
@@ -19,18 +20,16 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 })
 export class ShopsComponent {
   selectedCreatureId: number | null = null;
-  selectedCreature: any = null;
+  selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
   selectedFaction: string = "null";
-  filteredCreatures: any[] = [];
-  itemsData: any;
-  weaponsData: any;
-  weaponRulesData: any[] = [];
-  itemsCategories: any[] = [];
-  shops: any[] = [];
-  npcs: any [] = [];
+  itemsData!: Items;
+  weaponsData: Weapon[] = [];
+  weaponRulesData: WeaponRule[] = [];
+  itemsCategories: ItemCategory[] = [];
+  shops: Shop[] = [];
+  npcs: NPC[] = [];
   isLoading = true;
-  shopCategories: any[] = [];
   scrollSections: { title: string, id: string }[] = [];
 
   constructor(private dataService: DataService) {}
@@ -53,23 +52,23 @@ export class ShopsComponent {
     return this.dataService.getNpcByd(owner).name;
   }
 
-  getWeaponIds(shop: any) {
+  getWeaponIds(shop: Shop) {
     return this.dataService.getShopWeapons(shop.id).map((shopItem) => shopItem.id);
   }
 
-  hasWeapons(shop: any) {
+  hasWeapons(shop: Shop) {
     return this.dataService.getShopWeapons(shop.id).length;
   }
 
-  hasItems(shop: any) {
+  hasItems(shop: Shop) {
     return this.dataService.getShopItems(shop.id).length;
   }
 
-  findCategory(categoryId: string) {
+  findCategory(categoryId: number) {
     return this.itemsCategories.filter((category) => category.id === categoryId)[0];
   }
 
-  getShopItemsWithPrices(shop: any, categoryKey: string) {
+  getShopItemsWithPrices(shop: Shop, categoryKey: string) {
     return this.dataService.getShopItems(shop.id).map((shopItem) => {
       const itemInfo = this.dataService.getItemById(shopItem.id);
       return {

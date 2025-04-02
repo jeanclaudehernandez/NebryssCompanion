@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { Items, Weapon, WeaponRule, ItemCategory } from '../model';
 
 @Component({
   selector: 'app-items',
@@ -28,7 +29,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
         <app-generic-table 
           [storageKey]="'items-category-' + category.key"
           [title]="category.name"
-          [data]="itemsData[category.key] || []"
+          [data]="getCategoryData(category.key)"
           [headers]="category.headers"
           [headerKeys]="category.keys">
         </app-generic-table>
@@ -38,11 +39,11 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   styleUrls: ['./items.component.css']
 })
 export class ItemsComponent {
-  itemsData: any = {};
-  weaponsData: any[] = [];
-  weaponRules: any[] = [];
-  allWeaponIds: number[] = [];
-  itemCategories: any[] = [];
+  itemsData!: Items; // Use Items interface
+  weaponsData: Weapon[] = [];
+  weaponRules: WeaponRule[] = [];
+  itemCategories: ItemCategory[] = [];
+  allWeaponIds: number[] = [];;
   weaponsCollapsed = true;
   
 
@@ -64,5 +65,10 @@ export class ItemsComponent {
   toggleWeaponsCollapsed() {
     this.weaponsCollapsed = !this.weaponsCollapsed;
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
+  }
+
+  getCategoryData(key: string): any[] {
+    // Type assertion here (valid in TypeScript code)
+    return this.itemsData[key as keyof Items] || [];
   }
 }

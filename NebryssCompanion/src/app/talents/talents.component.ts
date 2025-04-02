@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
+import { Talent, TalentCategory } from '../model';
 
 @Component({
   selector: 'app-talents',
@@ -10,7 +11,7 @@ import { DataService } from '../data.service';
   styleUrls: ['./talents.component.css']
 })
 export class TalentsComponent {
-  talentCategories: any[] = [];
+  talentCategories: TalentCategory[] = [];
 
   constructor(private dataService: DataService) {}
 

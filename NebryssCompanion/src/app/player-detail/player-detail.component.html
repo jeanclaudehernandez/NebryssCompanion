@@ -1,11 +1,11 @@
 <div class="player-card">
   <h2>{{ character.name }}</h2>
   <div class="player-info">
-    <div *ngIf="characterType === 'player'">
+    <div *ngIf="isPlayer(character)">
       <p><strong>Race:</strong> {{ character.race }}
       <p><strong>Origin:</strong> {{ character.origin }}</p>
     </div>
-    <div *ngIf="characterType === 'mob'">
+    <div *ngIf="isBeast(character)">
       <p><strong>Faction</strong> {{ character.faction }} </p>
       <p><strong>Subgroup:</strong> {{ character.subgroup }}</p>
       <p><strong>PR:</strong> {{ character.pr }}</p>
@@ -52,7 +52,7 @@
     </div>
   </div>
   
-  <div class="items" *ngIf="character.progression?.items?.length">
+  <div class="items" *ngIf="isPlayer(character) && character.progression?.items?.length">
     <h3>Items</h3>
     <div *ngFor="let item of character.progression.items" class="item">
       <h4>{{ item.name }}</h4>
@@ -79,7 +79,6 @@
             @let mob = getMobById(deployable.bestiaryId);
             <app-player-detail
             [character]="mob"
-            [characterType]="'mob'"
             [weaponsData]="weaponsData"
             [itemsData]="itemsData"
             [weaponRulesData]="weaponRulesData"

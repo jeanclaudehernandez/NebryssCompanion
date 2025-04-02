@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular
 import { CommonModule, JsonPipe } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
+import { AlteredState, BestiaryEntry, Character, Items, Player, Weapon, WeaponRule } from '../model';
 
 @Component({
   selector: 'app-player-detail',
@@ -11,12 +12,11 @@ import { DataService } from '../data.service';
   styleUrls: ['./player-detail.component.css']
 })
 export class PlayerDetailComponent implements OnChanges {
-  @Input() character: any;
-  @Input() characterType: 'player' | 'mob' = 'player';
-  @Input() weaponsData: any;
-  @Input() weaponRulesData: any[] = [];
-  @Input() alteredStates: any[] = [];
-  @Input() itemsData: any[] = [];
+  @Input() character!: Character;
+  @Input() weaponsData: Weapon[] = [];
+  @Input() weaponRulesData: WeaponRule[] = [];
+  @Input() alteredStates: AlteredState[] = [];
+  @Input() itemsData!: Items;
   bodyString = "";
   activeTooltip: string | null = null;
   tooltipX = 0;
@@ -30,6 +30,14 @@ export class PlayerDetailComponent implements OnChanges {
 
   getMobById(bestiaryId: number): any {
     return this.dataService.getBestiaryById(bestiaryId);
+  }
+
+  isPlayer(character: Character): character is Player {
+    return 'race' in character;
+  }
+
+  isBeast(character: Character): character is BestiaryEntry {
+    return 'pr' in character;
   }
 
 
