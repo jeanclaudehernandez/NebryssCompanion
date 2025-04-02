@@ -62,7 +62,7 @@ export class ImageViewerComponent {
 
     setTimeout(() => {
         dialogRef.disableClose = false;
-    }, 0)
+    }, 0);
 
   }
 }

@@ -10,24 +10,21 @@ export class ModalService {
 
   constructor(private injector: EnvironmentInjector) {}
 
-  openFromTemplate(template: TemplateRef<any>) {
-    this.close(); // Close any existing modal
-
-    // Create the modal component
+  openFromTemplate(template: TemplateRef<any>, context?: any) {
+    this.close();
+  
     this.modalComponentRef = createComponent(ModalComponent, {
       environmentInjector: this.injector
     });
-
-    // Set the template and close handler
-    setTimeout(() => {
-      this.modalComponentRef!.instance.setTemplate(template);
-      this.modalComponentRef!.instance.close = () => this.close();
-      document.body.appendChild(this.modalComponentRef!.location.nativeElement);
-      this.modalComponentRef!.changeDetectorRef.detectChanges();
-    });
-
-    // Attach the modal to the DOM
+  
+    // Append to DOM and detect changes first
     document.body.appendChild(this.modalComponentRef.location.nativeElement);
+    this.modalComponentRef.changeDetectorRef.detectChanges();
+  
+    // Now set the template and context
+    this.modalComponentRef.instance.setTemplate(template, context);
+    this.modalComponentRef.instance.close = () => this.close();
+    this.modalComponentRef.changeDetectorRef.detectChanges();
   }
 
   close() {

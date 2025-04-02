@@ -42,10 +42,3 @@
   color: #0066cc;
   border-bottom-color: currentColor;
 }
-
-.weapon-tooltip {
-  white-space: pre-line;
-  max-width: 300px;
-  font-size: 0.8rem;
-  line-height: 1.4;
-}

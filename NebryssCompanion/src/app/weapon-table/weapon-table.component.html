@@ -34,12 +34,8 @@
                 </td>
                 <td>
                   <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
-                      <span class="rule-text"
-                          [matTooltip]="getRuleDisplay(rule).description"
-                          matTooltipPosition="above"
-                          matTooltipClass="weapon-tooltip"
-                          [matTooltipDisabled]="!getRuleDisplay(rule).description">
-                          {{ getRuleDisplay(rule).name }}
+                      <span class="rule-text" (click)="showRuleDetails(getRuleDisplay(rule))">
+                        {{ getRuleDisplay(rule).name }}
                       </span>
                       <span *ngIf="!last">, </span>
                   </span>

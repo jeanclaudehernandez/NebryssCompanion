@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, HostListener, ViewChild, ElementRef, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, Input,TemplateRef, SimpleChanges, OnChanges, ViewChild } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
+import { ModalService } from '../modal.service';
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+import { MatDialog } from '@angular/material/dialog';
+import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 
 interface Weapon {
   id: number;
@@ -37,7 +41,9 @@ interface RuleDefinition {
   imports: [
     CommonModule,
     MatTooltipModule,
-    WeaponRangePipe
+    WeaponRangePipe,
+    SanitizeHtmlPipe,
+    WeaponRuleDialogComponent
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css']
@@ -54,6 +60,8 @@ export class WeaponTableComponent implements OnChanges {
   @Input() sortByRange: boolean = true;
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
+
+  constructor(private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
@@ -144,7 +152,7 @@ export class WeaponTableComponent implements OnChanges {
           description = description.replace(new RegExp(match, 'g'), status.name);
           
           // Add to status entries list
-          statusEntries.push(`${status.name}: ${status.effect}`);
+          statusEntries.push(`<strong>${status.name}</strong>: ${status.effect}`);
         }
       });
     }
@@ -152,10 +160,24 @@ export class WeaponTableComponent implements OnChanges {
     // Append status descriptions if any were found
     if (statusEntries.length > 0) {
       description += '\n\n' + statusEntries.map(entry => 
-        `${entry}`
+        `<em>${entry}</em>`
       ).join('\n\n');
     }
   
     return { name, description };
+  }
+
+  showRuleDetails(ruleDisplay: { name: string; description: string }) {
+    console.log(ruleDisplay)
+    const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
+      data: {rule: ruleDisplay},
+      panelClass: 'image-dialog-container',
+      hasBackdrop: true,
+      backdropClass: 'image-dialog-backdrop', // Optional: custom backdrop class
+      disableClose: true // Allow closing by clicking outside});
+    });
+    setTimeout(() => {
+      dialogRef.disableClose = false;
+  }, 0);
   }
 }
