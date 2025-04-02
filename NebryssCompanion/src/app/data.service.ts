@@ -76,15 +76,15 @@ export class DataService {
   }
 
   getAllData(): Observable<{
-    players: any[],
-    npcs: any[],
-    weapons: any,
-    items: any,
-    weaponRules: any[],
-    bestiary: any[],
-    shops: any[],
-    itemCategories: any[],
-    alteredStates: any[]
+    players: Player[],
+    npcs: NPC[],
+    weapons: Weapon[],
+    items: Items,
+    weaponRules: WeaponRule[],
+    bestiary: BestiaryEntry[],
+    shops: Shop[],
+    itemCategories: ItemCategory[],
+    alteredStates: AlteredState[]
   }> {
     return of({
       players: this.players,

@@ -4,7 +4,7 @@ import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
-import { Lore } from '../model';
+import { Lore, ScrollSection } from '../model';
 
 @Component({
   selector: 'app-lore',
@@ -48,7 +48,7 @@ export class LoreComponent {
     'potentialEndgameScenarios',
     'mistBasedGameplayMechanics',
   ];
-  scrollSections: { title: string, id: string }[] = [];
+  scrollSections: ScrollSection[] = [];
 
   constructor(private dataService: DataService) {}
 

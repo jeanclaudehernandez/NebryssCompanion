@@ -1,5 +1,6 @@
 import { NgFor } from '@angular/common';
 import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { ScrollSection } from '../model';
 
 @Component({
   selector: 'app-scroll-nav',
@@ -9,7 +10,7 @@ import { Component, Input, Output, EventEmitter, HostListener } from '@angular/c
   styleUrls: ['./scroll-nav.component.css']
 })
 export class ScrollNavComponent {
-  @Input() sections: { title: string, id: string }[] = [];
+  @Input() sections: ScrollSection[] = [];
   @Output() sectionSelected = new EventEmitter<string>();
   isOpen = false;
 

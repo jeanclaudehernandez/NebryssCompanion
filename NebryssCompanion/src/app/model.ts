@@ -363,3 +363,8 @@ export interface AlteredState {
     price: number;
     profiles: WeaponProfile[];
   }
+  
+  export interface ScrollSection {
+    title: string;
+    id: string;
+  }

@@ -4,7 +4,7 @@ import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
-import { BestiaryEntry, ItemCategory, Items, NPC, Player, Shop, Weapon, WeaponRule } from '../model';
+import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule } from '../model';
 
 @Component({
   selector: 'app-shops',
@@ -30,7 +30,7 @@ export class ShopsComponent {
   shops: Shop[] = [];
   npcs: NPC[] = [];
   isLoading = true;
-  scrollSections: { title: string, id: string }[] = [];
+  scrollSections: ScrollSection[] = [];
 
   constructor(private dataService: DataService) {}
 
