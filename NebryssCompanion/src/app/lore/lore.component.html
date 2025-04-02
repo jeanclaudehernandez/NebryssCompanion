@@ -1,5 +1,5 @@
 <div class="lore-container">
-    <div *ngFor="let section of loreSections" class="lore-section">
+    <div *ngFor="let section of loreSections" class="lore-section" [id]="section.key">
       <ng-container *ngIf="!isProhibitedSection(section.key)">
         <h2 style="text-align: center;">{{section.title}}</h2>
         <div style="width:100%; display:flex; justify-content:space-around" *ngIf="section.imgUrl">
@@ -11,7 +11,7 @@
         </div>
         <div class="player-card" *ngIf="section.title !== 'Factions'" [innerHTML]="formatLoreContent(section.content)"></div>
         <div *ngIf="section.title === 'Factions'" class="factions-container">
-            <div *ngFor="let faction of section.content.factions" class="faction-card">
+            <div *ngFor="let faction of section.content.factions" class="faction-card" [id]="factionScrollId(faction)">
             <h3>{{faction.name}} (Controls {{faction.control}})</h3>
             
             <div class="faction-details">
@@ -110,3 +110,5 @@
       
     </div>
   </div>
+
+  <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>

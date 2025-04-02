@@ -3,10 +3,17 @@ import { DataService } from '../data.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
+import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 
 @Component({
   selector: 'app-lore',
-  imports: [CommonModule, NgFor, CapitalCasePipe, ImageViewerComponent],
+  imports: [
+    CommonModule,
+    NgFor,
+    CapitalCasePipe,
+    ImageViewerComponent,
+    ScrollNavComponent
+  ],
   standalone: true,
   templateUrl: './lore.component.html',
   styleUrls: ['./lore.component.css'],
@@ -40,6 +47,7 @@ export class LoreComponent {
     'potentialEndgameScenarios',
     'mistBasedGameplayMechanics',
   ];
+  scrollSections: { title: string, id: string }[] = [];
 
   constructor(private dataService: DataService) {}
 
@@ -47,6 +55,7 @@ export class LoreComponent {
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
       this.prepareLoreSections();
+      
     });
   }
 
@@ -111,6 +120,31 @@ export class LoreComponent {
         key: 'potentialEndgameScenarios'
       }
     ];
+    this.scrollSections = [
+      {
+        title: 'Planet', id: 'planet'
+      },{
+        title: 'Currency', id: 'currency'
+      },{
+        title: 'Mist Effects', id: 'mistEffects'
+      },{
+        title: 'Technology and Infrastructure', id: 'technologyAndInfrastructure'
+      },
+      {
+        title: 'Factions', id: 'factions'
+      },
+      ...overview.factions.map((faction: any) => ({
+      title: faction.name,
+      id: `faction-${faction.name.toLowerCase().replace(/\s+/g, '-')}`
+    })),
+    {
+      title: 'Struggle for Nebryss', id: 'struggleForNebryss'
+    },
+  ];
+  }
+
+  factionScrollId(faction: any): string{
+    return 'faction-' + faction.name.toLowerCase().replace(/\s+/g, '-')
   }
 
   formatLoreContent(content: any): string {
