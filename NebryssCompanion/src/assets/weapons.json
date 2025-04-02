@@ -1200,5 +1200,74 @@
         "body": "behemoth"
       }
     ]
+  },
+  {
+    "id": 60,
+    "name": "Mistforged Greatsword",
+    "price": 85,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 4, "max": 6 },
+        "specialRules": [
+          { "ruleId": 40, "modValue": null }, 
+          { "ruleId": 26, "modValue": null } 
+        ],
+        "body": "human"
+      }
+    ]
+  },
+  {
+    "id": 61,
+    "name": "Plasma Caster",
+    "price": 90,
+    "profiles": [
+      {
+        "profileName": "Standard",
+        "rng": 12,
+        "attacks": 3,
+        "ws": 3,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 34, "modValue": 1 },  
+          { "ruleId": 35, "modValue": null } 
+        ],
+        "body": "astartes"
+      },
+      {
+        "profileName": "Overload",
+        "rng": 12,
+        "attacks": 5,
+        "ws": 2,
+        "damage": { "min": 5, "max": 7 },
+        "specialRules": [
+          { "ruleId": 33, "modValue": null },
+          { "ruleId": 34, "modValue": 2 }
+        ],
+        "body": "astartes"
+      }
+    ]
+  },
+  {
+    "id": 62,
+    "name": "Mist Repeller Gauntlets",
+    "price": 45,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 31, "modValue": 3 },    
+          { "ruleId": 11, "modValue": null }  
+        ],
+        "body": "universal"
+      }
+    ]
   }
 ]
