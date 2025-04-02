@@ -9,6 +9,7 @@ import itemCategoriesData from '../assets/itemCategories.json';
 import npcsData from '../assets/npcs.json';
 import loreData from '../assets/lore.json';
 import talentsData from '../assets/talents.json';
+import alteredStatesData from '../assets/alteredStates.json';
 import { Observable, of } from 'rxjs';
 
 @Injectable({
@@ -25,6 +26,7 @@ export class DataService {
   private npcs: any[] = npcsData;
   private lore: any = loreData;
   private talents: any[] = talentsData;
+  private alteredStates: any[] = alteredStatesData;
 
   constructor() { }
 
@@ -68,6 +70,10 @@ export class DataService {
     return of(this.talents);
   }
 
+  getAlteredStates(): Observable<any[]> {
+    return of(this.alteredStates);
+  }
+
   getAllData(): Observable<{
     players: any[],
     npcs: any[],
@@ -76,7 +82,8 @@ export class DataService {
     weaponRules: any[],
     bestiary: any[],
     shops: any[],
-    itemCategories: any[]
+    itemCategories: any[],
+    alteredStates: any[]
   }> {
     return of({
       players: this.players,
@@ -86,7 +93,8 @@ export class DataService {
       weaponRules: this.weaponsRules,
       bestiary: this.bestiary,
       shops: this.shops,
-      itemCategories: this.itemCategories
+      itemCategories: this.itemCategories,
+      alteredStates: this.alteredStates
     });
   }
 

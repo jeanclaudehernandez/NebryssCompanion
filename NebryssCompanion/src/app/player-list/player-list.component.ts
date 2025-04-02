@@ -18,9 +18,10 @@ import { HttpClientModule } from '@angular/common/http';
 export class PlayerListComponent implements OnInit {
   @ViewChild('playerDetailContainer') playerDetailContainer!: ElementRef;
   players: any[] = [];
-  weaponsData: any;
+  weaponsData: any[] = [];
   itemsData: any;
   weaponRulesData: any[] = [];
+  alteredStates: any[] = [];
   selectedPlayer: any = null;
 
   constructor(private dataService: DataService) { }

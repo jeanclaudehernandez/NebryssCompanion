@@ -25,6 +25,7 @@ export class BestiaryComponent implements OnInit {
   itemsData: any;
   weaponsData: any[] = [];
   weaponRulesData: any[] = [];
+  alteredStates: any[] = [];
 
   constructor(private dataService: DataService) {}
 
@@ -35,6 +36,7 @@ export class BestiaryComponent implements OnInit {
       this.weaponsData = response.weapons;
       this.weaponRulesData = response.weaponRules;
       this.factions = this.getUniqueValues(response.bestiary, 'faction');
+      this.alteredStates = response.alteredStates;
 
       // Load saved filters
       const savedFaction = localStorage.getItem('bestiaryFaction');

@@ -46,6 +46,7 @@ export class WeaponTableComponent implements OnChanges {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: RuleDefinition[] = [];
+  @Input() alteredStates: any[] = [];
   @Input() displayPrice: boolean = false;
   @Input() displayBody: boolean = false;
   @Input() isCharacterDisplayPage: boolean = false;
@@ -117,17 +118,44 @@ export class WeaponTableComponent implements OnChanges {
         description: 'Rule definition not found'
       };
     }
-
+  
     let name = ruleDef.name;
     let description = ruleDef.effect;
     
+    // Replace modValue in name and description
     if (rule.modValue !== null && rule.modValue !== undefined) {
       name = name.replace(/<x>/g, rule.modValue.toString());
       name = name.replace(/[x][+]/g, rule.modValue.toString() + "+");
       name = name.replace(/[ ][x]/g, rule.modValue.toString());
       description = description.replace(/<x>/g, " " + rule.modValue.toString());
     }
-
+  
+    // Find all status references (/number/) in the description
+    const statusMatches = [...new Set(description.match(/\/\d+\//g))];
+    const statusEntries: string[] = [];
+  
+    if (statusMatches) {
+      statusMatches.forEach(match => {
+        const statusId = parseInt(match.replace(/\//g, ''));
+        const status = this.alteredStates.find(s => s.id === statusId);
+        
+        if (status) {
+          // Replace the reference with status name
+          description = description.replace(new RegExp(match, 'g'), status.name);
+          
+          // Add to status entries list
+          statusEntries.push(`${status.name}: ${status.effect}`);
+        }
+      });
+    }
+  
+    // Append status descriptions if any were found
+    if (statusEntries.length > 0) {
+      description += '\n\n' + statusEntries.map(entry => 
+        `${entry}`
+      ).join('\n\n');
+    }
+  
     return { name, description };
   }
 }

@@ -15,6 +15,7 @@ export class PlayerDetailComponent implements OnChanges {
   @Input() characterType: 'player' | 'mob' = 'player';
   @Input() weaponsData: any;
   @Input() weaponRulesData: any[] = [];
+  @Input() alteredStates: any[] = [];
   @Input() itemsData: any[] = [];
   bodyString = "";
   activeTooltip: string | null = null;

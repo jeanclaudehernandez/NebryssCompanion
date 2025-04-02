@@ -39,7 +39,8 @@
         [weaponsData]="weaponsData"
         [weaponRulesData]="weaponRulesData"
         [isCharacterDisplayPage]="true"
-        [characterBody]="character.attributes.body">
+        [characterBody]="character.attributes.body"
+        [alteredStates]="alteredStates">
       </app-weapon-table>
   </div>
   
@@ -71,7 +72,8 @@
             *ngIf="deployable.weapons?.length"
             [weaponIds]="deployable.weapons"
             [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRulesData">
+            [weaponRulesData]="weaponRulesData"
+            [alteredStates]="alteredStates">
           </app-weapon-table>
           <ng-container *ngIf="deployable.type === 'mob'">
             @let mob = getMobById(deployable.bestiaryId);
