@@ -20,7 +20,7 @@
   {
   "id": 4,
   "name": "Mist-Accuracy",
-  "effect": "This weapon isn't affected by mist's weapon skill penalties.",
+  "effect": "Ranged: isn't affected by penalties of the mist. Melee: When in mist improve WS by 1.",
   "prModifier": null
   },
   {

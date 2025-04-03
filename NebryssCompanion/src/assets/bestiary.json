@@ -928,7 +928,7 @@
       "APL": 2,
       "body": ["human", "null", "universal"]
     },
-    "weapons": [71],
+    "weapons": [3,71],
     "abilities": [
       {
         "name": "Cleansing Flame",
