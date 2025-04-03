@@ -61,11 +61,11 @@
       "abilities": [
         {
           "name": "Mist Veil",
-          "effect": "1AP, Once per battle: This operative is treated as in <strong>Cover until the end of its next activation</strong>. Enemy operatives more than <strong>12 inches away also treat it as Obscured</strong>."
+          "effect": "1AP, Once per battle, Psychic: This operative is treated as in <strong>Cover until the end of its next activation</strong>. Enemy operatives more than <strong>12 inches away also treat it as Obscured</strong>."
         },
         {
           "name": "The Wind’s Gift",
-          "effect": "Once per battle: This operative suffers 1 wound to <strong>restore 2D3 +1</strong> wounds to another friendly operative <strong>within 6 inches</strong>, cannot perform this action while within control range of an enemy."
+          "effect": "Once per battle, Psychic: This operative suffers 1 wound to <strong>restore 2D3 +1</strong> wounds to another friendly operative <strong>within 6 inches</strong>, cannot perform this action while within control range of an enemy."
         }
       ],
       "progression": {
@@ -144,15 +144,15 @@
       "abilities": [
         {
           "name": "Fractal Visions",
-          "effect": "Once per Battle: Reroll a <strong>failed</strong> shooting attack dice."
+          "effect": "Once per Battle, Psychic: Reroll a <strong>failed</strong> shooting attack dice."
         },
         {
           "name": "Mist Veilwalk",
-          "effect": "1AP: <strong>Teleport 6 inches</strong> through mist zones. Roll 1D6; on a 4+, change order to conceal."
+          "effect": "1AP, Psychic: <strong>Teleport 6 inches</strong> through mist zones. Roll 1D6; on a 4+, change order to conceal."
         },
         {
           "name": "Screaming Vortex",
-          "effect": "1AP: Once per Battle. Summon one of your deployables within control range."
+          "effect": "1AP, Psychic: Once per Battle. Summon one of your deployables within control range."
         },
         {
           "name": "Heretic Astartes",
@@ -207,7 +207,7 @@
       "abilities": [
         {
           "name": "Mist Regeneration",
-          "effect": "At the start of activation, if in a mist zone, <strong>roll 1D6 on a 4+</strong> and heal wounds based on mist density: Light Mist (1 wound), Medium Mist (1D3 wounds), Dense Mist (2D3 wounds)."
+          "effect": "At the start of activation, Psychic, if in a mist zone, <strong>roll 1D6 on a 4+</strong> and heal wounds based on mist density: Light Mist (1 wound), Medium Mist (1D3 wounds), Dense Mist (2D3 wounds)."
         },
         {
           "name": "Boulder Roll",

@@ -766,7 +766,15 @@
         "attacks": 3,
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
-        "specialRules": [{ "ruleId": 30, "modValue": 1 }],
+        "specialRules": [{
+          "ruleId": 30, 
+          "modValue": 1 
+        },
+        {
+          "ruleId": 32,
+          "modValue": null
+        }
+      ],
         "body": "spell"
       }
     ]
@@ -784,7 +792,11 @@
         "damage": { "min": 2, "max": 3 },
         "specialRules": [
           { "ruleId": 30, "modValue": 1 },
-          { "ruleId": 18, "modValue": null }
+          { "ruleId": 18, "modValue": null },
+          {
+            "ruleId": 32,
+            "modValue": null
+          }
         ],
         "body": "spell"
       }
@@ -803,7 +815,11 @@
         "damage": { "min": 2, "max": 3 },
         "specialRules": [
           { "ruleId": 30, "modValue": 1 },
-          { "ruleId": 31, "modValue": 2 }
+          { "ruleId": 31, "modValue": 2 },
+          {
+            "ruleId": 32,
+            "modValue": null
+          }
         ],
         "body": "spell"
       }
@@ -926,7 +942,15 @@
         "attacks": 3,
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
-        "specialRules": [{ "ruleId": 12, "modValue": null }],
+        "specialRules": [{ 
+            "ruleId": 12, 
+            "modValue": null
+          },
+          {
+            "ruleId": 32,
+            "modValue": null
+          }
+        ],
         "body": "spell"
       }
     ]
@@ -1202,7 +1226,7 @@
     ]
   },
   {
-    "id": 60,
+    "id": 66,
     "name": "Mistforged Greatsword",
     "price": 85,
     "profiles": [
@@ -1221,7 +1245,7 @@
     ]
   },
   {
-    "id": 61,
+    "id": 67,
     "name": "Plasma Caster",
     "price": 90,
     "profiles": [
@@ -1252,7 +1276,7 @@
     ]
   },
   {
-    "id": 62,
+    "id": 68,
     "name": "Mist Repeller Gauntlets",
     "price": 45,
     "profiles": [
@@ -1267,6 +1291,63 @@
           { "ruleId": 11, "modValue": null }  
         ],
         "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 69,
+    "name": "Executioner Greatblade",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 15, "modValue": null },
+          { "ruleId": 34, "modValue": 1 }
+        ],
+        "body": "null"
+      }
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Inferno Pistol",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 3,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 6, "modValue": null },
+          { "ruleId": 30, "modValue": 2 }
+        ],
+        "body": "null"
+      }
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Psychic Null Flamer",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 8,
+        "attacks": 5,
+        "ws": 3,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 6, "modValue": null },
+          { "ruleId": 32, "modValue": null }
+        ],
+        "body": "null"
       }
     ]
   }

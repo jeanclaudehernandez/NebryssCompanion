@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
-import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection } from '../model';
+import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection, AlteredState } from '../model';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 
 @Component({
@@ -21,6 +21,7 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
             [weaponIds]="allWeaponIds" 
             [weaponsData]="weaponsData" 
             [weaponRulesData]="weaponRules"
+            [alteredStates]="alteredStates"
             [displayPrice]="true"
             [displayBody]="true"></app-weapon-table>
         </div>
@@ -45,6 +46,7 @@ export class ItemsComponent {
   weaponsData: Weapon[] = [];
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
+  alteredStates: AlteredState[] = [];
   allWeaponIds: number[] = [];;
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
@@ -58,6 +60,7 @@ export class ItemsComponent {
       
       this.weaponsData = data.weapons;
       this.weaponRules = data.weaponRules;
+      this.alteredStates = data.alteredStates;
       this.itemCategories = data.itemCategories;
       this.allWeaponIds = this.weaponsData.map(w => w.id);
       const saved = localStorage.getItem('items-weapons-collapsed');
