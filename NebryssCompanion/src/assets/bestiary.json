@@ -64,7 +64,7 @@
     "name": "Murloc King",
     "faction": "Forces of nature",
     "subgroup": "Murloc",
-    "pr": 142,
+    "pr": 146,
     "attributes": {
       "Movement": 6,
       "Wounds": 12,
@@ -195,7 +195,7 @@
     "name": "Intercessor Warrior",
     "faction": "Imperium",
     "subgroup": "Space Marine",
-    "pr": 144,
+    "pr": 158,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -204,14 +204,20 @@
       "body": ["universal", "astartes"]
     },
     "weapons": [33, 2],
-    "abilities": []
+    "abilities": [
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ]
   },
   {
     "id": 9,
     "name": "Apothecary Biologis",
     "faction": "Imperium",
     "subgroup": "Space Marine",
-    "pr": 159,
+    "pr": 169,
     "attributes": {
       "Movement": 4,
       "Wounds": 18,
@@ -238,6 +244,11 @@
       {
         "name": "Desperate Charge",
         "effect": "Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order."
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -246,7 +257,7 @@
     "name": "Captain Marcus Valen",
     "faction": "Imperium",
     "subgroup": "Space Marine",
-    "pr": 221,
+    "pr": 231,
     "attributes": {
       "Movement": 6,
       "Wounds": 18,
@@ -269,6 +280,11 @@
         "name": "Inspiring Presence",
         "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
         "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -366,7 +382,7 @@
     "name": "Khorne Berzerker",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 145,
+    "pr": 159,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -385,6 +401,11 @@
         "name": "Warp-fueled Rage",
         "effect": "After defeating an enemy, gain +1 Attack next activation.",
         "prModifier": 4
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -393,7 +414,7 @@
     "name": "Legionary Aspiring Champion",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 192,
+    "pr": 202,
     "attributes": {
       "Movement": 6,
       "Wounds": 16,
@@ -412,6 +433,11 @@
         "name": "Inspiring Terror",
         "effect": "Enemy operatives within 6 inches worsen their WS by 1. ",
         "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -420,7 +446,7 @@
     "name": "Balefire Acolyte",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 143,
+    "pr": 153,
     "attributes": {
       "Movement": 4,
       "Wounds": 14,
@@ -436,7 +462,12 @@
       },
       {
         "name": "Warpfire",
-        "effect": "Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
+        "effect": "Create a 3 inche hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -445,7 +476,7 @@
     "name": "Legionary Gunner",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 150,
+    "pr": 166,
     "attributes": {
       "Movement": 4,
       "Wounds": 15,
@@ -462,6 +493,11 @@
       {
         "name": "Overcharge",
         "effect": "1AP: +1 Damage to next attack, but suffer 1 wound on a hit roll of 1."
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
       }
     ]
   },
@@ -642,7 +678,7 @@
     "name": "Mandrake Shadowstalker",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 100,
+    "pr": 101,
     "attributes": {
       "Movement": 7,
       "Wounds": 6,
@@ -669,7 +705,7 @@
     "name": "Mandrake Nightfiend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 134,
+    "pr": 135,
     "attributes": {
       "Movement": 7,
       "Wounds": 8,
@@ -696,7 +732,7 @@
     "name": "Mandrake Soulrend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 104,
+    "pr": 105,
     "attributes": {
       "Movement": 7,
       "Wounds": 7,
@@ -808,7 +844,7 @@
     "name": "Mistborn Leviathan",
     "faction": "Forces of nature",
     "subgroup": "Mistborn",
-    "pr": 240,
+    "pr": 251,
     "attributes": {
       "Movement": 6,
       "Wounds": 30,
@@ -820,11 +856,13 @@
     "abilities": [
       {
         "name": "Mist Vortex",
-        "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 1, they suffer 1 wound."
+        "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 5+, they suffer 1 wound.",
+        "prModifier": 3
       },
       {
         "name": "Reality Tear",
-        "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift. Enemies entering or starting their activation in it suffer 1D6 wounds (6+ to avoid)."
+        "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift on a place visible and within 12 inches. Enemies entering or starting their activation roll 1d6, on a <strong>1-5</strong> they suffer result wounds.",
+        "prModifier": 7
       },
       {
         "name": "Unyielding Fog",

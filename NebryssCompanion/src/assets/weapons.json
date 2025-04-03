@@ -742,7 +742,7 @@
   {
     "id": 41,
     "name": "Throwing Spear",
-    "price": 5,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -758,7 +758,7 @@
   {
     "id": 42,
     "name": "Tidal Bolt",
-    "price": 30,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -774,7 +774,7 @@
   {
     "id": 43,
     "name": "Tidal Blast",
-    "price": 40,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -950,7 +950,7 @@
   {
     "id": 52,
     "name": "Bolt Pistol",
-    "price": 0,
+    "price": 22,
     "profiles": [
       {
         "profileName": "",
@@ -1060,7 +1060,7 @@
         "damage": { "min": 2, "max": 3 },
         "specialRules": [
           { "ruleId": 38, "modValue": null }, 
-          { "ruleId": 28, "modValue": null } 
+          { "ruleId": 49, "modValue": null } 
         ],
         "body": "universal"
       }
@@ -1079,7 +1079,7 @@
         "damage": { "min": 3, "max": 4 },
         "specialRules": [
           { "ruleId": 39, "modValue": null },
-          { "ruleId": 28, "modValue": null }
+          { "ruleId": 49, "modValue": null }
         ],
         "body": "universal"
       }
@@ -1088,7 +1088,7 @@
   {
     "id": 60,
     "name": "Root Whip",
-    "price": 45,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -1107,7 +1107,7 @@
   {
     "id": 61,
     "name": "Crushing Slam",
-    "price": 60,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -1126,7 +1126,7 @@
   {
     "id": 62,
     "name": "Mist Tendrils",
-    "price": 35,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -1145,7 +1145,7 @@
   {
     "id": 63,
     "name": "Ancient Trunk",
-    "price": 70,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -1164,7 +1164,7 @@
   {
     "id": 64,
     "name": "Mist Vortex",
-    "price": 100,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",
@@ -1184,7 +1184,7 @@
   {
     "id": 65,
     "name": "Reality Rend Claws",
-    "price": 150,
+    "price": 0,
     "profiles": [
       {
         "profileName": "",

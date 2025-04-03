@@ -146,7 +146,6 @@ export class WeaponTableComponent implements OnChanges {
   }
 
   showRuleDetails(ruleDisplay: ruleDisplay) {
-    console.log(ruleDisplay)
     const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
       data: {rule: ruleDisplay},
       panelClass: 'image-dialog-container',

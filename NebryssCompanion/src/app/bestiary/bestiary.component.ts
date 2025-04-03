@@ -64,7 +64,7 @@ export class BestiaryComponent implements OnInit {
         }
       }
 
-      console.log(this.dataService.validateBestiaryPR());
+      console.log(this.dataService.validateBestiaryPR().filter((creature) => creature.calculatedPR != creature.currentPR));
     });
   }
 

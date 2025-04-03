@@ -158,8 +158,8 @@
   {
   "id": 28,
   "name": "Silent",
-  "effect": "Weapon can be used on conceal order.",
-  "prModifier": 1
+  "effect": "Can be used to shoot even in conceal order.",
+  "prModifier": 2
   },
   {
     "id": 29,
@@ -280,6 +280,11 @@
     "name": "Seek Light",
     "effect": "When selecting target for a shoot action, visible operatives can be targeted even if they are in cover from light terrain.",
     "prModifier": "6"
+  },
+  {
+    "id": 49,
+    "name": "assasinate",
+    "effect": "Operative can perform charge action on conceal only if it fights after the charge action.",
+    "prModifier": 2
   }
-
 ]
