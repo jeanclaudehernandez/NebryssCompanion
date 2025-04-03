@@ -283,8 +283,20 @@
   },
   {
     "id": 49,
-    "name": "assasinate",
+    "name": "Assasinate",
     "effect": "Operative can perform charge action on conceal only if it fights after the charge action.",
     "prModifier": 2
+  },
+  {
+    "id": 50,
+    "name": "Witchhunt",
+    "effect": "If the target is a [spell] operative, gain Piercing 1.",
+    "prModifier": 1
+  },
+  {
+    "id": 51,
+    "name": "Corrupt",
+    "effect": "If damage is made to the target during this action with a critical success, apply /7/ status to the target.",
+    "prModifier": 3
   }
 ]

@@ -52,9 +52,10 @@
     </div>
   </div>
   
-  <div class="items" *ngIf="isPlayer(character) && character.progression?.items?.length">
+  <div class="items" *ngIf="isPlayer(character) && character?.items?.length">
     <h3>Items</h3>
-    <div *ngFor="let item of character.progression.items" class="item">
+    <div *ngFor="let itemId of character.items" class="item">
+      @let item = getItemById(itemId.id);
       <h4>{{ item.name }}</h4>
       <p>{{ item.description }}</p>
       <p *ngIf="item.quant">Quantity: {{ item.quant }}</p>

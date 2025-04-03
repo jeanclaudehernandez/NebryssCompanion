@@ -1350,5 +1350,80 @@
         "body": "null"
       }
     ]
+  },
+  {
+    "id": 69,
+    "name": "Sanctioned Power Axe",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": {"min": 3, "max": 5},
+        "specialRules": [
+          {"ruleId": 15, "modValue": null},
+          {"ruleId": 19, "modValue": null}
+        ],
+        "body": "human"
+      }
+    ]
+  },
+  {
+    "id": 70,
+    "name": "Inferno Pistol",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 3,
+        "ws": 4,
+        "damage": {"min": 4, "max": 5},
+        "specialRules": [
+          {"ruleId": 6, "modValue": null},
+          {"ruleId": 30, "modValue": 2}
+        ],
+        "body": "human"
+      }
+    ]
+  },
+  {
+    "id": 71,
+    "name": "Psychic Null Rod",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": {"min": 2, "max": 3},
+        "specialRules": [
+          {"ruleId": 34, "modValue": 2}
+        ],
+        "body": "human"
+      }
+    ]
+  },
+  {
+    "id": 72,
+    "name": "Warp Talons",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 5,
+        "ws": 3,
+        "damage": {"min": 2, "max": 4},
+        "specialRules": [
+          {"ruleId": 38, "modValue": null},
+          {"ruleId": 7, "modValue": null}
+        ],
+        "body": "daemon"
+      }
+    ]
   }
 ]

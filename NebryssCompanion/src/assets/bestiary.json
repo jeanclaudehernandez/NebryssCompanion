@@ -936,5 +936,160 @@
         "prModifier": 3
       }
     ]
+  },
+  {
+    "id": 35,
+    "name": "Inquisitor Alaric Dresdan",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 167,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": ["human", "spell", "universal"]
+    },
+    "weapons": [69, 70],
+    "abilities": [
+      {
+        "name": "Psychic Dominion",
+        "effect": "1AP: Select visible enemy within 12 inches. Until next activation, their [spell] attacks targeting this operative automatically fail.",
+        "prModifier": 8
+      },
+      {
+        "name": "Inquisitorial Mandate",
+        "effect": "2AP: friendly operatives within 6 inches can immediately perform a free Fight or Shoot action after this operative's activation.",
+        "prModifier": 10
+      }
+    ],
+    "items": [{
+      "id": 29,
+      "quant": 1
+    }]
+  },
+  {
+    "id": 36,
+    "name": "Inquisitorial Body guard",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 114,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": ["human", "universal"]
+    },
+    "weapons": [71, 2],
+    "abilities": [
+      {
+        "name": "Sanctioned Tactics",
+        "effect": "When within 3 inches of an Inquisitor, improve WS by 1.",
+        "prModifier": 3
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Daemonhost",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 129,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 2,
+      "body": ["daemon", "spell", "universal"]
+    },
+    "weapons": [72],
+    "abilities": [
+      {
+        "name": "Bound Wrath",
+        "effect": "Each time this operative suffers wounds, add +1 to its Attack characteristic (max +3). If controller is killed, roll 1D6 each activation - on 1-3 it attacks nearest operative.",
+        "prModifier": -5
+      },
+      {
+        "name": "Warp Flux",
+        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply /7/ (Corrupted) status.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Inquisitorial Interrogator",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 123,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": 4,
+      "APL": 2,
+      "body": ["human", "universal"]
+    },
+    "weapons": [23, 2],
+    "abilities": [
+      {
+        "name": "Authority of the Ordos",
+        "effect": "Once per Turning Point, one friendly operative withint 6 inches can reroll a failed dice",
+        "prModifier": 3
+      }
+    ],
+    "items": [{
+      "id": 29,
+      "quant": 1
+    }]
+  },
+  {
+    "id": 39,
+    "name": "Inquisitorial Acolyte",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": ["human", "universal"]
+    },
+    "weapons": [24, 1],
+    "abilities": [
+      {
+        "name": "Sanctioned Vigilance",
+        "effect": "When within 3 inches of another Inquisitorial Agent, gain +1 to Save rolls",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Sanctioned Psyker",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 74,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": ["human", "spell", "universal"]
+    },
+    "weapons": [50],
+    "abilities": [
+      {
+        "name": "Warp Insight",
+        "effect": "1AP: Roll 1D6 - on 4+ remove change to engange enemies within 12 inches.",
+        "prModifier": 4
+      },
+      {
+        "name": "Unstable Connection",
+        "effect": "When using [spell] weapons, suffer 1 wound on hit rolls of 1",
+        "prModifier": -2
+      }
+    ]
   }
 ]

@@ -17,7 +17,8 @@
         "mission": "Harness the mist’s properties for the Imperium’s benefit.",
         "methods": "Works with radical Magi of the Adeptus Mechanicus and sanctioned psykers; conducts clandestine experiments.",
         "personality": "Pragmatic, methodical, and controversial.",
-        "location": "Stormwatch"
+        "location": "Stormwatch",
+        "bestiaryId": 35
       },
       {
         "id": 3,

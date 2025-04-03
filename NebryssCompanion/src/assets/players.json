@@ -34,16 +34,16 @@
             "50s": 0,
             "100s": 0
           }
-        },
-        "items": [
-          {
-            "id": 24,
-            "name": "Medical Supplies",
-            "description": "Standard battlefield medical kit",
-            "quant": "2/5"
-          }
-        ]
-      }
+        }
+      },
+      "items": [
+        {
+          "id": 24,
+          "name": "Medical Supplies",
+          "description": "Standard battlefield medical kit",
+          "quant": 2
+        }
+      ]
     },
     {
       "id": 2,
@@ -79,16 +79,16 @@
             "50s": 0,
             "100s": 0
           }
-        },
-        "items": [
-          {
-            "id": 16,
-            "name": "Mist Compass",
-            "description": "Navigates through dense mist zones",
-            "quant": 1
-          }
-        ]
-      }
+        }
+      },
+      "items": [
+        {
+          "id": 16,
+          "name": "Mist Compass",
+          "description": "Navigates through dense mist zones",
+          "quant": 1
+        }
+      ]
     },
     {
       "id": 3,
@@ -124,9 +124,9 @@
             "50s": 0,
             "100s": 0
           }
-        },
-        "items": []
-      }
+        }
+      },
+      "items": []
     },
     {
       "id": 4,
@@ -174,22 +174,18 @@
             "50s": 0,
             "100s": 0
           }
+        }
+      },
+      "items": [
+        {
+          "id": 61,
+          "quant": 1
         },
-        "items": [
-          {
-            "id": null,
-            "name": "Shattered Mirror",
-            "description": "Holds echoes of unmade futures",
-            "quant": 1
-          },
-          {
-            "id": 8,
-            "name": "Mist-Tracker Goggles",
-            "description": "Enhanced mist navigation",
-            "quant": 1
-          }
-        ]
-      }
+        {
+          "id": 8,
+          "quant": 1
+        }
+      ]
     },
     {
       "id": 5,
@@ -225,9 +221,9 @@
             "50s": 0,
             "100s": 0
           }
-        },
-        "items": []
-      }
+        }
+      },
+      "items": []
     },
     {
       "id": 6,
@@ -272,8 +268,8 @@
             "50s": 0, 
             "100s": 0 
           }
-        },
-        "items": []
-      }
+        }
+      },
+      "items": []
     }
   ]

@@ -5,9 +5,15 @@ export interface AlteredState {
     effect: string;
   }
 
+  export interface Inventory {
+    id: number;
+    quant: number;
+  }
+
   export interface Character {
     id: number;
     name: string;
+    items?: Inventory[];
     attributes: {
       Movement: number;
       Wounds: number;
@@ -46,67 +52,67 @@ export interface AlteredState {
   
   // items.ts
   interface ArmorItem {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
-    raceReq: string;
+    id?: number;
+    name?: string;
+    price?: number;
+    description?: string;
+    raceReq?: string;
   }
   
   interface ConsumableItem {
-    id: number;
-    name: string;
-    price: number;
-    description: string;
+    id?: number;
+    name?: string;
+    price?: number;
+    description?: string;
   }
   
   interface AmmunitionItem {
-    id: number;
-    name: string;
-    price: number;
-    quantity: number;
-    type: string;
-    description: string;
+    id?: number;
+    name?: string;
+    price?: number;
+    quantity?: number;
+    type?: string;
+    description?: string;
   }
   
   interface MistEngineItem {
-    id: number;
-    name: string;
-    price: number;
-    optimalConditions: string;
-    maxSpeed: string;
-    maxWeight: number;
+    id?: number;
+    name?: string;
+    price?: number;
+    optimalConditions?: string;
+    maxSpeed?: string;
+    maxWeight?: number;
   }
   
   interface ShipHullItem {
-    id: number;
-    name: string;
-    price: number;
-    weight: number;
-    shipWounds: number;
-    defense: number;
-    maxCargo: number;
+    id?: number;
+    name?: string;
+    price?: number;
+    weight?: number;
+    shipWounds?: number;
+    defense?: number;
+    maxCargo?: number;
   }
   
   interface CannonItem {
-    id: number;
-    name: string;
-    price: number;
-    ammoType: string;
-    weight: number;
+    id?: number;
+    name?: string;
+    price?: number;
+    ammoType?: string;
+    weight?: number;
   }
   
   interface CannonballItem {
-    id: number;
-    name: string;
-    price: number;
-    damage: string;
+    id?: number;
+    name?: string;
+    price?: number;
+    damage?: string;
   }
   
   interface DeployableItem {
-    id: number;
-    name: string;
-    type: string;
+    id?: number;
+    name?: string;
+    type?: string;
     description?: string;
     weapons?: number[];
     bestiaryId?: number;
@@ -279,17 +285,16 @@ export interface AlteredState {
         "100s": number;
       };
     };
-    items: Array<{
-      id: number | null;
-      name: string;
-      description: string;
-      quant: string | number;
-    }>;
+  }
+
+  export interface Inventory extends Item {
+    quant: number;
   }
   
   export interface Player extends Character {
     race: string;
     origin: string;
+    items: Inventory[]
     progression: Progression;
   }
   
@@ -368,3 +373,5 @@ export interface AlteredState {
     title: string;
     id: string;
   }
+
+  export interface Item extends ArmorItem, AmmunitionItem, MistEngineItem, ShipHullItem, CannonItem, CannonballItem, DeployableItem {}
