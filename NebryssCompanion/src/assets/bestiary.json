@@ -645,7 +645,7 @@
     "id": 24,
     "name": "Mini-Terminator",
     "faction": "Imperium",
-    "subgroup": "Astartes",
+    "subgroup": "Space Marine",
     "pr": 72,
     "attributes": {
       "Movement": 3,
