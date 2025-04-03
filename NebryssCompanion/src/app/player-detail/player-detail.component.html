@@ -52,7 +52,7 @@
     </div>
   </div>
   
-  <div class="items" *ngIf="isPlayer(character) && character?.items?.length">
+  <div class="items" *ngIf="character?.items?.length">
     <h3>Items</h3>
     <div *ngFor="let itemId of character.items" class="item">
       @let item = getItemById(itemId.id);
