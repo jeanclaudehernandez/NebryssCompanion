@@ -1,13 +1,14 @@
-import { ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, Input, OnChanges } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
 import { AlteredState, BestiaryEntry, Character, Items, Player, Weapon, WeaponRule } from '../model';
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, JsonPipe],
+  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })

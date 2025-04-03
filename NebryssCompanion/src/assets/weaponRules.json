@@ -86,13 +86,13 @@
   {
   "id": 16,
   "name": "Balanced",
-  "effect": "Re-roll one failed attack die.",
+  "effect": "Re-roll one attack die.",
   "prModifier": 1
   },
   {
   "id": 17,
   "name": "Stun",
-  "effect": "Target loses 1AP on its next activation.",
+  "effect": "Target loses 1AP on their next activation.",
   "prModifier": 1
   },
   {
@@ -110,43 +110,43 @@
   {
   "id": 20,
   "name": "Punishing",
-  "effect": "After rolling attack dice, if you retain a critical hit, you can retain a failed dice as successful.",
+  "effect": "After rolling attack dice, if you retain any critical hit, you can retain 1 failed dice as successful.",
   "prModifier": 2
   },
   {
   "id": 21,
   "name": "Lethal <x>+",
-  "effect": "Critical hits are scored on unmodified rolls of <x>+ instead of 6.",
+  "effect": "Critical hits are retained on unmodified rolls of <x>+ instead of 6.",
   "prModifier": 2
   },
   {
   "id": 22,
   "name": "Shock",
-  "effect": "After rolling attack dice if you retain a critical hit, you can discard one of your opponent's success attack dice (critical if no normal).",
-  "prModifier": 2
+  "effect": "After rolling attack dice, if you retain a critical hit, you can discard one of your opponent's successes (you can discard a critical if there are no normals).",
+  "prModifier": 6
   },
   {
   "id": 23,
   "name": "Saturate",
   "effect": "Weapon removes cover save bonuses.",
-  "prModifier": 1
+  "prModifier": 2
   },
   {
   "id": 24,
   "name": "Relentless",
   "effect": "After rolling attack dice, you can re-roll any number of dices.",
-  "prModifier": 3
+  "prModifier": 7
   },
   {
   "id": 25,
   "name": "Devastating <x>",
   "effect": "Deal <x> wounds on critical hits.",
-  "prModifier": 2
+  "prModifier": 3
   },
   {
   "id": 26,
   "name": "Heavy(dash only)",
-  "effect": "This weapon can't be used in the same activation as a move action.",
+  "effect": "This weapon can't be used in the same activation as a reposition action.",
   "prModifier": -1
   },
   {
@@ -170,37 +170,37 @@
   {
   "id": 30,
   "name": "Blast <x> inches",
-  "effect": "All operatives within <x> inches of the target are also attacked.",
+  "effect": "After this shoot action, make a shoot action against all operatives other than target within <x> inches of the target, treat cover and obscuring same as the original target",
   "prModifier": "X"
   },
   {
   "id": 31,
   "name": "Push <x> inches",
-  "effect": "Move the target <x> inches away after a successful hit.",
+  "effect": "Move the target <x> inches away after this action if you retain any sucesses.",
   "prModifier": 1
   },
   {
   "id": 32,
   "name": "Psychic",
-  "effect": "This attack is resolved as a psychic action.",
+  "effect": "This attack cannot be performed by operatives without the spell body type.",
   "prModifier": null
   },
   {
   "id": 33,
   "name": "Break",
-  "effect": "After use, roll a 1d6, on a failed roll of +3, the item breaks.",
+  "effect": "After use, roll a 1d6 +APL, on a failed roll of +5, the weapon breaks.",
   "prModifier": null
   },
   {
     "id": 34,
     "name": "Piercing <x>",
-    "effect": "Before rolling defense dice, the defending operatives rolls <x> less dice",
-    "prModifier": "x*2"
+    "effect": "Before rolling defense dice, the defending operatives rolls <x> less defense dice.",
+    "prModifier": 5
   },
   {
     "id": 35,
     "name": "hot",
-    "effect": "After finishing the shoot action, on a failed roll of 1d6 against WS, operative suffers 2x result wounds",
+    "effect": "After finishing a shoot action, roll 1d6, on a result lower than WS, operative suffers 2x result wounds.",
     "prModifier": -2
   },
   {
@@ -250,5 +250,36 @@
     "name": "Mistcloak Sync",
     "effect": "While in a mist zone, the operative gains +1 Save. If the operative is cover, they cannot be targeted by ranged attacks beyond 6inches.",
     "prModifier": 2
+  },
+  {
+    "id": 44,
+    "name": "Accurate <x>",
+    "effect": "Before rolling attack dice, you can retain <x> dices are normal sucesses.",
+    "prModifier": 4
+  },
+  {
+    "id": 45,
+    "name": "Torrent <x>",
+    "effect": "After this shoot action, make a shoot action against all operatives other than target that are visible and within <x> inches of the target.",
+    "prModifier": 4
+  },  
+  {
+    "id": 46,
+    "name": "Severe",
+    "effect": "After rolling attack dice, if you don't retain any critical success, you can change one of your normal success to become critical (rules that apply when you retain critical success will apply).",
+    "prModifier": 4
+  },
+  {
+    "id": 47,
+    "name": "Seek",
+    "effect": "When selecting target for a shoot action, visible operatives can be targeted even if they are in cover.",
+    "prModifier": 8
+  },
+  {
+    "id": 48,
+    "name": "Seek Light",
+    "effect": "When selecting target for a shoot action, visible operatives can be targeted even if they are in cover from light terrain.",
+    "prModifier": "6"
   }
+
 ]

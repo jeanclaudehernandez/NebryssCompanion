@@ -16,11 +16,11 @@
       "abilities": [
         {
           "name": "Battlefield first aid",
-          "effect": "1AP, Once per battle: Heal 1D3 +1 wounds to a friendly operative within Control Range. Can only be used if there are no enemy operatives within 3″ of this operative or the target."
+          "effect": "1AP, Once per battle: <strong>Heal 1D3 +1 wounds</strong> to a friendly operative within Control Range. Can only be used if there are <strong>no enemy operatives within 3 inches</strong> of this operative or the target."
         },
         {
           "name": "Extended Mags",
-          "effect": "Place an ammunition box marker within Control Range. Whenever a friendly operative performs a Shoot action within Control Range of the ammunition box marker, they add one attack dice but cannot retain critical successes from it. "
+          "effect": "Place an ammunition box marker within Control Range. Whenever a friendly operative performs a Shoot action within Control Range of the ammunition box marker, they <strong>add one attack dice but cannot retain critical successes from it</strong>. "
         }
       ],
       "progression": {
@@ -61,11 +61,11 @@
       "abilities": [
         {
           "name": "Mist Veil",
-          "effect": "1AP, Once per battle: This operative is treated as in Cover until the end of its next activation. Enemy operatives more than 12″ away also treat it as Obscured."
+          "effect": "1AP, Once per battle: This operative is treated as in <strong>Cover until the end of its next activation</strong>. Enemy operatives more than <strong>12 inches away also treat it as Obscured</strong>."
         },
         {
           "name": "The Wind’s Gift",
-          "effect": "Once per battle: This operative suffers 1 wound to restore 2D3 +1 wounds to another friendly operative within 6 inches, cannot perform this action while within control range of an enemy."
+          "effect": "Once per battle: This operative suffers 1 wound to <strong>restore 2D3 +1</strong> wounds to another friendly operative <strong>within 6 inches</strong>, cannot perform this action while within control range of an enemy."
         }
       ],
       "progression": {
@@ -106,11 +106,11 @@
       "abilities": [
         {
           "name": "Unrelenting Agility",
-          "effect": "Once per battle: this operative may perform Shoot action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. If the target survives, this operative gains 1AP until the end of the activation. "
+          "effect": "Once per battle: this operative may perform Shoot action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. <strong>If the target survives</strong>, this operative <strong>gains 1AP</strong> until the end of the activation. "
         },
         {
           "name": "Quick Assault",
-          "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two dice in sequence and add 1dmg to both their damage. "
+          "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, <strong>it can resolve two dice in sequence and add 1dmg to both their damage</strong>. "
         }
       ],
       "progression": {
@@ -144,11 +144,11 @@
       "abilities": [
         {
           "name": "Fractal Visions",
-          "effect": "Once per Battle: Reroll a failed shooting attack dice."
+          "effect": "Once per Battle: Reroll a <strong>failed</strong> shooting attack dice."
         },
         {
           "name": "Mist Veilwalk",
-          "effect": "1AP: Teleport 6″ through mist zones. Roll 1D6; on a 4+, change order to Conceal Order."
+          "effect": "1AP: <strong>Teleport 6 inches</strong> through mist zones. Roll 1D6; on a 4+, change order to conceal."
         },
         {
           "name": "Screaming Vortex",
@@ -207,11 +207,11 @@
       "abilities": [
         {
           "name": "Mist Regeneration",
-          "effect": "At the start of activation, if in a mist zone, roll 1D6 on a 4+ and heal wounds based on mist density: Light Mist (1 wound), Medium Mist (1D3 wounds), Dense Mist (2D3 wounds)."
+          "effect": "At the start of activation, if in a mist zone, <strong>roll 1D6 on a 4+</strong> and heal wounds based on mist density: Light Mist (1 wound), Medium Mist (1D3 wounds), Dense Mist (2D3 wounds)."
         },
         {
           "name": "Boulder Roll",
-          "effect": "1AP: Move up to 6 inches in a straight line. Operatives within 1 inch of the path suffer 1D3 wounds."
+          "effect": "1AP: Move up to 6 inches in a straight line. Operatives within 1 inch of the path (180 degrees arc) suffer 1D3 wounds."
         }
       ],
       "progression": {
@@ -245,7 +245,7 @@
       "abilities": [
         {
           "name": "Fortify",
-          "effect": "1AP: Place a deployable within 3 inches. Max 2 per game."
+          "effect": "1AP: Place one of your deployables visible and within 3 inches. Max 2 per game."
         },
         {
           "name": "Rites of Repair",

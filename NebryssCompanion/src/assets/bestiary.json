@@ -609,7 +609,7 @@
     "id": 24,
     "name": "Mini-Terminator",
     "faction": "Imperium",
-    "subgroup": "Astartes (Experimental)",
+    "subgroup": "Astartes",
     "pr": 72,
     "attributes": {
       "Movement": 3,
@@ -654,7 +654,7 @@
     "abilities": [
       {
         "name": "Shadow Step",
-        "effect": "1AP: Teleport 6 inches through shadows or mist zones. Treat as **Concealed** after teleporting.",
+        "effect": "1AP: <strong>Teleport 6 inches</strong> through shadows or mist zones. Treat as <strong>Concealed</strong> after teleporting.",
         "prModifier": 3
       },
       {
@@ -681,12 +681,12 @@
     "abilities": [
       {
         "name": "Umbral Aura",
-        "effect": "Enemies within 6 inches worsen their Save by 1 in mist zones.",
+        "effect": "Enemies <strong>within 6 inches</strong> worsen their Save by 1 in mist zones.",
         "prModifier": 4
       },
       {
         "name": "Terrifying Visage",
-        "effect": "Once per battle: All enemies within 6 inches gain **Disoriented** (ID 8) until the end of the Turning Point.",
+        "effect": "Once per battle: All enemies <strong>within 6 inches</strong> gain <strong>Disoriented</strong> until the end of the Turning Point.",
         "prModifier": 3
       }
     ]
@@ -708,12 +708,12 @@
     "abilities": [
       {
         "name": "Veil of Darkness",
-        "effect": "1AP: Create a 3 inch mist zone. Allies within it gain **Silent** (weapon rule).",
+        "effect": "1AP: Create a 3 inch mist zone. Allies within it gain <strong>Silent</strong>.",
         "prModifier": 3
       },
       {
         "name": "Siphon Essence",
-        "effect": "PSYCHIC: 1AP: Target enemy within 12 inches suffers 1D3 wounds. Heal equal to the damage dealt.",
+        "effect": "1AP: Target enemy <strong>within 12 inches</strong> suffers <strong>1D3 wounds</strong>. Heal equal to the damage dealt.",
         "prModifier": 4
       }
     ]
@@ -735,11 +735,11 @@
     "abilities": [
       {
         "name": "Living Roots",
-        "effect": "1AP: Create a 3-inch hazardous terrain patch of entangling roots. Enemies moving through suffer 1D3 wounds."
+        "effect": "1AP: Create a 3-inch hazardous terrain patch of entangling roots. Enemies moving through suffer <strong>1D3 wounds</strong>."
       },
       {
         "name": "Bark Armor",
-        "effect": "Reduce incoming damage by 1 (to a minimum of 1). Critical hits against this operative are scored on unmodified rolls of 5+.",
+        "effect": "Reduce incoming damage by 1 (to a minimum of 2). <strong>Critical hits against this operative are scored on unmodified rolls of 5+</strong>.",
         "prModifier": 5
       },
       {
@@ -765,16 +765,16 @@
     "abilities": [
       {
         "name": "Mistform",
-        "effect": "This operative is always treated as in Cover while in a mist zone. Can move through terrain and other operatives."
+        "effect": "This operative is always treated as <strong>in Cover while in a mist zone</strong>. Can move through terrain and other operatives."
       },
       {
         "name": "Density Shift",
-        "effect": "1AP: Increase mist density level in a 6-inch radius for one Turning Point. All operatives in the area gain **Obscured**.",
+        "effect": "1AP: Increase mist density level in a <strong>6-inch</strong> radius for one Turning Point. All operatives in the area are <strong>Obscured</strong>.",
         "prModifier": 4
       },
       {
         "name": "Ethereal Strike",
-        "effect": "Critical hits inflict the **Bleeding** (ID 2) status. If the target is already Bleeding, worsen it to **Corrupted** (ID 7)."
+        "effect": "Critical hits inflict the <strong>Bleeding</strong> status. If the target is already Bleeding, worsen it to <strong>Corrupted</strong>."
       }
     ]
   },
@@ -795,11 +795,11 @@
     "abilities": [
       {
         "name": "Guardian's Call",
-        "effect": "Once per battle, summon 1D3 **Sylvan Saplings** (PR 40) within 6 inches. Saplings activate after this operative."
+        "effect": "Once per battle, <strong>summon 1D3 Sylvan Saplings</strong>  within 6 inches. Saplings activate after this operative."
       },
       {
         "name": "Thorn Burst",
-        "effect": "When this operative is destroyed, all enemies within 3 inches suffer 1D3 wounds and gain **Bleeding** (ID 2)."
+        "effect": "When this operative is <strong>destroyed</strong>, all enemies <strong>within 3 inches</strong> suffer <strong>1D3</strong> wounds and gain <strong>Bleeding</strong>."
       }
     ]
   },
