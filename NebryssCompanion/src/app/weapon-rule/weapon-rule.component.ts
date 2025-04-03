@@ -33,6 +33,5 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
 })
 export class WeaponRuleDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { rule: {name: string, description: string}}) {
-    console.log(data)
   }
 }
