@@ -2,7 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
-import { AlteredState, BestiaryEntry, Character, Items, Player, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Character, Items, Player, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 
@@ -26,12 +26,18 @@ export class PlayerDetailComponent implements OnChanges {
   itemTableData: any[] = [];
   itemTableHeaders: string[] = ['Name', 'Description', 'Quantity'];
   itemTableHeaderKeys: string[] = ['name', 'description', 'quant'];
+  
+  // Talent table properties
+  talentTableData: any[] = [];
+  talentTableHeaders: string[] = ['Name', 'Effect'];
+  talentTableHeaderKeys: string[] = ['name', 'effect'];
 
   constructor(private dataService: DataService) {}
 
   ngOnChanges(): void {
     this.bodyString = this.character.attributes.body.reduce((body: string, acc: string) => body + " " + acc, "");
     this.prepareItemTableData();
+    this.prepareTalentTableData();
   }
 
   prepareItemTableData(): void {
@@ -48,6 +54,24 @@ export class PlayerDetailComponent implements OnChanges {
       }).filter(item => item !== null);
     } else {
       this.itemTableData = [];
+    }
+  }
+
+  prepareTalentTableData(): void {
+    if (this.isPlayer(this.character) && this.character.progression && 
+        this.character.progression.talents && this.character.progression.talents.length > 0) {
+      this.talentTableData = this.character.progression.talents.map(talentId => {
+        const talent = this.dataService.getTalentById(talentId);
+        if (talent) {
+          return {
+            name: talent.name,
+            effect: talent.effect
+          };
+        }
+        return null;
+      }).filter(talent => talent !== null);
+    } else {
+      this.talentTableData = [];
     }
   }
 

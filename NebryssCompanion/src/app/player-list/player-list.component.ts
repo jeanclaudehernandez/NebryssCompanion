@@ -45,6 +45,9 @@ export class PlayerListComponent implements OnInit, OnDestroy {
       if (activePlayer) {
         this.expandedPlayers.add(activePlayer.id);
         this.scrollToPlayer();
+        
+        // Override player data with active player if it exists in the players array
+        this.updatePlayerFromActivePlayer();
       }
     });
 
@@ -57,6 +60,9 @@ export class PlayerListComponent implements OnInit, OnDestroy {
           this.expandedPlayers.clear();
           // Expand only the active player
           this.expandedPlayers.add(player.id);
+          
+          // Override player data with active player data
+          this.updatePlayerFromActivePlayer();
         }
       });
   }
@@ -64,6 +70,17 @@ export class PlayerListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  private updatePlayerFromActivePlayer(): void {
+    const activePlayer = this.activePlayerService.activePlayer;
+    if (activePlayer && this.players.length > 0) {
+      const index = this.players.findIndex(p => p.id === activePlayer.id);
+      if (index !== -1) {
+        // Replace the player with the active player data
+        this.players[index] = { ...activePlayer };
+      }
+    }
   }
 
   selectPlayer(player: Player): void {
