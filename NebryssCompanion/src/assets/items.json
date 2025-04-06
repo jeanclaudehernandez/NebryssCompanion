@@ -186,7 +186,7 @@
       "description": "Single-use energy core required to activate Voidwalker Exosuit for one mission. Provides 6 operational hours before depletion."
     },
     {
-      "id": 29,
+      "id": 62,
       "name": "Inquisitorial Rosette",
       "price": 0,
       "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded)."
