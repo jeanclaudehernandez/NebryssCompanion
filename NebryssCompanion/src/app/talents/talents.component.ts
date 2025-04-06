@@ -5,11 +5,13 @@ import { ScrollSection, Talent, TalentCategory, Player } from '../model';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ActivePlayerService } from '../active-player.service';
 import { Subscription } from 'rxjs';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TalentRequirementsDialogComponent } from './talent-requirements-dialog.component';
 
 @Component({
   selector: 'app-talents',
   standalone: true,
-  imports: [CommonModule, ScrollNavComponent],
+  imports: [CommonModule, ScrollNavComponent, MatDialogModule],
   templateUrl: './talents.component.html',
   styleUrls: ['./talents.component.css']
 })
@@ -21,7 +23,8 @@ export class TalentsComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -54,6 +57,34 @@ export class TalentsComponent implements OnInit, OnDestroy {
     }).join(', ');
   }
 
+  hasRequiredTalents(talent: Talent): boolean {
+    if (!talent.requirements || talent.requirements.length === 0) {
+      return true;
+    }
+    
+    if (!this.activePlayer || !this.activePlayer.progression.talents) {
+      return false;
+    }
+    
+    return talent.requirements.every(reqId => 
+      this.activePlayer!.progression.talents!.includes(reqId)
+    );
+  }
+  
+  getMissingRequirements(talent: Talent): string[] {
+    if (!talent.requirements || talent.requirements.length === 0) {
+      return [];
+    }
+    
+    if (!this.activePlayer || !this.activePlayer.progression.talents) {
+      return talent.requirements;
+    }
+    
+    return talent.requirements.filter(reqId => 
+      !this.activePlayer!.progression.talents!.includes(reqId)
+    );
+  }
+
   toggleTalent(talent: Talent): void {
     if (!this.activePlayer) return;
     
@@ -63,27 +94,35 @@ export class TalentsComponent implements OnInit, OnDestroy {
     }
     
     const playerTalents = this.activePlayer.progression.talents;
-
-    // Handle talents with max stacks
-    if (talent.maxStacks) {
-      const count = this.getTalentSelectedCount(talent);
-      // If talent is selected fewer times than maxStacks, add it
-      if (count < talent.maxStacks) {
-        playerTalents.push(talent.id);
+    const talentIndex = playerTalents.indexOf(talent.id);
+    
+    // If adding a talent (not already selected)
+    if (talentIndex === -1) {
+      // Check if player has required talents
+      if (!this.hasRequiredTalents(talent)) {
+        this.showRequirementsDialog(talent);
+        return;
+      }
+      
+      // Handle talents with max stacks
+      if (talent.maxStacks) {
+        const count = this.getTalentSelectedCount(talent);
+        // If talent is selected fewer times than maxStacks, add it
+        if (count < talent.maxStacks) {
+          playerTalents.push(talent.id);
+        }
       } else {
+        // For non-stacking talents, add it
+        playerTalents.push(talent.id);
+      }
+    } else {
+      // Removing talent
+      if (talent.maxStacks) {
         // Remove one instance of the talent (the last one)
         const lastIndex = playerTalents.lastIndexOf(talent.id);
         if (lastIndex !== -1) {
           playerTalents.splice(lastIndex, 1);
         }
-      }
-    } else {
-      // For non-stacking talents, toggle as before
-      const talentIndex = playerTalents.indexOf(talent.id);
-      
-      if (talentIndex === -1) {
-        // Add talent
-        playerTalents.push(talent.id);
       } else {
         // Remove talent
         playerTalents.splice(talentIndex, 1);
@@ -92,6 +131,30 @@ export class TalentsComponent implements OnInit, OnDestroy {
     
     // Update the player
     this.activePlayerService.setActivePlayer({...this.activePlayer});
+  }
+  
+  showRequirementsDialog(talent: Talent): void {
+    const missingRequirements = this.getMissingRequirements(talent);
+    const missingNames = missingRequirements.map(reqId => {
+      const reqTalent = this.talentCategories.flatMap(cat => cat.talents).find(t => t.id === reqId);
+      return reqTalent ? reqTalent.name : reqId;
+    }).join(', ');
+    
+    const dialogRef = this.dialog.open(TalentRequirementsDialogComponent, {
+      data: {
+        talentName: talent.name,
+        missingTalents: missingNames
+      },
+      width: '350px',
+      hasBackdrop: true,
+      backdropClass: 'image-dialog-backdrop', // Optional: custom backdrop class
+      disableClose: true // Allow closing by clicking outside
+    });
+
+    setTimeout(() => {
+        dialogRef.disableClose = false;
+    }, 0);
+    ;
   }
 
   isTalentSelected(talent: Talent): boolean {
@@ -114,6 +177,12 @@ export class TalentsComponent implements OnInit, OnDestroy {
     
     if (!this.activePlayer.progression.talents) {
       this.activePlayer.progression.talents = [];
+    }
+    
+    // Check if player has required talents
+    if (!this.hasRequiredTalents(talent)) {
+      this.showRequirementsDialog(talent);
+      return;
     }
     
     if (talent.maxStacks && this.getTalentSelectedCount(talent) < talent.maxStacks) {

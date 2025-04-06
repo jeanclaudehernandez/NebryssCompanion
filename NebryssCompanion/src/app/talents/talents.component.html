@@ -14,7 +14,8 @@
           </div>
         </div>
         <p>{{talent.effect}}</p>
-        <div *ngIf="talent.requirements && talent.requirements.length" class="requirements">
+        <div *ngIf="talent.requirements && talent.requirements.length" class="requirements" 
+          [class.requirements-not-met]="!hasRequiredTalents(talent)">
           <small>Requires: {{getRequirementNames(talent.requirements)}}</small>
         </div>
         <div *ngIf="talent.maxStacks && isTalentSelected(talent)" class="stack-controls">
