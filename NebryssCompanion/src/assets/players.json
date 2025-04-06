@@ -21,6 +21,10 @@
         {
           "name": "Extended Mags",
           "effect": "Place an ammunition box marker within Control Range. Whenever a friendly operative performs a Shoot action within Control Range of the ammunition box marker, they <strong>add one attack dice but cannot retain critical successes from it</strong>. "
+        },
+        {
+          "name": "Steady Guard",
+          "effect": "Reaction, Once per battle: When an enemy operative ends an action in which it moved, you can make a shoot action against that operative if it's a valid target."
         }
       ],
       "progression": {
@@ -66,6 +70,10 @@
         {
           "name": "The Wind’s Gift",
           "effect": "Once per battle, Psychic: This operative suffers 1 wound to <strong>restore 2D3 +1</strong> wounds to another friendly operative <strong>within 6 inches</strong>, cannot perform this action while within control range of an enemy."
+        },
+        {
+          "name": "Wind's Gift Salvation",
+          "effect": "Reaction, Once per Battle: When a shoot or fight action is declared against a friendly operative, you can perform a Wind's Gift on that operative (you must comply it's conditions, this does not count towards usage of Wind's Gift usage limit."
         }
       ],
       "progression": {
@@ -111,6 +119,10 @@
         {
           "name": "Quick Assault",
           "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, <strong>it can resolve two dice in sequence and add 1dmg to both their damage</strong>. "
+        },
+        {
+          "name": "Deadly intuition",
+          "effect": "Reaction, Once per battle: When an enemy operative declares a charge action, before or after it moves, if it's a valid target you can make a shoot action against that operative, weapons used for this rule gain the balanced weapon rule."
         }
       ],
       "progression": {
@@ -157,6 +169,10 @@
         {
           "name": "Heretic Astartes",
           "effect": "Once per battle: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions. You cannot select the same psychic ranged weapon more than once. For the rest of the battle it can counteract regarless of order."
+        },
+        {
+          "name": "Temporal Protection",
+          "effect": "Reaction, Once per battle: When an enemy operative declares a fight or shoot action against you or allies withint 6 inches, you can Summon your Screecher Blue deployable, (this does not count towards Screaming Vortex usage limit, but you cannot summon Screecher Blue when using it)."
         }
       ],
       "deployables": [
@@ -184,6 +200,14 @@
         {
           "id": 8,
           "quant": 1
+        },
+        {
+          "id": 60,
+          "quant": 1
+        },
+        {
+          "id": 59,
+          "quant": 1
         }
       ]
     },
@@ -208,6 +232,10 @@
         {
           "name": "Boulder Roll",
           "effect": "1AP: Move up to 6 inches in a straight line. Operatives within 1 inch of the path (180 degrees arc) suffer 1D3 wounds."
+        },
+        {
+          "name": "Primal Retaliation",
+          "effect": "Reaction, Once per battle: When you survive a retaliation, you can declare a fight action against the operative that you just fought."
         }
       ],
       "progression": {
@@ -250,6 +278,10 @@
         {
           "name": "Techmarine Astartes",
           "effect": "Once per battle: This operative gains 1AP and it can perform either two Shoot actions, two Fight actions or two Fortity actions. You must select at least one PISTOL weapon to perform two shoot actions this way. For the rest of the battle it can counteract regarless of order."
+        },
+        {
+          "name": "Genius Placement",
+          "effect": "Reaction, Once per battle: When an enemy operative declares a fight or shoot action against you or allies within 3 inches, you can summon 1 of your light barricade deployables (place it so ally is in cover) or make a shoot action against that enemy operative with one of your Autogun Turret deployables."
         }
         
       ],
