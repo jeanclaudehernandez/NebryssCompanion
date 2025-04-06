@@ -5,20 +5,22 @@
       <div *ngFor="let player of players" 
            class="player-card" 
            (click)="selectPlayer(player)"
-           [class.selected]="player === selectedPlayer">
+           [class.selected]="isPlayerExpanded(player)">
         <h3>{{ player.name }}</h3>
         <p>{{ player.race }} - {{ player.origin }}</p>
         <p>Wounds: {{ player.attributes.Wounds }}</p>
       </div>
     </div>
     
-    <div *ngIf="selectedPlayer" class="player-detail-container" #playerDetailContainer>
-      <app-player-detail 
-        [character]="selectedPlayer"
-        [weaponsData]="weaponsData"
-        [itemsData]="itemsData"
-        [weaponRulesData]="weaponRulesData"
-        [alteredStates]="alteredStates">
-      </app-player-detail>
+    <div *ngFor="let player of players">
+      <div *ngIf="isPlayerExpanded(player)" class="player-detail-container" #playerDetailContainer>
+        <app-player-detail 
+          [character]="player"
+          [weaponsData]="weaponsData"
+          [itemsData]="itemsData"
+          [weaponRulesData]="weaponRulesData"
+          [alteredStates]="alteredStates">
+        </app-player-detail>
+      </div>
     </div>
   </div>

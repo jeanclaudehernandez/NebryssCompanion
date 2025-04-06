@@ -285,6 +285,7 @@ export interface AlteredState {
         "100s": number;
       };
     };
+    talents?: string[];
   }
 
   export interface Inventory extends Item {
@@ -324,6 +325,7 @@ export interface AlteredState {
     prModifier?: number | null;
     requirements?: string[];
     maxStacks?: number;
+    selectedCount?: number;
   }
   
   export interface TalentCategory {

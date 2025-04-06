@@ -3,11 +3,25 @@
     <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
       <h3>{{category.name}}</h3>
       <p *ngIf="category.description">{{category.description}}</p>
-      <div *ngFor="let talent of category.talents" class="talent-card">
-        <h4>{{talent.name}} (Cost: {{talent.cost}})</h4>
+      <div *ngFor="let talent of category.talents" 
+           class="talent-card"
+           [class.selected]="isTalentSelected(talent)"
+           (click)="toggleTalent(talent)">
+        <div class="talent-header">
+          <h4>{{talent.name}} (Cost: {{talent.cost}})</h4>
+          <div *ngIf="talent.maxStacks" class="stacks-counter">
+            {{ getTalentSelectedCount(talent) }}/{{ talent.maxStacks }}
+          </div>
+        </div>
         <p>{{talent.effect}}</p>
         <div *ngIf="talent.requirements && talent.requirements.length" class="requirements">
           <small>Requires: {{getRequirementNames(talent.requirements)}}</small>
+        </div>
+        <div *ngIf="talent.maxStacks && isTalentSelected(talent)" class="stack-controls">
+          <button class="stack-btn decrement" (click)="decrementTalent(talent, $event)" 
+                  [disabled]="getTalentSelectedCount(talent) <= 0">-</button>
+          <button class="stack-btn increment" (click)="incrementTalent(talent, $event)" 
+                  [disabled]="getTalentSelectedCount(talent) >= talent.maxStacks">+</button>
         </div>
       </div>
     </div>

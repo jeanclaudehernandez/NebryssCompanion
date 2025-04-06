@@ -9,43 +9,48 @@
             "cost": 1,
             "effect": "Critical hits in melee deal +1 damage",
             "prModifier": 1,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "c2",
             "name": "Overwatch Tactics",
             "cost": 3,
             "effect": "After killing an enemy with a shoot action, reposition costs 0AP during this activation, limit movement to 4 inches",
             "prModifier": null,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "c3",
             "name": "Chain Killer",
             "cost": 5,
             "effect": "Gain 1AP for the rest of the battle, after eliminating 3+ enemies in a single activation",
             "prModifier": 2,
-            "stackLimit": 1,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "c4",
             "name": "Trained shooter",
             "cost": 2,
             "effect": "Improve by 1 the WS of ranged weapons of a selected type",
             "prModifier": 2,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "c5",
             "name": "Obliterator",
             "cost": 2,
             "effect": "Weapons with **torrent** or **blast** rules gain lethal 5+",
             "prModifier": 2,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "c6",
             "name": "Counter Strike",
             "cost": 2,
             "effect": "Once per Turning point: When retaliating, After parrying an attack, inmidiately resolve a successful hit as damaging.",
             "prModifier": 3,
-            "requirements": ["c1"]
+            "requirements": ["c1"],
+            "maxStacks": 1
         },
         {
             "id": "c7",
@@ -53,7 +58,8 @@
             "cost": 2,
             "effect": "In mist zones, gain +1 WS and retain one additional critical success in melee combat.",
             "prModifier": 4,
-            "requirements": ["c1"]
+            "requirements": ["c1"],
+            "maxStacks": 1
         },
         {
             "id": "c8",
@@ -61,7 +67,8 @@
             "cost": 4,
             "effect": "When using a weapon with **Torrent** or **Blast**, reroll one failed attack die per target.",
             "prModifier": 2,
-            "requirements": ["c5"]
+            "requirements": ["c5"],
+            "maxStacks": 1
         }]
     },{
         "id": "magic",
@@ -73,28 +80,32 @@
             "cost": 1,
             "effect": "Ignore Obscured penalties in light mist zones",
             "prModifier": null,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         },{
             "id": "m2",
             "name": "Addept Magician",
             "cost": 2,
             "effect": "Improve WS of PSYCHIC weapons by 1",
             "prModifier": 2,
-            "requirements": ["m1"]
+            "requirements": ["m1"],
+            "maxStacks": 1
         },{
             "id": "m3",
             "name": "Ethreal Support",
             "cost": 1,
             "effect": "Once per battle: Add +1d3 to a healing PSYCHIC ability",
             "prModifier": 2,
-            "requirements": ["m1"]
+            "requirements": ["m1"],
+            "maxStacks": 1
         }, {
             "id": "m4",
             "name": "Mist Cloak",
             "cost": 3,
             "effect": "1AP: When in a mist zone, improve the save stat by 2 until the end of this operatives next activation.",
             "prModifier": 4,
-            "requirements": ["m2"]
+            "requirements": ["m2"],
+            "maxStacks": 1
         },
         {
             "id": "m5",
@@ -102,7 +113,8 @@
             "cost": 5,
             "effect": "Once per battle: Create a 3″ hazardous mist anomaly within 12″. Enemies in the harzardous zone or entering the hazardous zone suffer 1D3 wounds.",
             "prModifier": 7,
-            "requirements": ["m2"]
+            "requirements": ["m2"],
+            "maxStacks": 1
         },
         {
             "id": "m6",
@@ -110,7 +122,8 @@
             "cost": 5,
             "effect": "Once per battle: Psychic attacks inflict **Disoriented** on targets (even if no damage was dealt). Lasts until end of Turning Point.",
             "prModifier": 3,
-            "requirements": ["m2", "m5"]
+            "requirements": ["m2", "m5"],
+            "maxStacks": 1
         }
     ]
     },{
@@ -123,28 +136,32 @@
             "cost": 1,
             "effect": "Add +1 to all healing actions (except psychic)",
             "prModifier": null,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "s2",
             "name": "Shared Resolve",
             "cost": 2,
             "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within 3 inches may re-roll 1 defense die per Turning Point",
             "prModifier": 1,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }, {
             "id": "s3",
             "name": "Rallying Cry",
             "cost": 3,
             "effect": "Once Per Battle: Remove 1 altered state from all allies within 3 inches (must remove the same state from all allies)",
             "prModifier": 2,
-            "requirements": ["s2"]
+            "requirements": ["s2"],
+            "maxStacks": 1
         }, {
             "id": "s4",
             "name": "Guardian Aura",
             "cost": 3,
             "effect": "Allies within 3 inches reduce incoming damage by 1 (min 3). Does not stack with other damage reduction.",
             "prModifier": 4,
-            "requirements": ["s2"]
+            "requirements": ["s2"],
+            "maxStacks": 1
         },
         {
             "id": "s5",
@@ -152,7 +169,8 @@
             "cost": 2,
             "effect": "Once per day: Restore 1D3 ammunition of one specific type for all allies within 3 inches.",
             "prModifier": 2,
-            "requirements": ["s1"]
+            "requirements": ["s1"],
+            "maxStacks": 1
         },
         {
             "id": "s6",
@@ -160,7 +178,8 @@
             "cost": 1,
             "effect": "You and allies within 3 inches at the start of the activation ignore mist movement penalties.",
             "prModifier": 3,
-            "requirements": []
+            "requirements": [],
+            "maxStacks": 1
         }
     ]
     },{
