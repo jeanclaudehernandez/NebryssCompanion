@@ -42,66 +42,49 @@ export class PlayerDetailComponent implements OnChanges {
     private activePlayerService: ActivePlayerService
   ) {}
 
-  ngOnChanges() {
-    if (this.character) {
-      // Get body string
-      this.bodyString = this.character.attributes.body?.join(', ') || '';
-      
-      // Process talent data if applicable
-      if (this.isPlayer(this.character) && this.character.progression?.talents) {
-        this.talentTableData = this.character.progression.talents.map((talentId: string) => {
-          // Get talent info from id
-          const talent = this.dataService.getTalentById(talentId);
-          
-          return { name: talent?.name, effect: talent?.effect };
-        });
-      }
-      
-      // Process item data if applicable
-      if (this.isPlayer(this.character) && this.character.items?.length) {
-        this.itemTableData = this.character.items.map(itemEntry => {
-          // Find the item in itemsData
-          const item = this.getItemById(itemEntry.id);
-          
-          return { 
-            id: item?.id,
-            name: item?.name, 
-            description: item?.description,
-            quant: itemEntry.quant || 1 
-          };
-        });
-      }
-      
-      // Generate scroll sections based on available content
-      this.generateScrollSections();
+  ngOnChanges(): void {
+    // Body parts formatting
+    this.bodyString = this.character.attributes.body.join(', ');
+    
+    // Update talent table data if character is a player
+    if (this.isPlayer(this.character) && this.character.progression?.talents) {
+      this.talentTableData = this.character.progression.talents.map((talentId: string) => {
+        // Get talent info from id
+        const talent = this.dataService.getTalentById(talentId);
+        return {
+          name: talent?.name,
+          effect: talent?.effect
+        };
+      });
     }
-  }
-  
-  generateScrollSections() {
-    this.scrollSections = [];
     
-    // Always add attributes and weapons sections
-    this.scrollSections.push(
+    // Update item table data
+    if (this.character.items && this.character.items.length > 0) {
+      this.itemTableData = this.character.items.map(inventory => {
+        const item = this.getItemById(inventory.id);
+        return {
+          id: inventory.id,
+          name: item?.name || 'Unknown Item',
+          description: item?.description || 'No description available',
+          quant: inventory.quant
+        };
+      });
+    }
+    
+    // Set up scroll sections
+    this.scrollSections = [
       { title: 'Attributes', id: 'attributes' },
-      { title: 'Weapons', id: 'weapons' }
-    );
-    
-    // Add talents section if applicable
+      { title: 'Weapons', id: 'weapons' },
+    ];
     if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
       this.scrollSections.push({ title: 'Talents', id: 'talents' });
     }
-    
-    // Add abilities section if character has abilities
     if (this.character.abilities && this.character.abilities.length > 0) {
       this.scrollSections.push({ title: 'Abilities', id: 'abilities' });
     }
-    
-    // Add items section if applicable
-    if (this.isPlayer(this.character) && this.character.items?.length) {
+    if ((this.isPlayer(this.character) || this.isBestiary(this.character)) && this.character.items?.length) {
       this.scrollSections.push({ title: 'Items', id: 'items' });
     }
-    
-    // Add deployables section if applicable
     if (this.character.deployables?.length) {
       this.scrollSections.push({ title: 'Deployables', id: 'deployables' });
     }
@@ -113,6 +96,22 @@ export class PlayerDetailComponent implements OnChanges {
 
   isBeast(character: Character): boolean {
     return !(character as Player).race;
+  }
+
+  isBestiary(character: Character): boolean {
+    return !!(character as BestiaryEntry).faction && !!(character as BestiaryEntry).subgroup;
+  }
+
+  getFaction(character: Character): string {
+    return (character as BestiaryEntry).faction || '';
+  }
+
+  getSubgroup(character: Character): string {
+    return (character as BestiaryEntry).subgroup || '';
+  }
+
+  getPR(character: Character): number {
+    return (character as BestiaryEntry).pr || 0;
   }
 
   getMobById(bestiaryId: number): any {
@@ -131,5 +130,9 @@ export class PlayerDetailComponent implements OnChanges {
   isActivePlayer(character: Character): boolean {
     const activePlayer = this.activePlayerService.activePlayer;
     return activePlayer !== null && activePlayer.id === character.id;
+  }
+
+  isActionAllowed(character: Character): boolean {
+    return this.isPlayer(character) && this.isActivePlayer(character);
   }
 }

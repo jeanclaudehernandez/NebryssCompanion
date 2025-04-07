@@ -43,8 +43,6 @@
       "items": [
         {
           "id": 24,
-          "name": "Medical Supplies",
-          "description": "Standard battlefield medical kit",
           "quant": 2
         }
       ]
@@ -92,8 +90,6 @@
       "items": [
         {
           "id": 16,
-          "name": "Mist Compass",
-          "description": "Navigates through dense mist zones",
           "quant": 1
         }
       ]

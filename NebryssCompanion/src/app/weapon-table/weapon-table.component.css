@@ -31,6 +31,10 @@
 .weapons-table tr:last-child td {
     border-bottom: none;
 }
+
+.in-inventory {
+    background-color: #e8f5e9;  /* Light green background */
+}
   
 .rule-text {
   cursor: help;

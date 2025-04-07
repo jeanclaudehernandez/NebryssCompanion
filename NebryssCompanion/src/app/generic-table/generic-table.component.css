@@ -28,6 +28,10 @@
     border-bottom: none;
 }
 
+.in-inventory {
+    background-color: #e8f5e9;  /* Light green background */
+}
+
 h3 {
     margin-top: 0;
     color: #2c3e50;

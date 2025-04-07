@@ -6,9 +6,9 @@
       <p><strong>Origin:</strong> {{ character.origin }}</p>
     </div>
     <div *ngIf="isBeast(character)">
-      <p><strong>Faction</strong> {{ character.faction }} </p>
-      <p><strong>Subgroup:</strong> {{ character.subgroup }}</p>
-      <p><strong>PR:</strong> {{ character.pr }}</p>
+      <p><strong>Faction</strong> {{ getFaction(character) }} </p>
+      <p><strong>Subgroup:</strong> {{ getSubgroup(character) }}</p>
+      <p><strong>PR:</strong> {{ getPR(character) }}</p>
     </div>
   </div>
   
@@ -41,7 +41,7 @@
         [isCharacterDisplayPage]="true"
         [characterBody]="character.attributes.body"
         [alteredStates]="alteredStates"
-        [inventoryManagement]="isActivePlayer(character)">
+        [inventoryManagement]="isActionAllowed(character)">
       </app-weapon-table>
   </div>
   
@@ -65,7 +65,7 @@
     </div>
   </div>
   
-  <div id="items" class="items" *ngIf="isPlayer(character) && character?.items?.length">
+  <div id="items" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character?.items?.length">
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
@@ -73,7 +73,7 @@
       [data]="itemTableData"
       [headers]="itemTableHeaders"
       [headerKeys]="itemTableHeaderKeys"
-      [inventoryManagement]="isActivePlayer(character)"
+      [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true">
     </app-generic-table>
   </div>
