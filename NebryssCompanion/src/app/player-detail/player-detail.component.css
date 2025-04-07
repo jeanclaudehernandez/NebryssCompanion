@@ -57,3 +57,37 @@
   margin-top: 0;
   color: #333;
 }
+
+.player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.player-header h2 {
+  margin: 0;
+}
+
+.save-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.save-button:hover {
+  background-color: #388e3c;
+}
+
+.save-button:active {
+  transform: scale(0.95);
+}

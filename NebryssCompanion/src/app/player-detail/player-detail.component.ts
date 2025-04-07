@@ -7,6 +7,7 @@ import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ActivePlayerService } from '../active-player.service';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-player-detail',
@@ -39,7 +40,8 @@ export class PlayerDetailComponent implements OnChanges {
 
   constructor(
     private dataService: DataService,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    private toastService: ToastService
   ) {}
 
   ngOnChanges(): void {
@@ -134,5 +136,24 @@ export class PlayerDetailComponent implements OnChanges {
 
   isActionAllowed(character: Character): boolean {
     return this.isPlayer(character) && this.isActivePlayer(character);
+  }
+
+  copyToClipboard(): void {
+    if (!this.isActivePlayer(this.character)) {
+      return;
+    }
+
+    const player = this.activePlayerService.activePlayer;
+    if (player) {
+      const playerJson = JSON.stringify(player, null, 2);
+      navigator.clipboard.writeText(playerJson)
+        .then(() => {
+          this.toastService.show('Active player changes copied to clipboard', 'success');
+        })
+        .catch(err => {
+          console.error('Failed to copy to clipboard:', err);
+          this.toastService.show('Failed to copy to clipboard', 'error');
+        });
+    }
   }
 }
