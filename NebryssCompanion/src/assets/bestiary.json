@@ -25,7 +25,7 @@
       },
       {
         "name": "Primitive Cunning",
-        "effect": "Free Dash once per Turning Point when within 6 inches of Murloc King."
+        "effect": "Free Dash  when within 6 inches of Murloc King."
       },
       {
         "name": "Crab Shell Shield",
@@ -55,7 +55,7 @@
       },
       {
         "name": "Primitive Cunning",
-        "effect": "Free Dash once per Turning Point when within 6 inches of Murloc King."
+        "effect": "Free Dash when within 6 inches of Murloc King."
       }
     ]
   },
@@ -151,7 +151,7 @@
       "APL": 2,
       "body": ["universal", "aetherwing"]
     },
-    "weapons": [19, 20],
+    "weapons": [19, 20, 44],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -310,7 +310,7 @@
       },
       {
         "name": "Warpfire Trail",
-        "effect": "Psychic, After moving, leave a 1inche-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. ",
+        "effect": "Psychic, After moving, leave a 1 inch-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. ",
         "prModifier": 4
       }
     ]
@@ -337,7 +337,7 @@
       },
       {
         "name": "Aegis of the Ninefold Deceit",
-        "effect": "Psychic, Reduces by 1 (to a min of 2) damage received by visible friendly operatives within 6 inches. ",
+        "effect": "Psychic, Reduces damage by 1 (to a min of 2) received by visible friendly operatives within 6 inches. ",
         "prModifier": 4
       },
       {
@@ -368,7 +368,7 @@
       },
       {
         "name": "Arcane Bargain",
-        "effect": "Psychic, Once per activation: an enemy within control range, roll 1d6 and that enemy suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative and that operative, restore result/2 wounds rounded up from Summoner. ",
+        "effect": "Psychic, Once per activation: roll 1d6 and an enemy visible and within control range suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative and that operative, restore result/2 wounds rounded up from Summoner. ",
         "prModifier": 7
       },
       {
@@ -399,7 +399,7 @@
       },
       {
         "name": "Warp-fueled Rage",
-        "effect": "After defeating an enemy, gain +1 Attack next activation.",
+        "effect": "After defeating an enemy, gain +1 Attack on melee weapons until the end of the next activation.",
         "prModifier": 4
       },
       {
@@ -431,7 +431,7 @@
       },
       {
         "name": "Inspiring Terror",
-        "effect": "Enemy operatives within 6 inches worsen their WS by 1. ",
+        "effect": "Worsen the WS 1 of Enemy operatives within 6 inches. ",
         "prModifier": 7
       },
       {
@@ -458,11 +458,11 @@
     "abilities": [
       {
         "name": "Psychic Smite",
-        "effect": "Psychic, 1AP: target operative visible and within 10 inches, 1D3 mortal wounds) . ", "prModifier": 7
+        "effect": "Psychic, 1AP: target operative visible and within 10 inches suffers 1D3 mortal wounds. ", "prModifier": 7
       },
       {
         "name": "Warpfire",
-        "effect": "Psychic, Create a 3 inche hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
+        "effect": "Psychic, Create a 3 inch hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
       },
       {
         "name": "Astartes",
@@ -488,7 +488,7 @@
     "abilities": [
       {
         "name": "Overcharge",
-        "effect": "1AP: +1 Damage to next attack, but suffer 1 wound on a hit roll of 1."
+        "effect": "1AP: +1 Damage to next attack, but suffer 1 wound for each hit roll of 1."
       },
       {
         "name": "Astartes",
@@ -622,12 +622,12 @@
     "abilities": [
       {
         "name": "Disgustingly Resilient",
-        "effect": "Psychic,Roll 1D6 each time this operative loses a wound. On a 5+, ignore that wound.",
+        "effect": "Psychic, Roll 1D6 each time this operative loses a wound. On a 5+, ignore that wound.",
         "prModifier": 2
       },
       {
         "name": "Swarm of Filth",
-        "effect": "If another Nurgling is within 2 inches, improve WS by 1 for melee attacks.",
+        "effect": "If another Nurgling is within 2 inches, improve WS by 1 of melee attacks.",
         "prModifier": 1
       },
       {
@@ -736,7 +736,7 @@
       "APL": 2,
       "body": ["universal"]
     },
-    "weapons": [58],
+    "weapons": [58, 59],
     "abilities": [
       {
         "name": "Veil of Darkness",
@@ -767,7 +767,7 @@
     "abilities": [
       {
         "name": "Living Roots",
-        "effect": "1AP: Create a 3-inch hazardous terrain patch of entangling roots. Enemies moving through suffer <strong>1D3 wounds</strong>."
+        "effect": "1AP: Create a 3-inch hazardous terrain of entangling roots. Enemies moving through become <strong>Entangled</strong>."
       },
       {
         "name": "Bark Armor",
@@ -776,7 +776,7 @@
       },
       {
         "name": "Sylvan Regrowth",
-        "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+1 instead."
+        "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+2 instead."
       }
     ]
   },
@@ -910,7 +910,7 @@
     "abilities": [
       {
         "name": "Null Charge",
-        "effect": "1AP: Perform Charge action through terrain. If charging a [spell] operative, retain one additional attack die.",
+        "effect": "If charging a [spell] operative, melee weapons gain accurate 1.",
         "prModifier": 5
       }
     ]
@@ -932,7 +932,7 @@
     "abilities": [
       {
         "name": "Cleansing Flame",
-        "effect": "When attacking [spell] operatives, critical hits apply /3/ (Burning) status automatically.",
+        "effect": "When attacking [spell] operatives, critical hits apply <strong>/3/</strong> status automatically.",
         "prModifier": 3
       }
     ]
@@ -1012,7 +1012,7 @@
       },
       {
         "name": "Warp Flux",
-        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply /7/ (Corrupted) status.",
+        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/7/</strong> status.",
         "prModifier": 7
       }
     ]
@@ -1034,7 +1034,7 @@
     "abilities": [
       {
         "name": "Authority of the Ordos",
-        "effect": "Once per Turning Point, one friendly operative withint 6 inches can reroll a failed dice",
+        "effect": "Once per Turning Point, one friendly operative within 6 inches can reroll a failed dice",
         "prModifier": 3
       }
     ],

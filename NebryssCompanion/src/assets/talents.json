@@ -7,7 +7,7 @@
             "id": "c1",
             "name": "Brutal Strikes",
             "cost": 1,
-            "effect": "Critical hits in melee deal +1 damage",
+            "effect": "Critical hits in melee deal <strong>+1 damage</strong>",
             "prModifier": 1,
             "requirements": [],
             "maxStacks": 1
@@ -15,7 +15,7 @@
             "id": "c2",
             "name": "Overwatch Tactics",
             "cost": 3,
-            "effect": "After killing an enemy with a shoot action, reposition costs 0AP during this activation, limit movement to 4 inches",
+            "effect": "After killing an enemy with a shoot action, reposition costs <strong>0 AP</strong> during this activation, limit movement to <strong>4 inches</strong>",
             "prModifier": null,
             "requirements": [],
             "maxStacks": 1
@@ -23,7 +23,7 @@
             "id": "c3",
             "name": "Chain Killer",
             "cost": 5,
-            "effect": "Gain 1AP for the rest of the battle, after eliminating 3+ enemies in a single activation",
+            "effect": "Gain <strong>1 AP</strong> for the rest of the battle, after eliminating <strong>3+ enemies</strong> in a turning point",
             "prModifier": 2,
             "requirements": [],
             "maxStacks": 1
@@ -31,7 +31,7 @@
             "id": "c4",
             "name": "Trained shooter",
             "cost": 2,
-            "effect": "Improve by 1 the WS of ranged weapons of a selected type",
+            "effect": "Improve by <strong>1</strong> the <strong>WS</strong> of ranged weapons of a selected type",
             "prModifier": 2,
             "requirements": [],
             "maxStacks": 1
@@ -39,7 +39,7 @@
             "id": "c5",
             "name": "Obliterator",
             "cost": 2,
-            "effect": "Weapons with **torrent** or **blast** rules gain lethal 5+",
+            "effect": "Weapons with <strong>torrent</strong> or <strong>blast</strong> rules gain lethal <strong>5+</strong>",
             "prModifier": 2,
             "requirements": [],
             "maxStacks": 1
@@ -56,7 +56,7 @@
             "id": "c7",
             "name": "Mist Duelist",
             "cost": 2,
-            "effect": "In mist zones, gain +1 WS and retain one additional critical success in melee combat.",
+            "effect": "In mist zones, gain <strong>+1 WS</strong> and <strong>rending</strong>.",
             "prModifier": 4,
             "requirements": ["c1"],
             "maxStacks": 1
@@ -65,7 +65,7 @@
             "id": "c8",
             "name": "Bulletstorm",
             "cost": 4,
-            "effect": "When using a weapon with **Torrent** or **Blast**, reroll one failed attack die per target.",
+            "effect": "When using a weapon with <strong>Torrent</strong> or <strong>Blast</strong>, reroll one failed attack die per target.",
             "prModifier": 2,
             "requirements": ["c5"],
             "maxStacks": 1
@@ -86,7 +86,7 @@
             "id": "m2",
             "name": "Addept Magician",
             "cost": 2,
-            "effect": "Improve WS of PSYCHIC weapons by 1",
+            "effect": "Improve <strong>WS of PSYCHIC</strong> weapons by <strong>1</strong>",
             "prModifier": 2,
             "requirements": ["m1"],
             "maxStacks": 1
@@ -94,7 +94,7 @@
             "id": "m3",
             "name": "Ethreal Support",
             "cost": 1,
-            "effect": "Once per battle: Add +1d3 to a healing PSYCHIC ability",
+            "effect": "Once per battle: Add <strong>+1d3</strong> to <strong>healing PSYCHIC</strong> abilities.",
             "prModifier": 2,
             "requirements": ["m1"],
             "maxStacks": 1
@@ -102,7 +102,7 @@
             "id": "m4",
             "name": "Mist Cloak",
             "cost": 3,
-            "effect": "1AP: When in a mist zone, improve the save stat by 2 until the end of this operatives next activation.",
+            "effect": "1AP: When in a mist zone, improve the <strong>save stat by 2</strong> until the end of this operative's next activation.",
             "prModifier": 4,
             "requirements": ["m2"],
             "maxStacks": 1
@@ -111,7 +111,7 @@
             "id": "m5",
             "name": "Reality Tear",
             "cost": 5,
-            "effect": "Once per battle: Create a 3″ hazardous mist anomaly within 12″. Enemies in the harzardous zone or entering the hazardous zone suffer 1D3 wounds.",
+            "effect": "Once per battle: Create a <strong>3 inch</strong> hazardous mist anomaly within <strong>12 inches</strong>. Enemies in the harzardous zone or entering the hazardous zone suffer <strong>1D3 wounds</strong>.",
             "prModifier": 7,
             "requirements": ["m2"],
             "maxStacks": 1
@@ -120,7 +120,7 @@
             "id": "m6",
             "name": "Echoing Scream",
             "cost": 5,
-            "effect": "Once per battle: Psychic attacks inflict **Disoriented** on targets (even if no damage was dealt). Lasts until end of Turning Point.",
+            "effect": "Once per battle: Psychic attacks inflict <strong>Disoriented</strong> on targets (even if no damage was dealt). Lasts until end of Turning Point.",
             "prModifier": 3,
             "requirements": ["m2", "m5"],
             "maxStacks": 1
@@ -142,7 +142,7 @@
             "id": "s2",
             "name": "Shared Resolve",
             "cost": 2,
-            "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within 3 inches may re-roll 1 defense die per Turning Point",
+            "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within <strong>3 inches</strong> may re-roll <strong>1 defense die</strong> per Turning Point",
             "prModifier": 1,
             "requirements": [],
             "maxStacks": 1
@@ -150,7 +150,7 @@
             "id": "s3",
             "name": "Rallying Cry",
             "cost": 3,
-            "effect": "Once Per Battle: Remove 1 altered state from all allies within 3 inches (must remove the same state from all allies)",
+            "effect": "Once Per Battle: Remove <strong>1 altered state</strong> from all allies within <strong>3 inches</strong> (must remove the same state from all allies)",
             "prModifier": 2,
             "requirements": ["s2"],
             "maxStacks": 1
@@ -158,7 +158,7 @@
             "id": "s4",
             "name": "Guardian Aura",
             "cost": 3,
-            "effect": "Allies within 3 inches reduce incoming damage by 1 (min 3). Does not stack with other damage reduction.",
+            "effect": "Allies within <strong>3 inches</strong> reduce incoming damage by <strong>1</strong> (min <strong>3</strong>). Does not stack with other damage reduction.",
             "prModifier": 4,
             "requirements": ["s2"],
             "maxStacks": 1
@@ -167,7 +167,7 @@
             "id": "s5",
             "name": "Brass Collector",
             "cost": 2,
-            "effect": "Once per day: Restore 1D3 ammunition of one specific type for all allies within 3 inches.",
+            "effect": "Once per day: Restore <strong>1D3 ammunition</strong> of one specific type for all allies within <strong>3 inches</strong>.",
             "prModifier": 2,
             "requirements": ["s1"],
             "maxStacks": 1
@@ -176,7 +176,7 @@
             "id": "s6",
             "name": "Mist Navigator",
             "cost": 1,
-            "effect": "You and allies within 3 inches at the start of the activation ignore mist movement penalties.",
+            "effect": "You and allies within <strong>3 inches</strong> at the start of the activation ignore mist movement penalties.",
             "prModifier": 3,
             "requirements": [],
             "maxStacks": 1
@@ -190,28 +190,28 @@
             "id": "att1",
             "name": "+1 Movement",
             "cost": 2,
-            "effect": "+1 inch to Movement characteristic",
+            "effect": "+1 inch to <strong>Movement</strong> characteristic",
             "maxStacks": 3,
             "prModifier": null
         }, {
             "id": "att2",
             "name": "+2 Wounds",
             "cost": 3,
-            "effect": "+2 Wounds",
+            "effect": "+2 <strong>Wounds</strong>",
             "maxStacks": 2,
             "prModifier": null
         }, {
             "id": "att3",
             "name": "Better Save",
             "cost": 4,
-            "effect": "Improve Save characteristic by 1",
+            "effect": "Improve <strong>Save</strong> characteristic by <strong>1</strong>",
             "maxStacks": 1,
             "prModifier": 2
         }, {
             "id": "att4",
             "name": "+1 APL",
             "cost": 5,
-            "effect": "Permanent +1 Action Point Limit",
+            "effect": "Permanent <strong>+1 Action Point Limit</strong>",
             "maxStacks": 1,
             "prModifier": 7
         }]
@@ -224,7 +224,7 @@
                 "id": "su1",
                 "name": "Mist Resilience",
                 "cost": 1,
-                "effect": "Gain +2 Wounds while in mist zones. Stacks with other Wound bonuses.",
+                "effect": "Gain <strong>+2 Wounds</strong> while in mist zones. Stacks with other Wound bonuses.",
                 "maxStacks": 1,
                 "prModifier": 4
             },
@@ -232,7 +232,7 @@
                 "id": "su2",
                 "name": "Precision Reflexes",
                 "cost": 4,
-                "effect": "Improve Save by 1. Does not stack with armor bonuses.",
+                "effect": "Improve <strong>Save</strong> by <strong>1</strong>. Does not stack with armor bonuses.",
                 "maxStacks": 1,
                 "prModifier": 5
             },
@@ -240,7 +240,7 @@
                 "id": "su3",
                 "name": "Mist Synergy",
                 "cost": 2,
-                "effect": "Once per battle: Gain +1 APL while in **dense** mist. Lasts one Turning Point.",
+                "effect": "Once per battle: Gain <strong>+1 APL</strong> while in <strong>dense</strong> mist. Lasts one Turning Point.",
                 "maxStacks": 1,
                 "prModifier": 3
             }

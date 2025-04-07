@@ -3,27 +3,27 @@
     {
       "effectName": "Obscuration",
       "densityLevel": "Light",
-      "description": "All operatives treat visibility as **Obscured** beyond 10″. Worsen WS by 1 of Ranged attacks beyond 6″."
+      "description": "All operatives treat visibility as <strong>Obscured</strong> beyond 10″. Worsen WS by 1 of Ranged attacks beyond 6″."
     },
     {
       "effectName": "Mist Veil",
       "densityLevel": "Light",
-      "description": "Operatives movement is reduced by **1″**."
+      "description": "Operatives movement is reduced by <strong>1 inch</strong>."
     },
     {
       "effectName": "Drift",
       "densityLevel": "Medium",
-      "description": "At the end of each operative’s activation, roll **1D6**. On a **4+**, the operative is pushed **2″** in a random direction."
+      "description": "At the end of each operative’s activation, roll <strong>1D6</strong>. On a <strong>4+</strong>, the operative is pushed <strong>2 inch</strong> in a random direction."
     },
     {
       "effectName": "Fatigue",
       "densityLevel": "Medium",
-      "description": "At the beggining of turning point all operatives roll 1D6, on a **1** loses 1AP. Roll **1D6 + APL** at the end of activation."
+      "description": "At the beggining of turning point all operatives roll <strong>1D6</strong>, on a <strong>1</strong> loses <strong>1 AP</strong>. Roll <strong>1D6 + APL</strong> at the end of activation."
     },
     {
       "effectName": "Obscuration (M)",
       "densityLevel": "Medium",
-      "description": "All operatives treat visibility as **Obscured** beyond 6″. Worsen WS by 1 of Ranged attacks."
+      "description": "All operatives treat visibility as <strong>Obscured</strong> beyond 6 inch. Worsen WS by 1 of Ranged attacks."
     },
     {
       "effectName": "Dificult terrain",
@@ -33,32 +33,32 @@
     {
       "effectName": "Mist Anomaly",
       "densityLevel": "Dense",
-      "description": "At the start of each Turning Point, roll **1D6**. On a **4+**, a random operative within the mist zone suffers **1D3 wounds**."
+      "description": "At the start of each Turning Point, roll <strong>1D</strong>. On a<strong>4</strong>, a random operative within the mist zone suffers<strong>1D3 wound</strong>."
     },
     {
       "effectName": "Mistborn Ambush",
       "densityLevel": "Dense",
-      "description": "Roll 1D3, at the beginning of turning point **result** place **1D3 Force of nature Creatures**. They activate after all operatives."
+      "description": "Roll <strong>1D3</strong>, at the beginning of turning point <strong>result</strong> place <strong>1D3 Force of nature Creatures</strong>. They activate after all operatives."
     },
     {
       "effectName": "Resonance",
       "densityLevel": "Dense",
-      "description": "PSYCHIC abilities gain **+1 to hit** but inflict **1 wound** on the user if they fail the roll."
+      "description": "PSYCHIC abilities gain <strong>+1 to hit</strong> but inflict <strong>1 wound</strong> on the user if they fail the roll."
     },
     {
       "effectName": "Mist Echoes",
       "densityLevel": "Dense",
-      "description": "Operatives in the mist zone cannot use **Silent** or **Conceal** abilities."
+      "description": "Operatives in the mist zone cannot use <strong>Silent</strong> or <strong>Conceal</strong> abilities."
     },
     {
       "effectName": "Mist Cloak",
       "densityLevel": "Dense",
-      "description": "Operatives in the mist zone cannot be targeted by ranged attacks beyond **12″**."
+      "description": "Operatives in the mist zone cannot be targeted by ranged attacks beyond <strong>12 inch</strong>."
     },
     {
       "effectName": "Watch your step",
       "densityLevel": "Dense",
-      "description": "Operatives roll **1d6 + APL** on a **6+** halve that operatives movement."
+      "description": "Operatives roll <strong>1d6 + APL</strong> on a <strong>6+</strong> halve that operatives movement."
     },
     {
       "effectName": "Dispersal",

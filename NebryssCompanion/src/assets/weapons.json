@@ -995,9 +995,9 @@
       {
         "profileName": "",
         "rng": 8,
-        "attacks": 3,
-        "ws": 3,
-        "damage": { "min": 1, "max": 2 },
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 2, "max": 2 },
         "specialRules": [],
         "body": "construct"
       }
@@ -1097,9 +1097,9 @@
     "profiles": [
       {
         "profileName": "",
-        "rng": 0,
+        "rng": 8,
         "attacks": 3,
-        "ws": 2,
+        "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [
           { "ruleId": 39, "modValue": null },
@@ -1218,7 +1218,6 @@
         "damage": { "min": 4, "max": 5 },
         "specialRules": [
           { "ruleId": 15, "modValue": null }, 
-          { "ruleId": 11, "modValue": null }, 
           { "ruleId": 25, "modValue": 2 }
         ],
         "body": "behemoth"
@@ -1307,7 +1306,7 @@
         "damage": { "min": 3, "max": 4 },
         "specialRules": [
           { "ruleId": 15, "modValue": null },
-          { "ruleId": 34, "modValue": 1 }
+          { "ruleId": 16, "modValue": null }
         ],
         "body": "universal"
       }

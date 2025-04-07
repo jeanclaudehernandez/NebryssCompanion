@@ -218,13 +218,13 @@
   {
     "id": 38,
     "name": "Shadow Claws",
-    "effect": "After rolling attack dice, retain one additional normal success if the target is in a mist zone or Obscured.",
+    "effect": "After rolling attack dice, retain one additional normal success if the target is in a mist zone or this operative has heavy terrain within control range.",
     "prModifier": 2
   },
   {
     "id": 39,
     "name": "Soulrender",
-    "effect": "For each critical hit retained, heal 1 wound to the attacker.",
+    "effect": "For each critical hit retained, restone 1 wound on this operative.",
     "prModifier": 3
   },
   {
