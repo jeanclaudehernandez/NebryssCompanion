@@ -71,7 +71,7 @@
   
   <div id="abilities" class="abilities">
     <h3>Abilities</h3>
-    <div *ngFor="let ability of character.abilities" class="ability">
+    <div *ngFor="let ability of processedAbilities" class="ability">
       <h4>{{ ability.name }}</h4>
       <p [innerHtml]="ability.effect | sanitizeHtml"></p>
     </div>

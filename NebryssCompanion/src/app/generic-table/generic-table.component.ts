@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, SanitizeHtmlPipe],
   template: `
     <div class="table-container">
       <h3 (click)="toggleCollapse()" style="cursor: pointer;">
@@ -23,7 +24,8 @@ import { Inventory, Player } from '../model';
           <tbody>
             <tr *ngFor="let item of data" [class.in-inventory]="isInInventory(item)">
               <td *ngFor="let header of headerKeys">
-                {{ item[header] }}
+                <span *ngIf="header !== 'effect'" >{{ item[header] }}</span>
+                <span *ngIf="header === 'effect'" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
               <td *ngIf="inventoryManagement">
                 <div class="inventory-actions">

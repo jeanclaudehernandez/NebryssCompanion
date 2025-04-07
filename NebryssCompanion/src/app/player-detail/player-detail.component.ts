@@ -35,6 +35,9 @@ export class PlayerDetailComponent implements OnChanges {
   talentTableHeaders: string[] = ['Name', 'Effect'];
   talentTableHeaderKeys: string[] = ['name', 'effect'];
   
+  // Process abilities for display
+  processedAbilities: {name: string, effect: string}[] = [];
+  
   // Scroll nav
   scrollSections: ScrollSection[] = [];
 
@@ -55,7 +58,7 @@ export class PlayerDetailComponent implements OnChanges {
         const talent = this.dataService.getTalentById(talentId);
         return {
           name: talent?.name,
-          effect: talent?.effect
+          effect: talent?.effect // HTML content will be sanitized in GenericTableComponent
         };
       });
     }
@@ -71,6 +74,16 @@ export class PlayerDetailComponent implements OnChanges {
           quant: inventory.quant
         };
       });
+    }
+    
+    // Process abilities
+    if (this.character.abilities && this.character.abilities.length > 0) {
+      this.processedAbilities = this.character.abilities.map(ability => ({
+        name: ability.name,
+        effect: this.processAbilityEffect(ability.effect)
+      }));
+    } else {
+      this.processedAbilities = [];
     }
     
     // Set up scroll sections
@@ -90,6 +103,29 @@ export class PlayerDetailComponent implements OnChanges {
     if (this.character.deployables?.length) {
       this.scrollSections.push({ title: 'Deployables', id: 'deployables' });
     }
+  }
+
+  processAbilityEffect(effect: string): string {
+    if (!effect) return '';
+    
+    // Find all status references (/number/) in the effect text
+    const statusMatches = [...new Set(effect.match(/\/\d+\//g))];
+    
+    if (!statusMatches || statusMatches.length === 0) return effect;
+    
+    let processedEffect = effect;
+    
+    statusMatches.forEach(match => {
+      const statusId = parseInt(match.replace(/\//g, ''));
+      const status = this.alteredStates.find(s => s.id === statusId);
+      
+      if (status) {
+        // Replace the reference with status name
+        processedEffect = processedEffect.replace(new RegExp(match, 'g'), status.name);
+      }
+    });
+    
+    return processedEffect;
   }
 
   isPlayer(character: Character): character is Player {
@@ -131,7 +167,7 @@ export class PlayerDetailComponent implements OnChanges {
 
   isActivePlayer(character: Character): boolean {
     const activePlayer = this.activePlayerService.activePlayer;
-    return activePlayer !== null && activePlayer.id === character.id;
+    return this.isPlayer(character) && activePlayer !== null && activePlayer.id === character.id;
   }
 
   isActionAllowed(character: Character): boolean {

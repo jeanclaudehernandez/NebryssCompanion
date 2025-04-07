@@ -13,7 +13,7 @@
             {{ getTalentSelectedCount(talent) }}/{{ talent.maxStacks }}
           </div>
         </div>
-        <p>{{talent.effect}}</p>
+        <p [innerHtml]="talent.effect | sanitizeHtml"></p>
         <div *ngIf="talent.requirements && talent.requirements.length" class="requirements" 
           [class.requirements-not-met]="!hasRequiredTalents(talent)">
           <small>Requires: {{getRequirementNames(talent.requirements)}}</small>

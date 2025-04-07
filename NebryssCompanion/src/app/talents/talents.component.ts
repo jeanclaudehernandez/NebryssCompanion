@@ -7,11 +7,12 @@ import { ActivePlayerService } from '../active-player.service';
 import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TalentRequirementsDialogComponent } from './talent-requirements-dialog.component';
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 
 @Component({
   selector: 'app-talents',
   standalone: true,
-  imports: [CommonModule, ScrollNavComponent, MatDialogModule],
+  imports: [CommonModule, ScrollNavComponent, MatDialogModule, SanitizeHtmlPipe],
   templateUrl: './talents.component.html',
   styleUrls: ['./talents.component.css']
 })
