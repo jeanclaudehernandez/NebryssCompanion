@@ -73,13 +73,29 @@ export class ShopsComponent {
   }
 
   getShopItemsWithPrices(shop: Shop, categoryKey: string) {
-    return this.dataService.getShopItems(shop.id).map((shopItem) => {
+    const shopItems = this.dataService.getShopItems(shop.id).map((shopItem) => {
       const itemInfo = this.dataService.getItemById(shopItem.id);
       return {
         ...shopItem,
         ...itemInfo
       };
     }).filter((shopItem) => String(shopItem.itemCategory) == String(categoryKey));
+    
+    // Check if we have an active player
+    const activePlayer = this.activePlayerService.activePlayer;
+    if (!activePlayer || !activePlayer.items || !activePlayer.items.length) {
+      return shopItems;
+    }
+    
+    // Map player's item IDs for quick lookup
+    const playerItemIds = new Set(activePlayer.items.map(item => item.id));
+    
+    // Sort the items - player owned items first
+    return shopItems.sort((a, b) => {
+      const aOwned = a.id !== undefined && playerItemIds.has(a.id) ? 1 : 0;
+      const bOwned = b.id !== undefined && playerItemIds.has(b.id) ? 1 : 0;
+      return bOwned - aOwned; // Sort descending so owned items come first
+    });
   }
 
   isWeaponCollapsed(shopId: number): boolean {

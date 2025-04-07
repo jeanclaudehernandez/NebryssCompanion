@@ -109,6 +109,17 @@ export class WeaponTableComponent implements OnChanges {
 
   private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]): {weapon: Weapon, profile: WeaponProfile}[] {
     return [...profiles].sort((a, b) => {
+      // First sort by player ownership
+      const player = this.activePlayerService.activePlayer;
+      if (player && player.weapons) {
+        const aOwned = player.weapons.includes(a.weapon.id) ? 1 : 0;
+        const bOwned = player.weapons.includes(b.weapon.id) ? 1 : 0;
+        if (aOwned !== bOwned) {
+          return bOwned - aOwned; // Sort descending so owned items come first
+        }
+      }
+      
+      // Then sort by range as before
       const aRng = a.profile.rng;
       const bRng = b.profile.rng;
 
