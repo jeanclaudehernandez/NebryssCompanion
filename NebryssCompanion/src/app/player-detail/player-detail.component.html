@@ -105,7 +105,7 @@
             [alteredStates]="alteredStates"
             [inventoryManagement]="false">
           </app-weapon-table>
-          <ng-container *ngIf="deployable.type === 'mob'">
+          <ng-container *ngIf="deployable.subType === 'mob'">
             @let mob = getMobById(deployable.bestiaryId);
             <app-player-detail
             [character]="mob"

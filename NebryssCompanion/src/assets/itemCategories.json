@@ -9,7 +9,7 @@
     { 
       "id": 2,
       "name": "Consumables", 
-      "key": "consumables",
+      "key": "consumable",
       "headers": ["Name", "Price", "Description"],
       "keys": ["name", "price", "description"]
     },
@@ -23,35 +23,35 @@
     { 
       "id": 4,
       "name": "Mist Engines", 
-      "key": "mistEngines",
+      "key": "mistEngine",
       "headers": ["Name", "Price", "Optimal Conditions", "Max Speed", "Max Weight"],
       "keys": ["name", "price", "optimalConditions", "maxSpeed", "maxWeight"]
     },
     { 
       "id": 5,
       "name": "Ship Hulls", 
-      "key": "shipHulls",
+      "key": "shipHull",
       "headers": ["Name", "Price", "Weight", "Ship Wounds", "Defense", "Max Cargo"],
       "keys": ["name", "price", "weight", "shipWounds", "defense", "maxCargo"]
     },
     { 
       "id": 6,
       "name": "Cannons", 
-      "key": "cannons",
+      "key": "cannon",
       "headers": ["Name", "Price", "Ammo Type", "Weight"],
       "keys": ["name", "price", "ammoType", "weight"]
     },
     { 
       "id": 7,
       "name": "Cannonballs", 
-      "key": "cannonballs",
+      "key": "cannonball",
       "headers": ["Name", "Price", "Damage"],
       "keys": ["name", "price", "damage"]
     },
     { 
       "id": 8,
       "name": "Deployables", 
-      "key": "deployables",
+      "key": "deployable",
       "headers": ["Name", "Type", "Description"],
       "keys": ["name", "type", "description"]
     }

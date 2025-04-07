@@ -79,7 +79,7 @@ export class ShopsComponent {
         ...shopItem,
         ...itemInfo
       };
-    }).filter((shopItem) => String(shopItem.itemCategory) == String(categoryKey));
+    }).filter((shopItem) => String(shopItem.type) == String(categoryKey));
     
     // Check if we have an active player
     const activePlayer = this.activePlayerService.activePlayer;

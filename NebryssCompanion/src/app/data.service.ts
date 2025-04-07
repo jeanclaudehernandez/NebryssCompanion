@@ -114,13 +114,10 @@ export class DataService {
   getItemById(id: number): any {
     if (!this.items) return null;
     
-    // Search through all item categories
-    for (const categoryKey in this.items) {
-      const key = categoryKey as keyof Items;
-      const category = this.items[key];
-      const foundItem = (category as any[]).find((item: any) => item.id === id);
-      if (foundItem) return {...foundItem, itemCategory: categoryKey};
-    }
+    // With new items structure, items are in a single array
+    const foundItem = this.items.items.find((item: any) => item.id === id);
+    if (foundItem) return {...foundItem};
+    
     return null;
   }
 

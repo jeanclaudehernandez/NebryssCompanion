@@ -51,82 +51,62 @@ export interface AlteredState {
   }
   
   // items.ts
-  interface ArmorItem {
+  interface BaseItem {
     id?: number;
     name?: string;
     price?: number;
     description?: string;
-    raceReq?: string;
-  }
-  
-  interface ConsumableItem {
-    id?: number;
-    name?: string;
-    price?: number;
-    description?: string;
-  }
-  
-  interface AmmunitionItem {
-    id?: number;
-    name?: string;
-    price?: number;
-    quantity?: number;
     type?: string;
-    description?: string;
-  }
-  
-  interface MistEngineItem {
-    id?: number;
-    name?: string;
-    price?: number;
+    raceReq?: string;
+    quantity?: number;
+    subtype?: string;
     optimalConditions?: string;
     maxSpeed?: string;
     maxWeight?: number;
-  }
-  
-  interface ShipHullItem {
-    id?: number;
-    name?: string;
-    price?: number;
     weight?: number;
     shipWounds?: number;
     defense?: number;
     maxCargo?: number;
-  }
-  
-  interface CannonItem {
-    id?: number;
-    name?: string;
-    price?: number;
     ammoType?: string;
-    weight?: number;
-  }
-  
-  interface CannonballItem {
-    id?: number;
-    name?: string;
-    price?: number;
     damage?: string;
-  }
-  
-  interface DeployableItem {
-    id?: number;
-    name?: string;
-    type?: string;
-    description?: string;
     weapons?: number[];
     bestiaryId?: number;
   }
   
+  interface ArmorItem extends BaseItem {
+    type?: 'armor';
+  }
+  
+  interface ConsumableItem extends BaseItem {
+    type?: 'consumable';
+  }
+  
+  interface AmmunitionItem extends BaseItem {
+    type?: 'ammunition';
+  }
+  
+  interface MistEngineItem extends BaseItem {
+    type?: 'mistEngine';
+  }
+  
+  interface ShipHullItem extends BaseItem {
+    type?: 'shipHull';
+  }
+  
+  interface CannonItem extends BaseItem {
+    type?: 'cannon';
+  }
+  
+  interface CannonballItem extends BaseItem {
+    type?: 'cannonball';
+  }
+  
+  interface DeployableItem extends BaseItem {
+    type?: 'deployable';
+  }
+  
   export interface Items {
-    armor: ArmorItem[];
-    consumables: ConsumableItem[];
-    ammunition: AmmunitionItem[];
-    mistEngines: MistEngineItem[];
-    shipHulls: ShipHullItem[];
-    cannons: CannonItem[];
-    cannonballs: CannonballItem[];
-    deployables: DeployableItem[];
+    items: BaseItem[];
   }
   
   // lore.ts
@@ -376,4 +356,4 @@ export interface AlteredState {
     id: string;
   }
 
-  export interface Item extends ArmorItem, AmmunitionItem, MistEngineItem, ShipHullItem, CannonItem, CannonballItem, DeployableItem {}
+  export interface Item extends BaseItem {}

@@ -284,32 +284,36 @@
       "name": "Hollow-Point Rounds",
       "price": 3,
       "quantity": 10,
-      "type": "Pistol",
-      "description": "Rounds that expand on impact, dealing +1 Damage to unarmored targets."
+      "subType": "Pistol",
+      "description": "Rounds that expand on impact, dealing +1 Damage to unarmored targets.",
+      "type": "ammunition"
     },
     {
       "id": 36,
       "name": "Match Grade Rounds",
       "price": 10,
       "quantity": 5,
-      "type": "Sniper",
-      "description": "Precision-engineered rounds, Penetrating 1, SR: Devastating 2."
+      "subType": "Sniper",
+      "description": "Precision-engineered rounds, Penetrating 1, SR: Devastating 2.",
+      "type": "ammunition"
     },
     {
       "id": 37,
       "name": "Incendiary Rounds",
       "price": 4,
       "quantity": 8,
-      "type": "Rifle",
-      "description": "Rounds that ignite on impact, SR: Burning"
+      "subType": "Rifle",
+      "description": "Rounds that ignite on impact, SR: Burning",
+      "type": "ammunition"
     },
     {
       "id": 38,
       "name": "Fragmentation Rounds",
       "price": 3,
       "quantity": 10,
-      "type": "Pistol/Rifle",
-      "description": "Rounds that explode on impact, SR: blast 1 inch."
+      "subType": "Pistol/Rifle",
+      "description": "Rounds that explode on impact, SR: blast 1 inch.",
+      "type": "ammunition"
     },
     {
       "id": 39,
@@ -317,7 +321,8 @@
       "price": 100,
       "optimalConditions": "W:100% M:-",
       "maxSpeed": "35kmph / 4\"",
-      "maxWeight": 80
+      "maxWeight": 80,
+      "type": "mistEngine"
     },
     {
       "id": 40,
@@ -325,7 +330,8 @@
       "price": 500,
       "optimalConditions": "W:40%  M: light",
       "maxSpeed": "120kmph / 12\"",
-      "maxWeight": 100
+      "maxWeight": 100,
+      "type": "mistEngine"
     },
     {
       "id": 41,
@@ -333,7 +339,8 @@
       "price": 450,
       "optimalConditions": "W:70%  M: light/medium",
       "maxSpeed": "60kmph / 7\"",
-      "maxWeight": 300
+      "maxWeight": 300,
+      "type": "mistEngine"
     },
     {
       "id": 42,
@@ -341,7 +348,8 @@
       "price": 400,
       "optimalConditions": "W:90%  M: medium",
       "maxSpeed": "35kmph / 4\"",
-      "maxWeight": 600
+      "maxWeight": 600,
+      "type": "mistEngine"
     },
     {
       "id": 43,
@@ -349,7 +357,8 @@
       "price": 850,
       "optimalConditions": "W:60%  M:-",
       "maxSpeed": "90 kmph / 9\"",
-      "maxWeight": 175
+      "maxWeight": 175,
+      "type": "mistEngine"
     },
     {
       "id": 44,
@@ -358,7 +367,8 @@
       "weight": 20,
       "shipWounds": 20,
       "defense": 0,
-      "maxCargo": 50
+      "maxCargo": 50,
+      "type": "shipHull"
     },
     {
       "id": 45,
@@ -367,7 +377,8 @@
       "weight": 20,
       "shipWounds": 40,
       "defense": 2,
-      "maxCargo": 60
+      "maxCargo": 60,
+      "type": "shipHull"
     },
     {
       "id": 46,
@@ -376,7 +387,8 @@
       "weight": 150,
       "shipWounds": 80,
       "defense": 4,
-      "maxCargo": 100
+      "maxCargo": 100,
+      "type": "shipHull"
     },
     {
       "id": 47,
@@ -385,7 +397,8 @@
       "weight": 200,
       "shipWounds": 60,
       "defense": 3,
-      "maxCargo": 200
+      "maxCargo": 200,
+      "type": "shipHull"
     },
     {
       "id": 48,
@@ -394,85 +407,98 @@
       "weight": 350,
       "shipWounds": 120,
       "defense": 5,
-      "maxCargo": 80
+      "maxCargo": 80,
+      "type": "shipHull"
     },
     {
       "id": 49,
       "name": "Light Deck Cannon",
       "price": 30,
       "ammoType": "Standard Cannonballs",
-      "weight": 15
+      "weight": 15,
+      "type": "cannon"
     },
     {
       "id": 50,
       "name": "Heavy Broadside",
       "price": 50,
       "ammoType": "Explosive Cannonballs",
-      "weight": 40
+      "weight": 40,
+      "type": "cannon"
     },
     {
       "id": 51,
       "name": "Mistfire Cannon",
       "price": 60,
       "ammoType": "Mist-Infused Ammo",
-      "weight": 35
+      "weight": 35,
+      "type": "cannon"
     },
     {
       "id": 52,
       "name": "Plasma Cannon",
       "price": 700,
       "ammoType": "Plasma Charges",
-      "weight": 60
+      "weight": 60,
+      "type": "cannon"
     },
     {
       "id": 53,
       "name": "Standard Cannonballs",
       "price": 50,
-      "damage": "4/6"
+      "damage": "4/6",
+      "type": "cannonball"
     },
     {
       "id": 54,
       "name": "Explosive Cannonballs",
       "price": 100,
-      "damage": "8/10"
+      "damage": "8/10",
+      "type": "cannonball"
     },
     {
       "id": 55,
       "name": "Mist-Infused Ammo",
       "price": 150,
-      "damage": "12/15"
+      "damage": "12/15",
+      "type": "cannonball"
     },
     {
       "id": 56,
       "name": "Plasma Charges",
       "price": 200,
-      "damage": "20/25"
+      "damage": "20/25",
+      "type": "cannonball"
     },
     {
       "id": 57,
       "name": "Light Barricade",
       "subType": "construct",
       "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
-      "weapons": []
+      "weapons": [],
+      "type": "deployable"
     },
     {
       "id": 58,
       "name": "Autogun Turret",
       "subType": "construct",
       "description": "Fixed in place, targets closest enemy.",
-      "weapons": [53]
+      "weapons": [53],
+      "type": "deployable"
     },
     {
       "id": 59,
       "name": "Screecher Green",
       "subType": "mob",
-      "bestiaryId": 12
+      "bestiaryId": 12,
+      "type": "deployable"
     },
     {
       "id": 60,
       "name": "Screecher Purple",
       "subType": "mob",
-      "bestiaryId": 13
+      "bestiaryId": 13,
+      "type": "deployable"
     }
   ]
 }

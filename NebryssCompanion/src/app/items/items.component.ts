@@ -54,6 +54,8 @@ export class ItemsComponent implements OnInit {
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   
+  // Map of item types to categories for display purposes
+  private typeToCategory: {[key: string]: ItemCategory} = {};
 
   constructor(
     private dataService: DataService,
@@ -63,11 +65,19 @@ export class ItemsComponent implements OnInit {
   ngOnInit() {
     this.dataService.getAllData().subscribe(data => {
       this.itemsData = data.items;
+      console.log(this.itemsData);
+    
       
       this.weaponsData = data.weapons;
       this.weaponRules = data.weaponRules;
       this.alteredStates = data.alteredStates;
       this.itemCategories = data.itemCategories;
+      
+      // Set up type to category mapping
+      this.itemCategories.forEach(category => {
+        this.typeToCategory[category.key] = category;
+      });
+      
       this.allWeaponIds = this.weaponsData.map(w => w.id);
       const saved = localStorage.getItem('items-weapons-collapsed');
       this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
@@ -92,8 +102,13 @@ export class ItemsComponent implements OnInit {
   }
 
   getCategoryData(key: string): any[] {
-    // Get the base items
-    const items = this.itemsData[key as keyof Items] || [];
+    // Filter items by type
+    if (!this.itemsData || !this.itemsData.items) {
+      return [];
+    }
+    
+    // Get items matching the requested type
+    const items = this.itemsData.items.filter(item => item.type === key);
     
     // Check if we have an active player
     const activePlayer = this.activePlayerService.activePlayer;

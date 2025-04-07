@@ -71,7 +71,8 @@ export class PlayerDetailComponent implements OnChanges {
           id: inventory.id,
           name: item?.name || 'Unknown Item',
           description: item?.description || 'No description available',
-          quant: inventory.quant
+          quant: inventory.quant,
+          type: item?.type
         };
       });
     }
@@ -157,12 +158,9 @@ export class PlayerDetailComponent implements OnChanges {
   }
 
   getItemById(id: number): any {
-    // Search in all item categories
-    for (const category of Object.values(this.itemsData)) {
-      const foundItem = (category as any[]).find((item: any) => item.id === id);
-      if (foundItem) return foundItem;
-    }
-    return null;
+    // With the new structure, items are in a single array
+    if (!this.itemsData || !this.itemsData.items) return null;
+    return this.itemsData.items.find((item: any) => item.id === id);
   }
 
   isActivePlayer(character: Character): boolean {

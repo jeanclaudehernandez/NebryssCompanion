@@ -94,6 +94,28 @@ export class GenericTableComponent implements OnInit {
         quant: 1
       });
     }
+
+    // Handle deployables
+    if (item.type === 'deployable') {
+      // Initialize deployables array if it doesn't exist
+      if (!player.deployables) {
+        player.deployables = [];
+      }
+      
+      // Check if deployable already exists
+      const existingDeployable = player.deployables.find((deployable) => deployable.id === item.id);
+      
+      if (existingDeployable) {
+        // Increment quantity if deployable exists
+        existingDeployable.quant += 1;
+      } else {
+        // Add new deployable with quantity 1
+        player.deployables.push({
+          id: item.id,
+          quant: 1
+        });
+      }
+    }
     
     // Update the player
     this.activePlayerService.setActivePlayer({...player});
@@ -115,6 +137,24 @@ export class GenericTableComponent implements OnInit {
       } else {
         // Remove item if quantity is 1
         player.items.splice(existingItemIndex, 1);
+      }
+      
+      // Handle deployables removal
+      if (item.type === 'deployable' && player.deployables) {
+        console.log('This is a deployable, checking deployables array:', player.deployables);
+        const existingDeployableIndex = player.deployables.findIndex((deployable) => deployable.id === item.id);
+        
+        if (existingDeployableIndex >= 0) {
+          const existingDeployable = player.deployables[existingDeployableIndex];
+          
+          if (existingDeployable.quant > 1) {
+            // Decrement quantity if more than 1
+            existingDeployable.quant -= 1;
+          } else {
+            // Remove deployable if quantity is 1
+            player.deployables.splice(existingDeployableIndex, 1);
+          }
+        }
       }
       
       // Update the player
