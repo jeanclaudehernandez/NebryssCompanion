@@ -5,6 +5,7 @@ import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule } from '../model';
+import { ActivePlayerService } from '../active-player.service';
 
 @Component({
   selector: 'app-shops',
@@ -32,7 +33,10 @@ export class ShopsComponent {
   isLoading = true;
   scrollSections: ScrollSection[] = [];
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private activePlayerService: ActivePlayerService
+  ) {}
 
   ngOnInit() {
     this.dataService.getAllData().subscribe(response => {
@@ -86,5 +90,9 @@ export class ShopsComponent {
   toggleWeaponCollapse(shopId: number): void {
     const newState = !this.isWeaponCollapsed(shopId);
     localStorage.setItem(`shop-${shopId}-weapons-collapsed`, JSON.stringify(newState));
+  }
+
+  hasActivePlayer(): boolean {
+    return this.activePlayerService.activePlayer !== null;
   }
 }

@@ -5,6 +5,7 @@ import { DataService } from '../data.service';
 import { AlteredState, BestiaryEntry, Character, Items, Player, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { ActivePlayerService } from '../active-player.service';
 
 @Component({
   selector: 'app-player-detail',
@@ -32,7 +33,10 @@ export class PlayerDetailComponent implements OnChanges {
   talentTableHeaders: string[] = ['Name', 'Effect'];
   talentTableHeaderKeys: string[] = ['name', 'effect'];
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private activePlayerService: ActivePlayerService
+  ) {}
 
   ngOnChanges(): void {
     this.bodyString = this.character.attributes.body.reduce((body: string, acc: string) => body + " " + acc, "");
@@ -87,7 +91,6 @@ export class PlayerDetailComponent implements OnChanges {
     return 'pr' in character;
   }
 
-
   getItemById(id: number): any {
     // Search in all item categories
     for (const category of Object.values(this.itemsData)) {
@@ -95,5 +98,10 @@ export class PlayerDetailComponent implements OnChanges {
       if (foundItem) return foundItem;
     }
     return null;
+  }
+
+  isActivePlayer(character: Character): boolean {
+    const activePlayer = this.activePlayerService.activePlayer;
+    return activePlayer !== null && activePlayer.id === character.id;
   }
 }

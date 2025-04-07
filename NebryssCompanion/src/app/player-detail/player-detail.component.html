@@ -40,7 +40,8 @@
         [weaponRulesData]="weaponRulesData"
         [isCharacterDisplayPage]="true"
         [characterBody]="character.attributes.body"
-        [alteredStates]="alteredStates">
+        [alteredStates]="alteredStates"
+        [inventoryManagement]="isActivePlayer(character)">
       </app-weapon-table>
   </div>
   
@@ -51,7 +52,8 @@
       [title]="'Character Talents'"
       [data]="talentTableData"
       [headers]="talentTableHeaders"
-      [headerKeys]="talentTableHeaderKeys">
+      [headerKeys]="talentTableHeaderKeys"
+      [isPlayerDetail]="true">
     </app-generic-table>
   </div>
   
@@ -70,7 +72,9 @@
       [title]="'Character Items'"
       [data]="itemTableData"
       [headers]="itemTableHeaders"
-      [headerKeys]="itemTableHeaderKeys">
+      [headerKeys]="itemTableHeaderKeys"
+      [inventoryManagement]="isActivePlayer(character)"
+      [isPlayerDetail]="true">
     </app-generic-table>
   </div>
 
@@ -86,7 +90,8 @@
             [weaponIds]="deployable.weapons"
             [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates">
+            [alteredStates]="alteredStates"
+            [inventoryManagement]="false">
           </app-weapon-table>
           <ng-container *ngIf="deployable.type === 'mob'">
             @let mob = getMobById(deployable.bestiaryId);

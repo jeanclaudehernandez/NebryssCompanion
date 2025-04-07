@@ -10,12 +10,13 @@
           <th>Damage</th>
           <th>Special Rules</th>
           <th *ngIf="displayBody">Body</th>
+          <th *ngIf="inventoryManagement">Actions</th>
         </tr>
       </thead>
       <tbody>
         <ng-container *ngFor="let entry of sortedProfiles">
           <ng-container *ngIf="filterByBody(entry.profile) || !isCharacterDisplayPage">
-            <tr class="weapon-row">
+            <tr class="weapon-row" [class.in-inventory]="isInInventory(entry.weapon.id)">
                 <td>
                   {{ entry.weapon.name }}
                   <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
@@ -41,6 +42,12 @@
                   </span>
                 </td>
                 <td *ngIf="displayBody">{{entry.profile.body}}</td>
+                <td *ngIf="inventoryManagement">
+                  <div class="inventory-actions">
+                    <button *ngIf="!isCharacterDisplayPage" (click)="addToInventory(entry.weapon.id)" class="btn-add">+</button>
+                    <button (click)="removeFromInventory(entry.weapon.id)" class="btn-remove">-</button>
+                  </div>
+                </td>
             </tr>
           </ng-container>
         </ng-container>

@@ -7,6 +7,7 @@ import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
+import { ActivePlayerService } from '../active-player.service';
 
 interface ruleDisplay {
   name: string,
@@ -36,14 +37,57 @@ export class WeaponTableComponent implements OnChanges {
   @Input() isCharacterDisplayPage: boolean = false;
   @Input() characterBody: string[] = [];
   @Input() sortByRange: boolean = true;
+  @Input() inventoryManagement: boolean = false;
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
 
-  constructor(private dialog: MatDialog) {}
+  constructor(private dialog: MatDialog, private activePlayerService: ActivePlayerService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
       this.updateSortedProfiles();
+    }
+  }
+
+  isInInventory(weaponId: number): boolean {
+    const player = this.activePlayerService.activePlayer;
+    if (!player || !player.weapons) return false;
+    
+    return player.weapons.includes(weaponId);
+  }
+
+  addToInventory(weaponId: number) {
+    const player = this.activePlayerService.activePlayer;
+    if (!player) return;
+    
+    // Initialize weapons array if it doesn't exist
+    if (!player.weapons) {
+      player.weapons = [];
+    }
+    
+    // Check if weapon already exists in inventory
+    if (!player.weapons.includes(weaponId)) {
+      // Add weapon to the player's weapons
+      player.weapons.push(weaponId);
+      
+      // Update the player
+      this.activePlayerService.setActivePlayer({...player});
+    }
+  }
+  
+  removeFromInventory(weaponId: number) {
+    const player = this.activePlayerService.activePlayer;
+    if (!player || !player.weapons) return;
+    
+    // Find the weapon in the inventory
+    const weaponIndex = player.weapons.indexOf(weaponId);
+    
+    if (weaponIndex >= 0) {
+      // Remove weapon from the player's weapons
+      player.weapons.splice(weaponIndex, 1);
+      
+      // Update the player
+      this.activePlayerService.setActivePlayer({...player});
     }
   }
 

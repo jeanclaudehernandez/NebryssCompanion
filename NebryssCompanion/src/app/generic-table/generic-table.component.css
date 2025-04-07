@@ -32,3 +32,41 @@ h3 {
     margin-top: 0;
     color: #2c3e50;
 }
+
+/* Inventory management buttons */
+.inventory-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-add, .btn-remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.btn-add {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-add:hover {
+    background-color: #388e3c;
+}
+
+.btn-remove {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-remove:hover {
+    background-color: #d32f2f;
+}

@@ -1,10 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection, AlteredState } from '../model';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { ActivePlayerService } from '../active-player.service';
 
 @Component({
   selector: 'app-items',
@@ -23,7 +24,8 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
             [displayPrice]="true"
-            [displayBody]="true"></app-weapon-table>
+            [displayBody]="true"
+            [inventoryManagement]="hasActivePlayer()"></app-weapon-table>
         </div>
       </div>
 
@@ -33,7 +35,8 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
           [title]="category.name"
           [data]="getCategoryData(category.key)"
           [headers]="category.headers"
-          [headerKeys]="category.keys">
+          [headerKeys]="category.keys"
+          [inventoryManagement]="hasActivePlayer()">
         </app-generic-table>
       </div>
     </div>
@@ -41,18 +44,21 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
   `,
   styleUrls: ['./items.component.css']
 })
-export class ItemsComponent {
+export class ItemsComponent implements OnInit {
   itemsData!: Items; // Use Items interface
   weaponsData: Weapon[] = [];
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
   alteredStates: AlteredState[] = [];
-  allWeaponIds: number[] = [];;
+  allWeaponIds: number[] = [];
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private activePlayerService: ActivePlayerService
+  ) {}
 
   ngOnInit() {
     this.dataService.getAllData().subscribe(data => {
@@ -88,5 +94,9 @@ export class ItemsComponent {
   getCategoryData(key: string): any[] {
     // Type assertion here (valid in TypeScript code)
     return this.itemsData[key as keyof Items] || [];
+  }
+
+  hasActivePlayer(): boolean {
+    return this.activePlayerService.activePlayer !== null;
   }
 }

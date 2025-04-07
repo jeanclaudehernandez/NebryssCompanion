@@ -13,7 +13,8 @@
         [title]="category.name"
         [data]="getShopItemsWithPrices(shop, category.key) || []"
         [headers]="category.headers"
-        [headerKeys]="category.keys">
+        [headerKeys]="category.keys"
+        [inventoryManagement]="hasActivePlayer()">
       </app-generic-table>
     </div>
     
