@@ -2,15 +2,16 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
-import { AlteredState, BestiaryEntry, Character, Items, Player, Talent, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Character, Items, Player, ScrollSection, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ActivePlayerService } from '../active-player.service';
+import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent],
+  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
@@ -32,63 +33,90 @@ export class PlayerDetailComponent implements OnChanges {
   talentTableData: any[] = [];
   talentTableHeaders: string[] = ['Name', 'Effect'];
   talentTableHeaderKeys: string[] = ['name', 'effect'];
+  
+  // Scroll nav
+  scrollSections: ScrollSection[] = [];
 
   constructor(
     private dataService: DataService,
     private activePlayerService: ActivePlayerService
   ) {}
 
-  ngOnChanges(): void {
-    this.bodyString = this.character.attributes.body.reduce((body: string, acc: string) => body + " " + acc, "");
-    this.prepareItemTableData();
-    this.prepareTalentTableData();
-  }
-
-  prepareItemTableData(): void {
-    if (this.isPlayer(this.character) && this.character.items && this.character.items.length > 0) {
-      this.itemTableData = this.character.items.map(itemId => {
-        const item = this.getItemById(itemId.id);
-        if (item) {
-          return {
-            ...item,
-            quant: itemId.quant || 1
+  ngOnChanges() {
+    if (this.character) {
+      // Get body string
+      this.bodyString = this.character.attributes.body?.join(', ') || '';
+      
+      // Process talent data if applicable
+      if (this.isPlayer(this.character) && this.character.progression?.talents) {
+        this.talentTableData = this.character.progression.talents.map((talentId: string) => {
+          // Get talent info from id
+          const talent = this.dataService.getTalentById(talentId);
+          
+          return { name: talent?.name, effect: talent?.effect };
+        });
+      }
+      
+      // Process item data if applicable
+      if (this.isPlayer(this.character) && this.character.items?.length) {
+        this.itemTableData = this.character.items.map(itemEntry => {
+          // Find the item in itemsData
+          const item = this.getItemById(itemEntry.id);
+          
+          return { 
+            id: item?.id,
+            name: item?.name, 
+            description: item?.description,
+            quant: itemEntry.quant || 1 
           };
-        }
-        return null;
-      }).filter(item => item !== null);
-    } else {
-      this.itemTableData = [];
+        });
+      }
+      
+      // Generate scroll sections based on available content
+      this.generateScrollSections();
+    }
+  }
+  
+  generateScrollSections() {
+    this.scrollSections = [];
+    
+    // Always add attributes and weapons sections
+    this.scrollSections.push(
+      { title: 'Attributes', id: 'attributes' },
+      { title: 'Weapons', id: 'weapons' }
+    );
+    
+    // Add talents section if applicable
+    if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
+      this.scrollSections.push({ title: 'Talents', id: 'talents' });
+    }
+    
+    // Add abilities section if character has abilities
+    if (this.character.abilities && this.character.abilities.length > 0) {
+      this.scrollSections.push({ title: 'Abilities', id: 'abilities' });
+    }
+    
+    // Add items section if applicable
+    if (this.isPlayer(this.character) && this.character.items?.length) {
+      this.scrollSections.push({ title: 'Items', id: 'items' });
+    }
+    
+    // Add deployables section if applicable
+    if (this.character.deployables?.length) {
+      this.scrollSections.push({ title: 'Deployables', id: 'deployables' });
     }
   }
 
-  prepareTalentTableData(): void {
-    if (this.isPlayer(this.character) && this.character.progression && 
-        this.character.progression.talents && this.character.progression.talents.length > 0) {
-      this.talentTableData = this.character.progression.talents.map(talentId => {
-        const talent = this.dataService.getTalentById(talentId);
-        if (talent) {
-          return {
-            name: talent.name,
-            effect: talent.effect
-          };
-        }
-        return null;
-      }).filter(talent => talent !== null);
-    } else {
-      this.talentTableData = [];
-    }
+  isPlayer(character: Character): character is Player {
+    return !!(character as Player).race;
+  }
+
+  isBeast(character: Character): boolean {
+    return !(character as Player).race;
   }
 
   getMobById(bestiaryId: number): any {
     return this.dataService.getBestiaryById(bestiaryId);
-  }
-
-  isPlayer(character: Character): character is Player {
-    return 'race' in character;
-  }
-
-  isBeast(character: Character): character is BestiaryEntry {
-    return 'pr' in character;
   }
 
   getItemById(id: number): any {

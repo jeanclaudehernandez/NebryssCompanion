@@ -12,7 +12,7 @@
     </div>
   </div>
   
-  <div class="attributes">
+  <div id="attributes" class="attributes">
     <h3>Attributes</h3>
     <table class="attributes-table">
       <tr>
@@ -32,7 +32,7 @@
     </table>
   </div>
   
-  <div class="weapons">
+  <div id="weapons" class="weapons">
     <h3>Weapons</h3>
       <app-weapon-table 
         [weaponIds]="character.weapons"
@@ -45,7 +45,7 @@
       </app-weapon-table>
   </div>
   
-  <div class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
+  <div id="talents" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
     <h3>Talents</h3>
     <app-generic-table 
       [storageKey]="'player-talents-' + character.id"
@@ -57,7 +57,7 @@
     </app-generic-table>
   </div>
   
-  <div class="abilities">
+  <div id="abilities" class="abilities">
     <h3>Abilities</h3>
     <div *ngFor="let ability of character.abilities" class="ability">
       <h4>{{ ability.name }}</h4>
@@ -65,7 +65,7 @@
     </div>
   </div>
   
-  <div class="items" *ngIf="isPlayer(character) && character?.items?.length">
+  <div id="items" class="items" *ngIf="isPlayer(character) && character?.items?.length">
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
@@ -78,7 +78,7 @@
     </app-generic-table>
   </div>
 
-  <div class="deployables" *ngIf="character.deployables?.length">
+  <div id="deployables" class="deployables" *ngIf="character.deployables?.length">
     <h3>Deployables</h3>
     <div *ngFor="let deployableEntry of character.deployables">
       <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
@@ -107,3 +107,5 @@
     </div>
   </div>
 </div>
+
+<app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
