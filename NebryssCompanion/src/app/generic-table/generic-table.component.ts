@@ -3,6 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-generic-table',
@@ -53,7 +54,10 @@ export class GenericTableComponent implements OnInit {
   
   isCollapsed = true;
 
-  constructor(private activePlayerService: ActivePlayerService) {}
+  constructor(
+    private activePlayerService: ActivePlayerService,
+    private toastService: ToastService
+  ) {}
 
   ngOnInit() {
     const savedState = localStorage.getItem(this.storageKey);
@@ -119,6 +123,15 @@ export class GenericTableComponent implements OnInit {
     
     // Update the player
     this.activePlayerService.setActivePlayer({...player});
+    
+    // Get current quantity after adding
+    const currentQuant = player.items.find(i => i.id === item.id)?.quant || 1;
+    
+    // Show success toast
+    this.toastService.show(
+      `Added ${item.name || 'Item'} to inventory (${currentQuant} in inventory)`, 
+      'success'
+    );
   }
   
   removeFromInventory(item: any) {
@@ -130,6 +143,7 @@ export class GenericTableComponent implements OnInit {
     
     if (existingItemIndex >= 0) {
       const existingItem = player.items[existingItemIndex];
+      let remainingQuant = existingItem.quant - 1;
       
       if (existingItem.quant > 1) {
         // Decrement quantity if more than 1
@@ -137,6 +151,7 @@ export class GenericTableComponent implements OnInit {
       } else {
         // Remove item if quantity is 1
         player.items.splice(existingItemIndex, 1);
+        remainingQuant = 0;
       }
       
       // Handle deployables removal
@@ -159,6 +174,12 @@ export class GenericTableComponent implements OnInit {
       
       // Update the player
       this.activePlayerService.setActivePlayer({...player});
+      
+      // Show error toast
+      this.toastService.show(
+        `Removed ${item.name || 'Item'} from inventory (${remainingQuant} remaining)`, 
+        'error'
+      );
     }
   }
 }

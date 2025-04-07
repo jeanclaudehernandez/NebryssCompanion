@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
 import { ActivePlayerService } from '../active-player.service';
+import { ToastService } from '../toast.service';
 
 interface ruleDisplay {
   name: string,
@@ -38,7 +39,11 @@ export class WeaponTableComponent implements OnChanges {
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
 
-  constructor(private dialog: MatDialog, private activePlayerService: ActivePlayerService) {}
+  constructor(
+    private dialog: MatDialog, 
+    private activePlayerService: ActivePlayerService,
+    private toastService: ToastService
+  ) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
@@ -69,6 +74,16 @@ export class WeaponTableComponent implements OnChanges {
       
       // Update the player
       this.activePlayerService.setActivePlayer({...player});
+      
+      // Get weapon name
+      const weapon = this.getWeaponById(weaponId);
+      const weaponName = weapon ? weapon.name : 'Weapon';
+      
+      // Show success toast
+      this.toastService.show(
+        `Added ${weaponName} to inventory (1 in inventory)`, 
+        'success'
+      );
     }
   }
   
@@ -80,11 +95,21 @@ export class WeaponTableComponent implements OnChanges {
     const weaponIndex = player.weapons.indexOf(weaponId);
     
     if (weaponIndex >= 0) {
+      // Get weapon name before removing
+      const weapon = this.getWeaponById(weaponId);
+      const weaponName = weapon ? weapon.name : 'Weapon';
+      
       // Remove weapon from the player's weapons
       player.weapons.splice(weaponIndex, 1);
       
       // Update the player
       this.activePlayerService.setActivePlayer({...player});
+      
+      // Show error toast
+      this.toastService.show(
+        `Removed ${weaponName} from inventory (0 remaining)`, 
+        'error'
+      );
     }
   }
 
