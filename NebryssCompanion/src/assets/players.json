@@ -28,6 +28,7 @@
         }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": {
@@ -75,6 +76,7 @@
         }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": {
@@ -122,6 +124,7 @@
         }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": {
@@ -176,6 +179,7 @@
         { "id": 60, "quant": 1 }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": {
@@ -235,6 +239,7 @@
         }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": {
@@ -286,6 +291,7 @@
         { "id": 58, "quant": 2 }
       ],
       "progression": {
+        "talents": [],
         "mistrals": {
           "digital": 0,
           "physical": { 

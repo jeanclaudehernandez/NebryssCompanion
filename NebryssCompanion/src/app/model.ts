@@ -285,7 +285,7 @@ export interface AlteredState {
         "100s": number;
       };
     };
-    talents?: string[];
+    talents: string[];
   }
 
   export interface Inventory extends Item {
