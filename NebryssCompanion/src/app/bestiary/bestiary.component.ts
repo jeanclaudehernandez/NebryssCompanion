@@ -1,6 +1,6 @@
 // bestiary.component.ts
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +9,7 @@ import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule } from '../model
 @Component({
   selector: 'app-bestiary',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlayerDetailComponent, JsonPipe],
+  imports: [CommonModule, FormsModule, PlayerDetailComponent],
   templateUrl: './bestiary.component.html',
   styleUrls: ['./bestiary.component.css']
 })

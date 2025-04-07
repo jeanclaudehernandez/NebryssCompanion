@@ -3,7 +3,6 @@ import { Component, Input,TemplateRef, SimpleChanges, OnChanges, ViewChild } fro
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
 import { ModalService } from '../modal.service';
-import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
@@ -21,8 +20,6 @@ interface ruleDisplay {
     CommonModule,
     MatTooltipModule,
     WeaponRangePipe,
-    SanitizeHtmlPipe,
-    WeaponRuleDialogComponent
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css']
