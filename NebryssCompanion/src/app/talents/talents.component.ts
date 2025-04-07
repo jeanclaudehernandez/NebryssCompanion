@@ -94,6 +94,11 @@ export class TalentsComponent implements OnInit, OnDestroy {
       this.activePlayer.progression.talents = [];
     }
     
+    // Make sure talentPoints is initialized
+    if (this.activePlayer.progression.talentPoints === undefined) {
+      this.activePlayer.progression.talentPoints = 0;
+    }
+    
     const playerTalents = this.activePlayer.progression.talents;
     const talentIndex = playerTalents.indexOf(talent.id);
     
@@ -105,16 +110,26 @@ export class TalentsComponent implements OnInit, OnDestroy {
         return;
       }
       
+      // Check if player has enough talent points
+      if (this.activePlayer.progression.talentPoints < talent.cost) {
+        this.showInsufficientPointsDialog(talent);
+        return;
+      }
+      
       // Handle talents with max stacks
       if (talent.maxStacks) {
         const count = this.getTalentSelectedCount(talent);
         // If talent is selected fewer times than maxStacks, add it
         if (count < talent.maxStacks) {
           playerTalents.push(talent.id);
+          // Deduct talent points
+          this.activePlayer.progression.talentPoints -= talent.cost;
         }
       } else {
         // For non-stacking talents, add it
         playerTalents.push(talent.id);
+        // Deduct talent points
+        this.activePlayer.progression.talentPoints -= talent.cost;
       }
     } else {
       // Removing talent
@@ -123,10 +138,14 @@ export class TalentsComponent implements OnInit, OnDestroy {
         const lastIndex = playerTalents.lastIndexOf(talent.id);
         if (lastIndex !== -1) {
           playerTalents.splice(lastIndex, 1);
+          // Refund talent points
+          this.activePlayer.progression.talentPoints += talent.cost;
         }
       } else {
         // Remove talent
         playerTalents.splice(talentIndex, 1);
+        // Refund talent points
+        this.activePlayer.progression.talentPoints += talent.cost;
       }
     }
     
@@ -158,6 +177,24 @@ export class TalentsComponent implements OnInit, OnDestroy {
     ;
   }
 
+  showInsufficientPointsDialog(talent: Talent): void {
+    const dialogRef = this.dialog.open(TalentRequirementsDialogComponent, {
+      data: {
+        talentName: talent.name,
+        insufficientPoints: true,
+        required: talent.cost,
+        available: this.activePlayer?.progression.talentPoints || 0
+      },
+      width: '350px',
+      hasBackdrop: true,
+      disableClose: true
+    });
+
+    setTimeout(() => {
+      dialogRef.disableClose = false;
+    }, 0);
+  }
+
   isTalentSelected(talent: Talent): boolean {
     if (!this.activePlayer || !this.activePlayer.progression.talents) {
       return false;
@@ -180,14 +217,27 @@ export class TalentsComponent implements OnInit, OnDestroy {
       this.activePlayer.progression.talents = [];
     }
     
+    // Make sure talentPoints is initialized
+    if (this.activePlayer.progression.talentPoints === undefined) {
+      this.activePlayer.progression.talentPoints = 0;
+    }
+    
     // Check if player has required talents
     if (!this.hasRequiredTalents(talent)) {
       this.showRequirementsDialog(talent);
       return;
     }
     
+    // Check if player has enough talent points
+    if (this.activePlayer.progression.talentPoints < talent.cost) {
+      this.showInsufficientPointsDialog(talent);
+      return;
+    }
+    
     if (talent.maxStacks && this.getTalentSelectedCount(talent) < talent.maxStacks) {
       this.activePlayer.progression.talents.push(talent.id);
+      // Deduct talent points
+      this.activePlayer.progression.talentPoints -= talent.cost;
       this.activePlayerService.setActivePlayer({...this.activePlayer});
     }
   }
@@ -200,11 +250,18 @@ export class TalentsComponent implements OnInit, OnDestroy {
       return;
     }
     
+    // Make sure talentPoints is initialized
+    if (this.activePlayer.progression.talentPoints === undefined) {
+      this.activePlayer.progression.talentPoints = 0;
+    }
+    
     const playerTalents = this.activePlayer.progression.talents;
     const lastIndex = playerTalents.lastIndexOf(talent.id);
     
     if (lastIndex !== -1) {
       playerTalents.splice(lastIndex, 1);
+      // Refund talent points
+      this.activePlayer.progression.talentPoints += talent.cost;
       this.activePlayerService.setActivePlayer({...this.activePlayer});
     }
   }

@@ -254,6 +254,7 @@ export interface AlteredState {
   }
   
   interface Progression {
+    talentPoints: number;
     mistrals: {
       digital: number;
       physical: {

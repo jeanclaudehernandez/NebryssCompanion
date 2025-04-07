@@ -1,5 +1,8 @@
 <div class="talents-container">
     <h2>Talents</h2>
+    <div class="talent-points-floating" *ngIf="activePlayer">
+      <span>Available Talent Points: {{ activePlayer.progression.talentPoints || 0 }}</span>
+    </div>
     <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
       <h3>{{category.name}}</h3>
       <p *ngIf="category.description">{{category.description}}</p>

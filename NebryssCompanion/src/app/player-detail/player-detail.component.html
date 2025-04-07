@@ -16,6 +16,7 @@
     <div *ngIf="isPlayer(character)">
       <p><strong>Race:</strong> {{ character.race }}
       <p><strong>Origin:</strong> {{ character.origin }}</p>
+      <p><strong>Talent Points:</strong> {{ character.progression?.talentPoints || 0 }}</p>
     </div>
     <div *ngIf="isBeast(character)">
       <p><strong>Faction</strong> {{ getFaction(character) }} </p>
