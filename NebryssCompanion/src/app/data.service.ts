@@ -10,8 +10,9 @@ import npcsData from '../assets/npcs.json';
 import loreData from '../assets/lore.json';
 import talentsData from '../assets/talents.json';
 import alteredStatesData from '../assets/alteredStates.json';
+import mistEffectsData from '../assets/mistEffects.json';
 import { Observable, of } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect } from './model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +29,7 @@ export class DataService {
   private talents: TalentCategory[] = talentsData;
   private alteredStates: AlteredState[] = alteredStatesData;
   private lore: Lore = loreData;
+  private mistEffects = mistEffectsData.mistEffects;
 
   constructor() { }
 
@@ -75,6 +77,10 @@ export class DataService {
     return of(this.alteredStates);
   }
 
+  getMistEffects(): Observable<any[]> {
+    return of(this.mistEffects);
+  }
+
   getAllData(): Observable<{
     players: Player[],
     npcs: NPC[],
@@ -84,7 +90,8 @@ export class DataService {
     bestiary: BestiaryEntry[],
     shops: Shop[],
     itemCategories: ItemCategory[],
-    alteredStates: AlteredState[]
+    alteredStates: AlteredState[],
+    mistEffects: any[]
   }> {
     return of({
       players: this.players,
@@ -95,7 +102,8 @@ export class DataService {
       bestiary: this.bestiary,
       shops: this.shops,
       itemCategories: this.itemCategories,
-      alteredStates: this.alteredStates
+      alteredStates: this.alteredStates,
+      mistEffects: this.mistEffects
     });
   }
 

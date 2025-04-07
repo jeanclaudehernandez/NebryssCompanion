@@ -10,6 +10,7 @@ import { ItemsComponent } from './items/items.component';
 import { ShopsComponent } from './shops/shops.component';
 import { LoreComponent } from './lore/lore.component';
 import { TalentsComponent } from './talents/talents.component';
+import { MistEffectsComponent } from './mist-effects/mist-effects.component';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +25,8 @@ import { TalentsComponent } from './talents/talents.component';
     BestiaryComponent,
     ShopsComponent,
     LoreComponent,
-    TalentsComponent
+    TalentsComponent,
+    MistEffectsComponent
   ],
   template: `
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
@@ -36,12 +38,13 @@ import { TalentsComponent } from './talents/talents.component';
       <app-shops *ngIf="currentView === 'shops'"></app-shops>
       <app-lore *ngIf="currentView === 'lore'"></app-lore>
       <app-talents *ngIf="currentView === 'talents'"></app-talents>
+      <app-mist-effects *ngIf="currentView === 'mistEffects'"></app-mist-effects>
     </div>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents'  = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects' = 'players';
 
   constructor() {
     const savedView = localStorage.getItem('lastView');
@@ -50,10 +53,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'talents'].includes(view);
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'talents', 'mistEffects'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects') {
     this.currentView = view;
     localStorage.setItem('lastView', view);
     window.scrollTo({ top: 0 });
