@@ -1,251 +1,283 @@
 {
-  "armor": [
+  "items": [
     {
       "id": 1,
       "name": "Mistcloak",
       "price": 8,
       "description": "Save +1 in mist zones of density medium or higher.",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 2,
       "name": "Mist-Resistant Armor",
       "price": 18,
       "description": "Reduces damage from mist anomalies by 1 (to a minimum of 1).",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 3,
       "name": "Reinforced Carapace",
       "price": 22,
       "description": "Wounds +4, Movement -1\" (min 4).",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 4,
       "name": "Mistweave Plate",
       "price": 25,
       "description": "wounds +2, Re-roll one failed Save roll once per Battle.",
-      "raceReq": "Human"
+      "raceReq": "Human",
+      "type": "armor"
     },
     {
       "id": 5,
       "name": "Mistweave Shroud",
       "price": 30,
       "description": "Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.",
-      "raceReq": "Human"
+      "raceReq": "Human",
+      "type": "armor"
     },
     {
       "id": 6,
       "name": "Swiftwind Harness",
       "price": 25,
       "description": "Wounds -1, Dash costs 0 AP.",
-      "raceReq": "Human"
+      "raceReq": "Human",
+      "type": "armor"
     },
     {
       "id": 7,
       "name": "Aegis Battleplate",
       "price": 50,
       "description": "Wounds +5, Save +2, Movement -2″ (min 3) and cannot be used with Fly or Climb abilities.",
-      "raceReq": "Astartes"
+      "raceReq": "Astartes",
+      "type": "armor"
     },
     {
       "id": 8,
       "name": "Mist-Tracker Goggles",
       "price": 12,
       "description": "Goggles that highlight mist anomalies and hidden paths within 12\".",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 9,
       "name": "Stormweave Brigandine",
       "price": 45,
       "description": "Wounds +3, Save +1 vs ranged attacks. Re-roll one failed Save per battle.",
-      "raceReq": "Human"
+      "raceReq": "Human",
+      "type": "armor"
     },
     {
       "id": 10,
       "name": "Aetheric Pauldrons",
       "price": 60,
       "description": "Wounds +2, reduces damage from psychic attacks by 1.",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 11,
       "name": "Mistforged Cuirass",
       "price": 75,
       "description": "Wounds +4, Save +1, Movement -1\". Reduce damage from mist bourne attacks.",
-      "raceReq": "Human"
+      "raceReq": "Human",
+      "type": "armor"
     },
     {
       "id": 12,
       "name": "Voidwalker Exosuit",
       "price": 200,
       "description": "Wounds +8, Save 3+, Movement +2\". Requires power cell (sold separately).",
-      "raceReq": "Astartes"
+      "raceReq": "Astartes",
+      "type": "armor"
     },
     {
       "id": 13,
       "name": "Eclipse Shroud",
       "price": 150,
       "description": "Wounds +2, Save +1. Once per battle: operative is in Cover for 1 turning point only in mist zones.",
-      "raceReq": "Universal"
+      "raceReq": "Universal",
+      "type": "armor"
     },
     {
       "id": 14,
       "name": "Titanfall Plate",
       "price": 250,
       "description": "Wounds +10, Save 3+, but Movement -3\" and cannot Dash.",
-      "raceReq": "Astartes"
+      "raceReq": "Astartes",
+      "type": "armor"
     },
     {
       "id": 15,
       "name": "Mistlord Raiment",
       "price": 180,
       "description": "Wounds +5, Save +1. All mist-based healing effects are doubled for wearer (both target and performer).",
-      "raceReq": "Human"
-    }
-  ],
-  "consumables": [
+      "raceReq": "Human",
+      "type": "armor"
+    },
     {
       "id": 16,
       "name": "Mist Compass",
       "price": 5,
-      "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost."
+      "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost.",
+      "type": "consumable"
     },
     {
       "id": 17,
       "name": "Stimpack",
       "price": 3,
-      "description": "Single-use injector, restores 1D3 wounds to the user. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+      "description": "Single-use injector, restores 1D3 wounds to the user. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+      "type": "consumable"
     },
     {
       "id": 18,
       "name": "Mist Grenade",
       "price": 6,
-      "description": "A: 1 -- RNG: 6\" -- WS: - -- DMG: -/- -- SR: Blast (3\"), Mist Dispersal."
+      "description": "A: 1 -- RNG: 6\" -- WS: - -- DMG: -/- -- SR: Blast (3\"), Mist Dispersal.",
+      "type": "consumable"
     },
     {
       "id": 19,
       "name": "Mist Lantern",
       "price": 7,
-      "description": "A portable light source that pierces through dense mist, illuminating a 6\" radius."
+      "description": "A portable light source that pierces through dense mist, illuminating a 6\" radius.",
+      "type": "consumable"
     },
     {
       "id": 20,
       "name": "Rations Pack",
       "price": 2,
-      "description": "A week's worth of preserved food and water, essential for long journeys."
+      "description": "A week's worth of preserved food and water, essential for long journeys.",
+      "type": "consumable"
     },
     {
       "id": 21,
       "name": "Medkit",
       "price": 9,
-      "description": "Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+      "description": "Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+      "type": "consumable"
     },
     {
       "id": 22,
       "name": "Mist-Repellent Spray",
       "price": 3.5,
-      "description": "Single-use spray that clears mist in a 1\" radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives."
+      "description": "Single-use spray that clears mist in a 1\" radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+      "type": "consumable"
     },
     {
       "id": 23,
       "name": "Signal Flare",
       "price": 2.5,
-      "description": "A flare that can be used to signal for help or mark a location, visible through mist."
+      "description": "A flare that can be used to signal for help or mark a location, visible through mist.",
+      "type": "consumable"
     },
     {
       "id": 24,
       "name": "Medical Supplies",
       "price": 2,
-      "description": "A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities."
+      "description": "A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.",
+      "type": "consumable"
     },
     {
       "id": 25,
       "name": "Lockpick Set",
       "price": 10,
-      "description": "A set of tools for bypassing locks and traps."
+      "description": "A set of tools for bypassing locks and traps.",
+      "type": "consumable"
     },
     {
       "id": 26,
       "name": "Stoutbarrel Ale",
       "price": 1,
-      "description": "Restores 1D3 wounds but imposes a -1″ movement penalty for the next reposition action the operative performs."
+      "description": "Restores 1D3 wounds but imposes a -1″ movement penalty for the next reposition action the operative performs.",
+      "type": "consumable"
     },
     {
       "id": 27,
       "name": "Mist Maps",
       "price": 20,
-      "description": "Grants re-rolls for navigation checks in mist zones."
+      "description": "Grants re-rolls for navigation checks in mist zones.",
+      "type": "consumable"
     },
     {
       "id": 28,
       "name": "Power Cell",
       "price": 30,
-      "description": "Single-use energy core required to activate Voidwalker Exosuit for one mission. Provides 6 operational hours before depletion."
+      "description": "Single-use energy core required to activate Voidwalker Exosuit for one mission. Provides 6 operational hours before depletion.",
+      "type": "consumable"
     },
     {
       "id": 62,
       "name": "Inquisitorial Rosette",
       "price": 0,
-      "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded)."
+      "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded).",
+      "type": "consumable"
     },
     {
       "id": 61,
       "name": "Shattered Mirror",
       "description": "Holds echoes of unmade futures",
-      "price": 0
-    }
-  ],
-  "ammunition": [
+      "price": 0,
+      "type": "consumable"
+    },
     {
       "id": 29,
       "name": "Standard Bolter Rounds",
       "price": 2,
       "quantity": 5,
-      "type": "Bolter",
-      "description": "Standard ammunition for bolter-type weapons."
+      "subtype": "Bolter",
+      "description": "Standard ammunition for bolter-type weapons.",
+      "type": "ammunition"
     },
     {
       "id": 30,
       "name": "Kraken Penetrator Rounds",
       "price": 10,
       "quantity": 5,
-      "type": "Bolter",
-      "description": "High-penetration rounds, SR: Penetrating 1, Piercing 1."
+      "subtype": "Bolter",
+      "description": "High-penetration rounds, SR: Penetrating 1, Piercing 1.",
+      "type": "ammunition"
     },
     {
       "id": 31,
       "name": "Hellfire Rounds",
       "price": 8,
       "quantity": 6,
-      "type": "Bolter",
-      "description": "Rounds filled with acidic compounds, SR: Burning, Bleeding."
+      "subtype": "Bolter",
+      "description": "Rounds filled with acidic compounds, SR: Burning, Bleeding.",
+      "type": "ammunition"
     },
     {
       "id": 32,
       "name": "Standard Plasma Cells",
       "price": 3,
       "quantity": 8,
-      "type": "Plasma",
-      "description": "Standard energy cells for plasma weapons."
+      "subtype": "Plasma",
+      "description": "Standard energy cells for plasma weapons.",
+      "type": "ammunition"
     },
     {
       "id": 33,
       "name": "Standard Rounds",
       "price": 3,
       "quantity": 9,
-      "type": "Pistol/Rifle",
-      "description": "Basic ammunition for gunpowder-based pistols and rifles."
+      "subtype": "Pistol/Rifle",
+      "description": "Basic ammunition for gunpowder-based pistols and rifles.",
+      "type": "ammunition"
     },
     {
       "id": 34,
       "name": "Armor-Piercing Rounds",
       "price": 5,
       "quantity": 8,
-      "type": "Rifle/Sniper",
-      "description": "Rounds designed to pierce armor, SR: Piercing 1."
+      "subtype": "Rifle/Sniper",
+      "description": "Rounds designed to pierce armor, SR: Piercing 1.",
+      "type": "ammunition"
     },
     {
       "id": 35,
@@ -278,15 +310,13 @@
       "quantity": 10,
       "type": "Pistol/Rifle",
       "description": "Rounds that explode on impact, SR: blast 1 inch."
-    }
-  ],
-  "mistEngines": [
+    },
     {
       "id": 39,
       "name": "Entry Engine",
       "price": 100,
       "optimalConditions": "W:100% M:-",
-      "maxSpeed": "35kmph / 4″",
+      "maxSpeed": "35kmph / 4\"",
       "maxWeight": 80
     },
     {
@@ -294,7 +324,7 @@
       "name": "Swiftwind Engine",
       "price": 500,
       "optimalConditions": "W:40%  M: light",
-      "maxSpeed": "120kmph / 12″",
+      "maxSpeed": "120kmph / 12\"",
       "maxWeight": 100
     },
     {
@@ -302,7 +332,7 @@
       "name": "Endurance Engine",
       "price": 450,
       "optimalConditions": "W:70%  M: light/medium",
-      "maxSpeed": "60kmph / 7″",
+      "maxSpeed": "60kmph / 7\"",
       "maxWeight": 300
     },
     {
@@ -310,7 +340,7 @@
       "name": "Cargo Hauler Engine",
       "price": 400,
       "optimalConditions": "W:90%  M: medium",
-      "maxSpeed": "35kmph / 4″",
+      "maxSpeed": "35kmph / 4\"",
       "maxWeight": 600
     },
     {
@@ -318,11 +348,9 @@
       "name": "Balanced Engine",
       "price": 850,
       "optimalConditions": "W:60%  M:-",
-      "maxSpeed": "90 kmph / 9″",
+      "maxSpeed": "90 kmph / 9\"",
       "maxWeight": 175
-    }
-  ],
-  "shipHulls": [
+    },
     {
       "id": 44,
       "name": "Entry Hull",
@@ -367,9 +395,7 @@
       "shipWounds": 120,
       "defense": 5,
       "maxCargo": 80
-    }
-  ],
-  "cannons": [
+    },
     {
       "id": 49,
       "name": "Light Deck Cannon",
@@ -397,9 +423,7 @@
       "price": 700,
       "ammoType": "Plasma Charges",
       "weight": 60
-    }
-  ],
-  "cannonballs": [
+    },
     {
       "id": 53,
       "name": "Standard Cannonballs",
@@ -423,34 +447,32 @@
       "name": "Plasma Charges",
       "price": 200,
       "damage": "20/25"
+    },
+    {
+      "id": 57,
+      "name": "Light Barricade",
+      "subType": "construct",
+      "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
+      "weapons": []
+    },
+    {
+      "id": 58,
+      "name": "Autogun Turret",
+      "subType": "construct",
+      "description": "Fixed in place, targets closest enemy.",
+      "weapons": [53]
+    },
+    {
+      "id": 59,
+      "name": "Screecher Green",
+      "subType": "mob",
+      "bestiaryId": 12
+    },
+    {
+      "id": 60,
+      "name": "Screecher Purple",
+      "subType": "mob",
+      "bestiaryId": 13
     }
-  ],
-  "deployables": [
-  {
-    "id": 57,
-    "name": "Light Barricade",
-    "type": "construct",
-    "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
-    "weapons": []
-  },
-  {
-    "id": 58,
-    "name": "Autogun Turret",
-    "type": "construct",
-    "description": "Fixed in place, targets closest enemy.",
-    "weapons": [53]
-  }, 
-  {
-    "id": 59,
-    "name": "Screecher Green",
-    "type": "mob",
-    "bestiaryId": 12
-  },
-  {
-    "id": 60,
-    "name": "Screecher Purple",
-    "type": "mob",
-    "bestiaryId": 13
-  }
-]
+  ]
 }
