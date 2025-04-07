@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UpdateService } from '../update.service';
+import { ModalService } from '../modal.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -12,10 +14,15 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
+  @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects'>();
   isOpen = false;
 
-  constructor(private matDialog: MatDialog) {}
+  constructor(
+    private matDialog: MatDialog,
+    public updateService: UpdateService,
+    private modalService: ModalService
+  ) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -42,5 +49,23 @@ export class SidebarComponent {
   changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects') {
     this.viewChange.emit(view);
     this.toggleMenu();
+  }
+
+  forceUpdate() {
+    this.updateService.unregisterAndReload();
+  }
+
+  clearStorageAndUpdate() {
+    const dialogContext = {
+      confirm: () => {
+        this.modalService.close();
+        this.updateService.clearStorageAndReload();
+      },
+      cancel: () => {
+        this.modalService.close();
+      }
+    };
+    
+    this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
   }
 }

@@ -9,5 +9,22 @@
     <div class="menu-item" (click)="changeView('bestiary')">Bestiary</div>
     <div class="menu-item" (click)="changeView('lore')">Lore</div>
     <div class="menu-item" (click)="changeView('mistEffects')">Mist Effects</div>
+    
+    <div class="update-section">
+      <div class="timestamp">Updated: {{ updateService.timestamp$ | async }}</div>
+      <button class="update-button" (click)="forceUpdate()">Force Update</button>
+      <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Force Update & Clean Storage</button>
+    </div>
   </div>
 </nav>
+
+<ng-template #confirmDialog let-confirm="confirm" let-cancel="cancel">
+  <div class="confirmation-dialog">
+    <h3>Warning</h3>
+    <p>This will clear all locally stored changes. Make sure you have saved your characters before proceeding.</p>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button class="btn-confirm" (click)="confirm()">Continue</button>
+    </div>
+  </div>
+</ng-template>
