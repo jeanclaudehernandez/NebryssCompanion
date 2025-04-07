@@ -21,7 +21,8 @@ import { MistEffect } from '../model';
         [data]="mistEffects"
         [headers]="['Effect Name', 'Density Level', 'Description']"
         [headerKeys]="['effectName', 'densityLevel', 'description']"
-        [inventoryManagement]="false">
+        [inventoryManagement]="false"
+        [renderHtml]="['description']">
       </app-generic-table>
     </div>
   `,

@@ -24,8 +24,8 @@ import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
           <tbody>
             <tr *ngFor="let item of data" [class.in-inventory]="isInInventory(item)">
               <td *ngFor="let header of headerKeys">
-                <span *ngIf="header !== 'effect'" >{{ item[header] }}</span>
-                <span *ngIf="header === 'effect'" [innerHtml]="item[header] | sanitizeHtml"></span>
+                <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
+                <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
               <td *ngIf="inventoryManagement">
                 <div class="inventory-actions">
@@ -49,6 +49,7 @@ export class GenericTableComponent implements OnInit {
   @Input() storageKey!: string;
   @Input() inventoryManagement: boolean = false;
   @Input() isPlayerDetail: boolean = false;
+  @Input() renderHtml?: string[];
   
   isCollapsed = true;
 
