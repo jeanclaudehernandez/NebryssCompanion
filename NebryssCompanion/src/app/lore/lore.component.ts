@@ -40,7 +40,9 @@ export class LoreComponent {
     'peopleIdentity',
     'control',
     'role',
-    'notableOrganizations'
+    'notableOrganizations',
+    'image',
+    'thumbnail'
   ];
   public prohibitedSections = [
     'storyHooks',

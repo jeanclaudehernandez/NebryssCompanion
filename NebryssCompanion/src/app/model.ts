@@ -23,6 +23,11 @@ export interface AlteredState {
       description: string;
       owner?: string;
     }>;
+    shops?: Array<{
+      name: string;
+      description: string;
+      owner?: string;
+    }>;
   }
 
   export interface Locations {

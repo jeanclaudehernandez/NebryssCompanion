@@ -1,6 +1,20 @@
 {
   "locations": [
     {
+      "name": "Nebryss",
+      "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
+      "imgUrl": "https://iili.io/3R2Be6u.png",
+      "thumbnail": "https://iili.io/3R2Be6u.th.png",
+      "faction": "Planet",
+      "isCapital": false,
+      "notableFeatures": [
+        {
+          "name": "Mist Trade Routes",
+          "description": "Formed by stable mist zones, these routes are crucial for travel and commerce. Control over mist trade routes is key to power."
+        }
+      ]
+    },
+    {
       "name": "Fortress Sanctus",
       "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
       "imgUrl": "https://iili.io/3R2BjZ7.jpg",
@@ -52,13 +66,30 @@
           "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
           "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
         }
+      ],
+      "shops": [
+        {
+          "name": "Herbwhisper’s Apothecary",
+          "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+          "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
+        },
+        {
+          "name": "Ironveil’s Ward",
+          "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+          "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
+        },
+        {
+          "name": "Blackhammer’s Arsenal",
+          "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+          "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
+        }
       ]
     },
     {
       "name": "Luminos",
       "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture.",
-      "imgUrl": "",
-      "thumbnail": "",
+      "imgUrl": "https://iili.io/3YDnziX.jpg",
+      "thumbnail": "https://iili.io/3YDnziX.th.jpg",
       "faction": "The Gilded Accord",
       "isCapital": false
     },

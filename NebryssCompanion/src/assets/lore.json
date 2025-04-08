@@ -79,7 +79,9 @@
           "goals": ["Conquer and bring Nebryss into full compliance."],
           "challenges": "Struggles with supply lines due to its remote location.",
           "mistKnowledge": "Some within the Imperium know of its warp origins, but this information is heavily censored.",
-          "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture."
+          "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture.",
+          "image": "https://iili.io/3YDx5t2.jpg",
+          "thumbnail": "https://iili.io/3YDx5t2.th.jpg"
         },
         {
           "name": "The Gilded Accord",
@@ -94,7 +96,9 @@
               "name": "The Fogbound Cartographers",
               "description": "An elite guild of navigators and pilots within the Gilded Accord."
             }
-          ]
+          ],
+          "image": "https://iili.io/3YDxYnS.jpg",
+          "thumbnail": "https://iili.io/3YDxYnS.th.jpg"
         },
         {
           "name": "The Abyssal Cabal",
@@ -103,7 +107,9 @@
           "goals": ["Bring full warp corruption over Nebryss and harness the power of the mist.", "Destruction of the Imperium of Man"],
           "recruitment": "Filled with exiles and heretics from other factions.",
           "mistKnowledge": "Fully understands the mist's warp nature and seeks to exploit it.",
-          "iconography": "Generic Chaos-worshipping symbols."
+          "iconography": "Generic Chaos-worshipping symbols.",
+          "image": "https://iili.io/3YDxaM7.jpg",
+          "thumbnail": "https://iili.io/3YDxaM7.th.jpg"
         },
         {
           "name": "The Nebryssian Liberation Republic",
@@ -113,6 +119,8 @@
           "mistweavers": "Shamans who unknowingly channel the mist to create new mist zones at the cost of their lives.",
           "peopleIdentity": "Proudly call themselves Nebryssians, seeing themselves as the true inheritors of the planet.",
           "iconography": "Animals, plants, mist symbols, and freedom imagery (broken chains, doves, open hands).",
+          "image": "https://iili.io/3YDxE8b.jpg",
+          "thumbnail": "https://iili.io/3YDxE8b.th.jpg",
           "goals": [
             "Secure Nebryss's independence from all external forces.",
             "Protect and expand their mist-weaving knowledge.",
@@ -135,7 +143,9 @@
           "fleetComposition": [
             "The Corsairs' fleets are small and agile, consisting of fast raiders and heavily armed flagships.",
             "Ships are often modified with mist-resistant technology, allowing them to navigate denser mist zones and evade pursuit."
-          ]
+          ],
+          "image": "https://iili.io/3YDxRwl.jpg",
+          "thumbnail": "https://iili.io/3YDxRwl.th.jpg"
         }
       ],
       "struggleForNebryss": [

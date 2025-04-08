@@ -20,6 +20,13 @@
         <div *ngIf="section.title === 'Factions'" class="factions-container">
             <div *ngFor="let faction of section.content.factions" class="faction-card" [id]="factionScrollId(faction)">
             <h3>{{faction.name}} (Controls {{faction.control}})</h3>
+            <div *ngIf="faction.image" class="faction-image-container">
+                <app-image-viewer
+                    [imageUrl]="faction.image"
+                    [thumbnailUrl]="faction.thumbnail"
+                    [altText]="faction.name"
+                ></app-image-viewer>
+            </div>
             
             <div class="faction-details">
                 <div class="faction-role">
