@@ -1,0 +1,48 @@
+@use '@angular/material' as mat;
+
+// Define your custom palettes
+$primary-palette: mat.define-palette(mat.$blue-palette);
+$accent-palette: mat.define-palette(mat.$amber-palette);
+$warn-palette: mat.define-palette(mat.$red-palette);
+
+// Create the theme
+$custom-theme: mat.define-light-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+    warn: $warn-palette,
+  ),
+  typography: mat.define-typography-config(),
+  density: 0,
+));
+
+// Custom dialog component colors
+$dialog-background: white;
+$dialog-text-color: #333;
+$dialog-border-color: #333;
+
+// Apply the theme to all Angular Material components
+@include mat.all-component-themes($custom-theme);
+
+// Custom dialog styles
+.mat-mdc-dialog-container {
+  --mdc-dialog-container-color: #{$dialog-background};
+  --mdc-dialog-with-divider-divider-color: rgba(0, 0, 0, 0.12);
+  --mdc-dialog-subhead-color: #{$dialog-text-color};
+  --mdc-dialog-supporting-text-color: #{$dialog-text-color};
+  
+  .mdc-dialog__surface {
+    border-radius: 8px;
+    border: 1px solid $dialog-border-color;
+  }
+}
+
+// Custom dialog content styles
+.mat-mdc-dialog-content {
+  color: $dialog-text-color;
+}
+
+// Custom dialog title styles
+.mat-mdc-dialog-title {
+  color: mat.get-color-from-palette($primary-palette, 700);
+} 

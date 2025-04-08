@@ -11,6 +11,15 @@ body {
     color: #2c3e50;
   }
   
+  /* Global CSS Variables for Dialog Customization */
+  :root {
+    --mat-dialog-container-color: white;
+    --mat-dialog-text-color: #333;
+    --mat-dialog-title-color: #2c3e50;
+    --mat-dialog-border-color: #333;
+    --mat-dialog-button-color: #3498db;
+  }
+  
   /* Player List */
   .player-list-container {
     max-width: 1200px;
@@ -203,10 +212,41 @@ h6 { font-size: 0.8rem; margin: 0.1rem 0; }
   overflow: hidden;
 }
 
+/* MatDialog overrides */
 .mat-mdc-dialog-surface {
   border-radius: 6px !important;
-  border: solid 1px #333 !important;
-  background-color: white !important;
+  border: solid 1px var(--mat-dialog-border-color, #333) !important;
+  background-color: var(--mat-dialog-container-color, white) !important;
+  color: var(--mat-dialog-text-color, #333) !important;
+}
+
+.mat-mdc-dialog-title {
+  color: var(--mat-dialog-title-color, #2c3e50) !important;
+}
+
+.mat-mdc-dialog-content {
+  color: var(--mat-dialog-text-color, #333) !important;
+}
+
+.mat-mdc-dialog-actions button {
+  color: var(--mat-dialog-button-color, #3498db) !important;
+}
+
+/* Theme-specific dialog styles */
+.dark-theme-dialog .mat-mdc-dialog-surface {
+  --mat-dialog-container-color: #2c3e50;
+  --mat-dialog-text-color: #ecf0f1;
+  --mat-dialog-title-color: #3498db;
+  --mat-dialog-border-color: #34495e;
+  --mat-dialog-button-color: #3498db;
+}
+
+.light-theme-dialog .mat-mdc-dialog-surface {
+  --mat-dialog-container-color: #f0f8ff;
+  --mat-dialog-text-color: #333333;
+  --mat-dialog-title-color: #2c3e50;
+  --mat-dialog-border-color: #3498db;
+  --mat-dialog-button-color: #3498db;
 }
 
 /* Toast notification styles */
