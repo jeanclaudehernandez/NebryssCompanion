@@ -4,10 +4,10 @@
     <h2>Locations of Nebryss</h2>
     
     <!-- Group locations by faction -->
-    <div *ngFor="let faction of getUniqueFactions()" class="faction-section">
+    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section">
       <div class="faction-header">
         <div class="faction-emblem sidebar-emblem" *ngIf="getFactionThumbnail(faction)">
-          <img [src]="getFactionThumbnail(faction)" [alt]="faction">
+          <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy">
         </div>
         <div class="faction-emblem sidebar-emblem text-emblem" *ngIf="!getFactionThumbnail(faction)">
           {{ getFactionInitial(faction) }}
@@ -15,7 +15,7 @@
         <h3>{{ faction }}</h3>
       </div>
       <div class="location-cards">
-        <div *ngFor="let location of getLocationsByFaction(faction)" 
+        <div *ngFor="let location of getLocationsByFaction(faction); trackBy: trackByLocation" 
              class="location-card" 
              [class.selected]="selectedLocation === location"
              (click)="selectLocation(location)">
@@ -24,7 +24,7 @@
             <span *ngIf="location.isCapital" class="capital-badge">Capital</span>
           </div>
           <div class="location-thumb" *ngIf="location.thumbnail">
-            <img [src]="location.thumbnail" [alt]="location.name">
+            <img [src]="location.thumbnail" [alt]="location.name" loading="lazy">
           </div>
         </div>
       </div>
@@ -41,7 +41,7 @@
           <div class="location-badges">
             <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital</span>
             <div class="faction-emblem" *ngIf="getFactionThumbnail(selectedLocation.faction)">
-              <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction">
+              <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction" loading="lazy">
             </div>
             <div class="faction-emblem text-emblem" *ngIf="!getFactionThumbnail(selectedLocation.faction)">
               {{ getFactionInitial(selectedLocation.faction) }}
@@ -67,7 +67,7 @@
       <div class="notable-features" *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
         <h3>Notable Features</h3>
         <div class="features-list">
-          <div *ngFor="let feature of selectedLocation.notableFeatures" class="feature-item">
+          <div *ngFor="let feature of selectedLocation.notableFeatures; trackBy: trackByFeature" class="feature-item">
             <h4>{{ feature.name }}</h4>
             <p>{{ feature.description }}</p>
             <div *ngIf="feature.owner" class="feature-owner">

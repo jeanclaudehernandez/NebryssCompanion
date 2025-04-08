@@ -15,7 +15,7 @@ import locationsData from '../assets/locations.json';
 import talentsData from '../assets/talents.json';
 import alteredStatesData from '../assets/alteredStates.json';
 import mistEffectsData from '../assets/mistEffects.json';
-import { Observable, of } from 'rxjs';
+import { Observable, of, ReplaySubject, shareReplay } from 'rxjs';
 import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations } from './model';
 
 @Injectable({
@@ -41,14 +41,35 @@ export class DataService {
   private locations: Locations = locationsData;
   private mistEffects = mistEffectsData.mistEffects;
 
+  // Cache observables
+  private playersCache$: Observable<Player[]> | null = null;
+  private npcsCache$: Observable<NPC[]> | null = null;
+  private bestiaryCache$: Observable<BestiaryEntry[]> | null = null;
+  private weaponsCache$: Observable<Weapon[]> | null = null;
+  private itemsCache$: Observable<Items> | null = null;
+  private weaponRulesCache$: Observable<WeaponRule[]> | null = null;
+  private shopsCache$: Observable<Shop[]> | null = null;
+  private loreCache$: Observable<Lore> | null = null;
+  private locationsCache$: Observable<Locations> | null = null;
+  private talentsCache$: Observable<TalentCategory[]> | null = null;
+  private alteredStatesCache$: Observable<AlteredState[]> | null = null;
+  private mistEffectsCache$: Observable<any[]> | null = null;
+  private allDataCache$: Observable<any> | null = null;
+
   constructor() { }
 
   getPlayers(): Observable<Player[]> {
-    return of(this.players);
+    if (!this.playersCache$) {
+      this.playersCache$ = of(this.players).pipe(shareReplay(1));
+    }
+    return this.playersCache$;
   }
 
   getNpcs(): Observable<NPC[]> {
-    return of(this.npcs);
+    if (!this.npcsCache$) {
+      this.npcsCache$ = of(this.npcs).pipe(shareReplay(1));
+    }
+    return this.npcsCache$;
   }
 
   getitemCategories(): Observable<ItemCategory[]> {
@@ -56,43 +77,73 @@ export class DataService {
   }
 
   getBestiary(): Observable<BestiaryEntry[]> {
-    return of(this.bestiary);
+    if (!this.bestiaryCache$) {
+      this.bestiaryCache$ = of(this.bestiary).pipe(shareReplay(1));
+    }
+    return this.bestiaryCache$;
   }
 
   getWeapons(): Observable<Weapon[]> {
-    return of(this.weapons);
+    if (!this.weaponsCache$) {
+      this.weaponsCache$ = of(this.weapons).pipe(shareReplay(1));
+    }
+    return this.weaponsCache$;
   }
 
   getItems(): Observable<Items> {
-    return of(this.items);
+    if (!this.itemsCache$) {
+      this.itemsCache$ = of(this.items).pipe(shareReplay(1));
+    }
+    return this.itemsCache$;
   }
 
   getWeaponRules(): Observable<WeaponRule[]> {
-    return of(this.weaponsRules);
+    if (!this.weaponRulesCache$) {
+      this.weaponRulesCache$ = of(this.weaponsRules).pipe(shareReplay(1));
+    }
+    return this.weaponRulesCache$;
   }
 
   getShops(): Observable<Shop[]> {
-    return of(this.shops);
+    if (!this.shopsCache$) {
+      this.shopsCache$ = of(this.shops).pipe(shareReplay(1));
+    }
+    return this.shopsCache$;
   }
 
   getLore(): Observable<Lore> {
-    return of(this.lore);
+    if (!this.loreCache$) {
+      this.loreCache$ = of(this.lore).pipe(shareReplay(1));
+    }
+    return this.loreCache$;
   }
 
   getLocations(): Observable<Locations> {
-    return of(this.locations);
+    if (!this.locationsCache$) {
+      this.locationsCache$ = of(this.locations).pipe(shareReplay(1));
+    }
+    return this.locationsCache$;
   }
 
   getTalents(): Observable<TalentCategory[]> {
-    return of(this.talents);
+    if (!this.talentsCache$) {
+      this.talentsCache$ = of(this.talents).pipe(shareReplay(1));
+    }
+    return this.talentsCache$;
   }
 
   getAlteredStates(): Observable<AlteredState[]> {
-    return of(this.alteredStates);
+    if (!this.alteredStatesCache$) {
+      this.alteredStatesCache$ = of(this.alteredStates).pipe(shareReplay(1));
+    }
+    return this.alteredStatesCache$;
   }
 
   getMistEffects(): Observable<any[]> {
-    return of(this.mistEffects);
+    if (!this.mistEffectsCache$) {
+      this.mistEffectsCache$ = of(this.mistEffects).pipe(shareReplay(1));
+    }
+    return this.mistEffectsCache$;
   }
 
   getAllData(): Observable<{
@@ -107,18 +158,21 @@ export class DataService {
     alteredStates: AlteredState[],
     mistEffects: any[]
   }> {
-    return of({
-      players: this.players,
-      npcs: this.npcs,
-      weapons: this.weapons,
-      items: this.items,
-      weaponRules: this.weaponsRules,
-      bestiary: this.bestiary,
-      shops: this.shops,
-      itemCategories: this.itemCategories,
-      alteredStates: this.alteredStates,
-      mistEffects: this.mistEffects
-    });
+    if (!this.allDataCache$) {
+      this.allDataCache$ = of({
+        players: this.players,
+        npcs: this.npcs,
+        weapons: this.weapons,
+        items: this.items,
+        weaponRules: this.weaponsRules,
+        bestiary: this.bestiary,
+        shops: this.shops,
+        itemCategories: this.itemCategories,
+        alteredStates: this.alteredStates,
+        mistEffects: this.mistEffects
+      }).pipe(shareReplay(1));
+    }
+    return this.allDataCache$;
   }
 
   getWeaponById(id: number): any {

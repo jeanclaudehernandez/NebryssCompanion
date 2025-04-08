@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
@@ -13,24 +13,32 @@ import { Location, Locations, Lore } from '../model';
   ],
   templateUrl: './locations.component.html',
   styleUrls: ['./locations.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LocationsComponent implements OnInit {
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   private readonly STORAGE_KEY = 'selectedLocationName';
   loreData: Lore | null = null;
+  uniqueFactions: string[] = [];
   
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.dataService.getLocations().subscribe(data => {
       this.locations = data.locations;
+      this.uniqueFactions = this.getUniqueFactions();
       this.loadFromLocalStorage();
+      this.cdr.markForCheck();
     });
     
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
+      this.cdr.markForCheck();
     });
   }
 
@@ -42,11 +50,13 @@ export class LocationsComponent implements OnInit {
       this.selectedLocation = location;
       this.saveToLocalStorage();
     }
+    this.cdr.markForCheck();
   }
 
   clearSelectedLocation(): void {
     this.selectedLocation = null;
     localStorage.removeItem(this.STORAGE_KEY);
+    this.cdr.markForCheck();
   }
 
   private saveToLocalStorage(): void {
@@ -88,5 +98,17 @@ export class LocationsComponent implements OnInit {
   getUniqueFactions(): string[] {
     const factions = this.locations.map(location => location.faction);
     return [...new Set(factions)];
+  }
+
+  trackByFaction(index: number, item: string): string {
+    return item;
+  }
+
+  trackByLocation(index: number, item: Location): string {
+    return item.name;
+  }
+
+  trackByFeature(index: number, feature: any): string {
+    return feature.name;
   }
 } 

@@ -56,11 +56,18 @@
         "https://iili.io/**"
       ],
       "cacheConfig": {
-        "maxSize": 1000,
-        "maxAge": "30d",
+        "maxSize": 2000,
+        "maxAge": "90d",
         "strategy": "performance",
-        "timeout": "1s"
+        "timeout": "3s"
       }
     }
-  ]
+  ],
+  "navigationUrls": [
+    "/**",
+    "!/**/*.*",
+    "!/**/*__*",
+    "!/**/*__*/**"
+  ],
+  "navigationRequestStrategy": "freshness"
 }

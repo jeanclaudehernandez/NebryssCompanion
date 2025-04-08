@@ -1,5 +1,5 @@
 // image-viewer.component.ts
-import { Component, Inject, Input } from '@angular/core';
+import { Component, Inject, Input, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +16,8 @@ import { MatButtonModule } from '@angular/material/button';
         class="thumbnail-image"
         [class.clickable]="showFullImageOnClick"
         [alt]="altText || 'Image'"
+        loading="lazy"
+        fetchpriority="low"
       >
     </div>
   `,
@@ -36,7 +38,8 @@ import { MatButtonModule } from '@angular/material/button';
     .clickable:hover {
       transform: scale(1.05);
     }
-  `]
+  `],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImageViewerComponent {
   @Input() imageUrl?: string;
@@ -56,23 +59,36 @@ export class ImageViewerComponent {
       },
       panelClass: 'image-dialog-container',
       hasBackdrop: true,
-      backdropClass: 'image-dialog-backdrop', // Optional: custom backdrop class
-      disableClose: true // Allow closing by clicking outside
+      backdropClass: 'image-dialog-backdrop',
+      disableClose: true
     });
 
     setTimeout(() => {
         dialogRef.disableClose = false;
     }, 0);
-
   }
 }
 
 @Component({
   selector: 'app-image-view-dialog',
   template: `
-    <img [src]="data.imageUrl" [alt]="data.altText || 'Full size image'" class="full-size-image">
+    <div class="image-dialog-wrapper">
+      <img 
+        [src]="data.imageUrl" 
+        [alt]="data.altText || 'Full size image'" 
+        class="full-size-image"
+        loading="lazy"
+      >
+    </div>
   `,
   styles: [`
+    .image-dialog-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+    }
     .full-size-image {
       max-height: 80vh;
       max-width: 80vw;
@@ -80,7 +96,8 @@ export class ImageViewerComponent {
     }
   `],
   standalone: true,
-  imports: [CommonModule]
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 class ImageViewDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { imageUrl: string; altText?: string }) {}

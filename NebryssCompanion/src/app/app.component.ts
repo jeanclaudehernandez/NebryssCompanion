@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { PlayerListComponent } from './player-list/player-list.component';
@@ -35,17 +35,34 @@ import { ThemeService } from './theme.service';
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
     
     <div class="content-area" #contentArea>
-      <app-player-list *ngIf="currentView === 'players'"></app-player-list>
-      <app-bestiary *ngIf="currentView === 'bestiary'"></app-bestiary>
-      <app-items *ngIf="currentView === 'items'"></app-items>
-      <app-shops *ngIf="currentView === 'shops'"></app-shops>
-      <app-lore *ngIf="currentView === 'lore'"></app-lore>
-      <app-locations *ngIf="currentView === 'locations'"></app-locations>
-      <app-talents *ngIf="currentView === 'talents'"></app-talents>
-      <app-mist-effects *ngIf="currentView === 'mistEffects'"></app-mist-effects>
+      @if (currentView === 'players') {
+        <app-player-list></app-player-list>
+      }
+      @if (currentView === 'bestiary') {
+        <app-bestiary></app-bestiary>
+      }
+      @if (currentView === 'items') {
+        <app-items></app-items>
+      }
+      @if (currentView === 'shops') {
+        <app-shops></app-shops>
+      }
+      @if (currentView === 'lore') {
+        <app-lore></app-lore>
+      }
+      @if (currentView === 'locations') {
+        <app-locations></app-locations>
+      }
+      @if (currentView === 'talents') {
+        <app-talents></app-talents>
+      }
+      @if (currentView === 'mistEffects') {
+        <app-mist-effects></app-mist-effects>
+      }
     </div>
   `,
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
   currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' = 'players';
