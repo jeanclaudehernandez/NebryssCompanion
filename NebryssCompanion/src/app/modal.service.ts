@@ -29,6 +29,12 @@ export class ModalService {
 
   close() {
     if (this.modalComponentRef) {
+      // Make sure the DOM element is removed properly
+      const element = this.modalComponentRef.location.nativeElement;
+      if (element && element.parentNode) {
+        element.parentNode.removeChild(element);
+      }
+      
       this.modalComponentRef.destroy();
       this.modalComponentRef = null;
     }

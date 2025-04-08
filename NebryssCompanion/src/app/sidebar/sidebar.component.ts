@@ -26,20 +26,34 @@ export class SidebarComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
+    // Handle sidebar closing
     if (this.isOpen && !this.isClickInside(event)) {
       this.isOpen = false;
     }
+    
+    // Close MatDialog dialogs
     this.matDialog.openDialogs.forEach((dialog) => {
       if(!dialog.disableClose) {
         dialog.close();
       }
     });
+    
+    // Close the modal if user clicked on the overlay or outside of any modal content
+    /*if (!this.isModalClick(event)) {
+      this.modalService.close();
+    }*/
   }
 
   private isClickInside(event: MouseEvent): boolean {
     const clickedInsideSidebar = this.sidebarElement?.nativeElement.contains(event.target as Node);
     const clickedInsideBurger = this.burgerElement?.nativeElement.contains(event.target as Node);
     return clickedInsideSidebar || clickedInsideBurger;
+  }
+
+  private isModalClick(event: MouseEvent): boolean {
+    // Check if click was inside modal content (not on the overlay)
+    const modalContent = document.querySelector('.modal-content');
+    return modalContent?.contains(event.target as Node) || false;
   }
 
   toggleMenu() {
