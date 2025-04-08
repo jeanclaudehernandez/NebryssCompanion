@@ -321,7 +321,7 @@
     "name": "Mandrake Nightfiend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 135,
+    "pr": 126,
     "attributes": {
       "Movement": 7,
       "Wounds": 8,
@@ -353,7 +353,7 @@
     "name": "Mandrake Soulrend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 105,
+    "pr": 110,
     "attributes": {
       "Movement": 7,
       "Wounds": 7,

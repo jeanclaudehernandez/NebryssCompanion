@@ -158,7 +158,7 @@
     "name": "Sister Superior",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 148,
+    "pr": 144,
     "attributes": {
       "Movement": 6,
       "Wounds": 11,
@@ -192,7 +192,7 @@
     "name": "Vigilator",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 136,
+    "pr": 132,
     "attributes": {
       "Movement": 7,
       "Wounds": 10,
@@ -220,7 +220,7 @@
     "name": "Witchseeker",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 116,
+    "pr": 124,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
@@ -249,7 +249,7 @@
     "name": "Inquisitor Alaric Dresdan",
     "faction": "Imperium",
     "subgroup": "Inquisition",
-    "pr": 167,
+    "pr": 163,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
