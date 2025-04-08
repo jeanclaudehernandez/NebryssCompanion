@@ -3,7 +3,10 @@ import playersData from '../assets/players.json';
 import weaponsData from '../assets/weapons.json';
 import itemsData from '../assets/items.json';
 import weaponRulesData from '../assets/weaponRules.json';
-import bestiaryData from '../assets/bestiary.json';
+import imperiumBestiary from '../assets/bestiaryFiles/ImperiumBestiary.json';
+import abyssalCabalBestiary from '../assets/bestiaryFiles/AbyssalCabalBestiary.json';
+import forcesOfNatureBestiary from '../assets/bestiaryFiles/ForcesofnatureBestiary.json';
+import nebryssianBestiary from '../assets/bestiaryFiles/NebryssianLiberationRepublicBestiary.json';
 import shopsData from '../assets/shops.json';
 import itemCategoriesData from '../assets/itemCategories.json';
 import npcsData from '../assets/npcs.json';
@@ -20,7 +23,12 @@ import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, N
 export class DataService {
   private players: Player[] = playersData;
   private weapons: Weapon[] = weaponsData;
-  private bestiary: BestiaryEntry[] = bestiaryData;
+  private bestiary: BestiaryEntry[] = [
+    ...imperiumBestiary,
+    ...abyssalCabalBestiary,
+    ...forcesOfNatureBestiary,
+    ...nebryssianBestiary
+  ];
   private weaponsRules: WeaponRule[] = weaponRulesData;
   private items: Items = itemsData;
   private shops: Shop[] = shopsData;

@@ -1,0 +1,379 @@
+[
+  {
+    "id": 1,
+    "name": "Murloc",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      10,
+      11,
+      40,
+      41
+    ],
+    "abilities": [
+      {
+        "name": "Amphibious Assault",
+        "effect": "1AP: Swim 6 inches through water or mist."
+      },
+      {
+        "name": "Pack Tactics",
+        "effect": "+1 to WS/BS within 3 inches of another Murloc. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash  when within 6 inches of Murloc King."
+      },
+      {
+        "name": "Crab Shell Shield",
+        "effect": "Improve Save by 1. When retaliating, retain one failed attack dice as a success."
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Murloc Tidecaller",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 88,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "spell"
+      ]
+    },
+    "weapons": [
+      12,
+      42
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash when within 6 inches of Murloc King."
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Murloc King",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 146,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "spell",
+        "human"
+      ]
+    },
+    "weapons": [
+      13,
+      43
+    ],
+    "abilities": [
+      {
+        "name": "King’s Command",
+        "effect": "Re-roll attack dice with result of 1 for Murlocs within 6 inches. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Aetherwing",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "name": "Aetherwing Bannerbearer",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 121,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7 over terrain."
+      },
+      {
+        "name": "Banner of Resilience",
+        "effect": "Friendly operatives within 6 inches reduce incoming damage by 1 (to a minimum of 2). ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Aetherwing Flutist",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20,
+      44
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Flute of Fury",
+        "effect": "Friendly operatives within 6 inches gain +1 to WS until the end of the Turning Point. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "name": "Windblast Aetherwing",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 121,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing",
+        "spell"
+      ]
+    },
+    "weapons": [
+      19,
+      44
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 28,
+    "name": "Elder Treant",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 168,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 25,
+      "Save": 3,
+      "APL": 2,
+      "body": [
+        "universal",
+        "plant"
+      ]
+    },
+    "weapons": [
+      60,
+      61
+    ],
+    "abilities": [
+      {
+        "name": "Living Roots",
+        "effect": "1AP: Create a 3-inch hazardous terrain of entangling roots. Enemies moving through become <strong>Entangled</strong>."
+      },
+      {
+        "name": "Bark Armor",
+        "effect": "Reduce incoming damage by 1 (to a minimum of 2). <strong>Critical hits against this operative are scored on unmodified rolls of 5+</strong>.",
+        "prModifier": 5
+      },
+      {
+        "name": "Sylvan Regrowth",
+        "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+2 instead."
+      }
+    ]
+  },
+  {
+    "id": 29,
+    "name": "Mistborn Wisp",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 86,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 8,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "mist",
+        "spirit"
+      ]
+    },
+    "weapons": [
+      62
+    ],
+    "abilities": [
+      {
+        "name": "Mistform",
+        "effect": "Psychic, This operative is always treated as <strong>in Cover while in a mist zone</strong>. Can move through terrain and other operatives."
+      },
+      {
+        "name": "Density Shift",
+        "effect": "Psychic, 1AP: Increase mist density level in a <strong>6-inch</strong> radius for one Turning Point. All operatives in the area are <strong>Obscured</strong>.",
+        "prModifier": 4
+      },
+      {
+        "name": "Ethereal Strike",
+        "effect": "Psychic, Critical hits inflict the <strong>Bleeding</strong> status. If the target is already Bleeding, worsen it to <strong>Corrupted</strong>."
+      }
+    ]
+  },
+  {
+    "id": 30,
+    "name": "Grove Sentinel",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 145,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 18,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "plant"
+      ]
+    },
+    "weapons": [
+      63
+    ],
+    "abilities": [
+      {
+        "name": "Guardian's Call",
+        "effect": "Psychic, Once per battle, <strong>summon 1D3 Sylvan Saplings</strong>  within 6 inches. Saplings activate after this operative."
+      },
+      {
+        "name": "Thorn Burst",
+        "effect": "When this operative is <strong>destroyed</strong>, all enemies <strong>within 3 inches</strong> suffer <strong>1D3</strong> wounds and gain <strong>Bleeding</strong>."
+      }
+    ]
+  },
+  {
+    "id": 31,
+    "name": "Mistborn Leviathan",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 251,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 30,
+      "Save": 2,
+      "APL": 3,
+      "body": [
+        "universal",
+        "mist",
+        "behemoth"
+      ]
+    },
+    "weapons": [
+      64,
+      65
+    ],
+    "abilities": [
+      {
+        "name": "Mist Vortex",
+        "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 5+, they suffer 1 wound.",
+        "prModifier": 3
+      },
+      {
+        "name": "Reality Tear",
+        "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift on a place visible and within 12 inches. Enemies entering or starting their activation roll 1d6, on a <strong>1-5</strong> they suffer result wounds.",
+        "prModifier": 7
+      },
+      {
+        "name": "Unyielding Fog",
+        "effect": "Mist zones within 12 inches cannot be dispersed. All mist effects are treated as Dense density."
+      }
+    ]
+  }
+]

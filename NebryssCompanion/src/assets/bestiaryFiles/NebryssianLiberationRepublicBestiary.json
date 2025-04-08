@@ -1,0 +1,141 @@
+[
+  {
+    "id": 18,
+    "name": "NLR Soldier (Human)",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 76,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      23,
+      1
+    ],
+    "abilities": [
+      {
+        "name": "Mist Resilience",
+        "effect": "In mist zones, gain Cover against ranged attacks."
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "name": "NLR Field Medic",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 83,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      25
+    ],
+    "abilities": [
+      {
+        "name": "Combat Triage",
+        "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3 inches. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "name": "Fellgor Mist Shaman",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Fellgor",
+    "pr": 104,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human",
+        "fellgor",
+        "spell"
+      ]
+    },
+    "weapons": [
+      5,
+      50
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "Psychic, 1AP: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 21,
+    "name": "NLR Sergeant",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 118,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      35,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 22,
+    "name": "T’au Pathfinder",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T’au",
+    "pr": 84,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ]
+  }
+]

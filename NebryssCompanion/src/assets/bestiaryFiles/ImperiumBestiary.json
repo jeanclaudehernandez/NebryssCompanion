@@ -1,0 +1,443 @@
+[
+  {
+    "id": 8,
+    "name": "Intercessor Warrior",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 158,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      33,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "name": "Apothecary Biologis",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 169,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 18,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      9,
+      52
+    ],
+    "abilities": [
+      {
+        "name": "Combat Medicae",
+        "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3 inches."
+      },
+      {
+        "name": "Genetic Augmentation",
+        "effect": "1AP: Friendly operative within 6 inches +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Revitalizing Aura",
+        "effect": "All friendly operatives within 3 inches reduce incoming damage by 1 (to a minimum of 1). ",
+        "prModifier": 7
+      },
+      {
+        "name": "Desperate Charge",
+        "effect": "Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order."
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "name": "Captain Marcus Valen",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 231,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 18,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      15,
+      47
+    ],
+    "abilities": [
+      {
+        "name": "Mistforged Precision",
+        "effect": "Re-roll one attack roll in mist zones."
+      },
+      {
+        "name": "Lancer’s Charge",
+        "effect": "1AP: Free Charge + Fight action. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ]
+  },
+  {
+    "id": 24,
+    "name": "Mini-Terminator",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 72,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 5,
+      "Save": 3,
+      "APL": 1,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      57,
+      56
+    ],
+    "abilities": [
+      {
+        "name": "Terminator Armor",
+        "effect": "Ignore movement penalties from terrain. Reduce damage taken from Blast weapons by 1 (to a min of 1).",
+        "prModifier": 2
+      },
+      {
+        "name": "Overclocked Systems",
+        "effect": "Once per battle: Gain +1 APL for one activation. After this activation, suffer 1 wound.",
+        "prModifier": 1
+      },
+      {
+        "name": "Bulky Frame",
+        "effect": "Cannot climb or perform Dash actions. Enemy operatives cannot move through this operative.",
+        "prModifier": -1
+      }
+    ]
+  },
+  {
+    "id": 32,
+    "name": "Sister Superior",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 148,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 11,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      69,
+      70
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Abomination",
+        "effect": "Enemy operatives within 6 inches cannot use Psychic actions and worsen WS by 1 of <strong>spell</strong> operatives.",
+        "prModifier": 6
+      },
+      {
+        "name": "Silent Judge",
+        "effect": "Once per Turning Point, select an enemy within 12 inches. Until your next activation, all attacks against this target gain +1 WS.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 33,
+    "name": "Vigilator",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 136,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      69
+    ],
+    "abilities": [
+      {
+        "name": "Null Charge",
+        "effect": "If charging a [spell] operative, melee weapons gain accurate 1.",
+        "prModifier": 5
+      }
+    ]
+  },
+  {
+    "id": 34,
+    "name": "Witchseeker",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 116,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      3,
+      71
+    ],
+    "abilities": [
+      {
+        "name": "Cleansing Flame",
+        "effect": "When attacking [spell] operatives, critical hits apply <strong>/3/</strong> status automatically.",
+        "prModifier": 3
+      }
+    ]
+  },
+  {
+    "id": 35,
+    "name": "Inquisitor Alaric Dresdan",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 167,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      69,
+      70
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Dominion",
+        "effect": "1AP: Select visible enemy within 12 inches. Until next activation, their [spell] attacks targeting this operative automatically fail.",
+        "prModifier": 8
+      },
+      {
+        "name": "Inquisitorial Mandate",
+        "effect": "2AP: friendly operatives within 6 inches can immediately perform a free Fight or Shoot action after this operative's activation.",
+        "prModifier": 10
+      }
+    ],
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ]
+  },
+  {
+    "id": 36,
+    "name": "Inquisitorial Body guard",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 114,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      71,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Sanctioned Tactics",
+        "effect": "When within 3 inches of an Inquisitor, improve WS by 1.",
+        "prModifier": 3
+      }
+    ]
+  },
+  {
+    "id": 37,
+    "name": "Daemonhost",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 129,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "daemon",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      72
+    ],
+    "abilities": [
+      {
+        "name": "Bound Wrath",
+        "effect": "Each time this operative suffers wounds, add +1 to its Attack characteristic (max +3). If controller is killed, roll 1D6 each activation - on 1-3 it attacks nearest operative.",
+        "prModifier": -5
+      },
+      {
+        "name": "Warp Flux",
+        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/7/</strong> status.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 38,
+    "name": "Inquisitorial Interrogator",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 123,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      23,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Authority of the Ordos",
+        "effect": "Once per Turning Point, one friendly operative within 6 inches can reroll a failed dice",
+        "prModifier": 3
+      }
+    ],
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ]
+  },
+  {
+    "id": 39,
+    "name": "Inquisitorial Acolyte",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      24,
+      1
+    ],
+    "abilities": [
+      {
+        "name": "Sanctioned Vigilance",
+        "effect": "When within 3 inches of another Inquisitorial Agent, gain +1 to Save rolls",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 40,
+    "name": "Sanctioned Psyker",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 74,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      50
+    ],
+    "abilities": [
+      {
+        "name": "Warp Insight",
+        "effect": "1AP: Roll 1D6 - on 4+ remove change to engange enemies within 12 inches.",
+        "prModifier": 4
+      },
+      {
+        "name": "Unstable Connection",
+        "effect": "When using [spell] weapons, suffer 1 wound on hit rolls of 1",
+        "prModifier": -2
+      }
+    ]
+  }
+]
