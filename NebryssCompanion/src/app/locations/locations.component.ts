@@ -2,7 +2,7 @@ import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { Location, Locations } from '../model';
+import { Location, Locations, Lore } from '../model';
 
 @Component({
   selector: 'app-locations',
@@ -19,6 +19,7 @@ export class LocationsComponent implements OnInit {
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   private readonly STORAGE_KEY = 'selectedLocationName';
+  loreData: Lore | null = null;
   
   constructor(private dataService: DataService) {}
 
@@ -26,6 +27,10 @@ export class LocationsComponent implements OnInit {
     this.dataService.getLocations().subscribe(data => {
       this.locations = data.locations;
       this.loadFromLocalStorage();
+    });
+    
+    this.dataService.getLore().subscribe(data => {
+      this.loreData = data;
     });
   }
 
@@ -64,6 +69,20 @@ export class LocationsComponent implements OnInit {
 
   getLocationsByFaction(factionName: string): Location[] {
     return this.locations.filter(location => location.faction === factionName);
+  }
+
+  getFactionThumbnail(factionName: string): string {
+    if (!this.loreData) return '';
+    
+    const faction = this.loreData.planetOverview.factions.find(
+      faction => faction.name === factionName
+    );
+    
+    return faction?.thumbnail || '';
+  }
+
+  getFactionInitial(faction: string): string {
+    return faction ? faction.charAt(0).toUpperCase() : '';
   }
 
   getUniqueFactions(): string[] {

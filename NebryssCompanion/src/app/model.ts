@@ -211,6 +211,8 @@ export interface AlteredState {
         challenges?: string | string[];
         mistKnowledge?: string;
         naming?: string;
+        image?: string;
+        thumbnail?: string;
         notableIslands?: Array<{
           name: string;
           description?: string;

@@ -5,7 +5,15 @@
     
     <!-- Group locations by faction -->
     <div *ngFor="let faction of getUniqueFactions()" class="faction-section">
-      <h3>{{ faction }}</h3>
+      <div class="faction-header">
+        <div class="faction-emblem sidebar-emblem" *ngIf="getFactionThumbnail(faction)">
+          <img [src]="getFactionThumbnail(faction)" [alt]="faction">
+        </div>
+        <div class="faction-emblem sidebar-emblem text-emblem" *ngIf="!getFactionThumbnail(faction)">
+          {{ getFactionInitial(faction) }}
+        </div>
+        <h3>{{ faction }}</h3>
+      </div>
       <div class="location-cards">
         <div *ngFor="let location of getLocationsByFaction(faction)" 
              class="location-card" 
@@ -27,9 +35,21 @@
   <div class="location-details-container" [class.has-selected-location]="selectedLocation">
     <!-- Main content area showing selected location details -->
     <div class="location-details" *ngIf="selectedLocation">
-      <h2>{{ selectedLocation.name }}
-        <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital of {{ selectedLocation.faction }}</span>
-      </h2>
+      <div class="location-header">
+        <div class="location-title">
+          <h2>{{ selectedLocation.name }}</h2>
+          <div class="location-badges">
+            <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital</span>
+            <div class="faction-emblem" *ngIf="getFactionThumbnail(selectedLocation.faction)">
+              <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction">
+            </div>
+            <div class="faction-emblem text-emblem" *ngIf="!getFactionThumbnail(selectedLocation.faction)">
+              {{ getFactionInitial(selectedLocation.faction) }}
+            </div>
+          </div>
+        </div>
+        <button class="close-btn" (click)="clearSelectedLocation()" aria-label="Close location">×</button>
+      </div>
       
       <div class="location-image" *ngIf="selectedLocation.imgUrl">
         <app-image-viewer 
