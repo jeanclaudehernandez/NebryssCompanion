@@ -1,0 +1,66 @@
+<div class="locations-page" [class.no-location-selected]="!selectedLocation">
+  <!-- Sidebar with location cards -->
+  <div class="locations-sidebar">
+    <h2>Locations of Nebryss</h2>
+    
+    <!-- Group locations by faction -->
+    <div *ngFor="let faction of getUniqueFactions()" class="faction-section">
+      <h3>{{ faction }}</h3>
+      <div class="location-cards">
+        <div *ngFor="let location of getLocationsByFaction(faction)" 
+             class="location-card" 
+             [class.selected]="selectedLocation === location"
+             (click)="selectLocation(location)">
+          <div class="location-card-header">
+            <h4>{{ location.name }}</h4>
+            <span *ngIf="location.isCapital" class="capital-badge">Capital</span>
+          </div>
+          <div class="location-thumb" *ngIf="location.thumbnail">
+            <img [src]="location.thumbnail" [alt]="location.name">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Container for location details that will be hidden in mobile when no location selected -->
+  <div class="location-details-container" [class.has-selected-location]="selectedLocation">
+    <!-- Main content area showing selected location details -->
+    <div class="location-details" *ngIf="selectedLocation">
+      <h2>{{ selectedLocation.name }}
+        <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital of {{ selectedLocation.faction }}</span>
+      </h2>
+      
+      <div class="location-image" *ngIf="selectedLocation.imgUrl">
+        <app-image-viewer 
+          [imageUrl]="selectedLocation.imgUrl"
+          [thumbnailUrl]="selectedLocation.thumbnail"
+          [altText]="selectedLocation.name">
+        </app-image-viewer>
+      </div>
+      
+      <div class="location-description">
+        <h3>Description</h3>
+        <p>{{ selectedLocation.description }}</p>
+      </div>
+      
+      <div class="notable-features" *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
+        <h3>Notable Features</h3>
+        <div class="features-list">
+          <div *ngFor="let feature of selectedLocation.notableFeatures" class="feature-item">
+            <h4>{{ feature.name }}</h4>
+            <p>{{ feature.description }}</p>
+            <div *ngIf="feature.owner" class="feature-owner">
+              <em>Owner: {{ feature.owner }}</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Empty state when no location is selected -->
+    <div class="location-empty-state" *ngIf="!selectedLocation">
+      <p>Select a location from the sidebar to view details</p>
+    </div>
+  </div>
+</div> 

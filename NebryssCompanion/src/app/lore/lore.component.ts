@@ -4,7 +4,7 @@ import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
-import { Lore, ScrollSection } from '../model';
+import { Lore, ScrollSection, Locations, Location } from '../model';
 
 @Component({
   selector: 'app-lore',
@@ -22,6 +22,7 @@ import { Lore, ScrollSection } from '../model';
 })
 export class LoreComponent {
   loreData!: Lore;
+  locationsData!: Locations;
   loreSections: {
     title: string,
     content: any,
@@ -37,8 +38,6 @@ export class LoreComponent {
     'challenges',
     'mistKnowledge',
     'peopleIdentity',
-    'capital',
-    'notableIslands',
     'control',
     'role',
     'notableOrganizations'
@@ -55,8 +54,10 @@ export class LoreComponent {
   ngOnInit() {
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
-      this.prepareLoreSections();
-      
+      this.dataService.getLocations().subscribe(locations => {
+        this.locationsData = locations;
+        this.prepareLoreSections();
+      });
     });
   }
 
@@ -66,6 +67,25 @@ export class LoreComponent {
 
   isProhibitedSection(section: string) {
     return !!this.prohibitedSections.find((prohibited) => prohibited == section);
+  }
+
+  getLocationsByFaction(factionName: string): Location[] {
+    if (!this.locationsData?.locations) return [];
+    return this.locationsData.locations.filter(location => location.faction === factionName);
+  }
+
+  getFactionCapital(factionName: string): Location | undefined {
+    if (!this.locationsData?.locations) return undefined;
+    return this.locationsData.locations.find(location => 
+      location.faction === factionName && location.isCapital
+    );
+  }
+
+  getFactionIslands(factionName: string): Location[] {
+    if (!this.locationsData?.locations) return [];
+    return this.locationsData.locations.filter(location => 
+      location.faction === factionName && !location.isCapital
+    );
   }
 
   prepareLoreSections() {

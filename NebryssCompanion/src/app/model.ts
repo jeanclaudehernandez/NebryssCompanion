@@ -10,6 +10,25 @@ export interface AlteredState {
     quant: number;
   }
 
+  // locations.ts
+  export interface Location {
+    name: string;
+    description: string;
+    imgUrl?: string;
+    thumbnail?: string;
+    faction: string;
+    isCapital: boolean;
+    notableFeatures?: Array<{
+      name: string;
+      description: string;
+      owner?: string;
+    }>;
+  }
+
+  export interface Locations {
+    locations: Location[];
+  }
+
   export interface Character {
     id: number;
     name: string;

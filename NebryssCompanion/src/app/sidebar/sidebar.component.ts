@@ -15,7 +15,7 @@ export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects'>();
   isOpen = false;
 
   constructor(
@@ -60,7 +60,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'talents' | 'mistEffects') {
+  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }

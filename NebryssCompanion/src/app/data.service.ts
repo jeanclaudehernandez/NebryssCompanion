@@ -11,11 +11,12 @@ import shopsData from '../assets/shops.json';
 import itemCategoriesData from '../assets/itemCategories.json';
 import npcsData from '../assets/npcs.json';
 import loreData from '../assets/lore.json';
+import locationsData from '../assets/locations.json';
 import talentsData from '../assets/talents.json';
 import alteredStatesData from '../assets/alteredStates.json';
 import mistEffectsData from '../assets/mistEffects.json';
 import { Observable, of } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations } from './model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,7 @@ export class DataService {
   private talents: TalentCategory[] = talentsData;
   private alteredStates: AlteredState[] = alteredStatesData;
   private lore: Lore = loreData;
+  private locations: Locations = locationsData;
   private mistEffects = mistEffectsData.mistEffects;
 
   constructor() { }
@@ -75,6 +77,10 @@ export class DataService {
 
   getLore(): Observable<Lore> {
     return of(this.lore);
+  }
+
+  getLocations(): Observable<Locations> {
+    return of(this.locations);
   }
 
   getTalents(): Observable<TalentCategory[]> {

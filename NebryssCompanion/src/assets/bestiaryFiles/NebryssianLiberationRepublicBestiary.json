@@ -1,7 +1,7 @@
 [
   {
     "id": 18,
-    "name": "NLR Soldier (Human)",
+    "name": "NLR Soldier",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
     "pr": 76,
@@ -113,9 +113,9 @@
   },
   {
     "id": 22,
-    "name": "T’au Pathfinder",
+    "name": "T'au Pathfinder",
     "faction": "Nebryssian Liberation Republic",
-    "subgroup": "T’au",
+    "subgroup": "T'au",
     "pr": 84,
     "attributes": {
       "Movement": 6,
@@ -131,6 +131,66 @@
       27
     ],
     "abilities": [
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 41,
+    "name": "NLR Mistborn Soldier",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 116,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      2,
+      24
+    ],
+    "abilities": [
+      {
+        "name": "Mistborn Reflexes",
+        "effect": "Gain +1 Save when in mist zones. Can dash through light terrain.",
+        "prModifier": 5
+      }
+    ]
+  },
+  {
+    "id": 42,
+    "name": "T'au Mist Pathfinder",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 139,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      38
+    ],
+    "abilities": [
+      {
+        "name": "Mist Synergy",
+        "effect": "Allies within 6 inches gain Mist-Accuracy rule when shooting targets in mist",
+        "prModifier": 3
+      },
       {
         "name": "Markerlight",
         "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",

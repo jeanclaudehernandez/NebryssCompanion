@@ -1,0 +1,102 @@
+{
+  "locations": [
+    {
+      "name": "Fortress Sanctus",
+      "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
+      "imgUrl": "https://iili.io/3R2BjZ7.jpg",
+      "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
+      "faction": "The Imperium of Man",
+      "isCapital": true,
+      "notableFeatures": [
+        {
+          "name": "Cathedral of the Emperor's Light",
+          "description": "A towering cathedral that serves as the spiritual center of Imperial control on Nebryss, where devotion to the Emperor is maintained with zealous fervor."
+        },
+        {
+          "name": "Command Citadel",
+          "description": "The military headquarters of Imperial forces, where campaign plans are drafted and orders are dispatched to forces across the region."
+        }
+      ]
+    },
+    {
+      "name": "Stormwatch",
+      "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
+      "imgUrl": "https://iili.io/3R2BhjS.jpg",
+      "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
+      "faction": "The Imperium of Man",
+      "isCapital": false
+    },
+    {
+      "name": "Zephyria",
+      "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
+      "imgUrl": "https://iili.io/3R2BOGe.jpg",
+      "thumbnail": "https://iili.io/3R2BOGe.th.jpg",
+      "faction": "The Gilded Accord",
+      "isCapital": true,
+      "notableFeatures": [
+        {
+          "name": "Sky Bazaar",
+          "description": "A sprawling, multi-tiered marketplace where all factions trade."
+        },
+        {
+          "name": "Mistforge",
+          "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
+        },
+        {
+          "name": "Anchorforge's Drydock",
+          "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it's a hub for sailors, traders, and explorers.",
+          "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
+        },
+        {
+          "name": "The Stoutbarrel Tavern",
+          "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
+          "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
+        }
+      ]
+    },
+    {
+      "name": "Luminos",
+      "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture.",
+      "imgUrl": "",
+      "thumbnail": "",
+      "faction": "The Gilded Accord",
+      "isCapital": false
+    },
+    {
+      "name": "Maledictum Prime",
+      "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
+      "imgUrl": "https://iili.io/3R2BXu2.jpg",
+      "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
+      "faction": "The Abyssal Cabal",
+      "isCapital": true,
+      "notableFeatures": [
+        {
+          "name": "The Veilrend Spire",
+          "description": "A towering obsidian monolith at Maledictum Prime's heart, where the Cabal conducts warp rituals to harness the mist's power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
+        }
+      ]
+    },
+    {
+      "name": "Misthaven",
+      "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
+      "imgUrl": "https://iili.io/3RFipWB.jpg",
+      "thumbnail": "https://iili.io/3RFipWB.th.jpg",
+      "faction": "The Nebryssian Liberation Republic",
+      "isCapital": true,
+      "notableFeatures": [
+        {
+          "name": "The Veiled Citadel",
+          "description": "The NLR's central stronghold, camouflaged within the mist and accessible only to those who know the secret paths."
+        },
+        {
+          "name": "The Mistweaver's Grove",
+          "description": "A sacred grove where Mistweavers commune with the mist, drawing power from its enigmatic energies."
+        },
+        {
+          "name": "The Silent Market",
+          "description": "A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence."
+        }
+      ]
+    }
+  ]
+} 

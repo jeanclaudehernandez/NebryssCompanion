@@ -20,7 +20,7 @@
           "physicalCoins": "Used in less advanced settlements, remote islands, and areas where digital infrastructure is unreliable.",
           "digitalTransactions": "In technologically advanced areas like Zephyria, some places even have banks and can handle digital transactions, allowing for seamless trade and high-value exchanges."
         },
-        "culturalSignificance": "The coin symbolizes the interconnectedness of Nebryss’s factions and the importance of the mist in shaping the planet’s economy."
+        "culturalSignificance": "The coin symbolizes the interconnectedness of Nebryss's factions and the importance of the mist in shaping the planet's economy."
       },
       "mistEffects": {
         "densityLevels": {
@@ -29,7 +29,7 @@
         },
         "navigation": "Ships primarily fly above the mist but can dip below for tactical or emergency reasons (extremely dangerous).",
         "mistWeavingTechnology": {
-          "overview": "Mist-weaving is an ancient and mystical practice unique to the Nebryssian Liberation Republic, rooted in the planet’s connection to the enigmatic mist.",
+          "overview": "Mist-weaving is an ancient and mystical practice unique to the Nebryssian Liberation Republic, rooted in the planet's connection to the enigmatic mist.",
           "howItWorks": {
             "ritualsAndSacrifice": "Mist-weaving requires elaborate rituals, often involving chants, offerings, and the use of sacred artifacts.",
             "temporaryMistZones": {
@@ -39,7 +39,7 @@
             "limitations": "Mist-weaving is a slow and laborious process, requiring significant time and resources."
           },
           "limitationsAndRisks": {
-            "psychicStrain": "Mist-weaving takes a heavy toll on the Mistweaver’s mind and body.",
+            "psychicStrain": "Mist-weaving takes a heavy toll on the Mistweaver's mind and body.",
             "culturalSecrecy": "The NLR guards mist-weaving technology fiercely, ensuring that no other faction can replicate it."
           },
           "culturalSignificance": "Mist-weaving is central to NLR identity, symbolizing their connection to the planet and their ancestors."
@@ -49,7 +49,7 @@
         "flyingShipsAndMistEngines": {
           "description": "The backbone of Nebryssian civilization.",
           "mistEngines": {
-            "gildedAccordsRole": "The Accord’s Mistforges in Zephyria and Luminos produce roughly 40% of all mist engines on Nebryss.",
+            "gildedAccordsRole": "The Accord's Mistforges in Zephyria and Luminos produce roughly 40% of all mist engines on Nebryss.",
             "otherFactions": "The remaining 60% of mist engines are produced by other factions or independent manufacturers."
           },
           "optimizationCategories": {
@@ -79,21 +79,7 @@
           "goals": ["Conquer and bring Nebryss into full compliance."],
           "challenges": "Struggles with supply lines due to its remote location.",
           "mistKnowledge": "Some within the Imperium know of its warp origins, but this information is heavily censored.",
-          "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture.",
-          "notableIslands": [
-            {
-              "name": "Fortress Sanctus",
-              "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
-              "imgUrl": "https://iili.io/3R2BjZ7.jpg",
-              "thumbnail":"https://iili.io/3R2BjZ7.th.jpg"
-            },
-            {
-              "name": "Stormwatch",
-              "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
-              "imgUrl": "https://iili.io/3R2BhjS.jpg",
-              "thumbnail":"https://iili.io/3R2BhjS.th.jpg"
-            }
-          ]
+          "naming": "Calls the planet 'Nebris Alpha,' disregarding local culture."
         },
         {
           "name": "The Gilded Accord",
@@ -102,39 +88,6 @@
           "neutrality": "Profits from the war by selling weapons and mist engines to all factions.",
           "peopleIdentity": "People refer to themselves by their home island (e.g., Zephyrians from Zephyria).",
           "goals": ["Maintain Status as top trading faction", "Keep the war going"],
-          "capital": {
-            "name": "Zephyria",
-            "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
-            "imgUrl": "https://iili.io/3R2BOGe.jpg",
-            "thumbnail":"https://iili.io/3R2BOGe.th.jpg",
-            "notableFeatures": [
-              {
-                "name": "Sky Bazaar",
-                "description": "A sprawling, multi-tiered marketplace where all factions trade."
-              },
-              {
-                "name": "Mistforge",
-                "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
-              },
-              {
-                "name": "Anchorforge’s Drydock",
-                "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers.",
-                "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
-              },
-              {
-                "name": "The Stoutbarrel Tavern",
-                "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
-                "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
-              }
-            ]
-          },
-          "notableIslands": [
-            {
-              "name": "Luminos",
-              "imgUrl": "",
-              "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture."
-            }
-          ],
           "iconography": "Golden spires, flowing mist patterns, symbols of wind and wealth.",
           "notableOrganizations": [
             {
@@ -149,53 +102,21 @@
           "role": "A Chaos-worshipping faction seeking to harness the true power of the mist.",
           "goals": ["Bring full warp corruption over Nebryss and harness the power of the mist.", "Destruction of the Imperium of Man"],
           "recruitment": "Filled with exiles and heretics from other factions.",
-          "mistKnowledge": "Fully understands the mist’s warp nature and seeks to exploit it.",
-          "iconography": "Generic Chaos-worshipping symbols.",
-          "capital": {
-            "name": "Maledictum Prime",
-            "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-            "imgUrl": "https://iili.io/3R2BXu2.jpg",
-            "thumbnail":"https://iili.io/3R2BXu2.th.jpg",
-            "notableFeatures": [
-              {
-                "name": "The Veilrend Spire",
-                "description": "A towering obsidian monolith at Maledictum Prime’s heart, where the Cabal conducts warp rituals to harness the mist’s power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
-              }
-            ]
-          }
+          "mistKnowledge": "Fully understands the mist's warp nature and seeks to exploit it.",
+          "iconography": "Generic Chaos-worshipping symbols."
         },
         {
           "name": "The Nebryssian Liberation Republic",
           "control": "20%",
-          "role": "A resistance force fighting for the planet’s independence.",
+          "role": "A resistance force fighting for the planet's independence.",
           "mistKnowledge": "Believes mist-weaving is partly magical and a connection to their ancestors.",
           "mistweavers": "Shamans who unknowingly channel the mist to create new mist zones at the cost of their lives.",
           "peopleIdentity": "Proudly call themselves Nebryssians, seeing themselves as the true inheritors of the planet.",
           "iconography": "Animals, plants, mist symbols, and freedom imagery (broken chains, doves, open hands).",
-          "capital": {
-            "name": "Misthaven",
-            "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
-            "imgUrl": "https://iili.io/3RFipWB.jpg",
-            "thumbnail": "https://iili.io/3RFipWB.th.jpg",
-            "keyFeatures": [
-              {
-                "name": "The Veiled Citadel",
-                "description": "The NLR’s central stronghold, camouflaged within the mist and accessible only to those who know the secret paths."
-              },
-              {
-                "name": "The Mistweaver’s Grove",
-                "description": "A sacred grove where Mistweavers commune with the mist, drawing power from its enigmatic energies."
-              },
-              {
-                "name": "The Silent Market",
-                "description": "A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence."
-              }
-            ]
-          },
           "goals": [
-            "Secure Nebryss’s independence from all external forces.",
+            "Secure Nebryss's independence from all external forces.",
             "Protect and expand their mist-weaving knowledge.",
-            "Unite the planet’s factions under a banner of freedom."
+            "Unite the planet's factions under a banner of freedom."
           ],
           "challenges": [
             "Constant pressure from the Imperium and Abyssal Cabal.",
@@ -212,7 +133,7 @@
           "culture": "The Corsairs are a loose coalition of independent captains, each with their own agenda.",
           "baseOfOperations": "The Corsairs have no permanent base, operating from hidden coves, abandoned islands, and their own ships.",
           "fleetComposition": [
-            "The Corsairs’ fleets are small and agile, consisting of fast raiders and heavily armed flagships.",
+            "The Corsairs' fleets are small and agile, consisting of fast raiders and heavily armed flagships.",
             "Ships are often modified with mist-resistant technology, allowing them to navigate denser mist zones and evade pursuit."
           ]
         }
@@ -228,19 +149,19 @@
       "storyHooks": [
         {
           "name": "The Sky Bazaar Conspiracy",
-          "premise": "A hidden conspiracy within the Gilded Accord’s Sky Bazaar threatens to destabilize the faction.",
+          "premise": "A hidden conspiracy within the Gilded Accord's Sky Bazaar threatens to destabilize the faction.",
           "keyElements": "Hidden alliances, double-crossing informants, moral dilemmas.",
           "potentialImpact": "Shifts the balance of power and marks the players as influential disruptors."
         },
         {
-          "name": "The Corsair’s Gambit",
+          "name": "The Corsair's Gambit",
           "premise": "The Crimson Corsairs plan a daring coup to seize control of a crucial mist trade route hub.",
           "keyElements": "Ambush and infiltration, uncertain loyalties, consequences of power.",
-          "potentialImpact": "Creates a new power player or weakens the Corsairs, depending on the players’ actions."
+          "potentialImpact": "Creates a new power player or weakens the Corsairs, depending on the players' actions."
         },
         {
           "name": "The Mistforge Sabotage",
-          "premise": "Mysterious malfunctions and acts of sabotage threaten to cripple the Gilded Accord’s Mistforge.",
+          "premise": "Mysterious malfunctions and acts of sabotage threaten to cripple the Gilded Accord's Mistforge.",
           "keyElements": "Intrigue, multiple suspects, race against time.",
           "potentialImpact": "Weakens the Accord or hands an advantage to a rival faction."
         }
@@ -266,10 +187,10 @@
         },
         {
           "name": "Inquisitorial Showdown",
-          "description": "Veyra Mortis and Alaric Dresdan’s conflict escalates into a full-blown shadow war."
+          "description": "Veyra Mortis and Alaric Dresdan's conflict escalates into a full-blown shadow war."
         },
         {
-          "name": "The Mist’s Awakening",
+          "name": "The Mist's Awakening",
           "description": "The mist becomes unstable, threatening to engulf the planet unless the players intervene."
         }
       ]

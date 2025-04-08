@@ -9,7 +9,14 @@
                 [altText]="section.title"
             ></app-image-viewer>
         </div>
-        <div class="player-card" *ngIf="section.title !== 'Factions'" [innerHTML]="formatLoreContent(section.content)"></div>
+        <div class="player-card" *ngIf="section.title !== 'Factions' && section.title !== 'Locations'" [innerHTML]="formatLoreContent(section.content)"></div>
+        
+        <!-- Locations Section -->
+        <div *ngIf="section.title === 'Locations'" class="locations-container" style="display: none;">
+          <!-- Content removed - now in separate Locations view -->
+        </div>
+        
+        <!-- Factions Section -->
         <div *ngIf="section.title === 'Factions'" class="factions-container">
             <div *ngFor="let faction of section.content.factions" class="faction-card" [id]="factionScrollId(faction)">
             <h3>{{faction.name}} (Controls {{faction.control}})</h3>
@@ -52,62 +59,39 @@
                     </div>
                 </ng-container>
 
-                <div class="faction-info" *ngIf="faction.capital">
+                <!-- Capital Section from Locations -->
+                <div class="faction-info" *ngIf="getFactionCapital(faction.name)">
                     <h4>Capital</h4>
-                    <p><strong>{{faction.capital.name}}</strong>: {{faction.capital.description}}</p>
-                    <app-image-viewer 
-                        *ngIf="faction.capital.imgUrl"
-                        [imageUrl]="faction.capital.imgUrl"
-                        [thumbnailUrl]="faction.capital.thumbnail"
-                        [altText]="faction.capital.name"
-                    ></app-image-viewer>
-                    <div *ngIf="faction.capital.notableFeatures" class="sub-features">
-                    <h5>Notable Features:</h5>
-                    <ul>
-                        <li *ngFor="let feature of faction.capital.notableFeatures">
-                        <strong>{{feature.name}}</strong>: {{feature.description}}
-                        <div *ngIf="feature.shops" class="shops-list">
-                            <h6>Shops:</h6>
-                            <ul>
-                            <li *ngFor="let shop of feature.shops">
-                                <strong>{{shop.name}}</strong> - {{shop.description}}<br>
-                                <em>Owner: {{shop.owner}}</em>
-                            </li>
-                            </ul>
-                        </div>
-                        </li>
-                    </ul>
-                    </div>
+                    <ng-container *ngIf="getFactionCapital(faction.name) as capital">
+                        <p><strong>{{capital.name}}</strong>: {{capital.description}}</p>
+                        <app-image-viewer 
+                            *ngIf="capital.imgUrl"
+                            [imageUrl]="capital.imgUrl"
+                            [thumbnailUrl]="capital.thumbnail"
+                            [altText]="capital.name"
+                        ></app-image-viewer>
+                        <!-- Notable features removed from lore view as requested -->
+                    </ng-container>
                 </div>
                 
-                <div class="faction-info" *ngIf="faction.notableIslands">
-                    <h4>Notable Islands</h4>
-                    <div class="island-entry" *ngFor="let island of faction.notableIslands; let last = last;">
-                        <app-image-viewer 
-                            *ngIf="island.imgUrl"
-                            [imageUrl]="island.imgUrl"
-                            [thumbnailUrl]="island.thumbnail"
-                            [altText]="island.name"
-                        ></app-image-viewer>
-                        <strong>{{island.name}}</strong>: {{island.description}}
-                        <hr *ngIf="!last">
-                    </div>
-                </div>
+                <!-- Notable Islands Section - Removed as it now appears in its own view -->
+                <div class="faction-info" *ngIf="false && getFactionIslands(faction.name).length > 0">
+                    <!-- Content removed - now in separate Locations view -->
                 </div>
 
                 <div class="faction-info" *ngIf="faction.notableOrganizations">
                     <h4>Notable Organizations</h4>
                     <ul>
                         <li *ngFor="let organization of faction.notableOrganizations">
-                            <strong>{{organization.name}}</strong>
-                            <em>{{organization.description}}</em>
+                            <strong>{{organization.name}}</strong>: 
+                            {{organization.description}}
                         </li>
                     </ul>
                 </div>
             </div>
+            </div>
         </div>
       </ng-container>
-      
     </div>
   </div>
 
