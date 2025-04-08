@@ -4,6 +4,7 @@
     border-radius: 4px;
     padding: 1rem;
     overflow-x: auto;
+    transition: border-color 0.3s;
 }
 
 .items-table {
@@ -17,11 +18,13 @@
     padding: 0.75rem;
     /*text-align: left;*/
     border-bottom: 2px solid #ddd;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
 
 .items-table td {
     padding: 0.5rem;
     border-bottom: 1px solid #eee;
+    transition: border-color 0.3s;
 }
 
 .items-table tr:last-child td {
@@ -30,11 +33,13 @@
 
 .in-inventory {
     background-color: #e8f5e9;  /* Light green background */
+    transition: background-color 0.3s;
 }
 
 h3 {
     margin-top: 0;
     color: #2c3e50;
+    transition: color 0.3s;
 }
 
 /* Inventory management buttons */
@@ -55,6 +60,7 @@ h3 {
     cursor: pointer;
     font-weight: bold;
     font-size: 1rem;
+    transition: background-color 0.3s;
 }
 
 .btn-add {
@@ -73,4 +79,33 @@ h3 {
 
 .btn-remove:hover {
     background-color: #d32f2f;
+}
+
+/* Dark Theme Styles */
+body.dark-theme .table-container {
+    border-color: #444;
+    background-color: #1f1f1f;
+}
+
+body.dark-theme .items-table th {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .items-table td {
+    border-bottom-color: #444;
+    color: #e0e0e0;
+}
+
+body.dark-theme .items-table tr {
+    color: #e0e0e0;
+}
+
+body.dark-theme .items-table tr.in-inventory {
+    background-color: #0d2015;
+}
+
+body.dark-theme h3 {
+    color: #e0e0e0;
 }

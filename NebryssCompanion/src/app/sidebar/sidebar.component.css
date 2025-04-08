@@ -130,3 +130,65 @@
   .btn-confirm:hover {
     background-color: #c0392b;
   }
+
+  .theme-switch {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-top: 16px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    position: absolute;
+    bottom: 20px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .theme-switch:hover {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .theme-icon {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+
+  .theme-text {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  body.dark-theme .sidebar {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  body.dark-theme .burger-menu {
+    color: #e0e0e0;
+    background-color: #1f1f1f;
+  }
+
+  body.dark-theme .menu-item:hover {
+    background-color: #2d2d2d;
+  }
+
+  body.dark-theme .update-button {
+    background-color: #2d2d2d;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+
+  body.dark-theme .update-button:hover {
+    background-color: #3d3d3d;
+  }
+
+  body.dark-theme .theme-switch {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  body.dark-theme .theme-switch:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }

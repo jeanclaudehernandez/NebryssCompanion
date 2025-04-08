@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component, Inject } from "@angular/core";
+import { Component, Inject, ViewEncapsulation } from "@angular/core";
 import { MAT_DIALOG_DATA } from "@angular/material/dialog";
 import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
 
@@ -17,6 +17,10 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
       max-width: 400px;
     }
 
+    body.dark-theme .modal-rule-content {
+      background-color: #333;
+    }
+
     .modal-rule-content h3 {
       margin-top: 0;
       color: #333;
@@ -29,7 +33,8 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
     }
   `],
   standalone: true,
-  imports: [CommonModule, SanitizeHtmlPipe]
+  imports: [CommonModule, SanitizeHtmlPipe],
+  encapsulation: ViewEncapsulation.None
 })
 export class WeaponRuleDialogComponent {
   constructor(@Inject(MAT_DIALOG_DATA) public data: { rule: {name: string, description: string}}) {

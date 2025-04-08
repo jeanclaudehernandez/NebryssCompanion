@@ -1,19 +1,22 @@
 // bestiary.component.ts
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
 import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule } from '../model';
+import { ThemeService } from '../theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-bestiary',
   standalone: true,
   imports: [CommonModule, FormsModule, PlayerDetailComponent],
   templateUrl: './bestiary.component.html',
-  styleUrls: ['./bestiary.component.css']
+  styleUrls: ['./bestiary.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class BestiaryComponent implements OnInit {
+export class BestiaryComponent implements OnInit, OnDestroy {
   @ViewChild('mobDetailContainer') mobDetailContainer!: ElementRef;
   bestiary: BestiaryEntry[] = [];
   selectedCreatureId: number | null = null;
@@ -27,10 +30,19 @@ export class BestiaryComponent implements OnInit {
   weaponsData: Weapon[] = [];
   weaponRulesData: WeaponRule[] = [];
   alteredStates: AlteredState[] = [];
+  isDarkMode: boolean = false;
+  private themeSubscription: Subscription = new Subscription();
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
+    this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
+      this.isDarkMode = isDark;
+    });
+    
     this.dataService.getAllData().subscribe(response => {
       this.bestiary = response.bestiary;
       this.itemsData = response.items;
@@ -66,6 +78,10 @@ export class BestiaryComponent implements OnInit {
 
       console.log(this.dataService.validateBestiaryPR().filter((creature) => creature.calculatedPR != creature.currentPR));
     });
+  }
+
+  ngOnDestroy() {
+    this.themeSubscription.unsubscribe();
   }
 
   private getUniqueValues(array: any[], property: string): string[] {

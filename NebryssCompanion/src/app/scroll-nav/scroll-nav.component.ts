@@ -1,5 +1,5 @@
 import { NgFor } from '@angular/common';
-import { Component, Input, Output, EventEmitter, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, HostListener, ViewEncapsulation } from '@angular/core';
 import { ScrollSection } from '../model';
 
 @Component({
@@ -7,7 +7,8 @@ import { ScrollSection } from '../model';
   standalone: true,
   imports: [NgFor],
   templateUrl: './scroll-nav.component.html',
-  styleUrls: ['./scroll-nav.component.css']
+  styleUrls: ['./scroll-nav.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class ScrollNavComponent {
   @Input() sections: ScrollSection[] = [];

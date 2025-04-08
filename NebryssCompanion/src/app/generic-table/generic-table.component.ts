@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
@@ -40,7 +40,8 @@ import { ToastService } from '../toast.service';
       </div>
     </div>
   `,
-  styleUrls: ['./generic-table.component.css']
+  styleUrls: ['./generic-table.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class GenericTableComponent implements OnInit {
   @Input() data: any[] = [];

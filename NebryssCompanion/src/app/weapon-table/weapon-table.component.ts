@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input,TemplateRef, SimpleChanges, OnChanges, ViewChild } from '@angular/core';
+import { Component, Input, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
 import { ModalService } from '../modal.service';
@@ -23,7 +23,8 @@ interface ruleDisplay {
     WeaponRangePipe,
   ],
   templateUrl: './weapon-table.component.html',
-  styleUrls: ['./weapon-table.component.css']
+  styleUrls: ['./weapon-table.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class WeaponTableComponent implements OnChanges {
   @Input() weaponIds: number[] = [];

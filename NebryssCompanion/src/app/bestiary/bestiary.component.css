@@ -3,12 +3,14 @@
     padding: 20px;
     background: #f5f5f5;
     border-radius: 8px;
+    transition: background-color 0.3s, color 0.3s;
 }
 
 select {
     padding: 8px;
     margin-top: 10px;
     width: 300px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
 }
 
 .filter-group {
@@ -17,6 +19,7 @@ select {
     background: #fff;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
   }
   
   label {
@@ -24,6 +27,7 @@ select {
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
+    transition: color 0.3s;
   }
   
 select {
@@ -33,4 +37,24 @@ select {
     border-radius: 4px;
     background: white;
     font-size: 14px;
+}
+
+/* Dark Theme Styles */
+body.dark-theme .bestiary-select-container {
+    background: #1f1f1f;
+}
+
+body.dark-theme .filter-group {
+    background: #2d2d2d;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+body.dark-theme label {
+    color: #e0e0e0;
+}
+
+body.dark-theme select {
+    border-color: #444;
+    background: #333;
+    color: #e0e0e0;
 }

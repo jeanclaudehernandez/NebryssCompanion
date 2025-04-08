@@ -4,6 +4,7 @@
   margin: 1rem 0;
   border: 1px solid #ddd;
   border-radius: 4px;
+  transition: border-color 0.3s;
 }
 
 .weapons-table {
@@ -21,11 +22,13 @@
   /*text-align: left;*/
   border-bottom: 2px solid #ddd;
   z-index: 2; /* Ensures header stays above table but below tooltips */
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
 }
   
 .weapons-table td {
   padding: 0.5rem;
   border-bottom: 1px solid #eee;
+  transition: border-color 0.3s;
 }
   
 .weapons-table tr:last-child td {
@@ -34,6 +37,7 @@
 
 .in-inventory {
     background-color: #e8f5e9;  /* Light green background */
+    transition: background-color 0.3s;
 }
   
 .rule-text {
@@ -65,22 +69,11 @@
     color: #007bff;
     cursor: pointer;
     border-bottom: 1px dotted #007bff;
+    transition: color 0.3s, border-color 0.3s;
 }
 
 .rule-text:hover {
     color: #0056b3;
-}
-
-.rule-description {
-    display: none;
-    position: absolute;
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 0.75rem;
-    z-index: 1000;
-    max-width: 300px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .inventory-actions {
@@ -100,6 +93,7 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
+  transition: background-color 0.3s;
 }
 
 .btn-add {
@@ -118,4 +112,58 @@
 
 .btn-remove:hover {
   background-color: #d32f2f;
+}
+
+/* Dark Theme Styles */
+body.dark-theme .table-container {
+  border-color: #444;
+  background-color: #1f1f1f;
+}
+
+body.dark-theme .weapons-table th {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-bottom-color: #444;
+}
+
+body.dark-theme .weapons-table td {
+  border-bottom-color: #444;
+  color: #e0e0e0;
+}
+
+body.dark-theme .weapons-table tr {
+  color: #e0e0e0;
+}
+
+body.dark-theme .in-inventory {
+  background-color: #0d2015 !important;  /* Darker green background for dark mode */
+}
+
+body.dark-theme tr.in-inventory td {
+  background-color: #0d2015;
+  color: #e0e0e0;
+}
+
+body.dark-theme .weapons-table tr.in-inventory {
+  background-color: #0d2015;
+}
+
+body.dark-theme .rule-text {
+  color: #64b5f6;
+  border-bottom-color: #64b5f6;
+}
+
+body.dark-theme .rule-text:hover {
+  color: #90caf9;
+}
+
+body.dark-theme .rule-description {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  border-color: #444;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+
+body.dark-theme .weapon-row {
+  background-color: #1f1f1f;
 }

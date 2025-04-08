@@ -3,6 +3,7 @@ import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener, T
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateService } from '../update.service';
 import { ModalService } from '../modal.service';
+import { ThemeService } from '../theme.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -17,12 +18,18 @@ export class SidebarComponent {
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects'>();
   isOpen = false;
+  isDarkMode = false;
 
   constructor(
     private matDialog: MatDialog,
     public updateService: UpdateService,
-    private modalService: ModalService
-  ) {}
+    private modalService: ModalService,
+    public themeService: ThemeService
+  ) {
+    this.themeService.darkMode$.subscribe(isDark => {
+      this.isDarkMode = isDark;
+    });
+  }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
@@ -81,5 +88,9 @@ export class SidebarComponent {
     };
     
     this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
+  }
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }

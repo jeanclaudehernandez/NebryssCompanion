@@ -16,6 +16,11 @@
       <button class="update-button" (click)="forceUpdate()">Force Update</button>
       <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Force Update & Clean Storage</button>
     </div>
+    
+    <div class="theme-switch" (click)="toggleTheme()">
+      <span class="theme-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
+      <span class="theme-text">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+    </div>
   </div>
 </nav>
 

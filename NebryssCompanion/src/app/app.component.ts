@@ -12,6 +12,7 @@ import { LoreComponent } from './lore/lore.component';
 import { LocationsComponent } from './locations/locations.component';
 import { TalentsComponent } from './talents/talents.component';
 import { MistEffectsComponent } from './mist-effects/mist-effects.component';
+import { ThemeService } from './theme.service';
 
 @Component({
   selector: 'app-root',
@@ -49,7 +50,7 @@ import { MistEffectsComponent } from './mist-effects/mist-effects.component';
 export class AppComponent {
   currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' = 'players';
 
-  constructor() {
+  constructor(private themeService: ThemeService) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
   }

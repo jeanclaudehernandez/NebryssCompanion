@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { ScrollSection, Talent, TalentCategory, Player } from '../model';
@@ -14,7 +14,8 @@ import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
   standalone: true,
   imports: [CommonModule, ScrollNavComponent, MatDialogModule, SanitizeHtmlPipe],
   templateUrl: './talents.component.html',
-  styleUrls: ['./talents.component.css']
+  styleUrls: ['./talents.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class TalentsComponent implements OnInit, OnDestroy {
   talentCategories: TalentCategory[] = [];

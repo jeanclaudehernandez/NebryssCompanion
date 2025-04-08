@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
@@ -6,6 +6,8 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule } from '../model';
 import { ActivePlayerService } from '../active-player.service';
+import { ThemeService } from '../theme.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-shops',
@@ -17,9 +19,10 @@ import { ActivePlayerService } from '../active-player.service';
     ScrollNavComponent
   ],
   templateUrl: './shops.component.html',
-  styleUrls: ['./shops.component.css']
+  styleUrls: ['./shops.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
-export class ShopsComponent {
+export class ShopsComponent implements OnInit, OnDestroy {
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
@@ -32,13 +35,20 @@ export class ShopsComponent {
   npcs: NPC[] = [];
   isLoading = true;
   scrollSections: ScrollSection[] = [];
+  isDarkMode: boolean = false;
+  private themeSubscription: Subscription = new Subscription();
 
   constructor(
     private dataService: DataService,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    private themeService: ThemeService
   ) {}
 
   ngOnInit() {
+    this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
+      this.isDarkMode = isDark;
+    });
+    
     this.dataService.getAllData().subscribe(response => {
       this.itemsData = response.items;
       this.weaponsData = response.weapons;
@@ -50,6 +60,10 @@ export class ShopsComponent {
         id: `shop-${shop.id}`
       }));
     });
+  }
+
+  ngOnDestroy() {
+    this.themeSubscription.unsubscribe();
   }
 
   getOwnerName(owner: number) {

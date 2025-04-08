@@ -22,6 +22,7 @@
     padding: 15px;
     background: #f5f5f5;
     border-radius: 5px;
+    transition: background-color 0.3s;
 }
   .talent-card {
     margin: 10px 0;
@@ -98,4 +99,38 @@
 .stack-btn:disabled {
   background-color: #95a5a6;
   cursor: not-allowed;
+}
+
+/* Dark theme styles */
+body.dark-theme .talent-category {
+    background: #1f1f1f;
+}
+
+body.dark-theme .talent-card {
+    background: #2d2d2d;
+    border-left: 4px solid #64b5f6;
+    color: #e0e0e0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+body.dark-theme .talent-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+body.dark-theme .talent-card.selected {
+    background-color: #2c5c2e;
+    border-left: 4px solid #4CAF50;
+}
+
+body.dark-theme .requirements {
+    color: #aaa;
+}
+
+body.dark-theme .requirements-not-met {
+    color: #ff6b6b !important;
+}
+
+body.dark-theme .stack-btn:disabled {
+    background-color: #555;
+    color: #888;
 }
