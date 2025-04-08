@@ -128,6 +128,60 @@
           "description": "A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence."
         }
       ]
+    },
+    {
+      "name": "Verdant Veil",
+      "faction": "The Nebryssian Liberation Republic",
+      "isCapital": false,
+      "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
+      "imgUrl": "https://iili.io/3Ybxd5G.png",
+      "thumbnail": "https://iili.io/3Ybxd5G.th.png",
+      "keyFeatures": [
+        {
+          "name": "The Grove of Echoes",
+          "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. The grove’s trees hum with faint voices from the past."
+        },
+        {
+          "name": "Veilroot Farms",
+          "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies."
+        }
+      ]
+    },
+    {
+      "name": "Aurelia Nexus",
+      "faction": "The Gilded Accord",
+      "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
+      "isCapital": false,
+      "imgUrl": "https://iili.io/3Ybx2ef.png",
+      "thumbnail": "https://iili.io/3Ybx2ef.th.png",
+      "notableFeatures": [
+        {
+          "name": "The Celestial Exchange",
+          "description": "A stock market for mist-engine components, where prices shift hourly based on route stability reports. Sabotage and insider trading are rampant."
+        },
+        {
+          "name": "The Accord’s Crucible",
+          "description": "A high-security lab where engineers test experimental mist engines. Leaked prototypes often end up in Corsair hands."
+        }
+      ]
+    },
+    {
+      "name": "Emberreach",
+      "faction": "The Abyssal Cabal",
+      "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
+      "imgUrl": "https://iili.io/3YbxJJs.png",
+      "thumbnail": "https://iili.io/3YbxJJs.th.png",
+      "isCapital": false,
+      "notableFeatures": [
+        {
+          "name": "The Ashen Forge",
+          "description": "A massive foundry where Cabal warlocks forge weapons fused with soul-embers. The screams of bound daemons echo from its furnaces."
+        },
+        {
+          "name": "The Shattered Maw",
+          "description": "A fissure spewing warp energy into the sky. Cabal cultists throw prisoners into it as offerings to the Chaos Gods."
+        }
+      ]
     }
   ]
 } 
