@@ -3,7 +3,7 @@
 <div class="dropdown-menu" [class.open]="isOpen">
   <div class="menu-header">Jump to Section</div>
   <div *ngFor="let section of sections" 
-       class="menu-item" 
+       class="menu-item-scroll" 
        (click)="scrollToSection(section.id)">
     {{ section.title }}
   </div>

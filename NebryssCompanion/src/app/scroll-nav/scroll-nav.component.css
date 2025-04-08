@@ -42,14 +42,13 @@
   }
   
   /* Rest remains the same */
-  .menu-item {
+  .menu-item-scroll {
     padding: 12px 20px;
     cursor: pointer;
-    color: #2c3e50;
     transition: background-color 0.2s, color 0.3s;
   }
   
-  .menu-item:hover {
+  .menu-item-scroll:hover {
     background-color: #f5f6fa;
   }
   
