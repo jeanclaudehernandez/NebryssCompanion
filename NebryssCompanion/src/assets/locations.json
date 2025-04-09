@@ -34,11 +34,21 @@
     },
     {
       "name": "Stormwatch",
-      "description": "A storm-wracked island with towering cliffs and constant lightning strikes.",
+      "description": "A storm-wracked island with towering cliffs and constant lightning strikes. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena. The perpetual tempests amplify mist anomalies, allowing the Imperium to study their warp-resistant properties and potential military applications.",
       "imgUrl": "https://iili.io/3R2BhjS.jpg",
       "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
       "faction": "The Imperium of Man",
-      "isCapital": false
+      "isCapital": false,
+      "notableFeatures": [
+        {
+          "name": "The Stormwatch Observatory",
+          "description": "A heavily shielded research complex where Inquisitor Dresdan and Adeptus Mechanicus magi conduct experiments. Lightning rods channel storm energy to power containment fields for captured mist anomalies. The facility is riddled with scorch marks from failed tests."
+        },
+        {
+          "name": "Tempest Proving Grounds",
+          "description": "An open-air testing zone where storm-forged weapons and mist-resistant armor prototypes are trialed. Lightning strikes are deliberately funneled onto test subjects to simulate combat in extreme conditions."
+        }
+      ]
     },
     {
       "name": "Zephyria",
@@ -87,11 +97,21 @@
     },
     {
       "name": "Luminos",
-      "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture.",
+      "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture. Home to the Nebryssian Reserve—the central bank controlling Mistral coins. The Reserve’s vaults are embedded within crystalline structures that shift color to indicate market stability, visible across the island as an economic barometer.",
       "imgUrl": "https://iili.io/3YDnziX.jpg",
       "thumbnail": "https://iili.io/3YDnziX.th.jpg",
       "faction": "The Gilded Accord",
-      "isCapital": false
+      "isCapital": false,
+      "notableFeatures": [
+        {
+          "name": "The Nebryssian Reserve",
+          "description": "A fortress-like bank complex guarded by mechanized sentinels and light-based security systems. Its vaults use bioluminescent flora as living locks—only Thalos Grenn and his inner circle know the chromatic sequences to access the Mistral reserves. The Reserve’s towering spires project holographic exchange rates visible for miles."
+        },
+        {
+          "name": "Luminos Artisan Quarter",
+          "description": "A district where artists craft glowstone sculptures and mist-reactive tapestries traded across Nebryss. Many works secretly encode market trends or faction messages using light patterns."
+        }
+      ]
     },
     {
       "name": "Maledictum Prime",
@@ -133,17 +153,21 @@
       "name": "Verdant Veil",
       "faction": "The Nebryssian Liberation Republic",
       "isCapital": false,
-      "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
+      "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
       "imgUrl": "https://iili.io/3Ybxd5G.png",
       "thumbnail": "https://iili.io/3Ybxd5G.th.png",
       "keyFeatures": [
         {
           "name": "The Grove of Echoes",
-          "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. The grove’s trees hum with faint voices from the past."
+          "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. Commander Voss frequently visits to assess new recruits, often participating in rituals to bolster their morale. The grove’s trees hum with faint voices from the past."
         },
         {
           "name": "Veilroot Farms",
-          "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies."
+          "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies. Voss ensures surplus harvests are smuggled to Misthaven to support frontline forces."
+        },
+        {
+          "name": "Voss’s Landing",
+          "description": "A hidden cove where Elara Voss docks her stealth skiffs during neophyte transports. The landing is littered with wreckage from ambushed Cabal vessels—a testament to her tactical ingenuity."
         }
       ]
     },

@@ -117,9 +117,10 @@
         "name": "Commander Elara Voss",
         "faction": "Nebryssian Liberation Republic",
         "subgroup": "Leadership",
-        "role": "The charismatic leader of the Nebryssian Liberation Republic, known for her tactical brilliance and unwavering dedication to Nebryss’s independence.",
-        "personality": "Inspiring, resourceful, and fiercely protective of her people.",
-        "location": "Veiled Citadel in Misthaven"
+        "role": "The charismatic leader of the NLR, personally overseeing high-risk operations like Mistweaver neophyte transports to Verdant Veil. She coordinates stealth convoys through Cabal-patrolled mist zones, often piloting the lead ship herself.",
+        "mission": "Ensure Mistweaver trainees survive the perilous journey to Verdant Veil’s Grove of Echoes, where they undergo grueling rituals. She views these transports as critical to replenishing the NLR’s dwindling Mistweaver ranks amid Imperial purges.",
+        "personality": "Inspiring, resourceful, and fiercely protective of her people. She carries a shard of the Whispering Stones as a reminder of the costs of mist-weaving.",
+        "location": "Veiled Citadel in Misthaven (or escorting convoys to Verdant Veil)"
       },
       {
         "id": 13,
