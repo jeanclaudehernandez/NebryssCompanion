@@ -47,7 +47,11 @@
             [weaponsData]="weaponsData"
             [itemsData]="itemsData"
             [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates">
+            [alteredStates]="alteredStates"
+            [hideScrollNav]="true"
+            (scrollSectionsChange)="addCreatureScrollSections($event, creature)">
         </app-player-detail>
     </div>
 </div>
+
+<app-scroll-nav *ngIf="combinedScrollSections.length > 0" [sections]="combinedScrollSections"></app-scroll-nav>

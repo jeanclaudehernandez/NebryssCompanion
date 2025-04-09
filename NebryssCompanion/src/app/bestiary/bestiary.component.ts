@@ -4,14 +4,20 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
-import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection } from '../model';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
+import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 
 @Component({
   selector: 'app-bestiary',
   standalone: true,
-  imports: [CommonModule, FormsModule, PlayerDetailComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PlayerDetailComponent,
+    ScrollNavComponent
+  ],
   templateUrl: './bestiary.component.html',
   styleUrls: ['./bestiary.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -33,6 +39,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
   alteredStates: AlteredState[] = [];
   isDarkMode: boolean = false;
   private themeSubscription: Subscription = new Subscription();
+  combinedScrollSections: ScrollSection[] = [];
 
   constructor(
     private dataService: DataService,
@@ -154,6 +161,11 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('bestiaryCreatureIds');
     }
+
+    // Remove any scroll sections for this creature
+    this.combinedScrollSections = this.combinedScrollSections.filter(
+      section => !section.id.includes(`-${creature.id}`)
+    );
   }
 
   scrollToMob(): void {
@@ -165,5 +177,15 @@ export class BestiaryComponent implements OnInit, OnDestroy {
         });
       }
     }, 0);
+  }
+
+  addCreatureScrollSections(sections: ScrollSection[], creature: BestiaryEntry): void {
+    // Remove any existing sections for this creature
+    this.combinedScrollSections = this.combinedScrollSections.filter(
+      section => !section.id.includes(`-${creature.id}`)
+    );
+    
+    // Add the new sections
+    this.combinedScrollSections = [...this.combinedScrollSections, ...sections];
   }
 }

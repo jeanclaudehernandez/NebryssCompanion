@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
@@ -22,6 +22,9 @@ export class PlayerDetailComponent implements OnChanges {
   @Input() weaponRulesData: WeaponRule[] = [];
   @Input() alteredStates: AlteredState[] = [];
   @Input() itemsData!: Items;
+  @Input() hideScrollNav = false;
+  @Output() scrollSectionsChange = new EventEmitter<ScrollSection[]>();
+  
   bodyString = "";
   activeTooltip: string | null = null;
   tooltipX = 0;
@@ -104,6 +107,9 @@ export class PlayerDetailComponent implements OnChanges {
     if (this.character.deployables?.length) {
       this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Deployables`, id: `deployables-${this.character.id}`});
     }
+    
+    // Emit scroll sections to parent component if needed
+    this.scrollSectionsChange.emit(this.scrollSections);
   }
 
   processAbilityEffect(effect: string): string {

@@ -122,4 +122,4 @@
   </div>
 </div>
 
-<app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+<app-scroll-nav *ngIf="!hideScrollNav" [sections]="scrollSections"></app-scroll-nav>
