@@ -21,6 +21,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
   bestiary: BestiaryEntry[] = [];
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | null = null;
+  selectedCreatures: BestiaryEntry[] = [];
   factions: string[] = [];
   subgroups: string[] = [];
   selectedFaction: string | null = null;
@@ -66,12 +67,14 @@ export class BestiaryComponent implements OnInit, OnDestroy {
       }
 
       // Load saved creature
-      const savedCreatureId = localStorage.getItem('bestiaryCreatureId');
-      if (savedCreatureId !== null) {
-        const creature = this.filteredCreatures.find(c => c.id === Number(JSON.parse(savedCreatureId)));
-        if (creature) {
-          this.selectedCreatureId = creature.id;
-          this.selectedCreature = creature;
+      const savedCreatureIds = localStorage.getItem('bestiaryCreatureIds');
+      if (savedCreatureIds !== null) {
+        const ids = JSON.parse(savedCreatureIds) as number[];
+        this.selectedCreatures = ids.map(id => 
+          this.bestiary.find(c => c.id === id)
+        ).filter(c => c !== undefined) as BestiaryEntry[];
+        
+        if (this.selectedCreatures.length > 0) {
           this.scrollToMob();
         }
       }
@@ -94,12 +97,9 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
     
     // Clear invalid subgroup selection
-    
     if (this.selectedSubGroup && !this.subgroups.includes(this.selectedSubGroup)) {
-      
       localStorage.removeItem('bestiarySubGroup');
     }
-    
     
     localStorage.setItem('bestiaryFaction', JSON.stringify(this.selectedFaction));
   }
@@ -123,14 +123,37 @@ export class BestiaryComponent implements OnInit, OnDestroy {
 
   onCreatureSelected() {
     if (this.selectedCreatureId) {
-      this.selectedCreature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId)) || null;
-      localStorage.setItem('bestiaryCreatureId', JSON.stringify(this.selectedCreatureId));
-    } else {
-      this.selectedCreature = null;
-      localStorage.removeItem('bestiaryCreatureId');
+      const creature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId)) || null;
+      
+      if (creature) {
+        // Check if already selected
+        const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
+        
+        if (!alreadySelected) {
+          this.selectedCreatures.push(creature);
+          // Save to local storage
+          const creatureIds = this.selectedCreatures.map(c => c.id);
+          localStorage.setItem('bestiaryCreatureIds', JSON.stringify(creatureIds));
+        }
+      }
+      
+      // Reset selection
+      this.selectedCreatureId = null;
     }
     
     this.scrollToMob();
+  }
+
+  removeCreature(creature: BestiaryEntry) {
+    this.selectedCreatures = this.selectedCreatures.filter(c => c.id !== creature.id);
+    
+    // Update local storage
+    if (this.selectedCreatures.length) {
+      const creatureIds = this.selectedCreatures.map(c => c.id);
+      localStorage.setItem('bestiaryCreatureIds', JSON.stringify(creatureIds));
+    } else {
+      localStorage.removeItem('bestiaryCreatureIds');
+    }
   }
 
   scrollToMob(): void {

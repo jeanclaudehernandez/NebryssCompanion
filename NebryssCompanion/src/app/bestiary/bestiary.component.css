@@ -39,6 +39,54 @@ select {
     font-size: 14px;
 }
 
+.selected-creatures-info {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #666;
+}
+
+.creature-detail-container {
+    margin: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.creature-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background: #f0f0f0;
+    border-bottom: 1px solid #ddd;
+}
+
+.creature-header h3 {
+    margin: 0;
+}
+
+.remove-creature-btn {
+    background: #ff5a5a;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background-color 0.2s;
+}
+
+.remove-creature-btn:hover {
+    background: #ff3333;
+}
+
 /* Dark Theme Styles */
 body.dark-theme .bestiary-select-container {
     background: #1f1f1f;
@@ -57,4 +105,18 @@ body.dark-theme select {
     border-color: #444;
     background: #333;
     color: #e0e0e0;
+}
+
+body.dark-theme .creature-detail-container {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .creature-header {
+    background: #333;
+    border-color: #444;
+}
+
+body.dark-theme .selected-creatures-info {
+    color: #aaa;
 }

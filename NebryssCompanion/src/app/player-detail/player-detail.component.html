@@ -25,7 +25,7 @@
     </div>
   </div>
   
-  <div id="attributes" class="attributes">
+  <div [id]="'attributes-' + character.id" class="attributes">
     <h3>Attributes</h3>
     <table class="attributes-table">
       <tr>
@@ -45,7 +45,7 @@
     </table>
   </div>
   
-  <div id="weapons" class="weapons">
+  <div [id]="'weapons-' + character.id" class="weapons">
     <h3>Weapons</h3>
       <app-weapon-table 
         [weaponIds]="character.weapons"
@@ -58,7 +58,7 @@
       </app-weapon-table>
   </div>
   
-  <div id="talents" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
+  <div [id]="'talents-' + character.id" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
     <h3>Talents</h3>
     <app-generic-table 
       [storageKey]="'player-talents-' + character.id"
@@ -71,7 +71,7 @@
     </app-generic-table>
   </div>
   
-  <div id="abilities" class="abilities">
+  <div [id]="'abilities-' + character.id" class="abilities">
     <h3>Abilities</h3>
     <div *ngFor="let ability of processedAbilities" class="ability">
       <h4>{{ ability.name }}</h4>
@@ -79,7 +79,7 @@
     </div>
   </div>
   
-  <div id="items" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character?.items?.length">
+  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character?.items?.length">
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
@@ -92,7 +92,7 @@
     </app-generic-table>
   </div>
 
-  <div id="deployables" class="deployables" *ngIf="character.deployables?.length">
+  <div [id]="'deployables-' + character.id" class="deployables" *ngIf="character.deployables?.length">
     <h3>Deployables</h3>
     <div *ngFor="let deployableEntry of character.deployables">
       <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">

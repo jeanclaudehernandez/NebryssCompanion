@@ -87,22 +87,22 @@ export class PlayerDetailComponent implements OnChanges {
       this.processedAbilities = [];
     }
     
-    // Set up scroll sections
+    // Set up scroll sections with unique IDs
     this.scrollSections = [
-      { title: 'Attributes', id: 'attributes' },
-      { title: 'Weapons', id: 'weapons' },
+      { title: `${(this.isBeast(this.character) ? this.character.name : '')} Attributes`, id: `attributes-${this.character.id}`},
+      { title: `${(this.isBeast(this.character) ? this.character.name : '')} Weapons`, id: `weapons-${this.character.id}`},
     ];
     if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
-      this.scrollSections.push({ title: 'Talents', id: 'talents' });
+      this.scrollSections.push({ title: 'Talents', id: `talents-${this.character.id}` });
     }
     if (this.character.abilities && this.character.abilities.length > 0) {
-      this.scrollSections.push({ title: 'Abilities', id: 'abilities' });
+      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Abilities`, id: `abilities-${this.character.id}`});
     }
     if ((this.isPlayer(this.character) || this.isBestiary(this.character)) && this.character.items?.length) {
-      this.scrollSections.push({ title: 'Items', id: 'items' });
+      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Items`, id: `items-${this.character.id}` });
     }
     if (this.character.deployables?.length) {
-      this.scrollSections.push({ title: 'Deployables', id: 'deployables' });
+      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Deployables`, id: `deployables-${this.character.id}`});
     }
   }
 

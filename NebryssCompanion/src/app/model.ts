@@ -381,6 +381,7 @@ export interface AlteredState {
   export interface ScrollSection {
     title: string;
     id: string;
+    contextName?: string;
   }
 
   export interface Item extends BaseItem {}

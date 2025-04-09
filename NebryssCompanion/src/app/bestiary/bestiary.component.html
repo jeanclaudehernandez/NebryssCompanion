@@ -30,16 +30,24 @@
                 {{ creature.name }} ({{ creature.subgroup }})
             </option>
         </select>
+        <div class="selected-creatures-info">
+            <p *ngIf="selectedCreatures.length">Selected: {{ selectedCreatures.length }} creature(s)</p>
+        </div>
     </div>
 </div>
 
 <div #mobDetailContainer>
-    <app-player-detail 
-        *ngIf="selectedCreature"
-        [character]="selectedCreature"
-        [weaponsData]="weaponsData"
-        [itemsData]="itemsData"
-        [weaponRulesData]="weaponRulesData"
-        [alteredStates]="alteredStates">
-    </app-player-detail>
+    <div *ngFor="let creature of selectedCreatures" class="creature-detail-container">
+        <div class="creature-header">
+            <h3>{{ creature.name }}</h3>
+            <button class="remove-creature-btn" (click)="removeCreature(creature)">✕</button>
+        </div>
+        <app-player-detail 
+            [character]="creature"
+            [weaponsData]="weaponsData"
+            [itemsData]="itemsData"
+            [weaponRulesData]="weaponRulesData"
+            [alteredStates]="alteredStates">
+        </app-player-detail>
+    </div>
 </div>
