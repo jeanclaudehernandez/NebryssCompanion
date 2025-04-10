@@ -15,8 +15,9 @@ import locationsData from '../assets/locations.json';
 import talentsData from '../assets/talents.json';
 import alteredStatesData from '../assets/alteredStates.json';
 import mistEffectsData from '../assets/mistEffects.json';
+import terrainsData from '../assets/terrainRules.json';
 import { Observable, of, ReplaySubject, shareReplay } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain } from './model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,7 @@ export class DataService {
   private lore: Lore = loreData;
   private locations: Locations = locationsData;
   private mistEffects = mistEffectsData.mistEffects;
+  private terrains: Terrain[] = terrainsData;
 
   // Cache observables
   private playersCache$: Observable<Player[]> | null = null;
@@ -54,6 +56,7 @@ export class DataService {
   private talentsCache$: Observable<TalentCategory[]> | null = null;
   private alteredStatesCache$: Observable<AlteredState[]> | null = null;
   private mistEffectsCache$: Observable<any[]> | null = null;
+  private terrainsCache$: Observable<Terrain[]> | null = null;
   private allDataCache$: Observable<any> | null = null;
 
   constructor() { }
@@ -146,6 +149,13 @@ export class DataService {
     return this.mistEffectsCache$;
   }
 
+  getTerrains(): Observable<Terrain[]> {
+    if (!this.terrainsCache$) {
+      this.terrainsCache$ = of(this.terrains).pipe(shareReplay(1));
+    }
+    return this.terrainsCache$;
+  }
+
   getAllData(): Observable<{
     players: Player[],
     npcs: NPC[],
@@ -156,7 +166,8 @@ export class DataService {
     shops: Shop[],
     itemCategories: ItemCategory[],
     alteredStates: AlteredState[],
-    mistEffects: any[]
+    mistEffects: any[],
+    terrains: Terrain[]
   }> {
     if (!this.allDataCache$) {
       this.allDataCache$ = of({
@@ -169,7 +180,8 @@ export class DataService {
         shops: this.shops,
         itemCategories: this.itemCategories,
         alteredStates: this.alteredStates,
-        mistEffects: this.mistEffects
+        mistEffects: this.mistEffects,
+        terrains: this.terrains
       }).pipe(shareReplay(1));
     }
     return this.allDataCache$;

@@ -1,0 +1,25 @@
+<div class="terrains-container">
+  <h1 class="terrains-title">Terrain Features</h1>
+  
+  <div class="terrain-list">
+    <div *ngFor="let terrain of terrains" class="terrain-card" [id]="'terrain-' + terrain.id">
+      <h2 class="terrain-name">{{ terrain.name }}</h2>
+      
+      <div class="terrain-content">
+        <div class="terrain-image">
+          <app-image-viewer 
+            [imageUrl]="terrain.imageUrl" 
+            [thumbnailUrl]="terrain.thumbnailUrl"
+            [altText]="terrain.name">
+          </app-image-viewer>
+        </div>
+        
+        <div class="terrain-description">
+          <p>{{ terrain.description }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+</div> 

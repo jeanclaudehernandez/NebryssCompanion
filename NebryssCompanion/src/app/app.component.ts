@@ -12,6 +12,7 @@ import { LoreComponent } from './lore/lore.component';
 import { LocationsComponent } from './locations/locations.component';
 import { TalentsComponent } from './talents/talents.component';
 import { MistEffectsComponent } from './mist-effects/mist-effects.component';
+import { TerrainsComponent } from './terrains/terrains.component';
 import { ThemeService } from './theme.service';
 
 @Component({
@@ -29,7 +30,8 @@ import { ThemeService } from './theme.service';
     LoreComponent,
     LocationsComponent,
     TalentsComponent,
-    MistEffectsComponent
+    MistEffectsComponent,
+    TerrainsComponent
   ],
   template: `
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
@@ -59,13 +61,16 @@ import { ThemeService } from './theme.service';
       @if (currentView === 'mistEffects') {
         <app-mist-effects></app-mist-effects>
       }
+      @if (currentView === 'terrains') {
+        <app-terrains></app-terrains>
+      }
     </div>
   `,
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' = 'players';
 
   constructor(private themeService: ThemeService) {
     const savedView = localStorage.getItem('lastView');
@@ -74,10 +79,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects'].includes(view);
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains') {
     this.currentView = view;
     localStorage.setItem('lastView', view);
     window.scrollTo({ top: 0 });

@@ -385,3 +385,11 @@ export interface AlteredState {
   }
 
   export interface Item extends BaseItem {}
+
+  export interface Terrain {
+    id: number;
+    name: string;
+    description: string;
+    imageUrl: string;
+    thumbnailUrl: string;
+  }
