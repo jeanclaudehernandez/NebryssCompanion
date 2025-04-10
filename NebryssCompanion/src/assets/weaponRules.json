@@ -298,5 +298,11 @@
     "name": "Corrupt",
     "effect": "If damage is made to the target during this action with a critical success, apply /7/ status to the target.",
     "prModifier": 3
+  },
+  {
+    "id": 52,
+    "name": "Poisonous",
+    "effect": "If damage is made to the target during this action with a critical success, apply /7/ status to the target.",
+    "prModifier": 3
   }
 ]

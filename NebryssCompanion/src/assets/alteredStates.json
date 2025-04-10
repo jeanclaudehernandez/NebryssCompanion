@@ -38,5 +38,10 @@
   "id": 8,
   "name": "Disoriented",
   "effect": "Worsen WS/BS by 1. Roll 1D6 + APL at the end of its activation. On a 6+, remove this state."
+  },
+  {
+  "id": 9,
+  "name": "Poisoned",
+  "effect": "At the start of the operative's activation, it suffers 1 wounds and worsen WS by 1 for the activation. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
   }
 ]
