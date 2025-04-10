@@ -499,6 +499,27 @@
       "price": 0,
       "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded).",
       "type": "consumable"
+    },
+    {
+      "id": 63,
+      "name": "Poison Flask",
+      "price": 0,
+      "description": "A flask of poison, can be used to coat a weapon or a melee weapon. It gains the poisonous special rule.",
+      "type": "consumable"
+    },
+    {
+      "id": 64,
+      "name": "Fruit",
+      "price": 0,
+      "description": "Restores 1D3+1 wounds, 1AP when in battle.",
+      "type": "consumable"
+    },
+    {
+      "id": 65,
+      "name": "Mushroom",
+      "price": 0,
+      "description": "Restores 1D3+1 wounds, 1AP when in battle and rolls add 1d3 to it's movement stat untill the next reposition or charge action.",
+      "type": "consumable"
     }
   ]
 }

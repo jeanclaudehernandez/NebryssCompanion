@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Tree",
+        "description": "Provides cover to operatives with bases of 28mm or less. If there are two intervening trees, operatives are obscured regardless of their size.",
+        "imageUrl": "https://iili.io/3aajswb.png",
+        "thumbnailUrl": "https://iili.io/3aajswb.th.png"
+    },
+    {
+        "id": 2,
+        "name": "Fruit Tree",
+        "description": "Provides cover to operatives with bases of 28mm or less. Operatives that finish a move action within control range of a fruit tree can harvest it, restoring 1D3+1 wounds or adding 1 Fruit to their inventory. If there are two intervening trees, operatives are obscured regardless of their size.",
+        "imageUrl": "https://iili.io/3aaj4S9.png",
+        "thumbnailUrl": "https://iili.io/3aaj4S9.th.png"
+    },
+    {
+        "id": 3,
+        "name": "Bush",
+        "description": "Provides cover to operatives with bases of 28mm or less on conceal order, can be traversed without penalty.",
+        "imageUrl": "https://iili.io/3aajSP2.png",
+        "thumbnailUrl": "https://iili.io/3aajSP2.th.png"
+    },
+    {
+        "id": 4,
+        "name": "Mushroom",
+        "description": "Operatives that finish a move action within control range of a mushroom can harvest it, restoring 1D3+1 wounds or adding 1 Mushroom to their inventory.",
+        "imageUrl": "https://iili.io/3aajrc7.png",
+        "thumbnailUrl": "https://iili.io/3aajrc7.th.png"
+    },
+    {
+        "id": 5,
+        "name": "Flower Bush",
+        "description": "Provides cover to operatives with bases of 28mm or less. Operatives that finish a move action within control range of a flower bush can harvest it, adding 1 poison flask to their inventory.",
+        "imageUrl": "https://iili.io/3aaj8Ml.png",
+        "thumbnailUrl": "https://iili.io/3aaj8Ml.th.png"
+    }
+    
+]
