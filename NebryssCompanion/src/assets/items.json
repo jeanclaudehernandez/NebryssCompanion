@@ -212,20 +212,6 @@
       "type": "consumable"
     },
     {
-      "id": 62,
-      "name": "Inquisitorial Rosette",
-      "price": 0,
-      "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded).",
-      "type": "consumable"
-    },
-    {
-      "id": 61,
-      "name": "Shattered Mirror",
-      "description": "Holds echoes of unmade futures",
-      "price": 0,
-      "type": "consumable"
-    },
-    {
       "id": 29,
       "name": "Standard Bolter Rounds",
       "price": 2,
@@ -499,6 +485,20 @@
       "subType": "mob",
       "bestiaryId": 13,
       "type": "deployable"
+    },
+    {
+      "id": 61,
+      "name": "Shattered Mirror",
+      "description": "Holds echoes of unmade futures",
+      "price": 0,
+      "type": "consumable"
+    },
+    {
+      "id": 62,
+      "name": "Inquisitorial Rosette",
+      "price": 0,
+      "description": "Once per battle: when a shoot action is declared, force the enemy to select a different target for that shooting action (if there is none, opponent cannot perform the shoot action and AP is not refunded).",
+      "type": "consumable"
     }
   ]
 }
