@@ -83,7 +83,7 @@ export const mistEngineBattlesData: MistEngineBattles = {
                                 "Discard all templates and draw **4 new random ones**"
                             ]
                         ],
-                        "footer": "**After moving:** Any templates used (or discarded) return to the pool."
+                        "footer": "**After moving:** All candidate templates (or discarded) return to the pool."
                     }
                 },
                 {
@@ -99,7 +99,7 @@ export const mistEngineBattlesData: MistEngineBattles = {
                         "rows": [
                             [
                                 "0 Energy",
-                                "The ship **loses momentum** and drifts aimlessly"
+                                "The ship losses momentum and **doesn't move**"
                             ],
                             [
                                 "1 Energy",
@@ -142,7 +142,7 @@ export const mistEngineBattlesData: MistEngineBattles = {
                             ],
                             [
                                 "1 Energy",
-                                "Roll **1d4** weapons. On a **1**, the ship suffers **a misfire (half ammo lost)**"
+                                "Roll **1d4** weapons. On hit results of **1**, the ship suffers from the weapon malfunction (suffering half the weapon damage)**"
                             ],
                             [
                                 "2 Energy",
@@ -158,7 +158,7 @@ export const mistEngineBattlesData: MistEngineBattles = {
                             ],
                             [
                                 "5 Energy",
-                                "Roll **1d8** weapons (**2 guaranteed hits**). Any **6 rolled** triggers an **extra weapon volley** (chain possible)"
+                                "Roll **1d8** weapons (**2 guaranteed hits**). Any **6 rolled** triggers an **extra weapon shoot** (possibly chaining attacks)"
                             ]
                         ],
                         "footer": ""

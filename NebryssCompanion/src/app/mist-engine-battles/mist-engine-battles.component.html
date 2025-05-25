@@ -21,24 +21,16 @@
           <p *ngFor="let paragraph of subsection.content" [innerHTML]="paragraph | safeHtml"></p>
         </div>
         
-        <div *ngIf="subsection.table" class="table-container">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th *ngFor="let header of subsection.table.headers">{{ header }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let row of subsection.table.rows">
-                <td *ngFor="let cell of row" [innerHTML]="cell | safeHtml"></td>
-              </tr>
-            </tbody>
-            <tfoot *ngIf="subsection.table.footer">
-              <tr>
-                <td [attr.colspan]="subsection.table.headers.length" [innerHTML]="subsection.table.footer | safeHtml"></td>
-              </tr>
-            </tfoot>
-          </table>
+        <div *ngIf="subsection.table">
+          <app-generic-table 
+            [data]="transformTableData(subsection.table.rows)" 
+            [headers]="subsection.table.headers" 
+            [headerKeys]="['col1', 'col2']" 
+            [title]="subsection.title"
+            [storageKey]="'mist-engine-' + subsection.title"
+            [renderHtml]="['col1', 'col2']">
+          </app-generic-table>
+          <div *ngIf="subsection.table.footer" class="table-footer" [innerHTML]="subsection.table.footer | safeHtml"></div>
         </div>
         
         <div *ngIf="subsection.footer" class="subsection-footer" [innerHTML]="subsection.footer | safeHtml"></div>
