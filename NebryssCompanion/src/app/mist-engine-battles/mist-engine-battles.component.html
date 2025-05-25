@@ -1,0 +1,52 @@
+<div class="mist-engine-battles-container" *ngIf="mistEngineBattles">
+  <h1 class="title">{{ mistEngineBattles.title }}</h1>
+  
+  <div id="introduction" class="section">
+    <p class="introduction" [innerHTML]="mistEngineBattles.introduction | safeHtml"></p>
+    <p class="subtitle" [innerHTML]="mistEngineBattles.subtitle | safeHtml"></p>
+  </div>
+  
+  <div *ngFor="let section of mistEngineBattles.sections; let i = index" [id]="'section-' + i" class="section">
+    <h2 class="section-title">{{ section.title }}</h2>
+    
+    <div *ngIf="section.content" class="section-content">
+      <p *ngFor="let paragraph of section.content" [innerHTML]="paragraph | safeHtml"></p>
+    </div>
+    
+    <div *ngIf="section.subsections">
+      <div *ngFor="let subsection of section.subsections; let j = index" [id]="'subsection-' + i + '-' + j" class="subsection">
+        <h3 class="subsection-title">{{ subsection.title }}</h3>
+        
+        <div *ngIf="subsection.content" class="subsection-content">
+          <p *ngFor="let paragraph of subsection.content" [innerHTML]="paragraph | safeHtml"></p>
+        </div>
+        
+        <div *ngIf="subsection.table" class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th *ngFor="let header of subsection.table.headers">{{ header }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of subsection.table.rows">
+                <td *ngFor="let cell of row" [innerHTML]="cell | safeHtml"></td>
+              </tr>
+            </tbody>
+            <tfoot *ngIf="subsection.table.footer">
+              <tr>
+                <td [attr.colspan]="subsection.table.headers.length" [innerHTML]="subsection.table.footer | safeHtml"></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        
+        <div *ngIf="subsection.footer" class="subsection-footer" [innerHTML]="subsection.footer | safeHtml"></div>
+      </div>
+    </div>
+    
+    <div *ngIf="section.footer" class="section-footer" [innerHTML]="section.footer | safeHtml"></div>
+  </div>
+  
+  <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+</div>

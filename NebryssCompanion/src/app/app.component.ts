@@ -13,6 +13,7 @@ import { LocationsComponent } from './locations/locations.component';
 import { TalentsComponent } from './talents/talents.component';
 import { MistEffectsComponent } from './mist-effects/mist-effects.component';
 import { TerrainsComponent } from './terrains/terrains.component';
+import { MistEngineBattlesComponent } from './mist-engine-battles/mist-engine-battles.component';
 import { ThemeService } from './theme.service';
 
 @Component({
@@ -31,7 +32,8 @@ import { ThemeService } from './theme.service';
     LocationsComponent,
     TalentsComponent,
     MistEffectsComponent,
-    TerrainsComponent
+    TerrainsComponent,
+    MistEngineBattlesComponent
   ],
   template: `
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
@@ -64,13 +66,16 @@ import { ThemeService } from './theme.service';
       @if (currentView === 'terrains') {
         <app-terrains></app-terrains>
       }
+      @if (currentView === 'mistEngineBattles') {
+        <app-mist-engine-battles></app-mist-engine-battles>
+      }
     </div>
   `,
   styleUrls: ['./app.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' = 'players';
 
   constructor(private themeService: ThemeService) {
     const savedView = localStorage.getItem('lastView');
@@ -79,10 +84,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains'].includes(view);
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles') {
     this.currentView = view;
     localStorage.setItem('lastView', view);
     window.scrollTo({ top: 0 });
