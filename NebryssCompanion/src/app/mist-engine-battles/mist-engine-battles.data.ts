@@ -31,7 +31,7 @@ export const mistEngineBattlesData: MistEngineBattles = {
             "content": [
                 "**Players:** 3 (Helm, Mist Engines, Weapons)",
                 "**Mist Energy:** 7 maximum per turn (shared between all stations)",
-                "**Movement Templates:** There are **6 types** (3x Straight, 2x Bank Left, 3x Bank Right, 1x Hover, 1x Double Firepower, 1x Mist Surge)"
+                "**Movement Templates:** There are **6 types** (3x Straight, 2x Left Curve, 3x Right Curve, 1x Hover, 1x Double Firepower, 1x Mist Surge)"
             ],
             "subsections": [
                 {
