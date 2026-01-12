@@ -19,6 +19,7 @@ import { Location, Locations, Lore } from '../model';
 export class LocationsComponent implements OnInit {
   @Input() initialLocationName: string | null = null;
   @Output() navigateTo = new EventEmitter<any>();
+  @Output() navigateToLore = new EventEmitter<string>();
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   private readonly STORAGE_KEY = 'selectedLocationName';
@@ -108,6 +109,10 @@ export class LocationsComponent implements OnInit {
     );
     
     return faction?.thumbnail || '';
+  }
+
+  onFactionClick(factionName: string) {
+    this.navigateToLore.emit(factionName);
   }
 
   getFactionInitial(faction: string): string {

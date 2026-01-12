@@ -30,6 +30,32 @@
   margin-bottom: 25px;
 }
 
+.faction-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.faction-header:hover {
+  background-color: rgba(100, 181, 246, 0.15);
+}
+
+.faction-header h3 {
+  color: #afd5fe;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.sidebar-emblem {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+}
+
 .location-cards {
   display: flex;
   flex-direction: column;
@@ -71,17 +97,18 @@
 }
 
 .capital-badge {
-  background-color: rgba(212, 175, 55, 0.7);
-  color: #fff;
-  padding: 3px 6px;
-  border-radius: 4px;
+  background-color: rgba(255, 193, 7, 0.2);
+  color: #ffca28;
+  border: 1px solid rgba(255, 193, 7, 0.4);
   font-size: 0.7rem;
-  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 4px;
   text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
 }
 
 .location-thumb {
-  width: 100%;
   height: 80px;
   overflow: hidden;
   border-radius: 4px;
@@ -92,52 +119,79 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s;
 }
 
-/* Container for details area */
+.location-card:hover .location-thumb img {
+  transform: scale(1.05);
+}
+
+/* Detail View Styles */
 .location-details-container {
   flex: 1;
+  overflow-y: auto;
+  background-color: rgba(20, 20, 20, 0.8);
+  position: relative;
   display: flex;
   flex-direction: column;
 }
 
-/* Details Area Styles */
 .location-details {
-  flex: 1;
   padding: 30px;
-  overflow-y: auto;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .location-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  align-items: flex-start;
+  margin-bottom: 25px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 15px;
-  margin-bottom: 20px;
-}
-
-.location-title {
-  display: flex;
-  align-items: center;
 }
 
 .location-title h2 {
-  color: #f0f0f0;
-  margin: 0;
-  margin-right: 10px;
+  font-size: 2rem;
+  color: #64b5f6;
+  margin: 0 0 10px 0;
 }
 
 .location-badges {
   display: flex;
   align-items: center;
+  gap: 10px;
 }
 
 .faction-emblem {
-  width: 25px;
-  height: 25px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.clickable-emblem {
+  cursor: pointer;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.clickable-emblem:hover {
+  transform: scale(1.1);
+  border-color: #64b5f6;
+  box-shadow: 0 0 8px rgba(100, 181, 246, 0.4);
+}
+
+.text-emblem {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(80, 80, 80, 0.8);
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
 
 .faction-emblem img {
@@ -146,23 +200,16 @@
   object-fit: cover;
 }
 
-.text-emblem {
-  background-color: #2a5480;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
 .close-btn {
   background: none;
   border: none;
   color: #aaa;
-  font-size: 1.5rem;
+  font-size: 2rem;
   cursor: pointer;
-  width: 30px;
-  height: 30px;
+  line-height: 1;
+  padding: 0;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,6 +294,7 @@
     max-height: 300px;
     border-right: none;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-sizing: border-box;
   }
   
   /* When no location is selected, make sidebar take full height */
@@ -269,21 +317,3 @@
     display: none;
   }
 }
-
-.faction-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.faction-header h3 {
-  color: #afd5fe;
-  margin: 0;
-  font-size: 1.2rem;
-}
-
-.sidebar-emblem {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
-} 

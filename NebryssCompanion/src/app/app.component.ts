@@ -52,10 +52,10 @@ import { ThemeService } from './theme.service';
         <app-shops (navigateToLocation)="onNavigateToLocation($event)"></app-shops>
       }
       @if (currentView === 'lore') {
-        <app-lore></app-lore>
+        <app-lore (navigateToLocation)="onNavigateToLocation($event)" [initialFactionName]="selectedFactionName"></app-lore>
       }
       @if (currentView === 'locations') {
-        <app-locations (navigateTo)="onViewChange($event)" [initialLocationName]="selectedLocationName"></app-locations>
+        <app-locations (navigateTo)="onViewChange($event)" (navigateToLore)="onNavigateToLore($event)" [initialLocationName]="selectedLocationName"></app-locations>
       }
       @if (currentView === 'talents') {
         <app-talents></app-talents>
@@ -77,6 +77,7 @@ import { ThemeService } from './theme.service';
 export class AppComponent {
   currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' = 'players';
   selectedLocationName: string | null = null;
+  selectedFactionName: string | null = null;
 
   constructor(private themeService: ThemeService) {
     const savedView = localStorage.getItem('lastView');
@@ -96,6 +97,7 @@ export class AppComponent {
     // But if it's coming from LocationsComponent navigating to Shops, we don't need to reset it (it's for Locations component input).
     // Let's just set it to null here, and have a separate method for location navigation.
     this.selectedLocationName = null;
+    this.selectedFactionName = null;
     localStorage.setItem('lastView', view);
     window.scrollTo({ top: 0 });
   }
@@ -104,6 +106,13 @@ export class AppComponent {
     this.selectedLocationName = locationName;
     this.currentView = 'locations';
     localStorage.setItem('lastView', 'locations');
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToLore(factionName: string) {
+    this.selectedFactionName = factionName;
+    this.currentView = 'lore';
+    localStorage.setItem('lastView', 'lore');
     window.scrollTo({ top: 0 });
   }
 }

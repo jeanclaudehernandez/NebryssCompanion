@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
 import { DataService } from '../data.service';
 import { CommonModule, NgFor } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
@@ -21,6 +21,8 @@ import { Lore, ScrollSection, Locations, Location } from '../model';
   encapsulation: ViewEncapsulation.None
 })
 export class LoreComponent {
+  @Input() initialFactionName: string | null = null;
+  @Output() navigateToLocation = new EventEmitter<string>();
   loreData!: Lore;
   locationsData!: Locations;
   loreSections: {
@@ -59,8 +61,28 @@ export class LoreComponent {
       this.dataService.getLocations().subscribe(locations => {
         this.locationsData = locations;
         this.prepareLoreSections();
+        
+        if (this.initialFactionName) {
+          // Allow time for view to render
+          setTimeout(() => {
+            this.scrollToFaction(this.initialFactionName!);
+          }, 100);
+        }
       });
     });
+  }
+
+  scrollToFaction(factionName: string) {
+    const factionId = 'faction-' + factionName.toLowerCase().replace(/\s+/g, '-');
+    const element = document.getElementById(factionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Add a highlight effect
+      element.classList.add('highlight-faction');
+      setTimeout(() => {
+        element.classList.remove('highlight-faction');
+      }, 2000);
+    }
   }
 
   isStandardSection(section: string) {
@@ -88,6 +110,10 @@ export class LoreComponent {
     return this.locationsData.locations.filter(location => 
       location.faction === factionName && !location.isCapital
     );
+  }
+
+  onCapitalClick(locationName: string) {
+    this.navigateToLocation.emit(locationName);
   }
 
   prepareLoreSections() {

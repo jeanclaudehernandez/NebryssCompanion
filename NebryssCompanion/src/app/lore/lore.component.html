@@ -67,18 +67,16 @@
                 </ng-container>
 
                 <!-- Capital Section from Locations -->
-                <div class="faction-info" *ngIf="getFactionCapital(faction.name)">
-                    <h4>Capital</h4>
-                    <ng-container *ngIf="getFactionCapital(faction.name) as capital">
-                        <p><strong>{{capital.name}}</strong>: {{capital.description}}</p>
-                        <app-image-viewer 
-                            *ngIf="capital.imgUrl"
-                            [imageUrl]="capital.imgUrl"
-                            [thumbnailUrl]="capital.thumbnail"
-                            [altText]="capital.name"
-                        ></app-image-viewer>
-                        <!-- Notable features removed from lore view as requested -->
-                    </ng-container>
+                <div class="faction-info clickable-capital" *ngIf="getFactionCapital(faction.name) as capital" (click)="onCapitalClick(capital.name)" title="Click to view in Locations">
+                    <h4>Capital <span style="font-size: 0.7em; color: #aaa; margin-left: 8px;">(View Location)</span></h4>
+                    <p><strong>{{capital.name}}</strong>: {{capital.description}}</p>
+                    <app-image-viewer 
+                        *ngIf="capital.imgUrl"
+                        [imageUrl]="capital.imgUrl"
+                        [thumbnailUrl]="capital.thumbnail"
+                        [altText]="capital.name"
+                    ></app-image-viewer>
+                    <!-- Notable features removed from lore view as requested -->
                 </div>
                 
                 <!-- Notable Islands Section - Removed as it now appears in its own view -->
