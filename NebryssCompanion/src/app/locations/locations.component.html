@@ -67,7 +67,9 @@
       <div class="notable-features" *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
         <h3>Notable Features</h3>
         <div class="features-list">
-          <div *ngFor="let feature of selectedLocation.notableFeatures; trackBy: trackByFeature" class="feature-item">
+          <div *ngFor="let feature of selectedLocation.notableFeatures; trackBy: trackByFeature" class="feature-item" 
+               [class.clickable]="isShop(feature.name)" 
+               (click)="isShop(feature.name) ? navigateToShop(feature.name) : null">
             <h4>{{ feature.name }}</h4>
             <p>{{ feature.description }}</p>
             <div *ngIf="feature.owner" class="feature-owner">

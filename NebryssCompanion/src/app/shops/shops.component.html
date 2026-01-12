@@ -1,8 +1,16 @@
 <div class="shops-container">
   <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
   <div *ngFor="let shop of shops" class="shop-card" [id]="'shop-' + shop.id">
-    <h3>{{ shop.name }}</h3>
-    <p class="location">{{ shop.location }}</p>
+    <div class="shop-header">
+      <h3>{{ shop.name }}</h3>
+      <app-image-viewer 
+        *ngIf="shop.imgUrl" 
+        [imageUrl]="shop.imgUrl" 
+        [thumbnailUrl]="shop.thumbnail" 
+        [altText]="shop.name">
+      </app-image-viewer>
+    </div>
+    <p class="location" (click)="onLocationClick(shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
     <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
     <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
     <div *ngFor="let categoryId of shop.categories">

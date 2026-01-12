@@ -27,6 +27,8 @@ export interface AlteredState {
       name: string;
       description: string;
       owner?: string;
+      imgUrl?: string;
+      thumbnail?: string;
     }>;
   }
 
@@ -318,9 +320,12 @@ export interface AlteredState {
     name: string;
     owner: number;
     location: string;
+    locationName: string;
     description?: string;
     categories?: number[];
     items: ShopItem[];
+    imgUrl?: string;
+    thumbnail?: string;
   }
   
   // talents.ts

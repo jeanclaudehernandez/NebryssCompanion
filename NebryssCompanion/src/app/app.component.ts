@@ -49,13 +49,13 @@ import { ThemeService } from './theme.service';
         <app-items></app-items>
       }
       @if (currentView === 'shops') {
-        <app-shops></app-shops>
+        <app-shops (navigateToLocation)="onNavigateToLocation($event)"></app-shops>
       }
       @if (currentView === 'lore') {
         <app-lore></app-lore>
       }
       @if (currentView === 'locations') {
-        <app-locations></app-locations>
+        <app-locations (navigateTo)="onViewChange($event)" [initialLocationName]="selectedLocationName"></app-locations>
       }
       @if (currentView === 'talents') {
         <app-talents></app-talents>
@@ -76,6 +76,7 @@ import { ThemeService } from './theme.service';
 })
 export class AppComponent {
   currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' = 'players';
+  selectedLocationName: string | null = null;
 
   constructor(private themeService: ThemeService) {
     const savedView = localStorage.getItem('lastView');
@@ -89,7 +90,20 @@ export class AppComponent {
 
   onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles') {
     this.currentView = view;
+    // Reset selectedLocationName when manually changing views, unless we are navigating specifically
+    // Ideally this logic should be more granular, but for now this is fine.
+    // Actually, if we just clicked sidebar, we probably want to reset it.
+    // But if it's coming from LocationsComponent navigating to Shops, we don't need to reset it (it's for Locations component input).
+    // Let's just set it to null here, and have a separate method for location navigation.
+    this.selectedLocationName = null;
     localStorage.setItem('lastView', view);
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToLocation(locationName: string) {
+    this.selectedLocationName = locationName;
+    this.currentView = 'locations';
+    localStorage.setItem('lastView', 'locations');
     window.scrollTo({ top: 0 });
   }
 }

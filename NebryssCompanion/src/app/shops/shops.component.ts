@@ -1,9 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ThemeService } from '../theme.service';
@@ -16,13 +17,15 @@ import { Subscription } from 'rxjs';
     CommonModule,
     WeaponTableComponent,
     GenericTableComponent,
-    ScrollNavComponent
+    ScrollNavComponent,
+    ImageViewerComponent
   ],
   templateUrl: './shops.component.html',
   styleUrls: ['./shops.component.css'],
   encapsulation: ViewEncapsulation.None
 })
 export class ShopsComponent implements OnInit, OnDestroy {
+  @Output() navigateToLocation = new EventEmitter<string>();
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
@@ -120,6 +123,10 @@ export class ShopsComponent implements OnInit, OnDestroy {
   toggleWeaponCollapse(shopId: number): void {
     const newState = !this.isWeaponCollapsed(shopId);
     localStorage.setItem(`shop-${shopId}-weapons-collapsed`, JSON.stringify(newState));
+  }
+
+  onLocationClick(locationName: string) {
+    this.navigateToLocation.emit(locationName);
   }
 
   hasActivePlayer(): boolean {

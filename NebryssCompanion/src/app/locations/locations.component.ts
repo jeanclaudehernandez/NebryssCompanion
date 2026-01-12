@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
@@ -17,11 +17,14 @@ import { Location, Locations, Lore } from '../model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LocationsComponent implements OnInit {
+  @Input() initialLocationName: string | null = null;
+  @Output() navigateTo = new EventEmitter<any>();
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   private readonly STORAGE_KEY = 'selectedLocationName';
   loreData: Lore | null = null;
   uniqueFactions: string[] = [];
+  shopNames: string[] = [];
   
   constructor(
     private dataService: DataService,
@@ -32,12 +35,28 @@ export class LocationsComponent implements OnInit {
     this.dataService.getLocations().subscribe(data => {
       this.locations = data.locations;
       this.uniqueFactions = this.getUniqueFactions();
-      this.loadFromLocalStorage();
+
+      if (this.initialLocationName) {
+        const location = this.locations.find(l => l.name === this.initialLocationName);
+        if (location) {
+          this.selectLocation(location);
+        } else {
+          this.loadFromLocalStorage();
+        }
+      } else {
+        this.loadFromLocalStorage();
+      }
+
       this.cdr.markForCheck();
     });
     
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
+      this.cdr.markForCheck();
+    });
+
+    this.dataService.getShops().subscribe(shops => {
+      this.shopNames = shops.map(shop => shop.name);
       this.cdr.markForCheck();
     });
   }
@@ -99,6 +118,39 @@ export class LocationsComponent implements OnInit {
     const factions = this.locations.map(location => location.faction);
     return [...new Set(factions)];
   }
+
+  navigateToShop(shopName: string) {
+    this.navigateTo.emit('shops');
+    
+    // Use setTimeout to allow the view to change before scrolling
+    setTimeout(() => {
+      // Find the shop element by text content since we don't have the ID here directly
+      // Or we can fetch shops to get ID, but that requires more logic.
+      // Better approach: Let's use DataService to find shop ID by name
+      this.dataService.getShops().subscribe(shops => {
+        const shop = shops.find(s => s.name === shopName);
+        if (shop) {
+          const elementId = `shop-${shop.id}`;
+          const element = document.getElementById(elementId);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Add a highlight effect
+            element.classList.add('highlight-shop');
+            setTimeout(() => element.classList.remove('highlight-shop'), 2000);
+          }
+        }
+      });
+    }, 100);
+  }
+
+  isShop(featureName: string): boolean {
+    // This is a simple check. A more robust way would be to check against the list of shops
+    // But since we can't easily access the shops list synchronously here without pre-fetching,
+    // we'll rely on a known list or fetch it on init.
+    // Let's fetch shops on init and store their names.
+    return this.shopNames.includes(featureName);
+  }
+
 
   trackByFaction(index: number, item: string): string {
     return item;
