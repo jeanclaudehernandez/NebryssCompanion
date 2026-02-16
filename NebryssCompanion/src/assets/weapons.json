@@ -148,7 +148,7 @@
     "price": 130,
     "profiles": [
       {
-        "profileName": "",
+        "profileName": "power cell",
         "rng": 0,
         "attacks": 5,
         "ws": 3,
@@ -157,6 +157,15 @@
           { "ruleId": 15, "modValue": null },
           { "ruleId": 16, "modValue": null }
         ],
+        "body": "astartes"
+      },
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 4, "max": 4 },
+        "specialRules": [],
         "body": "astartes"
       }
     ]
@@ -398,7 +407,7 @@
     "profiles": [
       {
         "profileName": "",
-        "rng": 8,
+        "rng": 10,
         "attacks": 4,
         "ws": 4,
         "damage": { "min": 2, "max": 3 },

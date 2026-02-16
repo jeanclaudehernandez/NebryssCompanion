@@ -87,6 +87,7 @@
       [data]="itemTableData"
       [headers]="itemTableHeaders"
       [headerKeys]="itemTableHeaderKeys"
+      [renderHtml]="['description']"
       [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true">
     </app-generic-table>

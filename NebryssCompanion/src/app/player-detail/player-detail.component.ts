@@ -70,10 +70,11 @@ export class PlayerDetailComponent implements OnChanges {
     if (this.character.items && this.character.items.length > 0) {
       this.itemTableData = this.character.items.map(inventory => {
         const item = this.getItemById(inventory.id);
+        const rawDescription = item?.description || 'No description available';
         return {
           id: inventory.id,
           name: item?.name || 'Unknown Item',
-          description: item?.description || 'No description available',
+          description: this.processItemDescription(rawDescription),
           quant: inventory.quant,
           type: item?.type
         };
@@ -115,24 +116,47 @@ export class PlayerDetailComponent implements OnChanges {
   processAbilityEffect(effect: string): string {
     if (!effect) return '';
     
-    // Find all status references (/number/) in the effect text
-    const statusMatches = [...new Set(effect.match(/\/\d+\//g))];
+    const statusMatches = [...new Set(effect.match(/\/status\/:\d+\//g))];
     
     if (!statusMatches || statusMatches.length === 0) return effect;
     
     let processedEffect = effect;
     
     statusMatches.forEach(match => {
-      const statusId = parseInt(match.replace(/\//g, ''));
+      const statusId = parseInt(match.replace('/status/:', '').replace('/', ''));
       const status = this.alteredStates.find(s => s.id === statusId);
       
       if (status) {
-        // Replace the reference with status name
-        processedEffect = processedEffect.replace(new RegExp(match, 'g'), status.name);
+        const link = `<span class="status-link" data-status="${status.name}">${status.name}</span>`;
+        processedEffect = processedEffect.replace(new RegExp(match, 'g'), link);
       }
     });
     
     return processedEffect;
+  }
+
+  processItemDescription(description: string): string {
+    if (!description) return '';
+    const withStatuses = this.replaceStatusTokens(description);
+    const regex = /\/weaponRule\/:(\d+)\//g;
+    return withStatuses.replace(regex, (match: string, idStr: string) => {
+      const id = parseInt(idStr, 10);
+      const rule = this.weaponRulesData.find(r => r.id === id);
+      if (!rule) return match;
+      const name = rule.name;
+      return `<span class="weapon-rule-link" data-weapon-rule="${name}">${name}</span>`;
+    });
+  }
+
+  private replaceStatusTokens(text: string): string {
+    const regex = /\/status\/:(\d+)\//g;
+    return text.replace(regex, (match: string, idStr: string) => {
+      const id = parseInt(idStr, 10);
+      const status = this.alteredStates.find(s => s.id === id);
+      if (!status) return match;
+      const name = status.name;
+      return `<span class="status-link" data-status="${name}">${name}</span>`;
+    });
   }
 
   isPlayer(character: Character): character is Player {

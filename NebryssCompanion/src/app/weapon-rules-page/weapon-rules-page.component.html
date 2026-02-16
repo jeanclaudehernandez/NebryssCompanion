@@ -1,0 +1,12 @@
+<div class="weapon-rules-page">
+  <h2>Weapon Rules</h2>
+  <app-generic-table
+    [title]="'Weapon Rules'"
+    [data]="weaponRules"
+    [headers]="tableHeaders"
+    [headerKeys]="tableHeaderKeys"
+    [renderHtml]="['effect']"
+    [storageKey]="'weapon-rules-table'"
+    [highlightInventory]="false">
+  </app-generic-table>
+</div>

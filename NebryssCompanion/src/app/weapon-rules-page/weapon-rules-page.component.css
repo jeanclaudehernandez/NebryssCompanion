@@ -1,0 +1,14 @@
+.weapon-rules-page {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.highlight-rule {
+  animation: highlight-green 2s;
+}
+
+@keyframes highlight-green {
+  0% { background-color: rgba(46, 204, 113, 0.6); }
+  100% { background-color: transparent; }
+}

@@ -23,7 +23,7 @@ import { ToastService } from '../toast.service';
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of data" [class.in-inventory]="isInInventory(item)">
+            <tr *ngFor="let item of data" [class.in-inventory]="highlightInventory && isInInventory(item)">
               <td *ngFor="let header of headerKeys">
                 <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
@@ -52,6 +52,7 @@ export class GenericTableComponent implements OnInit {
   @Input() inventoryManagement: boolean = false;
   @Input() isPlayerDetail: boolean = false;
   @Input() renderHtml?: string[];
+  @Input() highlightInventory: boolean = true;
   
   isCollapsed = true;
 

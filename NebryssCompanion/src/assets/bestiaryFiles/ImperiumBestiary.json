@@ -239,7 +239,7 @@
     "abilities": [
       {
         "name": "Cleansing Flame",
-        "effect": "When attacking [spell] operatives, critical hits apply <strong>/3/</strong> status automatically.",
+        "effect": "When attacking [spell] operatives, critical hits apply <strong>/status/:3/</strong> status automatically.",
         "prModifier": 3
       }
     ]
@@ -340,7 +340,7 @@
       },
       {
         "name": "Warp Flux",
-        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/7/</strong> status.",
+        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/status/:7/</strong> status.",
         "prModifier": 7
       }
     ]

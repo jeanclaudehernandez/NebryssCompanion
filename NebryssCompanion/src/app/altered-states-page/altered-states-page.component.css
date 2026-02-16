@@ -1,0 +1,15 @@
+.altered-states-page {
+  padding: 1rem;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.highlight-state {
+  animation: highlight-state-green 2s;
+}
+
+@keyframes highlight-state-green {
+  0% { background-color: rgba(46, 204, 113, 0.6); }
+  100% { background-color: transparent; }
+}
+

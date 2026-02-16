@@ -36,6 +36,7 @@ import { ActivePlayerService } from '../active-player.service';
           [data]="getCategoryData(category.key)"
           [headers]="category.headers"
           [headerKeys]="category.keys"
+          [renderHtml]="['description']"
           [inventoryManagement]="hasActivePlayer()">
         </app-generic-table>
       </div>
@@ -108,7 +109,17 @@ export class ItemsComponent implements OnInit {
     }
     
     // Get items matching the requested type
-    const items = this.itemsData.items.filter(item => item.type === key);
+    const items = this.itemsData.items
+      .filter(item => item.type === key)
+      .map(item => {
+        const raw = item.description || '';
+        const withStatuses = this.replaceStatusTokens(raw);
+        const withRules = this.replaceWeaponRuleTokens(withStatuses);
+        return {
+          ...item,
+          description: withRules
+        };
+      });
     
     // Check if we have an active player
     const activePlayer = this.activePlayerService.activePlayer;
@@ -124,6 +135,30 @@ export class ItemsComponent implements OnInit {
       const aOwned = a.id !== undefined && playerItemIds.has(a.id) ? 1 : 0;
       const bOwned = b.id !== undefined && playerItemIds.has(b.id) ? 1 : 0;
       return bOwned - aOwned; // Sort descending so owned items come first
+    });
+  }
+
+  private replaceWeaponRuleTokens(text: string): string {
+    if (!text) return '';
+    const regex = /\/weaponRule\/:(\d+)\//g;
+    return text.replace(regex, (match: string, idStr: string) => {
+      const id = parseInt(idStr, 10);
+      const rule = this.weaponRules.find(r => r.id === id);
+      if (!rule) return match;
+      const name = rule.name;
+      return `<span class="weapon-rule-link" data-weapon-rule="${name}">${name}</span>`;
+    });
+  }
+
+  private replaceStatusTokens(text: string): string {
+    if (!text) return '';
+    const regex = /\/status\/:(\d+)\//g;
+    return text.replace(regex, (match: string, idStr: string) => {
+      const id = parseInt(idStr, 10);
+      const status = this.alteredStates.find(s => s.id === id);
+      if (!status) return match;
+      const name = status.name;
+      return `<span class="status-link" data-status="${name}">${name}</span>`;
     });
   }
 

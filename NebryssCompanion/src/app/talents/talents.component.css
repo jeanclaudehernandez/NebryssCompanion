@@ -15,6 +15,23 @@
     font-weight: bold;
     z-index: 100;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.add-talent-point-btn {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.add-talent-point-btn:hover {
+    background-color: #27ae60;
 }
 
 .talent-category {

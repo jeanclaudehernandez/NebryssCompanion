@@ -105,7 +105,7 @@
       "origin": "Imperium of Man (exiled)",
       "attributes": {
         "Movement": 7,
-        "Wounds": 6,
+        "Wounds": 7,
         "Save": 5,
         "APL": 2,
         "body": ["universal", "human"]
@@ -113,16 +113,12 @@
       "weapons": [17, 24],
       "abilities": [
         {
-          "name": "Unrelenting Agility",
-          "effect": "Once per battle: this operative may perform Shoot action within control range of an enemy operative if that same operative was the target of previous charge action during this activation. <strong>If the target survives</strong>, this operative <strong>gains 1AP</strong> until the end of the activation. "
+          "name": "Unrelenting Barrage",
+          "effect": "This operative can perform the shoot action twice in an activation"
         },
         {
-          "name": "Quick Assault",
-          "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, <strong>it can resolve two dice in sequence and add 1dmg to both their damage</strong>. "
-        },
-        {
-          "name": "Deadly intuition",
-          "effect": "Reaction, Once per battle: When an enemy operative declares a charge action, before or after it moves, if it's a valid target you can make a shoot action against that operative, weapons used for this rule gain the balanced weapon rule."
+          "name": "Demonstrabily Agile",
+          "effect": "Reaction, Once per battle: When a shoot or charge action is declared with this operative as it's target, it can perform a move action, (If this makes the target no longer valid for a charge, the enemy moves to the place it would have moved to charge this operative. If this makes the target of a shoot action no longer valid, the opponent can peform a different action or shoot a different target). "
         }
       ],
       "progression": {
@@ -314,5 +310,53 @@
         { "id": 57, "quant": 2 },
         { "id": 58, "quant": 2 }
       ]
+    },
+    {
+      "id": 7,
+      "name": "Cassios Edilecto",
+      "race": "Astartes",
+      "origin": "Imperium - Adeptus Astartes (Bladeguard)",
+      "attributes": {
+        "Movement": 5,
+        "Wounds": 12,
+        "Save": 4,
+        "APL": 2,
+        "body": ["universal", "astartes"]
+      },
+      "weapons": [8, 52],
+      "abilities": [
+        {
+          "name": "Astartes",
+          "effect": "Once per battle: This operative gains 1AP and it can perform either two Shoot actions or two Fight actions."
+        },
+        {
+          "name": "Noble Sacrifice",
+          "effect": "Reaction, Once per battle: When an enemy declares shoot action against allies within 3 inches, you can perform a dash action towards that ally and become the target of that shoot action."
+        },
+        {
+          "name":  "Shield Stance",
+          "effect": "0AP: until you switch your stance, when you are the target of a shoot action, you can reroll one failed dice"
+        },
+        {
+          "name": "Two-handed stance",
+          "effect": "0AP: choose a melee weapon, until you switch your stance. When you perform a fight action, that weapon gains one of the following weapon rules: relentless, rending, brutal, parry."
+        }
+      ],
+      "progression": {
+        "talentPoints": 0,
+        "talents": [],
+        "mistrals": {
+          "digital": 0,
+          "physical": {
+            "1s": 0,
+            "5s": 0,
+            "10s": 0,
+            "20s": 0,
+            "50s": 0,
+            "100s": 0
+          }
+        }
+      },
+      "items": []
     }
   ]

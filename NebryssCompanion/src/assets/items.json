@@ -235,7 +235,7 @@
       "price": 8,
       "quantity": 6,
       "subtype": "Bolter",
-      "description": "Rounds filled with acidic compounds, SR: Burning, Bleeding.",
+      "description": "Rounds filled with acidic compounds, SR: /weaponRule/:6/, /weaponRule/:7/.",
       "type": "ammunition"
     },
     {
@@ -262,7 +262,7 @@
       "price": 5,
       "quantity": 8,
       "subtype": "Rifle/Sniper",
-      "description": "Rounds designed to pierce armor, SR: Piercing 1.",
+      "description": "Rounds designed to pierce armor, SR: /weaponRule/:34/.",
       "type": "ammunition"
     },
     {
@@ -280,7 +280,7 @@
       "price": 10,
       "quantity": 5,
       "subType": "Sniper",
-      "description": "Precision-engineered rounds, Penetrating 1, SR: Devastating 2.",
+      "description": "Precision-engineered rounds, Penetrating 1, SR: /weaponRule/:25/.",
       "type": "ammunition"
     },
     {
@@ -289,7 +289,7 @@
       "price": 4,
       "quantity": 8,
       "subType": "Rifle",
-      "description": "Rounds that ignite on impact, SR: Burning",
+      "description": "Rounds that ignite on impact, SR: /weaponRule/:6/.",
       "type": "ammunition"
     },
     {
@@ -298,7 +298,7 @@
       "price": 3,
       "quantity": 10,
       "subType": "Pistol/Rifle",
-      "description": "Rounds that explode on impact, SR: blast 1 inch.",
+      "description": "Rounds that explode on impact, SR: /weaponRule/:30/.",
       "type": "ammunition"
     },
     {
@@ -504,7 +504,7 @@
       "id": 63,
       "name": "Poison Flask",
       "price": 0,
-      "description": "A flask of poison, can be used to coat a weapon or a melee weapon. It gains the toxic special rule.",
+      "description": "A flask of poison, can be used to coat a weapon or a melee weapon. It gains the /weaponRule/:52/.",
       "type": "consumable"
     },
     {

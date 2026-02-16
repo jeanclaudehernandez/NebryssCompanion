@@ -32,25 +32,25 @@
   {
     "id": 6,
     "name": "Burning",
-    "effect": "If damage is made to the target during this action, apply /3/ status to the target.",
+    "effect": "If damage is made to the target during this action, apply /status/:3/ status to the target.",
     "prModifier": 1
   },
   {
     "id": 7,
     "name": "Bleeding",
-    "effect": "If damage is made to the target during this action, apply /2/ status to the target.",
+    "effect": "If damage is made to the target during this action, apply /status/:2/ status to the target.",
     "prModifier": 1
   },
   {
     "id": 8,
     "name": "Electrify",
-    "effect": "If damage is made to the target during this action, apply /6/ status to the target.",
+    "effect": "If damage is made to the target during this action, apply /status/:6/ status to the target.",
     "prModifier": 2
   },
   {
     "id": 10,
     "name": "Supressing",
-    "effect": "Target operative and active operative roll 1D6 + APL if active operative score is higher, apply /4/ status on target.",
+    "effect": "Target operative and active operative roll 1D6 + APL if active operative score is higher, apply /status/:4/ status on target.",
     "prModifier": 4
   },
   {
@@ -164,7 +164,7 @@
   {
     "id": 29,
     "name": "Entangle",
-    "effect": "If damage is made with a critical hit, apply /1/ status on target.",
+    "effect": "If damage is made with a critical hit, apply /status/:1/ status on target.",
     "prModifier": 1
   },
   {
@@ -206,7 +206,7 @@
   {
     "id": 36,
     "name": "Plague Bite",
-    "effect": "If damage is made to the target during this action, apply /2/ status to the target. If the target is already bleeding, apply /3/ status.",
+    "effect": "If damage is made to the target during this action, apply /status/:2/ status to the target. If the target is already bleeding, apply /status/:3/ status.",
     "prModifier": 1
   },
   {
@@ -296,13 +296,13 @@
   {
     "id": 51,
     "name": "Corrupt",
-    "effect": "If damage is made to the target during this action with a critical success, apply /7/ status to the target.",
+    "effect": "If damage is made to the target during this action with a critical success, apply status/:7/ status to the target.",
     "prModifier": 3
   },
   {
     "id": 52,
     "name": "Poisonous",
-    "effect": "If damage is made to the target during this action with a critical success, apply /7/ status to the target.",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:7/ status to the target.",
     "prModifier": 3
   }
 ]

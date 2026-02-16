@@ -51,6 +51,15 @@ export class TalentsComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
 
+  addTalentPoint(): void {
+    if (!this.activePlayer) return;
+    if (this.activePlayer.progression.talentPoints === undefined || this.activePlayer.progression.talentPoints === null) {
+      this.activePlayer.progression.talentPoints = 0;
+    }
+    this.activePlayer.progression.talentPoints += 1;
+    this.activePlayerService.setActivePlayer({ ...this.activePlayer });
+  }
+
   getRequirementNames(requirementIds: string[]): string {
     const allTalents = this.talentCategories.flatMap(cat => cat.talents);
     return requirementIds.map(id => {

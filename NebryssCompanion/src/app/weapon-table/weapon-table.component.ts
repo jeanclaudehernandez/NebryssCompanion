@@ -194,21 +194,18 @@ export class WeaponTableComponent implements OnChanges {
       description = description.replace(/<x>/g, " " + rule.modValue.toString());
     }
   
-    // Find all status references (/number/) in the description
-    const statusMatches = [...new Set(description.match(/\/\d+\//g))];
+    const statusMatches = [...new Set(description.match(/\/status\/:\d+\//g))];
     const statusEntries: string[] = [];
   
     if (statusMatches) {
       statusMatches.forEach(match => {
-        const statusId = parseInt(match.replace(/\//g, ''));
+        const statusId = parseInt(match.replace('/status/:', '').replace('/', ''));
         const status = this.alteredStates.find(s => s.id === statusId);
         
         if (status) {
-          // Replace the reference with status name
-          description = description.replace(new RegExp(match, 'g'), status.name);
-          
-          // Add to status entries list
-          statusEntries.push(`<strong>${status.name}</strong>: ${status.effect}`);
+          const link = `<span class="status-link" data-status="${status.name}">${status.name}</span>`;
+          description = description.replace(new RegExp(match, 'g'), link);
+          statusEntries.push(`<strong><span class="status-link" data-status="${status.name}">${status.name}</span></strong>: ${status.effect}`);
         }
       });
     }

@@ -2,6 +2,7 @@
     <h2>Talents</h2>
     <div class="talent-points-floating" *ngIf="activePlayer">
       <span>Available Talent Points: {{ activePlayer.progression.talentPoints || 0 }}</span>
+      <button class="add-talent-point-btn" (click)="addTalentPoint()">Add Talent Point</button>
     </div>
     <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
       <h3>{{category.name}}</h3>
