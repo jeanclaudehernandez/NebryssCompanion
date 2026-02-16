@@ -1433,5 +1433,24 @@
         "body": "daemon"
       }
     ]
+  },
+  {
+    "id": 73,
+    "name": "Photon Grenade Launcher",
+    "price": 30,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 8,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 2 },
+          { "ruleId": 17, "modValue": null }
+        ],
+        "body": "human"
+      }
+    ]
   }
 ]

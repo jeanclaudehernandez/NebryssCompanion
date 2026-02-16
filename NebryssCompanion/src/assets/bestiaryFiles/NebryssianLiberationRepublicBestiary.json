@@ -197,5 +197,129 @@
         "prModifier": 7
       }
     ]
+  },
+  {
+    "id": 43,
+    "name": "T'au Pathfinder Medic",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 86,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Nano-Triage",
+        "effect": "1AP: Heal 2D3 wounds to a friendly operative within 3 inches and remove one non-/status/:7/ status effect.",
+        "prModifier": 7
+      },
+      {
+        "name": "Pathfinder Support",
+        "effect": "While within 6 inches of another T'au operative, this operative re-rolls 1s on defense rolls.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 44,
+    "name": "T'au Pathfinder Drone Controller",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 84,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Drone Uplink",
+        "effect": "1AP: Select one friendly operative within 6 inches. Until the end of the Turning Point, when that operative performs a Shoot action, it gains Balanced and Ceaseless against targets that are visible to both operatives.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 45,
+    "name": "T'au Pathfinder Team Leader",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 107,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Coordinated Volley",
+        "effect": "1AP: Until the end of the Turning Point, friendly T'au operatives within 6 inches can re-roll one attack die when performing a Shoot action against a Markerlighted target.",
+        "prModifier": 7
+      },
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ]
+  },
+  {
+    "id": 46,
+    "name": "T'au Pathfinder Grenadier",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27,
+      73
+    ],
+    "abilities": [
+      {
+        "name": "Grenade Specialist",
+        "effect": "When this operative performs a Shoot action with a weapon that has Blast or Shockwave, it can re-roll up to two attack dice.",
+        "prModifier": 4
+      },
+      {
+        "name": "Photon Saturation",
+        "effect": "1AP: Select a point within 6 inches. Until the end of the Turning Point, enemy operatives within 3 inches of that point worsen their Save by 1 against ranged attacks made by your kill team.",
+        "prModifier": 6
+      }
+    ]
   }
 ]
