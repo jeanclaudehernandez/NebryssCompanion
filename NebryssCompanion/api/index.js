@@ -50,22 +50,22 @@ function createCollectionRoute(path, options) {
   });
 }
 
-createCollectionRoute('/api/players', {
+createCollectionRoute('/api/player', {
   usePlayersDb: true,
   collectionName: 'player',
 });
 
-createCollectionRoute('/api/weapons', {
+createCollectionRoute('/api/weapon', {
   usePlayersDb: false,
   collectionName: 'weapon',
 });
 
-createCollectionRoute('/api/items', {
+createCollectionRoute('/api/item', {
   usePlayersDb: false,
   collectionName: 'item',
 });
 
-createCollectionRoute('/api/weaponRules', {
+createCollectionRoute('/api/weaponRule', {
   usePlayersDb: false,
   collectionName: 'weaponRule',
 });
@@ -75,17 +75,17 @@ createCollectionRoute('/api/bestiary', {
   collectionName: 'bestiary',
 });
 
-createCollectionRoute('/api/shops', {
+createCollectionRoute('/api/shop', {
   usePlayersDb: false,
   collectionName: 'shop',
 });
 
-createCollectionRoute('/api/itemCategories', {
+createCollectionRoute('/api/itemCategory', {
   usePlayersDb: false,
-  collectionName: 'itemCategories',
+  collectionName: 'itemCategory',
 });
 
-createCollectionRoute('/api/npcs', {
+createCollectionRoute('/api/npc', {
   usePlayersDb: false,
   collectionName: 'npc',
 });
@@ -100,7 +100,7 @@ createCollectionRoute('/api/locations', {
   collectionName: 'location',
 });
 
-createCollectionRoute('/api/talents', {
+createCollectionRoute('/api/talent', {
   usePlayersDb: false,
   collectionName: 'talent',
 });
@@ -110,12 +110,12 @@ createCollectionRoute('/api/status', {
   collectionName: 'status',
 });
 
-createCollectionRoute('/api/mistEffects', {
+createCollectionRoute('/api/mistEffect', {
   usePlayersDb: false,
   collectionName: 'mistEffect',
 });
 
-createCollectionRoute('/api/terrain', {
+createCollectionRoute('/api/terrainRule', {
   usePlayersDb: false,
   collectionName: 'terrainRule',
 });
