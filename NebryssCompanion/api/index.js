@@ -52,22 +52,22 @@ function createCollectionRoute(path, options) {
 
 createCollectionRoute('/api/players', {
   usePlayersDb: true,
-  collectionName: 'players',
+  collectionName: 'player',
 });
 
 createCollectionRoute('/api/weapons', {
   usePlayersDb: false,
-  collectionName: 'weapons',
+  collectionName: 'weapon',
 });
 
 createCollectionRoute('/api/items', {
   usePlayersDb: false,
-  collectionName: 'items',
+  collectionName: 'item',
 });
 
 createCollectionRoute('/api/weaponRules', {
   usePlayersDb: false,
-  collectionName: 'weaponRules',
+  collectionName: 'weaponRule',
 });
 
 createCollectionRoute('/api/bestiary', {
@@ -77,7 +77,7 @@ createCollectionRoute('/api/bestiary', {
 
 createCollectionRoute('/api/shops', {
   usePlayersDb: false,
-  collectionName: 'shops',
+  collectionName: 'shop',
 });
 
 createCollectionRoute('/api/itemCategories', {
@@ -87,7 +87,7 @@ createCollectionRoute('/api/itemCategories', {
 
 createCollectionRoute('/api/npcs', {
   usePlayersDb: false,
-  collectionName: 'npcs',
+  collectionName: 'npc',
 });
 
 createCollectionRoute('/api/lore', {
@@ -97,27 +97,27 @@ createCollectionRoute('/api/lore', {
 
 createCollectionRoute('/api/locations', {
   usePlayersDb: false,
-  collectionName: 'locations',
+  collectionName: 'location',
 });
 
 createCollectionRoute('/api/talents', {
   usePlayersDb: false,
-  collectionName: 'talents',
+  collectionName: 'talent',
 });
 
-createCollectionRoute('/api/alteredStates', {
+createCollectionRoute('/api/status', {
   usePlayersDb: false,
-  collectionName: 'alteredStates',
+  collectionName: 'status',
 });
 
 createCollectionRoute('/api/mistEffects', {
   usePlayersDb: false,
-  collectionName: 'mistEffects',
+  collectionName: 'mistEffect',
 });
 
-createCollectionRoute('/api/terrains', {
+createCollectionRoute('/api/terrain', {
   usePlayersDb: false,
-  collectionName: 'terrains',
+  collectionName: 'terrainRule',
 });
 
 const port = process.env.PORT || 8080;
