@@ -6,6 +6,7 @@
     "start": "ng serve",
     "start:prod": "ng serve --configuration production",
     "start:opt": "ng serve --configuration optimized",
+    "start:api": "node api/index.js",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "build:opt": "ng build --configuration optimized",
@@ -27,6 +28,9 @@
     "@angular/platform-browser-dynamic": "^18.0.0",
     "@angular/router": "^18.0.0",
     "@angular/service-worker": "^18.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "mongodb": "^6.9.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
