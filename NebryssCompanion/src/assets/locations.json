@@ -1,5 +1,4 @@
-{
-  "locations": [
+[
     {
       "name": "Nebryss",
       "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
@@ -208,4 +207,3 @@
       ]
     }
   ]
-} 

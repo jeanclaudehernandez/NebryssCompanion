@@ -1,6 +1,4 @@
-{
-  "items": [
-    {
+[{
       "id": 1,
       "name": "Mistcloak",
       "price": 8,
@@ -520,6 +518,4 @@
       "price": 0,
       "description": "Restores 1D3+1 wounds, 1AP when in battle and rolls add 1d3 to it's movement stat untill the next reposition or charge action.",
       "type": "consumable"
-    }
-  ]
-}
+    }]

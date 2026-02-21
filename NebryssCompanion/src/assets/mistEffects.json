@@ -1,5 +1,4 @@
-{
-  "mistEffects": [
+ [
     {
       "effectName": "Obscuration",
       "densityLevel": "Light",
@@ -66,4 +65,3 @@
       "description": "This Zone isn't affected by mist, Ranged attacks within or that target an operative in mist still apply mist effects."
     }
   ]
-}

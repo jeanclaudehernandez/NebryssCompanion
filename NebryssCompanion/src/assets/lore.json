@@ -1,5 +1,4 @@
 {
-    "planetOverview": {
       "planet": {
         "name": "Nebryss",
         "imgUrl": "https://iili.io/3R2Be6u.png",
@@ -204,5 +203,4 @@
           "description": "The mist becomes unstable, threatening to engulf the planet unless the players intervene."
         }
       ]
-    }
 }
