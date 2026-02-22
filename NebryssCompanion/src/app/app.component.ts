@@ -17,6 +17,7 @@ import { MistEngineBattlesComponent } from './mist-engine-battles/mist-engine-ba
 import { WeaponRulesPageComponent } from './weapon-rules-page/weapon-rules-page.component';
 import { AlteredStatesPageComponent } from './altered-states-page/altered-states-page.component';
 import { ThemeService } from './theme.service';
+import { LoadingService } from './loading.service';
 
   @Component({
   selector: 'app-root',
@@ -40,6 +41,11 @@ import { ThemeService } from './theme.service';
     AlteredStatesPageComponent
   ],
   template: `
+    @if (loadingService.loading$ | async) {
+      <div class="loading-overlay">
+        <div class="spinner"></div>
+      </div>
+    }
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
     
     <div class="content-area" #contentArea>
@@ -90,7 +96,7 @@ export class AppComponent {
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
 
-  constructor(private themeService: ThemeService) {
+  constructor(private themeService: ThemeService, public loadingService: LoadingService) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
   }
