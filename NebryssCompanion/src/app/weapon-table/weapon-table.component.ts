@@ -130,35 +130,25 @@ export class WeaponTableComponent implements OnChanges {
   }
 
   private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]): {weapon: Weapon, profile: WeaponProfile}[] {
+    const player = this.activePlayerService.activePlayer;
+    const ownedWeaponIds = player && player.weapons ? player.weapons : [];
+
     return [...profiles].sort((a, b) => {
-      // First sort by player ownership
-      const player = this.activePlayerService.activePlayer;
-      if (player && player.weapons) {
-        const aOwned = player.weapons.includes(a.weapon.id) ? 1 : 0;
-        const bOwned = player.weapons.includes(b.weapon.id) ? 1 : 0;
-        if (aOwned !== bOwned) {
-          return bOwned - aOwned; // Sort descending so owned items come first
-        }
-      }
-      
-      // Then sort by range as before
-      const aRng = a.profile.rng;
-      const bRng = b.profile.rng;
-
-      // Melee (0) first
-      if (aRng === 0 && bRng !== 0) return -1;
-      if (bRng === 0 && aRng !== 0) return 1;
-
-      // Numeric ranges (ascending)
-      if (typeof aRng === 'number' && typeof bRng === 'number') {
-        return aRng - bRng;
+      const aOwned = ownedWeaponIds.includes(a.weapon.id) ? 1 : 0;
+      const bOwned = ownedWeaponIds.includes(b.weapon.id) ? 1 : 0;
+      if (aOwned !== bOwned) {
+        return bOwned - aOwned;
       }
 
-      // Handle null/undefined ranges last
-      if (aRng == null) return 1;
-      if (bRng == null) return -1;
+      const aMelee = a.profile.rng === 0 ? 1 : 0;
+      const bMelee = b.profile.rng === 0 ? 1 : 0;
+      if (aMelee !== bMelee) {
+        return bMelee - aMelee;
+      }
 
-      return 0;
+      const aName = a.weapon.name || '';
+      const bName = b.weapon.name || '';
+      return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
     });
   }
   
