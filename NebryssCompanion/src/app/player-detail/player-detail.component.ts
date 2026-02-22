@@ -263,7 +263,7 @@ export class PlayerDetailComponent implements OnChanges {
       confirm: () => this.confirmMistralAddition(),
       cancel: () => this.modalService.close(),
       setAmount: (value: number) => {
-        if (!Number.isFinite(value) || value < 0) {
+        if (!Number.isFinite(value)) {
           this.mistralModalAmount = 0;
         } else {
           this.mistralModalAmount = Math.floor(value);
@@ -279,10 +279,7 @@ export class PlayerDetailComponent implements OnChanges {
       return;
     }
     const amount = this.mistralModalAmount;
-    if (amount <= 0) {
-      this.modalService.close();
-      return;
-    }
+    console.log(amount)
     const activePlayer = this.activePlayerService.activePlayer;
     if (
       !activePlayer ||

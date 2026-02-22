@@ -97,7 +97,7 @@
     </div>
   </div>
   
-  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character?.items?.length">
+  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character.items?.length">
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
@@ -149,7 +149,6 @@
         Amount
         <input
           type="number"
-          min="0"
           (input)="setAmount(($any($event.target).valueAsNumber) ?? 0)" />
       </label>
     </div>
