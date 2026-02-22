@@ -2,18 +2,19 @@ import { Component, Input, OnChanges, Output, EventEmitter, TemplateRef, ViewChi
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
-import { AlteredState, BestiaryEntry, Character, Items, Player, ScrollSection, Talent, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Character, Inventory, Items, Player, ScrollSection, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ActivePlayerService } from '../active-player.service';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent],
+  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent, FormsModule],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
@@ -33,6 +34,8 @@ export class PlayerDetailComponent implements OnChanges {
   itemTableData: any[] = [];
   itemTableHeaders: string[] = ['Name', 'Description', 'Quantity'];
   itemTableHeaderKeys: string[] = ['name', 'description', 'quant'];
+  modItems: { inventory: Inventory; item: any }[] = [];
+  ownedWeapons: Weapon[] = [];
   
   // Talent table properties
   talentTableData: any[] = [];
@@ -57,22 +60,18 @@ export class PlayerDetailComponent implements OnChanges {
   ) {}
 
   ngOnChanges(): void {
-    // Body parts formatting
     this.bodyString = this.character.attributes.body.join(', ');
     
-    // Update talent table data if character is a player
     if (this.isPlayer(this.character) && this.character.progression?.talents) {
       this.talentTableData = this.character.progression.talents.map((talentId: string) => {
-        // Get talent info from id
         const talent = this.dataService.getTalentById(talentId);
         return {
           name: talent?.name,
-          effect: talent?.effect // HTML content will be sanitized in GenericTableComponent
+          effect: talent?.effect
         };
       });
     }
     
-    // Update item table data
     if (this.character.items && this.character.items.length > 0) {
       this.itemTableData = this.character.items.map(inventory => {
         const item = this.getItemById(inventory.id);
@@ -86,8 +85,28 @@ export class PlayerDetailComponent implements OnChanges {
         };
       });
     }
+
+    if (this.isPlayer(this.character)) {
+      const player = this.character as Player;
+      this.ownedWeapons = this.weaponsData.filter(w => player.weapons?.includes(w.id));
+      if (player.items && player.items.length > 0) {
+        this.modItems = player.items
+          .map((inventory: Inventory) => {
+            const item = this.getItemById(inventory.id);
+            if (!item || item.type !== 'modification') {
+              return null;
+            }
+            return { inventory, item };
+          })
+          .filter((entry): entry is { inventory: Inventory; item: any } => !!entry);
+      } else {
+        this.modItems = [];
+      }
+    } else {
+      this.modItems = [];
+      this.ownedWeapons = [];
+    }
     
-    // Process abilities
     if (this.character.abilities && this.character.abilities.length > 0) {
       this.processedAbilities = this.character.abilities.map(ability => ({
         name: ability.name,
@@ -97,11 +116,13 @@ export class PlayerDetailComponent implements OnChanges {
       this.processedAbilities = [];
     }
     
-    // Set up scroll sections with unique IDs
     this.scrollSections = [
       { title: `${(this.isBeast(this.character) ? this.character.name : '')} Attributes`, id: `attributes-${this.character.id}`},
       { title: `${(this.isBeast(this.character) ? this.character.name : '')} Weapons`, id: `weapons-${this.character.id}`},
     ];
+    if (this.isPlayer(this.character) && this.modItems.length > 0) {
+      this.scrollSections.push({ title: 'Mods', id: `mods-${this.character.id}` });
+    }
     if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
       this.scrollSections.push({ title: 'Talents', id: `talents-${this.character.id}` });
     }
@@ -115,7 +136,6 @@ export class PlayerDetailComponent implements OnChanges {
       this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Deployables`, id: `deployables-${this.character.id}`});
     }
     
-    // Emit scroll sections to parent component if needed
     this.scrollSectionsChange.emit(this.scrollSections);
   }
 
@@ -206,6 +226,27 @@ export class PlayerDetailComponent implements OnChanges {
 
   isActionAllowed(character: Character): boolean {
     return this.isPlayer(character) && this.isActivePlayer(character);
+  }
+
+  onModAttachedWeaponChange(inventoryItem: Inventory): void {
+    const activePlayer = this.activePlayerService.activePlayer;
+    if (
+      !activePlayer ||
+      !this.isPlayer(this.character) ||
+      activePlayer.id !== this.character.id ||
+      !activePlayer.items
+    ) {
+      return;
+    }
+    const playerItem = activePlayer.items.find(i => i.id === inventoryItem.id);
+    if (!playerItem) {
+      return;
+    }
+    (playerItem as any).attachedTo = (inventoryItem as any).attachedTo;
+    this.activePlayerService.updateActivePlayer({ ...activePlayer });
+    if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
+      this.character = { ...activePlayer };
+    }
   }
 
   copyToClipboard(): void {

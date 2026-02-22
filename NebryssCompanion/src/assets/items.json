@@ -526,7 +526,7 @@
       "price": 30,
       "description": "/weaponRule/:28/ and range is reduced by 1inch.",
       "type": "modification",
-      "part": "Pistol"
+      "part": "non-Bolter, non-Plasma Pistol"
     },
     {
       "id": 67,
@@ -540,8 +540,8 @@
       "id": 68,
       "name": "Fast Magazine",
       "price": 20,
-      "description": "Once per Battle: /weaponRule/:24/.",
+      "description": "Once per Battle: next shoot action /weaponRule/:24/.",
       "type": "modification",
-      "part": "non-Bolter Riffle, Pistol"
+      "part": "non-Plasma Riffle, Pistol"
     }
 ]

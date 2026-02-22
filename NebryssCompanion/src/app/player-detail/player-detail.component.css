@@ -166,3 +166,53 @@
   background-color: #4caf50;
   color: #ffffff;
 }
+
+/* Mods weapon selector styles */
+.weapon-selector {
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #333;
+  min-width: 180px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.weapon-selector:hover {
+  border-color: #999;
+}
+
+.weapon-selector:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+}
+
+.weapon-selector:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #ddd;
+}
+
+/* Dark theme for weapon selector */
+:host-context(.dark-theme) .weapon-selector {
+  background-color: #333;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+:host-context(.dark-theme) .weapon-selector:hover {
+  border-color: #777;
+}
+
+:host-context(.dark-theme) .weapon-selector:focus {
+  border-color: #64b5f6;
+  box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+}
+
+:host-context(.dark-theme) .weapon-selector:disabled {
+  background-color: #2d2d2d;
+  color: #888;
+  border-color: #444;
+}

@@ -34,14 +34,22 @@
                   </span>
                 </td>
                 <td>
-                  <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
-                      <span 
-                        class="rule-text weapon-rule-link"
-                        (click)="showRuleDetails(getRuleDisplay(rule))">
-                        {{ getRuleDisplay(rule).name }}
-                      </span>
-                      <span *ngIf="!last">, </span>
-                  </span>
+                  <div>
+                    <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
+                        <span 
+                          class="rule-text weapon-rule-link"
+                          (click)="showRuleDetails(getRuleDisplay(rule))">
+                          {{ getRuleDisplay(rule).name }}
+                        </span>
+                        <span *ngIf="!last">, </span>
+                    </span>
+                  </div>
+                  <div *ngIf="attachedModDescriptions[entry.weapon.id]?.length" class="mod-description">
+                    <strong>Mod:</strong>
+                    <span *ngFor="let modDesc of attachedModDescriptions[entry.weapon.id]; let lastMod = last">
+                      {{ processModDescription(modDesc) }}<span *ngIf="!lastMod"> | </span>
+                    </span>
+                  </div>
                 </td>
                 <td *ngIf="displayBody">{{entry.profile.body}}</td>
                 <td *ngIf="inventoryManagement">

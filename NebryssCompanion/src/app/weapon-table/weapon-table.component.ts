@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
-import { ModalService } from '../modal.service';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ToastService } from '../toast.service';
+import { DataService } from '../data.service';
+import { Subscription } from 'rxjs';
 
 interface ruleDisplay {
   name: string,
@@ -26,7 +27,7 @@ interface ruleDisplay {
   styleUrls: ['./weapon-table.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class WeaponTableComponent implements OnChanges {
+export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: WeaponRule[] = [];
@@ -39,17 +40,25 @@ export class WeaponTableComponent implements OnChanges {
   @Input() inventoryManagement: boolean = false;
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
+  attachedModDescriptions: { [weaponId: number]: string[] } = {};
+  private playerSubscription: Subscription | null = null;
 
   constructor(
     private dialog: MatDialog, 
     private activePlayerService: ActivePlayerService,
-    private toastService: ToastService
-  ) {}
+    private toastService: ToastService,
+    private dataService: DataService
+  ) {
+    this.playerSubscription = this.activePlayerService.activePlayer$.subscribe(() => {
+      this.updateAttachedMods();
+    });
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
       this.updateSortedProfiles();
     }
+    this.updateAttachedMods();
   }
 
   isInInventory(weaponId: number): boolean {
@@ -217,5 +226,47 @@ export class WeaponTableComponent implements OnChanges {
     setTimeout(() => {
       dialogRef.disableClose = false;
   }, 0);
+  }
+
+  private updateAttachedMods(): void {
+    const player = this.activePlayerService.activePlayer;
+    if (!player || !player.items || player.items.length === 0) {
+      this.attachedModDescriptions = {};
+      return;
+    }
+    const map: { [weaponId: number]: string[] } = {};
+    player.items.forEach(inventoryItem => {
+      const attachedTo = (inventoryItem as any).attachedTo;
+      if (!attachedTo) {
+        return;
+      }
+      const item = this.dataService.getItemById(inventoryItem.id);
+      if (!item || item.type !== 'modification') {
+        return;
+      }
+      const description = item.description || '';
+      if (!map[attachedTo]) {
+        map[attachedTo] = [];
+      }
+      map[attachedTo].push(description);
+    });
+    this.attachedModDescriptions = map;
+  }
+
+  processModDescription(text: string): string {
+    if (!text) return '';
+    const regex = /\/weaponRule\/:(\d+)\//g;
+    return text.replace(regex, (match: string, idStr: string) => {
+      const id = parseInt(idStr, 10);
+      const rule = this.weaponRulesData.find(r => r.id === id);
+      if (!rule) return match;
+      return rule.name;
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.playerSubscription) {
+      this.playerSubscription.unsubscribe();
+    }
   }
 }

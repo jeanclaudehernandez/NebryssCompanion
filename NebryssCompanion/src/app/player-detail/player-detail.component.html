@@ -75,6 +75,43 @@
         [inventoryManagement]="isActionAllowed(character)">
       </app-weapon-table>
   </div>
+
+  <div [id]="'mods-' + character.id" class="mods" *ngIf="isPlayer(character) && modItems.length">
+    <h3>Mods</h3>
+    <div class="table-container">
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Applies to</th>
+            <th>Attached Weapon</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let mod of modItems">
+            <td>{{ mod.item.name }}</td>
+            <td [innerHtml]="processItemDescription(mod.item.description || '') | sanitizeHtml"></td>
+            <td>{{mod.item.part}}</td>
+            <td>
+              <select
+                class="weapon-selector"
+                [(ngModel)]="mod.inventory.attachedTo"
+                (ngModelChange)="onModAttachedWeaponChange(mod.inventory)"
+                [disabled]="!isActionAllowed(character)">
+                <option [ngValue]="null">None</option>
+                <option
+                  *ngFor="let weapon of ownedWeapons"
+                  [ngValue]="weapon.id">
+                  {{ weapon.name }}
+                </option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
   
   <div [id]="'talents-' + character.id" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
     <h3>Talents</h3>
