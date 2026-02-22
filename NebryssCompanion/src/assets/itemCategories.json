@@ -17,8 +17,8 @@
       "id": 3,
       "name": "Ammunition", 
       "key": "ammunition",
-      "headers": ["Name", "Price", "Quantity", "Type", "Description"],
-      "keys": ["name", "price", "quantity", "type", "description"]
+      "headers": ["Name", "Price", "Quantity", "Subtype", "Description"],
+      "keys": ["name", "price", "quantity", "subType", "description"]
     },
     { 
       "id": 4,

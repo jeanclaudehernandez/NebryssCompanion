@@ -268,7 +268,7 @@
       "name": "Hollow-Point Rounds",
       "price": 3,
       "quantity": 10,
-      "subType": "Pistol",
+      "subtype": "Pistol",
       "description": "Rounds that expand on impact, dealing +1 Damage to unarmored targets.",
       "type": "ammunition"
     },
@@ -277,7 +277,7 @@
       "name": "Match Grade Rounds",
       "price": 10,
       "quantity": 5,
-      "subType": "Sniper",
+      "subtype": "Sniper",
       "description": "Precision-engineered rounds, Penetrating 1, SR: /weaponRule/:25/.",
       "type": "ammunition"
     },
@@ -286,7 +286,7 @@
       "name": "Incendiary Rounds",
       "price": 4,
       "quantity": 8,
-      "subType": "Rifle",
+      "subtype": "Rifle",
       "description": "Rounds that ignite on impact, SR: /weaponRule/:6/.",
       "type": "ammunition"
     },
@@ -295,7 +295,7 @@
       "name": "Fragmentation Rounds",
       "price": 3,
       "quantity": 10,
-      "subType": "Pistol/Rifle",
+      "subtype": "Pistol/Rifle",
       "description": "Rounds that explode on impact, SR: /weaponRule/:30/.",
       "type": "ammunition"
     },
