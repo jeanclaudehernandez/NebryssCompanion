@@ -230,17 +230,33 @@
             },
             {
                 "id": "su2",
-                "name": "Precision Reflexes",
-                "cost": 4,
-                "effect": "Improve <strong>Save</strong> by <strong>1</strong>. Does not stack with armor bonuses.",
+                "name": "Master of the Craft",
+                "cost": 7,
+                "effect": "Allows you to use one of your Reactions one additional time.",
                 "maxStacks": 1,
-                "prModifier": 5
+                "prModifier": 13
             },
             {
                 "id": "su3",
                 "name": "Mist Synergy",
                 "cost": 2,
                 "effect": "Once per battle: Gain <strong>+1 APL</strong> while in <strong>dense</strong> mist. Lasts one Turning Point.",
+                "maxStacks": 1,
+                "prModifier": 3
+            },
+            {
+                "id": "su4",
+                "name": "Sneaky Scoundrel",
+                "cost": 1,
+                "effect": "(Only if you didn't fight or shoot during this activation) the Dash action costs <strong>0AP</strong>.",
+                "maxStacks": 1,
+                "prModifier": 3
+            },
+            {
+                "id": "su5",
+                "name": "Voracious Hunger",
+                "cost": 3,
+                "effect": "Consuming a food item doesn't cost AP.",
                 "maxStacks": 1,
                 "prModifier": 3
             }

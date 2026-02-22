@@ -97,6 +97,7 @@ export interface AlteredState {
     damage?: string;
     weapons?: number[];
     bestiaryId?: number;
+    part?: string;
   }
   
   interface ArmorItem extends BaseItem {

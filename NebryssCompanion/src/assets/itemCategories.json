@@ -54,5 +54,12 @@
       "key": "deployable",
       "headers": ["Name", "Type", "Description"],
       "keys": ["name", "type", "description"]
+    },
+    {
+      "id": 9,
+      "name": "Modification", 
+      "key": "modification",
+      "headers": ["Name", "Price", "Description", "Part"],
+      "keys": ["name", "price", "description", "part"]
     }
 ]
