@@ -22,7 +22,8 @@ describe('ItemsComponent', () => {
       itemCategories: [],
       alteredStates: [],
       mistEffects: [],
-      terrains: []
+      terrains: [],
+      talents: []
     }));
     mockDataService.getPlayers.and.returnValue(of([]));
 
