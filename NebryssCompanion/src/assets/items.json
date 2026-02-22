@@ -128,8 +128,8 @@
     {
       "id": 17,
       "name": "Stimpack",
-      "price": 3,
-      "description": "Single-use injector, restores 1D3 wounds to the user. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+      "price": 5,
+      "description": "Single-use injector, restores 1D3+1 wounds to the user or target within control range. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
       "type": "consumable"
     },
     {
