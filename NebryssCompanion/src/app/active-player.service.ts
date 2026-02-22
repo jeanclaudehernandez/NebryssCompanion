@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, interval } from 'rxjs';
 import { Player } from './model';
 import { DataService } from './data.service';
 
@@ -13,6 +13,7 @@ export class ActivePlayerService {
   constructor(private dataService: DataService) {
     this.loadFromLocalStorage();
     this.syncActivePlayerFromDatabase();
+    this.startPeriodicSync();
   }
 
   get activePlayer$(): Observable<Player | null> {
@@ -79,6 +80,27 @@ export class ActivePlayerService {
       error: error => {
         console.error('Error syncing active player from database:', error);
       }
+    });
+  }
+
+  private startPeriodicSync(): void {
+    const TWENTY_MINUTES_MS = 20 * 60 * 1000;
+    interval(TWENTY_MINUTES_MS).subscribe(() => {
+      this.dataService.refreshPlayers().subscribe({
+        next: players => {
+          const current = this.activePlayer;
+          if (!current) {
+            return;
+          }
+          const freshPlayer = players.find(p => p.id === current.id);
+          if (freshPlayer) {
+            this.setActivePlayer(freshPlayer);
+          }
+        },
+        error: error => {
+          console.error('Error refreshing players:', error);
+        }
+      });
     });
   }
 } 

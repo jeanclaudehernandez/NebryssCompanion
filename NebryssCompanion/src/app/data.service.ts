@@ -53,6 +53,17 @@ export class DataService {
     return this.playersCache$;
   }
 
+  refreshPlayers(): Observable<Player[]> {
+    this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+      tap(players => {
+        this.players = players;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.playersCache$;
+  }
+
   getNpcs(): Observable<NPC[]> {
     if (!this.npcsCache$) {
       this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
