@@ -19,7 +19,7 @@ if errorlevel 1 goto :error
 
 echo.
 echo Step 2/3: Deploying container to Cloud Run (preserving existing revision settings)...
-gcloud run deploy "%CLOUD_RUN_SERVICE%" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed --quiet
+gcloud run deploy "%CLOUD_RUN_SERVICE%" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed 
 if errorlevel 1 goto :error
 
 echo.
