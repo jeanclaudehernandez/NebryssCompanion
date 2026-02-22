@@ -18,6 +18,9 @@ import { WeaponRulesPageComponent } from './weapon-rules-page/weapon-rules-page.
 import { AlteredStatesPageComponent } from './altered-states-page/altered-states-page.component';
 import { ThemeService } from './theme.service';
 import { LoadingService } from './loading.service';
+import { MatDialog } from '@angular/material/dialog';
+import { WeaponRuleDialogComponent } from './weapon-rule/weapon-rule.component';
+import { WeaponRule } from './model';
 
   @Component({
   selector: 'app-root',
@@ -96,7 +99,12 @@ export class AppComponent {
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
 
-  constructor(private themeService: ThemeService, public loadingService: LoadingService) {
+  constructor(
+    private themeService: ThemeService,
+    public loadingService: LoadingService,
+    private dataService: DataService,
+    private dialog: MatDialog
+  ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
   }
@@ -140,15 +148,15 @@ export class AppComponent {
   @HostListener('click', ['$event'])
   onClick(event: MouseEvent) {
     const target = event.target as HTMLElement;
-    // Check if the clicked element or any parent is a link with specific data attribute or class
-    // Assuming a convention for weapon rule links, e.g., class="weapon-rule-link" or data-weapon-rule="Rule Name"
+
     const ruleLink = target.closest('[data-weapon-rule]');
     if (ruleLink) {
       const ruleName = ruleLink.getAttribute('data-weapon-rule');
       if (ruleName) {
         event.preventDefault();
         event.stopPropagation();
-        this.navigateToWeaponRule(ruleName);
+        this.openWeaponRuleModal(ruleName);
+        return;
       }
     }
 
@@ -163,9 +171,65 @@ export class AppComponent {
     }
   }
 
-  navigateToWeaponRule(ruleName: string) {
-    this.selectedRuleName = ruleName;
-    this.currentView = 'weaponRules';
+  private openWeaponRuleModal(ruleName: string) {
+    this.dataService.getAllData().subscribe(data => {
+      const rule = data.weaponRules.find((r: any) => r.name === ruleName);
+
+      if (!rule) {
+        const fallbackRule = {
+          name: ruleName,
+          description: 'Rule definition not found'
+        };
+
+        const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
+          data: { rule: fallbackRule },
+          panelClass: 'image-dialog-container',
+          hasBackdrop: true,
+          backdropClass: 'image-dialog-backdrop',
+          disableClose: true
+        });
+        setTimeout(() => {
+          dialogRef.disableClose = false;
+        }, 0);
+        return;
+      }
+
+      let name = rule.name;
+      let description = rule.effect;
+
+      const statusMatches = [...new Set((description || '').match(/\/status\/:\d+\//g))];
+      const statusEntries: string[] = [];
+
+      if (statusMatches) {
+        statusMatches.forEach(match => {
+          const statusId = parseInt(match.replace('/status/:', '').replace('/', ''));
+          const status = data.alteredStates.find((s: any) => s.id === statusId);
+
+          if (status) {
+            const link = `<span class="status-link" data-status="${status.name}">${status.name}</span>`;
+            description = description.replace(new RegExp(match, 'g'), link);
+            statusEntries.push(`<strong><span class="status-link" data-status="${status.name}">${status.name}</span></strong>: ${status.effect}`);
+          }
+        });
+      }
+
+      if (statusEntries.length > 0) {
+        description += '\n\n' + statusEntries.map(entry => `<em>${entry}</em>`).join('\n\n');
+      }
+
+      const ruleDisplay = { name, description };
+
+      const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
+        data: { rule: ruleDisplay },
+        panelClass: 'image-dialog-container',
+        hasBackdrop: true,
+        backdropClass: 'image-dialog-backdrop',
+        disableClose: true
+      });
+      setTimeout(() => {
+        dialogRef.disableClose = false;
+      }, 0);
+    });
   }
 
   navigateToStatus(stateName: string) {

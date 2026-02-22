@@ -304,5 +304,11 @@
     "name": "Poisonous",
     "effect": "If damage is made to the target during this action with a critical success, apply /status/:7/ status to the target.",
     "prModifier": 3
+  },
+  {
+    "id": 53,
+    "name": "Penetrating <x>",
+    "effect": "Worsen the save stat of the target during the shoot action by <x>.",
+    "prModifier": 8
   }
 ]

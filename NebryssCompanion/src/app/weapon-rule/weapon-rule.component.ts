@@ -30,6 +30,16 @@ import { SanitizeHtmlPipe } from "../sanitizeHtml.pipe";
       white-space: pre-wrap;
       line-height: 1.5;
       color: #666;
+      background-color: #f5f5f5;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    body.dark-theme .rule-description {
+      background-color: #1f1f1f;
+      color: #e0e0e0;
+      border-color: #444;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
   `],
   standalone: true,

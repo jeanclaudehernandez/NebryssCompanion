@@ -36,8 +36,8 @@
                 <td>
                   <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
                       <span 
-                        class="rule-text weapon-rule-link" 
-                        [attr.data-weapon-rule]="getRuleDisplay(rule).name">
+                        class="rule-text weapon-rule-link"
+                        (click)="showRuleDetails(getRuleDisplay(rule))">
                         {{ getRuleDisplay(rule).name }}
                       </span>
                       <span *ngIf="!last">, </span>
