@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent } from './model';
 
 @Injectable({
   providedIn: 'root'
@@ -228,7 +228,8 @@ export class DataService {
     itemCategories: ItemCategory[],
     alteredStates: AlteredState[],
     mistEffects: any[],
-    terrains: Terrain[]
+    terrains: Terrain[],
+    talents: Talent[]
   }> {
     if (!this.allDataCache$) {
       this.allDataCache$ = forkJoin({
@@ -242,7 +243,8 @@ export class DataService {
         itemCategories: this.getitemCategories(),
         alteredStates: this.getAlteredStates(),
         mistEffects: this.getMistEffects(),
-        terrains: this.getTerrains()
+        terrains: this.getTerrains(),
+        talents: this.getTalents()
       }).pipe(shareReplay(1));
     }
     return this.allDataCache$;
