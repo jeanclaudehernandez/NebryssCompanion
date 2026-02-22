@@ -55,6 +55,32 @@ createCollectionRoute('/api/player', {
   collectionName: 'player',
 });
 
+app.post('/api/player', async (req, res) => {
+  const player = req.body;
+
+  if (!player || typeof player.id === 'undefined') {
+    return res.status(400).json({ error: 'Player id is required in request body' });
+  }
+
+  try {
+    const { playersDb } = await getDatabases();
+    const collection = playersDb.collection('player');
+
+    const result = await collection.replaceOne(
+      { id: player.id },
+      player
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+
+    res.json(player);
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 createCollectionRoute('/api/weapon', {
   usePlayersDb: false,
   collectionName: 'weapon',
@@ -125,4 +151,3 @@ const port = process.env.PORT || 8080;
 app.listen(port, () => {
   process.stdout.write(`API server listening on port ${port}\n`);
 });
-
