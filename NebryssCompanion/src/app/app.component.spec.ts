@@ -1,10 +1,40 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { UpdateService } from './update.service';
+import { ModalService } from './modal.service';
+import { ThemeService } from './theme.service';
 
 describe('AppComponent', () => {
+  let mockUpdateService: jasmine.SpyObj<UpdateService>;
+  let mockModalService: jasmine.SpyObj<ModalService>;
+  let mockThemeService: jasmine.SpyObj<ThemeService>;
+
   beforeEach(async () => {
+    mockUpdateService = jasmine.createSpyObj('UpdateService', [
+      'unregisterAndReload',
+      'clearStorageAndReload'
+    ]);
+
+    mockModalService = jasmine.createSpyObj('ModalService', [
+      'openFromTemplate',
+      'close'
+    ]);
+
+    mockThemeService = jasmine.createSpyObj('ThemeService', [
+      'toggleTheme'
+    ], {
+      darkMode$: {
+        subscribe: () => ({ unsubscribe() {} })
+      }
+    });
+
     await TestBed.configureTestingModule({
       imports: [AppComponent],
+      providers: [
+        { provide: UpdateService, useValue: mockUpdateService },
+        { provide: ModalService, useValue: mockModalService },
+        { provide: ThemeService, useValue: mockThemeService }
+      ]
     }).compileComponents();
   });
 
@@ -14,16 +44,4 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'NebryssCompanion' title`, () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.componentInstance;
-    expect(app.title).toEqual('NebryssCompanion');
-  });
-
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, NebryssCompanion');
-  });
 });

@@ -27,6 +27,7 @@ describe('ActivePlayerService', () => {
       },
       abilities: [],
       progression: {
+        talentPoints: 0,
         mistrals: {
           digital: 0,
           physical: {
@@ -37,7 +38,8 @@ describe('ActivePlayerService', () => {
             "50s": 0,
             "100s": 0
           }
-        }
+        },
+        talents: []
       }
     };
 
@@ -79,7 +81,7 @@ describe('ActivePlayerService', () => {
     localStorage.setItem('activePlayer', JSON.stringify(mockPlayer));
     
     // Create new instance of service which should load from localStorage
-    const newService = TestBed.inject(ActivePlayerService);
+    const newService = new ActivePlayerService();
     
     // Check player was loaded
     expect(newService.activePlayer).toEqual(mockPlayer);
