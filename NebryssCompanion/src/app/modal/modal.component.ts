@@ -47,6 +47,16 @@ import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, Vi
       cursor: pointer;
       padding: 0.25rem 0.5rem;
     }
+
+    :host-context(.dark-theme) .modal-overlay {
+      background-color: rgba(0, 0, 0, 0.7);
+    }
+
+    :host-context(.dark-theme) .modal-content {
+      background-color: #1f1f1f;
+      color: #e0e0e0;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
   `]
 })
 export class ModalComponent {

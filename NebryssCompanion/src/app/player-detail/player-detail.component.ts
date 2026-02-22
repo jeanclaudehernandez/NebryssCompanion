@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnChanges, Output, EventEmitter, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
@@ -8,6 +8,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 import { ActivePlayerService } from '../active-player.service';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ToastService } from '../toast.service';
+import { ModalService } from '../modal.service';
 
 @Component({
   selector: 'app-player-detail',
@@ -44,10 +45,15 @@ export class PlayerDetailComponent implements OnChanges {
   // Scroll nav
   scrollSections: ScrollSection[] = [];
 
+  @ViewChild('mistralDialog', { read: TemplateRef }) mistralDialogTemplate!: TemplateRef<any>;
+  mistralModalType: 'digital' | 'physical' | null = null;
+  mistralModalAmount = 0;
+
   constructor(
     private dataService: DataService,
     private activePlayerService: ActivePlayerService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private modalService: ModalService
   ) {}
 
   ngOnChanges(): void {
@@ -219,5 +225,93 @@ export class PlayerDetailComponent implements OnChanges {
           this.toastService.show('Failed to copy to clipboard', 'error');
         });
     }
+  }
+
+  getDigitalMistrals(character: Character): number {
+    if (!this.isPlayer(character)) {
+      return 0;
+    }
+    const progression = (character as Player).progression;
+    if (!progression || !progression.mistrals) {
+      return 0;
+    }
+    return progression.mistrals.digital || 0;
+  }
+
+  getPhysicalMistralsTotal(character: Character): number {
+    if (!this.isPlayer(character)) {
+      return 0;
+    }
+    const progression = (character as Player).progression;
+    if (!progression || !progression.mistrals) {
+      return 0;
+    }
+    return progression.mistrals.physical || 0;
+  }
+
+  openMistralModal(type: 'digital' | 'physical'): void {
+    if (!this.isActionAllowed(this.character)) {
+      return;
+    }
+    if (!this.mistralDialogTemplate) {
+      return;
+    }
+    this.mistralModalType = type;
+    this.mistralModalAmount = 0;
+    const context = {
+      type,
+      confirm: () => this.confirmMistralAddition(),
+      cancel: () => this.modalService.close(),
+      setAmount: (value: number) => {
+        if (!Number.isFinite(value) || value < 0) {
+          this.mistralModalAmount = 0;
+        } else {
+          this.mistralModalAmount = Math.floor(value);
+        }
+      }
+    };
+    this.modalService.openFromTemplate(this.mistralDialogTemplate, context);
+  }
+
+  private confirmMistralAddition(): void {
+    if (!this.mistralModalType) {
+      this.modalService.close();
+      return;
+    }
+    const amount = this.mistralModalAmount;
+    if (amount <= 0) {
+      this.modalService.close();
+      return;
+    }
+    const activePlayer = this.activePlayerService.activePlayer;
+    if (
+      !activePlayer ||
+      !this.isPlayer(activePlayer) ||
+      !this.isPlayer(this.character) ||
+      activePlayer.id !== this.character.id
+    ) {
+      this.modalService.close();
+      return;
+    }
+    if (!activePlayer.progression || !activePlayer.progression.mistrals) {
+      this.modalService.close();
+      return;
+    }
+    if (this.mistralModalType === 'digital') {
+      activePlayer.progression.mistrals.digital =
+        (activePlayer.progression.mistrals.digital || 0) + amount;
+    } else {
+      activePlayer.progression.mistrals.physical =
+        (activePlayer.progression.mistrals.physical || 0) + amount;
+    }
+    this.activePlayerService.updateActivePlayer({ ...activePlayer });
+    if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
+      this.character = { ...activePlayer };
+    }
+    const label = this.mistralModalType === 'digital' ? 'digital' : 'physical';
+    this.toastService.show(`Added ${amount} ${label} mistrals`, 'success');
+    this.modalService.close();
+    this.mistralModalType = null;
+    this.mistralModalAmount = 0;
   }
 }

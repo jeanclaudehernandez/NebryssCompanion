@@ -41,14 +41,7 @@ describe('ActivePlayerService', () => {
         talentPoints: 0,
         mistrals: {
           digital: 0,
-          physical: {
-            "1s": 0,
-            "5s": 0,
-            "10s": 0,
-            "20s": 0,
-            "50s": 0,
-            "100s": 0
-          }
+          physical: 0
         },
         talents: []
       }

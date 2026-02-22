@@ -17,6 +17,24 @@
       <p><strong>Race:</strong> {{ character.race }}
       <p><strong>Origin:</strong> {{ character.origin }}</p>
       <p><strong>Talent Points:</strong> {{ character.progression.talentPoints || 0 }}</p>
+      <p class="mistrals-row">
+        <span><strong>Digital Mistrals:</strong> {{ getDigitalMistrals(character) }}</span>
+        <button
+          *ngIf="isActionAllowed(character)"
+          class="mistrals-add-button"
+          (click)="openMistralModal('digital')">
+          +
+        </button>
+      </p>
+      <p class="mistrals-row">
+        <span><strong>Physical Mistrals:</strong> {{ getPhysicalMistralsTotal(character) }}</span>
+        <button
+          *ngIf="isActionAllowed(character)"
+          class="mistrals-add-button"
+          (click)="openMistralModal('physical')">
+          +
+        </button>
+      </p>
     </div>
     <div *ngIf="isBeast(character)">
       <p><strong>Faction</strong> {{ getFaction(character) }} </p>
@@ -122,5 +140,24 @@
     </div>
   </div>
 </div>
+
+<ng-template #mistralDialog let-type="type" let-confirm="confirm" let-cancel="cancel" let-setAmount="setAmount">
+  <div class="mistral-dialog">
+    <h3>Add {{ type === 'digital' ? 'Digital' : 'Physical' }} Mistrals</h3>
+    <div class="mistral-dialog-body">
+      <label>
+        Amount
+        <input
+          type="number"
+          min="0"
+          (input)="setAmount(($any($event.target).valueAsNumber) ?? 0)" />
+      </label>
+    </div>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button class="btn-confirm" (click)="confirm()">Add</button>
+    </div>
+  </div>
+</ng-template>
 
 <app-scroll-nav *ngIf="!hideScrollNav" [sections]="scrollSections"></app-scroll-nav>

@@ -285,14 +285,7 @@ export interface AlteredState {
     talentPoints: number;
     mistrals: {
       digital: number;
-      physical: {
-        "1s": number;
-        "5s": number;
-        "10s": number;
-        "20s": number;
-        "50s": number;
-        "100s": number;
-      };
+      physical: number;
     };
     talents: string[];
   }

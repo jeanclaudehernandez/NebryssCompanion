@@ -29,7 +29,8 @@ describe('ShopsComponent', () => {
       bestiary: [],
       alteredStates: [],
       mistEffects: [],
-      terrains: []
+      terrains: [],
+      talents: []
     }));
 
     mockDataService.getNpcByd.and.returnValue({ name: '' });

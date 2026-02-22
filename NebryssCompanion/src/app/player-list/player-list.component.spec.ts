@@ -22,7 +22,8 @@ describe('PlayerListComponent', () => {
       itemCategories: [],
       alteredStates: [],
       mistEffects: [],
-      terrains: []
+      terrains: [],
+      talents: []
     }));
 
     await TestBed.configureTestingModule({
