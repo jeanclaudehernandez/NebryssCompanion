@@ -7,18 +7,15 @@
     <div class="menu-item" (click)="changeView('items')">Items</div>
     <div class="menu-item" (click)="changeView('shops')">Shops</div>
     <div class="menu-item" (click)="changeView('bestiary')">Bestiary</div>
-    <div class="menu-item" (click)="changeView('lore')">Lore</div>
-    <div class="menu-item" (click)="changeView('locations')">Locations</div>
     <div class="menu-item" (click)="changeView('terrains')">Terrains</div>
     <div class="menu-item" (click)="changeView('mistEffects')">Mist Effects</div>
-    <div class="menu-item" (click)="changeView('mistEngineBattles')">Mist Engine Battles</div>
     <div class="menu-item" (click)="changeView('weaponRules')">Weapon Rules</div>
     <div class="menu-item" (click)="changeView('alteredStates')">Altered States</div>
+    <div class="menu-item" (click)="changeView('lore')">Lore</div>
+    <div class="menu-item" (click)="changeView('locations')">Locations</div>
     
     <div class="update-section">
-      <div class="timestamp">Updated: {{ updateService.timestamp$ | async }}</div>
-      <button class="update-button" (click)="forceUpdate()">Force Update</button>
-      <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Force Update & Clean Storage</button>
+      <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Refresh</button>
     </div>
     
     <div class="theme-switch" (click)="toggleTheme()">
