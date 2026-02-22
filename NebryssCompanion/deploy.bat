@@ -27,7 +27,7 @@ echo Step 3/3: Building Angular frontend and deploying to Firebase Hosting...
 npm run build
 if errorlevel 1 goto :error
 
-firebase deploy --only hosting
+firebase deploy
 if errorlevel 1 goto :error
 
 echo.
