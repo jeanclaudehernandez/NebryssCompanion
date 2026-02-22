@@ -302,7 +302,7 @@
   {
     "id": 52,
     "name": "Poisonous",
-    "effect": "If damage is made to the target during this action with a critical success, apply /status/:7/ status to the target.",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:9/ status to the target.",
     "prModifier": 3
   },
   {

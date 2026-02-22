@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
@@ -18,12 +18,20 @@ import { ToastService } from '../toast.service';
         <table class="items-table">
           <thead>
             <tr>
-              <th *ngFor="let header of headers">{{ header }}</th>
+              <th 
+                *ngFor="let header of headers; let i = index"
+                (click)="onSort(headerKeys[i])"
+                class="sortable-header">
+                {{ header }}
+                <span *ngIf="sortKey === headerKeys[i]">
+                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                </span>
+              </th>
               <th *ngIf="inventoryManagement">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of data" [class.in-inventory]="highlightInventory && isInInventory(item)">
+            <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
               <td *ngFor="let header of headerKeys">
                 <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
@@ -43,7 +51,7 @@ import { ToastService } from '../toast.service';
   styleUrls: ['./generic-table.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class GenericTableComponent implements OnInit {
+export class GenericTableComponent implements OnInit, OnChanges {
   @Input() data: any[] = [];
   @Input() headers: string[] = [];
   @Input() headerKeys: string[] = [];
@@ -55,6 +63,9 @@ export class GenericTableComponent implements OnInit {
   @Input() highlightInventory: boolean = true;
   
   isCollapsed = true;
+  sortedData: any[] = [];
+  sortKey: string | null = null;
+  sortDirection: 'asc' | 'desc' = 'asc';
 
   constructor(
     private activePlayerService: ActivePlayerService,
@@ -64,11 +75,69 @@ export class GenericTableComponent implements OnInit {
   ngOnInit() {
     const savedState = localStorage.getItem(this.storageKey);
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
+    this.initializeSortedData();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['data'] || changes['headerKeys']) {
+      this.initializeSortedData();
+    }
   }
 
   toggleCollapse() {
     this.isCollapsed = !this.isCollapsed;
     localStorage.setItem(this.storageKey, JSON.stringify(this.isCollapsed));
+  }
+
+  onSort(key: string) {
+    if (!key) return;
+    if (this.sortKey === key) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortKey = key;
+      this.sortDirection = 'asc';
+    }
+    this.applySort();
+  }
+
+  private initializeSortedData() {
+    this.sortedData = [...(this.data || [])];
+    const defaultKey = this.headerKeys.includes('name')
+      ? 'name'
+      : (this.headerKeys[0] || null);
+    if (defaultKey) {
+      this.sortKey = defaultKey;
+      this.sortDirection = 'asc';
+      this.applySort();
+    }
+  }
+
+  private applySort() {
+    if (!this.sortKey) {
+      this.sortedData = [...(this.data || [])];
+      return;
+    }
+    const key = this.sortKey;
+    const direction = this.sortDirection === 'asc' ? 1 : -1;
+    this.sortedData = [...(this.data || [])].sort((a, b) => {
+      const aVal = a[key];
+      const bVal = b[key];
+
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return 1;
+      if (bVal == null) return -1;
+
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return (aVal - bVal) * direction;
+      }
+
+      const aStr = String(aVal).toLowerCase();
+      const bStr = String(bVal).toLowerCase();
+
+      if (aStr < bStr) return -1 * direction;
+      if (aStr > bStr) return 1 * direction;
+      return 0;
+    });
   }
 
   isInInventory(item: any): boolean {
