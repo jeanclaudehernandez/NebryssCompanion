@@ -1,13 +1,24 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivePlayerService } from './active-player.service';
 import { Player } from './model';
+import { DataService } from './data.service';
+import { of } from 'rxjs';
 
 describe('ActivePlayerService', () => {
   let service: ActivePlayerService;
   let mockPlayer: Player;
+  let dataServiceSpy: jasmine.SpyObj<DataService>;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    dataServiceSpy = jasmine.createSpyObj('DataService', ['savePlayer', 'getPlayers']);
+    dataServiceSpy.savePlayer.and.returnValue(of(null as any));
+    dataServiceSpy.getPlayers.and.returnValue(of([]));
+
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: DataService, useValue: dataServiceSpy }
+      ]
+    });
     service = TestBed.inject(ActivePlayerService);
 
     // Mock player for testing
@@ -81,7 +92,7 @@ describe('ActivePlayerService', () => {
     localStorage.setItem('activePlayer', JSON.stringify(mockPlayer));
     
     // Create new instance of service which should load from localStorage
-    const newService = new ActivePlayerService();
+    const newService = new ActivePlayerService(dataServiceSpy);
     
     // Check player was loaded
     expect(newService.activePlayer).toEqual(mockPlayer);

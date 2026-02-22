@@ -57,7 +57,7 @@ export class TalentsComponent implements OnInit, OnDestroy {
       this.activePlayer.progression.talentPoints = 0;
     }
     this.activePlayer.progression.talentPoints += 1;
-    this.activePlayerService.setActivePlayer({ ...this.activePlayer });
+    this.activePlayerService.updateActivePlayer({ ...this.activePlayer });
   }
 
   getRequirementNames(requirementIds: string[]): string {
@@ -160,7 +160,7 @@ export class TalentsComponent implements OnInit, OnDestroy {
     }
     
     // Update the player
-    this.activePlayerService.setActivePlayer({...this.activePlayer});
+    this.activePlayerService.updateActivePlayer({ ...this.activePlayer });
   }
   
   showRequirementsDialog(talent: Talent): void {
@@ -248,7 +248,7 @@ export class TalentsComponent implements OnInit, OnDestroy {
       this.activePlayer.progression.talents.push(talent.id);
       // Deduct talent points
       this.activePlayer.progression.talentPoints -= talent.cost;
-      this.activePlayerService.setActivePlayer({...this.activePlayer});
+      this.activePlayerService.updateActivePlayer({ ...this.activePlayer });
     }
   }
 
@@ -272,7 +272,7 @@ export class TalentsComponent implements OnInit, OnDestroy {
       playerTalents.splice(lastIndex, 1);
       // Refund talent points
       this.activePlayer.progression.talentPoints += talent.cost;
-      this.activePlayerService.setActivePlayer({...this.activePlayer});
+      this.activePlayerService.updateActivePlayer({ ...this.activePlayer });
     }
   }
 }

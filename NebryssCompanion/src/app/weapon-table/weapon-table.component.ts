@@ -70,11 +70,8 @@ export class WeaponTableComponent implements OnChanges {
     
     // Check if weapon already exists in inventory
     if (!player.weapons.includes(weaponId)) {
-      // Add weapon to the player's weapons
       player.weapons.push(weaponId);
-      
-      // Update the player
-      this.activePlayerService.setActivePlayer({...player});
+      this.activePlayerService.updateActivePlayer({ ...player });
       
       // Get weapon name
       const weapon = this.getWeaponById(weaponId);
@@ -103,8 +100,7 @@ export class WeaponTableComponent implements OnChanges {
       // Remove weapon from the player's weapons
       player.weapons.splice(weaponIndex, 1);
       
-      // Update the player
-      this.activePlayerService.setActivePlayer({...player});
+      this.activePlayerService.updateActivePlayer({ ...player });
       
       // Show error toast
       this.toastService.show(

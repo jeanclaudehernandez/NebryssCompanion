@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WeaponTableComponent } from './weapon-table.component';
 
 describe('WeaponTableComponent', () => {
@@ -8,7 +8,7 @@ describe('WeaponTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [WeaponTableComponent]
+      imports: [HttpClientTestingModule, WeaponTableComponent]
     })
     .compileComponents();
 

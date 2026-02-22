@@ -296,10 +296,10 @@ export class DataService {
       const save = attributes.Save;
       const movement = attributes.Movement;
       const apl = attributes.APL;
-  
+
       // Calculate base components of PR
       const basePR = (wounds * 2.2) + ((6 - save) * 7) + (movement * 4) + (apl * 6);
-  
+
       // Calculate Weapon Threat (highest among all weapon profiles)
       let weaponThreat = 0;
       if (beast.weapons && beast.weapons.length > 0) {
@@ -328,7 +328,7 @@ export class DataService {
           }
         });
       }
-  
+
       // Calculate Ability Score (sum of prModifiers)
       let abilityScore = 0;
       if (beast.abilities) {
@@ -338,11 +338,11 @@ export class DataService {
           }
         });
       }
-  
+
       // Calculate total PR and round to nearest integer
       const calculatedPR = Math.round(basePR + weaponThreat + abilityScore);
       const currentPR = beast.pr;
-  
+
       return {
         id: beast.id,
         name: beast.name,
@@ -351,5 +351,9 @@ export class DataService {
         valid: currentPR === calculatedPR
       };
     });
+  }
+
+  savePlayer(player: Player): Observable<Player> {
+    return this.http.post<Player>(`${this.apiUrl}/player`, player);
   }
 }

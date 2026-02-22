@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Player } from './model';
+import { DataService } from './data.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,8 +10,9 @@ export class ActivePlayerService {
   private readonly STORAGE_KEY = 'activePlayer';
   private activePlayerSubject = new BehaviorSubject<Player | null>(null);
   
-  constructor() {
+  constructor(private dataService: DataService) {
     this.loadFromLocalStorage();
+    this.syncActivePlayerFromDatabase();
   }
 
   get activePlayer$(): Observable<Player | null> {
@@ -24,6 +26,15 @@ export class ActivePlayerService {
   setActivePlayer(player: Player | null): void {
     this.activePlayerSubject.next(player);
     this.saveToLocalStorage(player);
+  }
+
+  updateActivePlayer(player: Player): void {
+    this.setActivePlayer(player);
+    this.dataService.savePlayer(player).subscribe({
+      error: error => {
+        console.error('Error saving active player:', error);
+      }
+    });
   }
 
   clearActivePlayer(): void {
@@ -50,5 +61,24 @@ export class ActivePlayerService {
         localStorage.removeItem(this.STORAGE_KEY);
       }
     }
+  }
+
+  private syncActivePlayerFromDatabase(): void {
+    const storedPlayer = this.activePlayer;
+    if (!storedPlayer) {
+      return;
+    }
+
+    this.dataService.getPlayers().subscribe({
+      next: players => {
+        const freshPlayer = players.find(p => p.id === storedPlayer.id);
+        if (freshPlayer) {
+          this.setActivePlayer(freshPlayer);
+        }
+      },
+      error: error => {
+        console.error('Error syncing active player from database:', error);
+      }
+    });
   }
 } 

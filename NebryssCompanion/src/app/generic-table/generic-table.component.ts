@@ -192,8 +192,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
       }
     }
     
-    // Update the player
-    this.activePlayerService.setActivePlayer({...player});
+    this.activePlayerService.updateActivePlayer({ ...player });
     
     // Get current quantity after adding
     const currentQuant = player.items.find(i => i.id === item.id)?.quant || 1;
@@ -243,8 +242,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
         }
       }
       
-      // Update the player
-      this.activePlayerService.setActivePlayer({...player});
+      this.activePlayerService.updateActivePlayer({ ...player });
       
       // Show error toast
       this.toastService.show(

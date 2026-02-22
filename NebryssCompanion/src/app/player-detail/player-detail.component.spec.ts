@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { of } from 'rxjs';
 import { PlayerDetailComponent } from './player-detail.component';
 import { DataService } from '../data.service';
 import { Player } from '../model';
@@ -12,11 +12,13 @@ describe('PlayerDetailComponent', () => {
   beforeEach(async () => {
     mockDataService = jasmine.createSpyObj('DataService', [
       'getBestiaryById',
-      'getTalentById'
+      'getTalentById',
+      'getPlayers'
     ]);
 
     mockDataService.getBestiaryById.and.returnValue(null);
     mockDataService.getTalentById.and.returnValue(null);
+    mockDataService.getPlayers.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [PlayerDetailComponent],

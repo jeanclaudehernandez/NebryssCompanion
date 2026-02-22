@@ -9,8 +9,9 @@ describe('MistEffectsComponent', () => {
   let mockDataService: jasmine.SpyObj<DataService>;
 
   beforeEach(async () => {
-    mockDataService = jasmine.createSpyObj('DataService', ['getMistEffects']);
+    mockDataService = jasmine.createSpyObj('DataService', ['getMistEffects', 'getPlayers']);
     mockDataService.getMistEffects.and.returnValue(of([]));
+    mockDataService.getPlayers.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
       imports: [MistEffectsComponent],
