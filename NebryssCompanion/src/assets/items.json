@@ -1,4 +1,5 @@
-[{
+[
+    {
       "id": 1,
       "name": "Mistcloak",
       "price": 8,
@@ -518,4 +519,29 @@
       "price": 0,
       "description": "Restores 1D3+1 wounds, 1AP when in battle and rolls add 1d3 to it's movement stat untill the next reposition or charge action.",
       "type": "consumable"
-    }]
+    },
+    {
+      "id": 66,
+      "name": "Pistol Silencer",
+      "price": 30,
+      "description": "/weaponRule/:28/ and range is reduced by 1inch.",
+      "type": "modification",
+      "part": "Pistol"
+    },
+    {
+      "id": 67,
+      "name": "Sword Pommel",
+      "price": 25,
+      "description": "/weaponRule/:16/.",
+      "type": "modification",
+      "part": "One Handed Sword"
+    },
+    {
+      "id": 68,
+      "name": "Fast Magazine",
+      "price": 20,
+      "description": "Once per Battle: /weaponRule/:24/.",
+      "type": "modification",
+      "part": "non-Bolter Riffle, Pistol"
+    }
+]
