@@ -35,6 +35,37 @@ async function fetchCollection(db, collectionName) {
   return documents;
 }
 
+function createUpdateRoute(path, options) {
+  const { usePlayersDb, collectionName } = options;
+
+  app.post(path, async (req, res) => {
+    const item = req.body;
+
+    if (!item || typeof item.id === 'undefined') {
+      return res.status(400).json({ error: 'id is required in request body' });
+    }
+
+    try {
+      const { mainDb, playersDb } = await getDatabases();
+      const db = usePlayersDb ? playersDb : mainDb;
+      const collection = db.collection(collectionName);
+
+      const result = await collection.replaceOne(
+        { id: item.id },
+        item
+      );
+
+      if (result.matchedCount === 0) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      res.json(item);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+}
+
 function createCollectionRoute(path, options) {
   const { usePlayersDb, collectionName } = options;
 
@@ -86,7 +117,17 @@ createCollectionRoute('/api/weapon', {
   collectionName: 'weapon',
 });
 
+createUpdateRoute('/api/weapon', {
+  usePlayersDb: false,
+  collectionName: 'weapon',
+});
+
 createCollectionRoute('/api/item', {
+  usePlayersDb: false,
+  collectionName: 'item',
+});
+
+createUpdateRoute('/api/item', {
   usePlayersDb: false,
   collectionName: 'item',
 });
@@ -96,7 +137,17 @@ createCollectionRoute('/api/weaponRule', {
   collectionName: 'weaponRule',
 });
 
+createUpdateRoute('/api/weaponRule', {
+  usePlayersDb: false,
+  collectionName: 'weaponRule',
+});
+
 createCollectionRoute('/api/bestiary', {
+  usePlayersDb: false,
+  collectionName: 'bestiary',
+});
+
+createUpdateRoute('/api/bestiary', {
   usePlayersDb: false,
   collectionName: 'bestiary',
 });
@@ -106,7 +157,17 @@ createCollectionRoute('/api/shop', {
   collectionName: 'shop',
 });
 
+createUpdateRoute('/api/shop', {
+  usePlayersDb: false,
+  collectionName: 'shop',
+});
+
 createCollectionRoute('/api/itemCategory', {
+  usePlayersDb: false,
+  collectionName: 'itemCategory',
+});
+
+createUpdateRoute('/api/itemCategory', {
   usePlayersDb: false,
   collectionName: 'itemCategory',
 });
@@ -116,7 +177,17 @@ createCollectionRoute('/api/npc', {
   collectionName: 'npc',
 });
 
+createUpdateRoute('/api/npc', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
 createCollectionRoute('/api/lore', {
+  usePlayersDb: false,
+  collectionName: 'lore',
+});
+
+createUpdateRoute('/api/lore', {
   usePlayersDb: false,
   collectionName: 'lore',
 });
@@ -126,7 +197,17 @@ createCollectionRoute('/api/locations', {
   collectionName: 'location',
 });
 
+createUpdateRoute('/api/locations', {
+  usePlayersDb: false,
+  collectionName: 'location',
+});
+
 createCollectionRoute('/api/talent', {
+  usePlayersDb: false,
+  collectionName: 'talent',
+});
+
+createUpdateRoute('/api/talent', {
   usePlayersDb: false,
   collectionName: 'talent',
 });
@@ -136,12 +217,27 @@ createCollectionRoute('/api/status', {
   collectionName: 'status',
 });
 
+createUpdateRoute('/api/status', {
+  usePlayersDb: false,
+  collectionName: 'status',
+});
+
 createCollectionRoute('/api/mistEffect', {
   usePlayersDb: false,
   collectionName: 'mistEffect',
 });
 
+createUpdateRoute('/api/mistEffect', {
+  usePlayersDb: false,
+  collectionName: 'mistEffect',
+});
+
 createCollectionRoute('/api/terrainRule', {
+  usePlayersDb: false,
+  collectionName: 'terrainRule',
+});
+
+createUpdateRoute('/api/terrainRule', {
   usePlayersDb: false,
   collectionName: 'terrainRule',
 });
