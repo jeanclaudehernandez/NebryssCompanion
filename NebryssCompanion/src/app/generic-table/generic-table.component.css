@@ -54,7 +54,7 @@ h3 {
     justify-content: center;
 }
 
-.btn-add, .btn-remove, .btn-craft, .btn-clone {
+.btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -109,6 +109,16 @@ h3 {
 
 .btn-clone:hover {
     background-color: #ffa000;
+}
+
+.btn-delete {
+    background-color: #8B0000; /* Dark Red */
+    color: white;
+    font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+    background-color: #a50000;
 }
 
 /* Dark Theme Styles */

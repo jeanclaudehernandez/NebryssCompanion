@@ -380,4 +380,15 @@ export class DataService {
       })
     );
   }
+
+  deleteItem(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/item/${id}`).pipe(
+      tap(() => {
+        if (this.items && this.items.items) {
+          this.items.items = this.items.items.filter(item => item.id !== id);
+          this.itemsCache$ = null; // Invalidate cache
+        }
+      })
+    );
+  }
 }

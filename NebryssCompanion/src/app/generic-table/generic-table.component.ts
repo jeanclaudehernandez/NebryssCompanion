@@ -27,7 +27,7 @@ import { ToastService } from '../toast.service';
                   {{ sortDirection === 'asc' ? '▲' : '▼' }}
                 </span>
               </th>
-              <th *ngIf="inventoryManagement || enableCloning">Actions</th>
+              <th *ngIf="inventoryManagement || enableCloning || enableDeleting">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -36,10 +36,13 @@ import { ToastService } from '../toast.service';
                 <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
-              <td *ngIf="inventoryManagement || enableCloning">
+              <td *ngIf="inventoryManagement || enableCloning || enableDeleting">
                 <div class="inventory-actions">
                   <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
                     <span class="icon">❐</span>
+                  </button>
+                  <button *ngIf="enableDeleting" (click)="onDelete(item)" class="btn-delete" title="Delete Item">
+                    <span class="icon">🗑️</span>
                   </button>
                   <ng-container *ngIf="inventoryManagement">
                     <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
@@ -70,9 +73,11 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() renderHtml?: string[];
   @Input() highlightInventory: boolean = true;
   @Input() enableCloning: boolean = false;
+  @Input() enableDeleting: boolean = false;
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
+  @Output() delete = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -118,6 +123,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onClone(item: any) {
     this.clone.emit(item);
+  }
+
+  onDelete(item: any) {
+    this.delete.emit(item);
   }
 
   private initializeSortedData() {

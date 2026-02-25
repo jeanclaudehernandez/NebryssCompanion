@@ -4,6 +4,7 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { UpdateService } from '../update.service';
 import { ModalService } from '../modal.service';
 import { ThemeService } from '../theme.service';
+import { AdminService } from '../admin.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -26,14 +27,16 @@ export class SidebarComponent {
     private matDialog: MatDialog,
     public updateService: UpdateService,
     private modalService: ModalService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private adminService: AdminService
   ) {
     this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
     });
     
-    const adminStored = localStorage.getItem('isAdmin');
-    this.isAdmin = adminStored === 'true';
+    this.adminService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+    });
   }
 
   @HostListener('document:click', ['$event'])
@@ -101,14 +104,12 @@ export class SidebarComponent {
 
   toggleAdmin() {
     if (this.isAdmin) {
-      this.isAdmin = false;
-      localStorage.setItem('isAdmin', 'false');
+      this.adminService.setAdminStatus(false);
     } else {
       const dialogContext = {
         check: (password: string) => {
           if (password === '2602') {
-            this.isAdmin = true;
-            localStorage.setItem('isAdmin', 'true');
+            this.adminService.setAdminStatus(true);
             this.modalService.close();
           } else {
             alert('Incorrect password');

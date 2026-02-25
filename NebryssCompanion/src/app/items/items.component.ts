@@ -9,6 +9,7 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ActivePlayerService } from '../active-player.service';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
+import { AdminService } from '../admin.service';
 
 @Component({
   selector: 'app-items',
@@ -41,9 +42,11 @@ import { ToastService } from '../toast.service';
           [headerKeys]="category.keys"
           [renderHtml]="['description']"
           [inventoryManagement]="hasActivePlayer()"
-          [enableCloning]="true"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
           (craft)="onCraftItem($event)"
-          (clone)="onCloneItem($event)">
+          (clone)="onCloneItem($event)"
+          (delete)="onDeleteItem($event)">
         </app-generic-table>
       </div>
     </div>
@@ -79,6 +82,18 @@ import { ToastService } from '../toast.service';
         </div>
       </div>
     </ng-template>
+
+    <ng-template #deleteModal>
+      <div class="delete-modal">
+        <h3>Delete Item</h3>
+        <p>Are you sure you want to delete <strong>{{ itemToDelete?.name }}</strong>?</p>
+        <p>This action cannot be undone.</p>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button (click)="modalService.close()" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+          <button (click)="confirmDelete()" style="padding: 8px 16px; border: none; background: #8B0000; color: white; border-radius: 4px; cursor: pointer;">Delete</button>
+        </div>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./items.component.css']
 })
@@ -95,21 +110,32 @@ export class ItemsComponent implements OnInit {
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
+  @ViewChild('deleteModal') deleteModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   
   // Cloning
   itemToClone: any = null;
   clonedItemName: string = '';
+
+  // Deleting
+  itemToDelete: any = null;
   
   // Map of item types to categories for display purposes
   private typeToCategory: {[key: string]: ItemCategory} = {};
+  
+  isAdmin = false;
 
   constructor(
     private dataService: DataService,
     private activePlayerService: ActivePlayerService,
     public modalService: ModalService,
-    private toastService: ToastService
-  ) {}
+    private toastService: ToastService,
+    private adminService: AdminService
+  ) {
+    this.adminService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+    });
+  }
 
   ngOnInit() {
     this.dataService.getAllData().subscribe(data => {
@@ -168,6 +194,11 @@ export class ItemsComponent implements OnInit {
     this.modalService.openFromTemplate(this.cloneModal);
   }
 
+  onDeleteItem(item: any) {
+    this.itemToDelete = item;
+    this.modalService.openFromTemplate(this.deleteModal);
+  }
+
   confirmClone() {
     if (!this.itemToClone) return;
 
@@ -203,6 +234,22 @@ export class ItemsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to clone item', err);
         this.toastService.show(`Failed to clone item: ${err.message}`, 'error');
+      }
+    });
+  }
+
+  confirmDelete() {
+    if (!this.itemToDelete) return;
+
+    this.dataService.deleteItem(this.itemToDelete.id).subscribe({
+      next: () => {
+        this.toastService.show(`Item deleted successfully!`, 'success');
+        this.modalService.close();
+        this.itemToDelete = null;
+      },
+      error: (err) => {
+        console.error('Failed to delete item', err);
+        this.toastService.show(`Failed to delete item: ${err.message}`, 'error');
       }
     });
   }
