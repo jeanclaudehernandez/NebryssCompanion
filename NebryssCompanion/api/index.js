@@ -38,7 +38,7 @@ async function fetchCollection(db, collectionName) {
 function createUpdateRoute(path, options) {
   const { usePlayersDb, collectionName } = options;
 
-  app.post(path, async (req, res) => {
+  app.put(path, async (req, res) => {
     const item = req.body;
 
     if (!item || typeof item.id === 'undefined') {
@@ -86,7 +86,7 @@ createCollectionRoute('/api/player', {
   collectionName: 'player',
 });
 
-app.post('/api/player', async (req, res) => {
+app.put('/api/player', async (req, res) => {
   const player = req.body;
 
   if (!player || typeof player.id === 'undefined') {

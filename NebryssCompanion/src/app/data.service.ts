@@ -367,6 +367,6 @@ export class DataService {
   }
 
   savePlayer(player: Player): Observable<Player> {
-    return this.http.post<Player>(`${this.apiUrl}/player`, player);
+    return this.http.put<Player>(`${this.apiUrl}/player`, player);
   }
 }
