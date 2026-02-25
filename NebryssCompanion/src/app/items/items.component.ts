@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
-import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection, AlteredState } from '../model';
+import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection, AlteredState, BestiaryEntry } from '../model';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ActivePlayerService } from '../active-player.service';
 import { ModalService } from '../modal.service';
@@ -71,6 +71,7 @@ export class ItemsComponent implements OnInit {
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
   alteredStates: AlteredState[] = [];
+  bestiary: BestiaryEntry[] = [];
   allWeaponIds: number[] = [];
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
@@ -98,13 +99,15 @@ export class ItemsComponent implements OnInit {
       this.weaponRules = data.weaponRules;
       this.alteredStates = data.alteredStates;
       this.itemCategories = data.itemCategories;
+      this.bestiary = data.bestiary;
+      
+      this.allWeaponIds = this.weaponsData.map(w => w.id);
       
       // Set up type to category mapping
       this.itemCategories.forEach(category => {
         this.typeToCategory[category.key] = category;
       });
       
-      this.allWeaponIds = this.weaponsData.map(w => w.id);
       const saved = localStorage.getItem('items-weapons-collapsed');
       this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
       this.scrollSections = [
@@ -195,6 +198,13 @@ export class ItemsComponent implements OnInit {
           ...item,
           description: withRules
         };
+
+        if (key === 'material') {
+          if (item.bestiaryId) {
+            const creature = this.bestiary.find(b => b.id === item.bestiaryId);
+            (newItem as any).bestiaryId = creature ? creature.name : `Unknown Creature (${item.bestiaryId})`;
+          }
+        }
 
         if (key === 'blueprint') {
           // Append materials
