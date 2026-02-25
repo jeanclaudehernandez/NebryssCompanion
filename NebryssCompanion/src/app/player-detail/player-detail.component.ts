@@ -49,6 +49,8 @@ export class PlayerDetailComponent implements OnChanges {
   scrollSections: ScrollSection[] = [];
 
   @ViewChild('mistralDialog', { read: TemplateRef }) mistralDialogTemplate!: TemplateRef<any>;
+  @ViewChild('craftConfirmModal', { read: TemplateRef }) craftConfirmModal!: TemplateRef<any>;
+  selectedBlueprint: any = null;
   mistralModalType: 'digital' | 'physical' | null = null;
   mistralModalAmount = 0;
 
@@ -56,7 +58,7 @@ export class PlayerDetailComponent implements OnChanges {
     private dataService: DataService,
     private activePlayerService: ActivePlayerService,
     private toastService: ToastService,
-    private modalService: ModalService
+    public modalService: ModalService
   ) {}
 
   ngOnChanges(): void {
@@ -76,12 +78,39 @@ export class PlayerDetailComponent implements OnChanges {
       this.itemTableData = this.character.items.map(inventory => {
         const item = this.getItemById(inventory.id);
         const rawDescription = item?.description || 'No description available';
+        
+        let canCraft = false;
+        let blueprintForName = '';
+        let buildMaterials: any[] = [];
+        let _blueprintForId = null;
+
+        if (this.isActionAllowed(this.character) && item?.type === 'blueprint') {
+           if (item.blueprintFor) {
+              const weapon = this.weaponsData.find(w => w.id === item.blueprintFor);
+              blueprintForName = weapon ? weapon.name : `Unknown Weapon (${item.blueprintFor})`;
+              _blueprintForId = item.blueprintFor;
+           }
+           
+           if (item.buildMaterials) {
+              buildMaterials = item.buildMaterials;
+              const hasMaterials = item.buildMaterials.every((mat: any) => {
+                  const playerItem = this.character.items?.find(i => i.id === mat.id);
+                  return playerItem && playerItem.quant >= mat.amount;
+              });
+              canCraft = hasMaterials;
+           }
+        }
+
         return {
           id: inventory.id,
           name: item?.name || 'Unknown Item',
           description: this.processItemDescription(rawDescription),
           quant: inventory.quant,
-          type: item?.type
+          type: item?.type,
+          canCraft,
+          blueprintForName,
+          buildMaterials,
+          _blueprintForId
         };
       });
     }
@@ -247,6 +276,67 @@ export class PlayerDetailComponent implements OnChanges {
     if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
       this.character = { ...activePlayer };
     }
+  }
+
+  onCraft(item: any) {
+    this.selectedBlueprint = item;
+    if (this.craftConfirmModal) {
+      this.modalService.openFromTemplate(this.craftConfirmModal);
+    } else {
+      console.error('craftConfirmModal is undefined!');
+    }
+  }
+
+  confirmCraft() {
+    if (!this.selectedBlueprint) return;
+    
+    const player = this.activePlayerService.activePlayer;
+    if (!player || player.id !== this.character.id) return; 
+
+    // Check if player already has this weapon
+    if (this.selectedBlueprint._blueprintForId && player.weapons && player.weapons.includes(this.selectedBlueprint._blueprintForId)) {
+      this.toastService.show(`You already have ${this.selectedBlueprint.blueprintForName}!`, 'info');
+      this.modalService.close();
+      return;
+    }
+
+    // Deduct materials
+    if (this.selectedBlueprint.buildMaterials) {
+       this.selectedBlueprint.buildMaterials.forEach((mat: any) => {
+          if (!player.items) return;
+          const playerItem = player.items.find(i => i.id === mat.id);
+          if (playerItem) {
+             playerItem.quant -= mat.amount;
+          }
+       });
+       // Remove items with 0 or less quantity
+       if (player.items) {
+         player.items = player.items.filter(i => i.quant > 0);
+       }
+    }
+
+    // Add Weapon
+    if (this.selectedBlueprint._blueprintForId) {
+       if (!player.weapons) player.weapons = [];
+       player.weapons.push(this.selectedBlueprint._blueprintForId);
+       this.toastService.show(`Crafted ${this.selectedBlueprint.blueprintForName}!`, 'success');
+    }
+
+    this.activePlayerService.updateActivePlayer({...player});
+    this.modalService.close();
+    this.selectedBlueprint = null;
+    
+    // Refresh character data and table
+    if (this.isPlayer(this.character)) {
+        this.character = { ...player };
+        this.ngOnChanges(); 
+    }
+  }
+
+  getMaterialName(id: number): string {
+    if (!this.itemsData || !this.itemsData.items) return 'Unknown Material';
+    const item = this.itemsData.items.find(i => i.id === id);
+    return item?.name || `Unknown Material (${id})`;
   }
 
   copyToClipboard(): void {
