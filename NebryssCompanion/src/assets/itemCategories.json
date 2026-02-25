@@ -61,5 +61,19 @@
       "key": "modification",
       "headers": ["Name", "Price", "Description", "Part"],
       "keys": ["name", "price", "description", "part"]
+    },
+    {
+      "id": 10,
+      "name": "Material",
+      "key": "material",
+      "headers": ["Name", "Price", "Description", "Dropped From"],
+      "keys": ["name", "price", "description", "bestiaryId"]
+    },
+    {
+      "id": 11,
+      "name": "Blueprint",
+      "key": "blueprint",
+      "headers": ["Name", "Price", "Description", "Weapon"],
+      "keys": ["name", "price", "description", "blueprintFor"]
     }
 ]

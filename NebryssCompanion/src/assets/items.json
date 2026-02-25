@@ -543,5 +543,108 @@
       "description": "Once per Battle: next shoot action /weaponRule/:24/.",
       "type": "modification",
       "part": "non-Plasma Riffle, Pistol"
+    },
+    {
+      "id": 69,
+      "name": "Murloc Scale",
+      "price": 5,
+      "description": "A tough, slimy scale from a Murloc.",
+      "type": "material",
+      "bestiaryId": 1
+    },
+    {
+      "id": 70,
+      "name": "Murloc Fin",
+      "price": 8,
+      "description": "A fin from a Murloc.",
+      "type": "material",
+      "bestiaryId": 1
+    },
+    {
+      "id": 71,
+      "name": "Aetherwing Feather",
+      "price": 15,
+      "description": "A shimmering feather from an Aetherwing.",
+      "type": "material",
+      "bestiaryId": 4
+    },
+    {
+      "id": 72,
+      "name": "Aetherwing Beak",
+      "price": 20,
+      "description": "The sharp beak of an Aetherwing.",
+      "type": "material",
+      "bestiaryId": 4
+    },
+    {
+      "id": 73,
+      "name": "Screamer Hide",
+      "price": 25,
+      "description": "The leathery hide of a Screamer.",
+      "type": "material",
+      "bestiaryId": 11
+    },
+    {
+      "id": 74,
+      "name": "Daemon Blood",
+      "price": 30,
+      "description": "A vial of bubbling daemon blood.",
+      "type": "material",
+      "bestiaryId": 11
+    },
+    {
+      "id": 75,
+      "name": "Fellgor Horn",
+      "price": 18,
+      "description": "A sturdy horn from a Fellgor.",
+      "type": "material",
+      "bestiaryId": 20
+    },
+    {
+      "id": 76,
+      "name": "Blueprint: Murloc Spine Dagger",
+      "price": 5,
+      "description": "Blueprint for crafting a Murloc Spine Dagger.",
+      "type": "blueprint",
+      "blueprintFor": 74,
+      "buildMaterials": [
+        { "id": 70, "amount": 5 },
+        { "id": 69, "amount": 5 }
+      ]
+    },
+    {
+      "id": 77,
+      "name": "Blueprint: Aetherwing Bow",
+      "price": 8,
+      "description": "Blueprint for crafting an Aetherwing Bow.",
+      "type": "blueprint",
+      "blueprintFor": 75,
+      "buildMaterials": [
+        { "id": 71, "amount": 3 },
+        { "id": 72, "amount": 1 }
+      ]
+    },
+    {
+      "id": 78,
+      "name": "Blueprint: Fellgor Horn Hammer",
+      "price": 6,
+      "description": "Blueprint for crafting a Fellgor Horn Hammer.",
+      "type": "blueprint",
+      "blueprintFor": 76,
+      "buildMaterials": [
+        { "id": 75, "amount": 2 }
+      ]
+    },
+    {
+      "id": 79,
+      "name": "Blueprint: Screamer Whip",
+      "price": 10,
+      "description": "Blueprint for crafting a Screamer Whip.",
+      "type": "blueprint",
+      "blueprintFor": 77,
+      "buildMaterials": [
+        { "id": 73, "amount": 2 },
+        { "id": 74, "amount": 1 }
+      ]
     }
 ]

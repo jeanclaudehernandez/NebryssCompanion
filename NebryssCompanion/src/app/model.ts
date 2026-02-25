@@ -99,8 +99,14 @@ export interface AlteredState {
     bestiaryId?: number;
     part?: string;
     attachedTo?: number;
+    blueprintFor?: number;
+    buildMaterials?: {
+      id: number;
+      amount: number;
+    }[];
   }
   
+
   interface ArmorItem extends BaseItem {
     type?: 'armor';
   }

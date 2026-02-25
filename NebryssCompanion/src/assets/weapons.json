@@ -1452,5 +1452,81 @@
         "body": "human"
       }
     ]
+  },
+  {
+    "id": 74,
+    "name": "Murloc Spine Dagger",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 15, "modValue": null },
+          { "ruleId": 36, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 75,
+    "name": "Aetherwing Bow",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 12,
+        "attacks": 3,
+        "ws": 3,
+        "damage": { "min": 3, "max": 3 },
+        "specialRules": [
+          { "ruleId": 28, "modValue": null },
+          { "ruleId": 16, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 76,
+    "name": "Fellgor Horn Hammer",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 17, "modValue": null },
+          { "ruleId": 19, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 77,
+    "name": "Screamer Whip",
+    "price": 30,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 3,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 20, "modValue": null },
+          { "ruleId": 21, "modValue": 5 }
+        ],
+        "body": "universal"
+      }
+    ]
   }
 ]
