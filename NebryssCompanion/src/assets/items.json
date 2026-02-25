@@ -646,5 +646,34 @@
         { "id": 73, "amount": 2 },
         { "id": 74, "amount": 1 }
       ]
+    },
+    {
+      "id": 80,
+      "name": "Fellgor Crude Iron",
+      "price": 12,
+      "description": "A heavy, rough slab of iron used by Fellgors.",
+      "type": "material",
+      "bestiaryId": 20
+    },
+    {
+      "id": 81,
+      "name": "Beastman Leather",
+      "price": 10,
+      "description": "Thick, tough leather from a Beastman.",
+      "type": "material",
+      "bestiaryId": 20
+    },
+    {
+      "id": 82,
+      "name": "Blueprint: Fellgor Cleaver",
+      "price": 8,
+      "description": "Blueprint for crafting a Fellgor Cleaver.",
+      "type": "blueprint",
+      "blueprintFor": 84,
+      "buildMaterials": [
+        { "id": 80, "amount": 2 },
+        { "id": 75, "amount": 1 },
+        { "id": 81, "amount": 1 }
+      ]
     }
 ]
