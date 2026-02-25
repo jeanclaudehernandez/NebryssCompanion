@@ -1,9 +1,9 @@
 <div class="talents-container">
     <h2>Talents</h2>
     <div class="talent-points-floating" *ngIf="activePlayer">
-      <span>Talent Points: {{ activePlayer?.progression?.talentPoints ?? 0 }}</span>
+      <span>Talent Points: {{ activePlayer.progression.talentPoints }}</span>
       <button class="add-talent-point-btn" (click)="addTalentPoint()">+</button>
-      <button class="remove-talent-point-btn" (click)="removeTalentPoint()" [disabled]="(activePlayer?.progression?.talentPoints ?? 0) <= 0">-</button>
+      <button class="remove-talent-point-btn" (click)="removeTalentPoint()" [disabled]="(activePlayer.progression.talentPoints) <= 0">-</button>
     </div>
     <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
       <h3>{{category.name}}</h3>
