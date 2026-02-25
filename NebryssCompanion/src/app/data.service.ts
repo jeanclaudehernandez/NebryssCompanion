@@ -102,6 +102,11 @@ export class DataService {
     return this.bestiaryCache$;
   }
 
+  refreshWeapons(): Observable<Weapon[]> {
+    this.weaponsCache$ = null;
+    return this.getWeapons();
+  }
+
   getWeapons(): Observable<Weapon[]> {
     if (!this.weaponsCache$) {
       this.weaponsCache$ = this.http.get<Weapon[]>(`${this.apiUrl}/weapon`).pipe(
@@ -112,6 +117,11 @@ export class DataService {
       );
     }
     return this.weaponsCache$;
+  }
+
+  refreshItems(): Observable<Items> {
+    this.itemsCache$ = null;
+    return this.getItems();
   }
 
   getItems(): Observable<Items> {
@@ -402,6 +412,36 @@ export class DataService {
           this.items.items = this.items.items.filter(item => item.id !== id);
           this.itemsCache$ = null; // Invalidate cache
         }
+      })
+    );
+  }
+
+  createWeapon(weapon: Weapon): Observable<Weapon> {
+    return this.http.post<Weapon>(`${this.apiUrl}/weapon`, weapon).pipe(
+      tap(newWeapon => {
+        this.weapons.push(newWeapon);
+        this.weaponsCache$ = null;
+      })
+    );
+  }
+
+  updateWeapon(weapon: Weapon): Observable<Weapon> {
+    return this.http.put<Weapon>(`${this.apiUrl}/weapon`, weapon).pipe(
+      tap(updatedWeapon => {
+        const index = this.weapons.findIndex(w => w.id === updatedWeapon.id);
+        if (index !== -1) {
+          this.weapons[index] = updatedWeapon;
+        }
+        this.weaponsCache$ = null;
+      })
+    );
+  }
+
+  deleteWeapon(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/weapon/${id}`).pipe(
+      tap(() => {
+        this.weapons = this.weapons.filter(w => w.id !== id);
+        this.weaponsCache$ = null;
       })
     );
   }

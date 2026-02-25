@@ -30,7 +30,13 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
             [alteredStates]="alteredStates"
             [displayPrice]="true"
             [displayBody]="true"
-            [inventoryManagement]="hasActivePlayer()"></app-weapon-table>
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            (clone)="onCloneWeapon($event)"
+            (delete)="onDeleteWeapon($event)"
+            (edit)="onEditWeapon($event)"></app-weapon-table>
         </div>
       </div>
 
@@ -142,6 +148,11 @@ export class ItemsComponent implements OnInit {
   // Deleting
   itemToDelete: any = null;
   
+  // Weapon Management
+  weaponToClone: Weapon | null = null;
+  weaponToEdit: Weapon | null = null;
+  weaponToDelete: Weapon | null = null;
+  
   // Map of item types to categories for display purposes
   private typeToCategory: {[key: string]: ItemCategory} = {};
   
@@ -200,6 +211,25 @@ export class ItemsComponent implements OnInit {
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
   }
 
+  // Weapon Management Methods
+  onCloneWeapon(weapon: Weapon) {
+    this.weaponToClone = weapon;
+    this.clonedItemName = weapon.name + ' (Copy)';
+    this.modalService.openFromTemplate(this.cloneModal);
+  }
+
+  onDeleteWeapon(weapon: Weapon) {
+    this.weaponToDelete = weapon;
+    this.itemToDelete = weapon; // Reuse itemToDelete for display in modal
+    this.modalService.openFromTemplate(this.deleteModal);
+  }
+
+  onEditWeapon(weapon: Weapon) {
+    this.weaponToEdit = weapon;
+    this.editedItemJson = JSON.stringify(weapon, null, 2);
+    this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
+  }
+
   getMaterialName(id: number): string {
     const item = this.itemsData.items.find(i => i.id === id);
     return item ? item.name || 'Unknown Material' : 'Unknown Material';
@@ -225,95 +255,153 @@ export class ItemsComponent implements OnInit {
     this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
   }
 
-  confirmEdit() {
-    try {
-      const updatedItem = JSON.parse(this.editedItemJson);
-      
-      // Ensure the ID matches (optional but good practice)
-      if (this.itemToEdit.id && updatedItem.id !== this.itemToEdit.id) {
-        if (!confirm('You are changing the Item ID. This might break references. Continue?')) {
-          return;
-        }
-      }
-
-      this.dataService.updateItem(updatedItem).subscribe({
-        next: (result) => {
-          this.toastService.show('Item updated successfully', 'success');
-          this.modalService.close();
-          // Update local data
-          const index = this.itemsData.items.findIndex(i => i.id === updatedItem.id);
-          if (index !== -1) {
-             this.itemsData.items[index] = updatedItem;
-          }
-        },
-        error: (err) => {
-          console.error('Error updating item', err);
-          this.toastService.show('Failed to update item', 'error');
-        }
-      });
-    } catch (e) {
-      this.toastService.show('Invalid JSON format', 'error');
-    }
-  }
-
   onDeleteItem(item: any) {
     this.itemToDelete = item;
     this.modalService.openFromTemplate(this.deleteModal);
   }
 
   confirmClone() {
-    if (!this.itemToClone) return;
+    if (this.itemToClone) {
+      const newItem = { ...this.itemToClone };
+      delete newItem._id;
+      delete newItem.id; // Let the backend or logic handle ID generation
+      newItem.name = this.clonedItemName;
+      
+      this.dataService.createItem(newItem).subscribe({
+        next: (createdItem) => {
+          this.toastService.show(`Item cloned successfully!`, 'success');
+          this.modalService.close();
+          this.itemToClone = null;
+          this.clonedItemName = '';
+          
+          // Refresh items
+          this.dataService.refreshItems().subscribe(items => {
+            this.itemsData = items;
+          });
+        },
+        error: (err) => {
+          console.error('Failed to clone item', err);
+          this.toastService.show(`Failed to clone item: ${err.message}`, 'error');
+        }
+      });
+    } else if (this.weaponToClone) {
+      const newWeapon = { ...this.weaponToClone };
+      delete (newWeapon as any).id;
+      newWeapon.name = this.clonedItemName;
 
-    const allItems = this.itemsData.items;
-    const newId = allItems.length + 1; 
-    
-    // Create new item object
-    const newItem = { ...this.itemToClone };
-    delete newItem._id; // Remove mongoDB _id if present
-    newItem.id = newId;
-    newItem.name = this.clonedItemName;
-    
-    // Remove UI specific properties added in getCategoryData
-    // We should ideally clone the RAW item data, not the processed one.
-    // itemToClone is from the table, so it has processed data.
-    // We should find the original item in itemsData.items to be safe.
-    
-    const originalItem = this.itemsData.items.find(i => i.id === this.itemToClone.id);
-    const itemToSave = originalItem ? { ...originalItem } : { ...newItem };
-    
-    delete itemToSave._id;
-    itemToSave.id = newId;
-    itemToSave.name = this.clonedItemName;
-    
-    // Send to API
-    this.dataService.createItem(itemToSave).subscribe({
-      next: (createdItem) => {
-        this.toastService.show(`Item cloned successfully!`, 'success');
-        this.modalService.close();
-        this.itemToClone = null;
-        this.clonedItemName = '';
-      },
-      error: (err) => {
-        console.error('Failed to clone item', err);
-        this.toastService.show(`Failed to clone item: ${err.message}`, 'error');
-      }
-    });
+      this.dataService.createWeapon(newWeapon).subscribe({
+        next: (createdWeapon) => {
+          this.toastService.show('Weapon cloned successfully', 'success');
+          this.modalService.close();
+          
+          // Refresh weapons
+          this.dataService.refreshWeapons().subscribe(weapons => {
+            this.weaponsData = weapons;
+            this.allWeaponIds = this.weaponsData.map(w => w.id);
+          });
+          
+          this.weaponToClone = null;
+        },
+        error: (err) => {
+          console.error('Failed to clone weapon', err);
+          this.toastService.show(`Failed to clone weapon: ${err.message}`, 'error');
+        }
+      });
+    }
   }
 
   confirmDelete() {
-    if (!this.itemToDelete) return;
+    if (this.itemToDelete && !this.weaponToDelete) {
+      this.dataService.deleteItem(this.itemToDelete.id).subscribe({
+        next: () => {
+          this.toastService.show(`Item deleted successfully!`, 'success');
+          this.modalService.close();
+          this.itemToDelete = null;
 
-    this.dataService.deleteItem(this.itemToDelete.id).subscribe({
-      next: () => {
-        this.toastService.show(`Item deleted successfully!`, 'success');
-        this.modalService.close();
-        this.itemToDelete = null;
-      },
-      error: (err) => {
-        console.error('Failed to delete item', err);
-        this.toastService.show(`Failed to delete item: ${err.message}`, 'error');
+          // Refresh items
+          this.dataService.refreshItems().subscribe(items => {
+            this.itemsData = items;
+          });
+        },
+        error: (err) => {
+          console.error('Failed to delete item', err);
+          this.toastService.show(`Failed to delete item: ${err.message}`, 'error');
+        }
+      });
+    } else if (this.weaponToDelete) {
+      this.dataService.deleteWeapon(this.weaponToDelete.id).subscribe({
+        next: () => {
+          this.toastService.show('Weapon deleted successfully', 'success');
+          this.modalService.close();
+          
+          // Refresh weapons
+          this.dataService.refreshWeapons().subscribe(weapons => {
+            this.weaponsData = weapons;
+            this.allWeaponIds = this.weaponsData.map(w => w.id);
+          });
+          
+          this.weaponToDelete = null;
+          this.itemToDelete = null;
+        },
+        error: (err) => {
+          console.error('Failed to delete weapon', err);
+          this.toastService.show(`Failed to delete weapon: ${err.message}`, 'error');
+        }
+      });
+    }
+  }
+
+  confirmEdit() {
+    try {
+      const editedData = JSON.parse(this.editedItemJson);
+      
+      if (this.itemToEdit) {
+        // Ensure the ID matches
+        if (this.itemToEdit.id && editedData.id !== this.itemToEdit.id) {
+          if (!confirm('You are changing the Item ID. This might break references. Continue?')) {
+            return;
+          }
+        }
+
+        this.dataService.updateItem(editedData).subscribe({
+          next: (result) => {
+            this.toastService.show('Item updated successfully', 'success');
+            this.modalService.close();
+            this.itemToEdit = null;
+            
+            // Refresh items
+            this.dataService.refreshItems().subscribe(items => {
+              this.itemsData = items;
+            });
+          },
+          error: (err) => {
+            console.error('Error updating item', err);
+            this.toastService.show('Failed to update item', 'error');
+          }
+        });
+      } else if (this.weaponToEdit) {
+        this.dataService.updateWeapon(editedData).subscribe({
+          next: (updatedWeapon) => {
+            this.toastService.show('Weapon updated successfully', 'success');
+            this.modalService.close();
+            
+            // Refresh weapons
+            this.dataService.refreshWeapons().subscribe(weapons => {
+              this.weaponsData = weapons;
+              this.allWeaponIds = this.weaponsData.map(w => w.id);
+            });
+            
+            this.weaponToEdit = null;
+          },
+          error: (err) => {
+            console.error('Error updating weapon', err);
+            this.toastService.show('Failed to update weapon', 'error');
+          }
+        });
       }
-    });
+    } catch (e) {
+      this.toastService.show('Invalid JSON format', 'error');
+    }
   }
 
   confirmCraft() {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
 import { MatDialog } from '@angular/material/dialog';
@@ -38,6 +38,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Input() characterBody: string[] = [];
   @Input() sortByRange: boolean = true;
   @Input() inventoryManagement: boolean = false;
+  @Input() enableCloning: boolean = false;
+  @Input() enableDeleting: boolean = false;
+  @Input() enableEditing: boolean = false;
+
+  @Output() clone = new EventEmitter<any>();
+  @Output() delete = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<any>();
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
@@ -117,6 +124,18 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
         'error'
       );
     }
+  }
+
+  onClone(weapon: any) {
+    this.clone.emit(weapon);
+  }
+
+  onDelete(weapon: any) {
+    this.delete.emit(weapon);
+  }
+
+  onEdit(weapon: any) {
+    this.edit.emit(weapon);
   }
 
   private updateSortedProfiles(): void {
