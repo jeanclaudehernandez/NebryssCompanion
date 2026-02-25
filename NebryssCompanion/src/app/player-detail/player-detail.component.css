@@ -92,6 +92,25 @@
   transform: scale(0.95);
 }
 
+.mistrals-add-button {
+  background-color: #4caf50;
+  color: #ffffff;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.mistrals-add-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .mistrals-row {
   display: flex;
   align-items: center;

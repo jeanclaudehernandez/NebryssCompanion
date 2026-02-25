@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
@@ -12,7 +13,7 @@ import { ToastService } from '../toast.service';
 @Component({
   selector: 'app-items',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
+  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
       <div class="weapons-section" [id]="'weapon'">
@@ -40,7 +41,9 @@ import { ToastService } from '../toast.service';
           [headerKeys]="category.keys"
           [renderHtml]="['description']"
           [inventoryManagement]="hasActivePlayer()"
-          (craft)="onCraftItem($event)">
+          [enableCloning]="true"
+          (craft)="onCraftItem($event)"
+          (clone)="onCloneItem($event)">
         </app-generic-table>
       </div>
     </div>
@@ -62,6 +65,20 @@ import { ToastService } from '../toast.service';
         </div>
       </div>
     </ng-template>
+
+    <ng-template #cloneModal>
+      <div class="clone-modal">
+        <h3>Clone Modal</h3>
+        <div style="margin: 20px 0;">
+            <label for="cloneName" style="display: block; margin-bottom: 5px;">New Item Name:</label>
+            <input type="text" id="cloneName" [(ngModel)]="clonedItemName" style="width: 100%; padding: 8px; box-sizing: border-box;">
+        </div>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button (click)="modalService.close()" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+          <button (click)="confirmClone()" style="padding: 8px 16px; border: none; background: #FFC107; color: black; border-radius: 4px; cursor: pointer;">Confirm</button>
+        </div>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./items.component.css']
 })
@@ -77,8 +94,13 @@ export class ItemsComponent implements OnInit {
   scrollSections: ScrollSection[] = [];
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
+  @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
-
+  
+  // Cloning
+  itemToClone: any = null;
+  clonedItemName: string = '';
+  
   // Map of item types to categories for display purposes
   private typeToCategory: {[key: string]: ItemCategory} = {};
 
@@ -138,6 +160,51 @@ export class ItemsComponent implements OnInit {
   onCraftItem(item: any) {
     this.selectedBlueprint = item;
     this.modalService.openFromTemplate(this.craftConfirmModal);
+  }
+
+  onCloneItem(item: any) {
+    this.itemToClone = item;
+    this.clonedItemName = item.name + ' (Copy)';
+    this.modalService.openFromTemplate(this.cloneModal);
+  }
+
+  confirmClone() {
+    if (!this.itemToClone) return;
+
+    const allItems = this.itemsData.items;
+    const newId = allItems.length + 1; 
+    
+    // Create new item object
+    const newItem = { ...this.itemToClone };
+    delete newItem._id; // Remove mongoDB _id if present
+    newItem.id = newId;
+    newItem.name = this.clonedItemName;
+    
+    // Remove UI specific properties added in getCategoryData
+    // We should ideally clone the RAW item data, not the processed one.
+    // itemToClone is from the table, so it has processed data.
+    // We should find the original item in itemsData.items to be safe.
+    
+    const originalItem = this.itemsData.items.find(i => i.id === this.itemToClone.id);
+    const itemToSave = originalItem ? { ...originalItem } : { ...newItem };
+    
+    delete itemToSave._id;
+    itemToSave.id = newId;
+    itemToSave.name = this.clonedItemName;
+    
+    // Send to API
+    this.dataService.createItem(itemToSave).subscribe({
+      next: (createdItem) => {
+        this.toastService.show(`Item cloned successfully!`, 'success');
+        this.modalService.close();
+        this.itemToClone = null;
+        this.clonedItemName = '';
+      },
+      error: (err) => {
+        console.error('Failed to clone item', err);
+        this.toastService.show(`Failed to clone item: ${err.message}`, 'error');
+      }
+    });
   }
 
   confirmCraft() {

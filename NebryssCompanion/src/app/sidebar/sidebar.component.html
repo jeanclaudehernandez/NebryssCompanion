@@ -16,6 +16,9 @@
     
     <div class="update-section">
       <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Refresh</button>
+      <button class="update-button admin-btn" (click)="toggleAdmin()">
+        {{ isAdmin ? 'Admin Mode: ON' : 'Admin Mode: OFF' }}
+      </button>
     </div>
     
     <div class="theme-switch" (click)="toggleTheme()">
@@ -32,6 +35,18 @@
     <div class="dialog-buttons">
       <button class="btn-cancel" (click)="cancel()">Cancel</button>
       <button class="btn-confirm" (click)="confirm()">Continue</button>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #adminDialog let-check="check" let-cancel="cancel">
+  <div class="confirmation-dialog">
+    <h3>Admin Access</h3>
+    <p>Enter admin password:</p>
+    <input #passwordInput type="password" style="margin-bottom: 10px; padding: 5px; width: 100%; box-sizing: border-box;" (keyup.enter)="check(passwordInput.value)">
+    <div class="dialog-buttons">
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+      <button class="btn-confirm" (click)="check(passwordInput.value)">Submit</button>
     </div>
   </div>
 </ng-template>

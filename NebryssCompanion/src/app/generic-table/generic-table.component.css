@@ -54,7 +54,7 @@ h3 {
     justify-content: center;
 }
 
-.btn-add, .btn-remove, .btn-craft {
+.btn-add, .btn-remove, .btn-craft, .btn-clone {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -99,6 +99,16 @@ h3 {
 .btn-craft i {
     font-style: normal;
     filter: grayscale(100%) brightness(200%); /* Make emoji white */
+}
+
+.btn-clone {
+    background-color: #ffc107; /* Amber/Yellow */
+    color: black;
+    font-size: 0.8rem;
+}
+
+.btn-clone:hover {
+    background-color: #ffa000;
 }
 
 /* Dark Theme Styles */

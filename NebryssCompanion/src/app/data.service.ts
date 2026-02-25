@@ -369,4 +369,15 @@ export class DataService {
   savePlayer(player: Player): Observable<Player> {
     return this.http.put<Player>(`${this.apiUrl}/player`, player);
   }
+
+  createItem(item: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/item`, item).pipe(
+      tap(newItem => {
+        if (this.items && this.items.items) {
+          this.items.items.push(newItem);
+          this.itemsCache$ = null; // Invalidate cache
+        }
+      })
+    );
+  }
 }

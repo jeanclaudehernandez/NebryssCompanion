@@ -16,9 +16,11 @@ export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
+  @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates'>();
   isOpen = false;
   isDarkMode = false;
+  isAdmin = false;
 
   constructor(
     private matDialog: MatDialog,
@@ -29,6 +31,9 @@ export class SidebarComponent {
     this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
     });
+    
+    const adminStored = localStorage.getItem('isAdmin');
+    this.isAdmin = adminStored === 'true';
   }
 
   @HostListener('document:click', ['$event'])
@@ -92,5 +97,28 @@ export class SidebarComponent {
 
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  toggleAdmin() {
+    if (this.isAdmin) {
+      this.isAdmin = false;
+      localStorage.setItem('isAdmin', 'false');
+    } else {
+      const dialogContext = {
+        check: (password: string) => {
+          if (password === '2602') {
+            this.isAdmin = true;
+            localStorage.setItem('isAdmin', 'true');
+            this.modalService.close();
+          } else {
+            alert('Incorrect password');
+          }
+        },
+        cancel: () => {
+          this.modalService.close();
+        }
+      };
+      this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext);
+    }
   }
 }

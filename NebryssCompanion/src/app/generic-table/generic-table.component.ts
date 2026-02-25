@@ -27,7 +27,7 @@ import { ToastService } from '../toast.service';
                   {{ sortDirection === 'asc' ? '▲' : '▼' }}
                 </span>
               </th>
-              <th *ngIf="inventoryManagement">Actions</th>
+              <th *ngIf="inventoryManagement || enableCloning">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -36,13 +36,18 @@ import { ToastService } from '../toast.service';
                 <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
-              <td *ngIf="inventoryManagement">
+              <td *ngIf="inventoryManagement || enableCloning">
                 <div class="inventory-actions">
-                  <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
-                    <i class="icon-wrench">🔧</i>
+                  <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
+                    <span class="icon">❐</span>
                   </button>
-                  <button *ngIf="!isPlayerDetail" (click)="addToInventory(item)" class="btn-add">+</button>
-                  <button (click)="removeFromInventory(item)" class="btn-remove">-</button>
+                  <ng-container *ngIf="inventoryManagement">
+                    <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
+                      <i class="icon-wrench">🔧</i>
+                    </button>
+                    <button *ngIf="!isPlayerDetail" (click)="addToInventory(item)" class="btn-add">+</button>
+                    <button (click)="removeFromInventory(item)" class="btn-remove">-</button>
+                  </ng-container>
                 </div>
               </td>
             </tr>
@@ -64,8 +69,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() isPlayerDetail: boolean = false;
   @Input() renderHtml?: string[];
   @Input() highlightInventory: boolean = true;
+  @Input() enableCloning: boolean = false;
   
   @Output() craft = new EventEmitter<any>();
+  @Output() clone = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -107,6 +114,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
   
   onCraft(item: any) {
     this.craft.emit(item);
+  }
+
+  onClone(item: any) {
+    this.clone.emit(item);
   }
 
   private initializeSortedData() {
