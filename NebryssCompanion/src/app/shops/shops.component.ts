@@ -5,7 +5,7 @@ import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule } from '../model';
+import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
@@ -33,6 +33,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
   itemsData!: Items;
   weaponsData: Weapon[] = [];
   weaponRulesData: WeaponRule[] = [];
+  alteredStates: AlteredState[] = [];
   itemsCategories: ItemCategory[] = [];
   shops: Shop[] = [];
   npcs: NPC[] = [];
@@ -56,6 +57,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
       this.itemsData = response.items;
       this.weaponsData = response.weapons;
       this.weaponRulesData = response.weaponRules;
+      this.alteredStates = response.alteredStates;
       this.shops = response.shops;
       this.itemsCategories = response.itemCategories;
       this.scrollSections = this.shops.map(shop => ({

@@ -39,6 +39,7 @@ export class PlayerListComponent implements OnInit, OnDestroy {
       this.weaponsData = data.weapons;
       this.itemsData = data.items;
       this.weaponRulesData = data.weaponRules;
+      this.alteredStates = data.alteredStates;
 
       // Check if we have an active player and expand it
       const activePlayer = this.activePlayerService.activePlayer;
