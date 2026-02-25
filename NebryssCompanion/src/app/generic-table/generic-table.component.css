@@ -54,7 +54,7 @@ h3 {
     justify-content: center;
 }
 
-.btn-add, .btn-remove {
+.btn-add, .btn-remove, .btn-craft {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -86,6 +86,21 @@ h3 {
     background-color: #d32f2f;
 }
 
+.btn-craft {
+    background-color: #2196F3; /* Blue */
+    color: white;
+    font-size: 0.8rem; /* Smaller icon */
+}
+
+.btn-craft:hover {
+    background-color: #1976D2;
+}
+
+.btn-craft i {
+    font-style: normal;
+    filter: grayscale(100%) brightness(200%); /* Make emoji white */
+}
+
 /* Dark Theme Styles */
 body.dark-theme .table-container {
     border-color: #444;
@@ -99,16 +114,12 @@ body.dark-theme .items-table th {
 }
 
 body.dark-theme .items-table td {
-    border-bottom-color: #444;
-    color: #e0e0e0;
+    border-bottom-color: #333;
+    color: #ccc;
 }
 
-body.dark-theme .items-table tr {
-    color: #e0e0e0;
-}
-
-body.dark-theme .items-table tr.in-inventory {
-    background-color: #0d2015;
+body.dark-theme .in-inventory {
+    background-color: #1b5e20; /* Darker green background for dark mode */
 }
 
 body.dark-theme h3 {

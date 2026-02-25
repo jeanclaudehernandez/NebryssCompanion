@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
@@ -38,6 +38,9 @@ import { ToastService } from '../toast.service';
               </td>
               <td *ngIf="inventoryManagement">
                 <div class="inventory-actions">
+                  <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
+                    <i class="icon-wrench">🔧</i>
+                  </button>
                   <button *ngIf="!isPlayerDetail" (click)="addToInventory(item)" class="btn-add">+</button>
                   <button (click)="removeFromInventory(item)" class="btn-remove">-</button>
                 </div>
@@ -61,6 +64,8 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() isPlayerDetail: boolean = false;
   @Input() renderHtml?: string[];
   @Input() highlightInventory: boolean = true;
+  
+  @Output() craft = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -98,6 +103,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
       this.sortDirection = 'asc';
     }
     this.applySort();
+  }
+  
+  onCraft(item: any) {
+    this.craft.emit(item);
   }
 
   private initializeSortedData() {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
@@ -6,6 +6,8 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 import { Items, Weapon, WeaponRule, ItemCategory, ScrollSection, AlteredState } from '../model';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ActivePlayerService } from '../active-player.service';
+import { ModalService } from '../modal.service';
+import { ToastService } from '../toast.service';
 
 @Component({
   selector: 'app-items',
@@ -37,11 +39,29 @@ import { ActivePlayerService } from '../active-player.service';
           [headers]="category.headers"
           [headerKeys]="category.keys"
           [renderHtml]="['description']"
-          [inventoryManagement]="hasActivePlayer()">
+          [inventoryManagement]="hasActivePlayer()"
+          (craft)="onCraftItem($event)">
         </app-generic-table>
       </div>
     </div>
     <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+
+    <ng-template #craftConfirmModal>
+      <div class="craft-modal">
+        <h3>Confirm Crafting</h3>
+        <p>Are you sure you want to craft <strong>{{ selectedBlueprint?.blueprintForName }}</strong>?</p>
+        <p>This will consume the following materials:</p>
+        <ul>
+          <li *ngFor="let mat of selectedBlueprint?.buildMaterials">
+             {{ getMaterialName(mat.id) }} (x{{ mat.amount }})
+          </li>
+        </ul>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button (click)="modalService.close()" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+          <button (click)="confirmCraft()" style="padding: 8px 16px; border: none; background: #2196F3; color: white; border-radius: 4px; cursor: pointer;">Confirm Craft</button>
+        </div>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./items.component.css']
 })
@@ -55,12 +75,17 @@ export class ItemsComponent implements OnInit {
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   
+  @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
+  selectedBlueprint: any = null;
+
   // Map of item types to categories for display purposes
   private typeToCategory: {[key: string]: ItemCategory} = {};
 
   constructor(
     private dataService: DataService,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    public modalService: ModalService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
@@ -102,6 +127,56 @@ export class ItemsComponent implements OnInit {
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
   }
 
+  getMaterialName(id: number): string {
+    const item = this.itemsData.items.find(i => i.id === id);
+    return item ? item.name || 'Unknown Material' : 'Unknown Material';
+  }
+
+  onCraftItem(item: any) {
+    this.selectedBlueprint = item;
+    this.modalService.openFromTemplate(this.craftConfirmModal);
+  }
+
+  confirmCraft() {
+    if (!this.selectedBlueprint) return;
+    
+    const player = this.activePlayerService.activePlayer;
+    if (!player) return;
+
+    // Check if player already has this weapon
+    if (this.selectedBlueprint._blueprintForId && player.weapons && player.weapons.includes(this.selectedBlueprint._blueprintForId)) {
+      this.toastService.show(`You already have ${this.selectedBlueprint.blueprintForName}!`, 'info');
+      this.modalService.close();
+      return;
+    }
+
+    // Deduct materials
+    if (this.selectedBlueprint.buildMaterials) {
+       this.selectedBlueprint.buildMaterials.forEach((mat: any) => {
+          if (!player.items) return;
+          const playerItem = player.items.find(i => i.id === mat.id);
+          if (playerItem) {
+             playerItem.quant -= mat.amount;
+          }
+       });
+       // Remove items with 0 or less quantity
+       if (player.items) {
+         player.items = player.items.filter(i => i.quant > 0);
+       }
+    }
+
+    // Add Weapon
+    if (this.selectedBlueprint._blueprintForId) {
+       if (!player.weapons) player.weapons = [];
+       player.weapons.push(this.selectedBlueprint._blueprintForId);
+       this.toastService.show(`Crafted ${this.selectedBlueprint.blueprintForName}!`, 'success');
+    }
+
+    this.activePlayerService.updateActivePlayer({...player});
+    this.modalService.close();
+    this.selectedBlueprint = null;
+  }
+
   getCategoryData(key: string): any[] {
     // Filter items by type
     if (!this.itemsData || !this.itemsData.items) {
@@ -114,11 +189,47 @@ export class ItemsComponent implements OnInit {
       .map(item => {
         const raw = item.description || '';
         const withStatuses = this.replaceStatusTokens(raw);
-        const withRules = this.replaceWeaponRuleTokens(withStatuses);
-        return {
+        let withRules = this.replaceWeaponRuleTokens(withStatuses);
+
+        const newItem = {
           ...item,
           description: withRules
         };
+
+        if (key === 'blueprint') {
+          // Append materials
+          if (item.buildMaterials && item.buildMaterials.length > 0) {
+            const materialsList = item.buildMaterials.map(mat => {
+              const materialItem = this.itemsData.items.find(i => i.id === mat.id);
+              return `${materialItem ? materialItem.name : 'Unknown Material'} (x${mat.amount})`;
+            }).join(', ');
+            newItem.description += `<div class="materials-list" style="margin-top: 5px;"><strong>Required Materials:</strong> ${materialsList}</div>`;
+          }
+
+          // Resolve Weapon Name
+          if (item.blueprintFor) {
+            const weapon = this.weaponsData.find(w => w.id === item.blueprintFor);
+            const weaponName = weapon ? weapon.name : `Unknown Weapon (${item.blueprintFor})`;
+            (newItem as any).blueprintFor = weaponName;
+            (newItem as any).blueprintForName = weaponName;
+            (newItem as any)._blueprintForId = item.blueprintFor;
+          }
+
+          // Check if craftable
+          const activePlayer = this.activePlayerService.activePlayer;
+          let canCraft = false;
+          if (activePlayer && activePlayer.items && item.buildMaterials) {
+             const hasBlueprint = activePlayer.items.some(i => i.id === item.id);
+             const hasMaterials = item.buildMaterials.every((mat: any) => {
+                const playerItem = activePlayer.items!.find(i => i.id === mat.id);
+                return playerItem && playerItem.quant >= mat.amount;
+             });
+             canCraft = hasBlueprint && hasMaterials;
+          }
+          (newItem as any).canCraft = canCraft;
+        }
+
+        return newItem;
       });
     
     // Check if we have an active player
