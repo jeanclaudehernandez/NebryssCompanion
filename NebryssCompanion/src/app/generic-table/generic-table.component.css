@@ -54,7 +54,7 @@ h3 {
     justify-content: center;
 }
 
-.btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete {
+.btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete, .btn-edit {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -99,6 +99,16 @@ h3 {
 .btn-craft i {
     font-style: normal;
     filter: grayscale(100%) brightness(200%); /* Make emoji white */
+}
+
+.btn-edit {
+    background-color: #9C27B0; /* Purple */
+    color: white;
+    font-size: 0.8rem;
+}
+
+.btn-edit:hover {
+    background-color: #7B1FA2;
 }
 
 .btn-clone {

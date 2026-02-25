@@ -10,7 +10,7 @@ export class ModalService {
 
   constructor(private injector: EnvironmentInjector) {}
 
-  openFromTemplate(template: TemplateRef<any>, context?: any) {
+  openFromTemplate(template: TemplateRef<any>, context?: any, options: { width?: string, height?: string } = {}) {
     this.close();
   
     this.modalComponentRef = createComponent(ModalComponent, {
@@ -23,6 +23,9 @@ export class ModalService {
   
     // Now set the template and context
     this.modalComponentRef.instance.setTemplate(template, context);
+    if (options.width) this.modalComponentRef.instance.width = options.width;
+    if (options.height) this.modalComponentRef.instance.height = options.height;
+    
     this.modalComponentRef.instance.close = () => this.close();
     this.modalComponentRef.changeDetectorRef.detectChanges();
   }

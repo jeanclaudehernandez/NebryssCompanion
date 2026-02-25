@@ -27,7 +27,7 @@ import { ToastService } from '../toast.service';
                   {{ sortDirection === 'asc' ? '▲' : '▼' }}
                 </span>
               </th>
-              <th *ngIf="inventoryManagement || enableCloning || enableDeleting">Actions</th>
+              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -36,8 +36,11 @@ import { ToastService } from '../toast.service';
                 <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
-              <td *ngIf="inventoryManagement || enableCloning || enableDeleting">
+              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">
                 <div class="inventory-actions">
+                  <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
+                    <span class="icon">✏️</span>
+                  </button>
                   <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
                     <span class="icon">❐</span>
                   </button>
@@ -74,10 +77,12 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() highlightInventory: boolean = true;
   @Input() enableCloning: boolean = false;
   @Input() enableDeleting: boolean = false;
+  @Input() enableEditing: boolean = false;
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
+  @Output() edit = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -123,6 +128,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onClone(item: any) {
     this.clone.emit(item);
+  }
+
+  onEdit(item: any) {
+    this.edit.emit(item);
   }
 
   onDelete(item: any) {

@@ -10,11 +10,12 @@ import { ActivePlayerService } from '../active-player.service';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
 import { AdminService } from '../admin.service';
+import { JsonEditorComponent } from '../json-editor/json-editor.component';
 
 @Component({
   selector: 'app-items',
   standalone: true,
-  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
+  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent, JsonEditorComponent],
   template: `
     <div class="items-container">
       <div class="weapons-section" [id]="'weapon'">
@@ -44,9 +45,11 @@ import { AdminService } from '../admin.service';
           [inventoryManagement]="hasActivePlayer()"
           [enableCloning]="isAdmin"
           [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
           (craft)="onCraftItem($event)"
           (clone)="onCloneItem($event)"
-          (delete)="onDeleteItem($event)">
+          (delete)="onDeleteItem($event)"
+          (edit)="onEditItem($event)">
         </app-generic-table>
       </div>
     </div>
@@ -83,6 +86,20 @@ import { AdminService } from '../admin.service';
       </div>
     </ng-template>
 
+    <ng-template #editModal>
+      <div class="edit-modal">
+        <h3>Edit Item</h3>
+        <div style="margin: 20px 0;">
+            <label for="itemData" style="display: block; margin-bottom: 5px;">Item Data (JSON):</label>
+            <app-json-editor [(value)]="editedItemJson"></app-json-editor>
+        </div>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button (click)="modalService.close()" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
+          <button (click)="confirmEdit()" style="padding: 8px 16px; border: none; background: #9C27B0; color: white; border-radius: 4px; cursor: pointer;">Save</button>
+        </div>
+      </div>
+    </ng-template>
+
     <ng-template #deleteModal>
       <div class="delete-modal">
         <h3>Delete Item</h3>
@@ -111,11 +128,16 @@ export class ItemsComponent implements OnInit {
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
   @ViewChild('deleteModal') deleteModal!: TemplateRef<any>;
+  @ViewChild('editModal') editModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   
   // Cloning
   itemToClone: any = null;
   clonedItemName: string = '';
+
+  // Editing
+  itemToEdit: any = null;
+  editedItemJson: string = '';
 
   // Deleting
   itemToDelete: any = null;
@@ -192,6 +214,46 @@ export class ItemsComponent implements OnInit {
     this.itemToClone = item;
     this.clonedItemName = item.name + ' (Copy)';
     this.modalService.openFromTemplate(this.cloneModal);
+  }
+
+  onEditItem(item: any) {
+    this.itemToEdit = item;
+    // We want to edit the raw item data, so we should find it in the main list
+    // because the item passed here might have been processed by getCategoryData
+    const rawItem = this.itemsData.items.find(i => i.id === item.id);
+    this.editedItemJson = JSON.stringify(rawItem || item, null, 2);
+    this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
+  }
+
+  confirmEdit() {
+    try {
+      const updatedItem = JSON.parse(this.editedItemJson);
+      
+      // Ensure the ID matches (optional but good practice)
+      if (this.itemToEdit.id && updatedItem.id !== this.itemToEdit.id) {
+        if (!confirm('You are changing the Item ID. This might break references. Continue?')) {
+          return;
+        }
+      }
+
+      this.dataService.updateItem(updatedItem).subscribe({
+        next: (result) => {
+          this.toastService.show('Item updated successfully', 'success');
+          this.modalService.close();
+          // Update local data
+          const index = this.itemsData.items.findIndex(i => i.id === updatedItem.id);
+          if (index !== -1) {
+             this.itemsData.items[index] = updatedItem;
+          }
+        },
+        error: (err) => {
+          console.error('Error updating item', err);
+          this.toastService.show('Failed to update item', 'error');
+        }
+      });
+    } catch (e) {
+      this.toastService.show('Invalid JSON format', 'error');
+    }
   }
 
   onDeleteItem(item: any) {

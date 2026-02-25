@@ -381,6 +381,20 @@ export class DataService {
     );
   }
 
+  updateItem(item: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/item`, item).pipe(
+      tap(updatedItem => {
+        if (this.items && this.items.items) {
+          const index = this.items.items.findIndex(i => i.id === updatedItem.id);
+          if (index !== -1) {
+            this.items.items[index] = updatedItem;
+          }
+          this.itemsCache$ = null; // Invalidate cache
+        }
+      })
+    );
+  }
+
   deleteItem(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/item/${id}`).pipe(
       tap(() => {

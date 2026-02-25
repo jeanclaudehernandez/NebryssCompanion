@@ -50,6 +50,10 @@ function createUpdateRoute(path, options) {
       const db = usePlayersDb ? playersDb : mainDb;
       const collection = db.collection(collectionName);
 
+      if (item._id) {
+        delete item._id;
+      }
+
       const result = await collection.replaceOne(
         { id: item.id },
         item

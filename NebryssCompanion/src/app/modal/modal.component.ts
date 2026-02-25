@@ -6,7 +6,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, Vi
   standalone: true,
   template: `
     <div class="modal-overlay" (click)="close()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-content" (click)="$event.stopPropagation()" [style.width]="width" [style.height]="height">
         <ng-container #modalContent></ng-container>
         <button class="modal-close" (click)="close()">&times;</button>
       </div>
@@ -30,8 +30,9 @@ import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, Vi
       background-color: white;
       padding: 2rem;
       border-radius: 8px;
-      max-width: 90%;
-      max-height: 90vh;
+      max-width: 98vw;
+      width: 90%;
+      max-height: 98vh;
       overflow-y: auto;
       position: relative;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -62,6 +63,8 @@ import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, Vi
 export class ModalComponent {
   @ViewChild('modalContent', { read: ViewContainerRef }) viewContainerRef!: ViewContainerRef;
   close: () => void = () => {};
+  width: string = '90%';
+  height: string = 'auto';
 
   constructor(private cdr: ChangeDetectorRef) {}
 
