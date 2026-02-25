@@ -1528,5 +1528,167 @@
         "body": "universal"
       }
     ]
+  },
+  {
+    "id": 78,
+    "name": "Thunder Hammer",
+    "price": 25,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 5, "max": 6 },
+        "specialRules": [
+          { "ruleId": 17, "modValue": null },
+          { "ruleId": 19, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 79,
+    "name": "Heavy Flamer",
+    "price": 20,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 8,
+        "attacks": 6,
+        "ws": 2,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 2 },
+          { "ruleId": 6, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 80,
+    "name": "Needle Rifle",
+    "price": 18,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": null,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 3 },
+        "specialRules": [
+          { "ruleId": 28, "modValue": null },
+          { "ruleId": 21, "modValue": 5 },
+          { "ruleId": 34, "modValue": 1 }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 81,
+    "name": "Autocannon",
+    "price": 22,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": null,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 26, "modValue": null },
+          { "ruleId": 34, "modValue": 1 },
+          { "ruleId": 18, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 82,
+    "name": "Guardian Spear",
+    "price": 30,
+    "profiles": [
+      {
+        "profileName": "Melee",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 19, "modValue": null },
+          { "ruleId": 21, "modValue": 5 }
+        ],
+        "body": "astartes"
+      },
+      {
+        "profileName": "Ranged",
+        "rng": null,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 34, "modValue": 1 }
+        ],
+        "body": "astartes"
+      }
+    ]
+  },
+  {
+    "id": 83,
+    "name": "Witchblade",
+    "price": 20,
+    "profiles": [
+      {
+        "profileName": "Standard",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [],
+        "body": "universal"
+      },
+      {
+        "profileName": "Psychic Strike",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 23, "modValue": null }
+        ],
+        "body": "spell"
+      }
+    ]
+  },
+  {
+    "id": 84,
+    "name": "Fellgor Cleaver",
+    "price": 15,
+    "profiles": [
+      {
+        "profileName": "Cleave",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [],
+        "body": "universal"
+      },
+      {
+        "profileName": "Frenzy",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 18, "modValue": 1 }
+        ],
+        "body": "fellgor"
+      }
+    ]
   }
 ]

@@ -43,5 +43,30 @@
   "id": 9,
   "name": "Poisoned",
   "effect": "At the start of the operative's activation, it suffers 1 wounds and worsen WS by 1 for the activation. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+  "id": 10,
+  "name": "Blinded",
+  "effect": "Cannot perform Shoot actions or Overwatch. Worsen BS by 1 for melee attacks. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+  "id": 11,
+  "name": "Vulnerable",
+  "effect": "Re-roll successful Defense dice. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+  "id": 12,
+  "name": "Stunned",
+  "effect": "Subtract 1 from APL. Limit 1 per operative. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+  "id": 13,
+  "name": "Crippled",
+  "effect": "Reduce Movement characteristic by half. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+  "id": 14,
+  "name": "Frenzied",
+  "effect": "Add 1 to Attacks characteristic of melee weapons. Defense dice cannot be re-rolled and cannot parry during fights. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
   }
 ]

@@ -310,5 +310,29 @@
     "name": "Penetrating <x>",
     "effect": "Worsen the save stat of the target during the shoot action by <x>.",
     "prModifier": 8
+  },
+  {
+    "id": 54,
+    "name": "Disorienting",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:8/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "id": 55,
+    "name": "Blinding",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:10/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "id": 56,
+    "name": "Mist-Infused",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:5/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "id": 57,
+    "name": "Executioner",
+    "effect": "If the target has less than half of its wounds remaining, add 1 to both Damage characteristics of this weapon.",
+    "prModifier": 3
   }
 ]
