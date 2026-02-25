@@ -40,6 +40,10 @@ export class BestiaryComponent implements OnInit, OnDestroy {
   isDarkMode: boolean = false;
   private themeSubscription: Subscription = new Subscription();
   combinedScrollSections: ScrollSection[] = [];
+  
+  // Materials Sidebar properties
+  droppedMaterials: any[] = [];
+  showMaterialsSidebar: boolean = false;
 
   constructor(
     private dataService: DataService,
@@ -84,6 +88,8 @@ export class BestiaryComponent implements OnInit, OnDestroy {
         if (this.selectedCreatures.length > 0) {
           this.scrollToMob();
         }
+        
+        this.updateDroppedMaterials();
       }
 
       console.log(this.dataService.validateBestiaryPR().filter((creature) => creature.calculatedPR != creature.currentPR));
@@ -148,6 +154,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
       this.selectedCreatureId = null;
     }
     
+    this.updateDroppedMaterials();
     this.scrollToMob();
   }
 
@@ -166,6 +173,8 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     this.combinedScrollSections = this.combinedScrollSections.filter(
       section => !section.id.includes(`-${creature.id}`)
     );
+
+    this.updateDroppedMaterials();
   }
 
   scrollToMob(): void {
@@ -187,5 +196,35 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     
     // Add the new sections
     this.combinedScrollSections = [...this.combinedScrollSections, ...sections];
+  }
+
+  updateDroppedMaterials() {
+    if (!this.selectedCreatures || !this.itemsData || !this.itemsData.items) {
+      this.droppedMaterials = [];
+      this.showMaterialsSidebar = false;
+      return;
+    }
+
+    const creatureIds = this.selectedCreatures.map(c => c.id);
+    
+    this.droppedMaterials = this.itemsData.items.filter(item => 
+      item.type === 'material' && 
+      item.bestiaryId && 
+      creatureIds.includes(item.bestiaryId)
+    );
+
+    // If no materials, hide sidebar
+    if (this.droppedMaterials.length === 0) {
+      this.showMaterialsSidebar = false;
+    }
+  }
+
+  toggleMaterialsSidebar() {
+    this.showMaterialsSidebar = !this.showMaterialsSidebar;
+  }
+  
+  getCreatureName(bestiaryId: number): string {
+    const creature = this.bestiary.find(c => c.id === bestiaryId);
+    return creature ? creature.name : 'Unknown Creature';
   }
 }

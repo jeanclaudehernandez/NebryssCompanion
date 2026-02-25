@@ -55,3 +55,34 @@
 </div>
 
 <app-scroll-nav *ngIf="combinedScrollSections.length > 0" [sections]="combinedScrollSections"></app-scroll-nav>
+
+<!-- Materials Sidebar Toggle Button -->
+<button 
+    class="materials-toggle-btn" 
+    *ngIf="droppedMaterials.length > 0" 
+    (click)="toggleMaterialsSidebar()"
+    [class.open]="showMaterialsSidebar">
+    <span class="icon">📦</span>
+    <span class="text">Materials ({{droppedMaterials.length}})</span>
+</button>
+
+<!-- Materials Sidebar -->
+<div class="materials-sidebar" [class.open]="showMaterialsSidebar">
+    <div class="sidebar-header">
+        <h3>Dropped Materials</h3>
+        <button class="close-sidebar-btn" (click)="toggleMaterialsSidebar()">✕</button>
+    </div>
+    <div class="sidebar-content">
+        <div *ngIf="droppedMaterials.length === 0" class="no-materials">
+            No materials found for selected creatures.
+        </div>
+        <div *ngFor="let material of droppedMaterials" class="material-item">
+            <h4>{{ material.name }}</h4>
+            <p class="material-description">{{ material.description }}</p>
+            <div class="material-meta">
+                <span class="dropped-from">Dropped by: <strong>{{ getCreatureName(material.bestiaryId) }}</strong></span>
+                <span class="price">Value: {{ material.price }}</span>
+            </div>
+        </div>
+    </div>
+</div>
