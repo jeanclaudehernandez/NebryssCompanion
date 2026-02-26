@@ -61,12 +61,20 @@ function calculatePR(entry) {
   return { total, basePR, weaponThreat, abilityScore };
 }
 
-function runForFile(fileRel) {
+function runForFile(fileRel, shouldFix) {
   const bestiary = loadJson(fileRel);
   const results = [];
+  let updatedCount = 0;
+
   for (const entry of bestiary) {
     const calc = calculatePR(entry);
     const current = entry.pr;
+    
+    if (current !== calc.total && shouldFix) {
+      entry.pr = calc.total;
+      updatedCount++;
+    }
+
     results.push({
       id: entry.id,
       name: entry.name,
@@ -86,6 +94,7 @@ function runForFile(fileRel) {
 
   console.log(`PR Validation: ${fileRel}`);
   console.log(`Total: ${summary.total} | Valid: ${summary.valid} | Invalid: ${summary.invalid}`);
+  
   if (mismatches.length) {
     console.log('\nMismatches:');
     for (const r of mismatches) {
@@ -94,15 +103,24 @@ function runForFile(fileRel) {
       console.log(`    base=${b.basePR.toFixed(2)} weaponThreat=${b.weaponThreat.toFixed(2)} abilityScore=${b.abilityScore.toFixed(2)}`);
     }
   }
+
+  if (shouldFix && updatedCount > 0) {
+    const p = path.resolve(__dirname, '..', fileRel);
+    fs.writeFileSync(p, JSON.stringify(bestiary, null, 2), 'utf8');
+    console.log(`\nUpdated ${updatedCount} entries in ${fileRel}`);
+  }
 }
 
 function run() {
   const args = process.argv.slice(2);
-  if (args.length === 0) {
-    runForFile('src/assets/bestiary.json');
+  const shouldFix = args.includes('--fix');
+  const files = args.filter(arg => arg !== '--fix');
+
+  if (files.length === 0) {
+    runForFile('src/assets/bestiary.json', shouldFix);
   } else {
-    for (const fileRel of args) {
-      runForFile(fileRel);
+    for (const fileRel of files) {
+      runForFile(fileRel, shouldFix);
       console.log('');
     }
   }

@@ -10,9 +10,16 @@
       "Wounds": 6,
       "Save": 5,
       "APL": 2,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
-    "weapons": [10, 11, 40, 41],
+    "weapons": [
+      10,
+      11,
+      40,
+      41
+    ],
     "abilities": [
       {
         "name": "Amphibious Assault",
@@ -20,7 +27,7 @@
       },
       {
         "name": "Pack Tactics",
-        "effect": "+1 to WS/BS within 3 inches of another Murloc. ", 
+        "effect": "+1 to WS/BS within 3 inches of another Murloc. ",
         "prModifier": 7
       },
       {
@@ -44,13 +51,19 @@
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "spell"]
+      "body": [
+        "universal",
+        "spell"
+      ]
     },
-    "weapons": [12, 42],
+    "weapons": [
+      12,
+      42
+    ],
     "abilities": [
       {
         "name": "Tidal Surge",
-        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ", 
+        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
         "prModifier": 7
       },
       {
@@ -70,9 +83,16 @@
       "Wounds": 12,
       "Save": 4,
       "APL": 2,
-      "body": ["universal", "spell", "human"]
+      "body": [
+        "universal",
+        "spell",
+        "human"
+      ]
     },
-    "weapons": [13, 43],
+    "weapons": [
+      13,
+      43
+    ],
     "abilities": [
       {
         "name": "King’s Command",
@@ -97,9 +117,15 @@
       "Wounds": 10,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "aetherwing"]
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
     },
-    "weapons": [19, 20],
+    "weapons": [
+      19,
+      20
+    ],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -123,9 +149,15 @@
       "Wounds": 10,
       "Save": 4,
       "APL": 2,
-      "body": ["universal", "aetherwing"]
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
     },
-    "weapons": [19, 20],
+    "weapons": [
+      19,
+      20
+    ],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -149,9 +181,16 @@
       "Wounds": 10,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "aetherwing"]
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
     },
-    "weapons": [19, 20, 44],
+    "weapons": [
+      19,
+      20,
+      44
+    ],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -175,9 +214,16 @@
       "Wounds": 10,
       "Save": 4,
       "APL": 2,
-      "body": ["universal", "aetherwing", "spell"]
+      "body": [
+        "universal",
+        "aetherwing",
+        "spell"
+      ]
     },
-    "weapons": [19, 44],
+    "weapons": [
+      19,
+      44
+    ],
     "abilities": [
       {
         "name": "Aether Dive",
@@ -201,9 +247,15 @@
       "Wounds": 14,
       "Save": 3,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [33, 2],
+    "weapons": [
+      33,
+      2
+    ],
     "abilities": [
       {
         "name": "Astartes",
@@ -223,9 +275,15 @@
       "Wounds": 18,
       "Save": 3,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [9, 52],
+    "weapons": [
+      9,
+      52
+    ],
     "abilities": [
       {
         "name": "Combat Medicae",
@@ -263,9 +321,15 @@
       "Wounds": 18,
       "Save": 3,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [15, 47],
+    "weapons": [
+      15,
+      47
+    ],
     "abilities": [
       {
         "name": "Mistforged Precision",
@@ -299,9 +363,16 @@
       "Wounds": 5,
       "Save": 6,
       "APL": 1,
-      "body": ["universal", "screamer", "spell"]
+      "body": [
+        "universal",
+        "screamer",
+        "spell"
+      ]
     },
-    "weapons": [21, 45],
+    "weapons": [
+      21,
+      45
+    ],
     "abilities": [
       {
         "name": "Daemonic Flight",
@@ -326,7 +397,9 @@
       "Wounds": 1,
       "Save": 3,
       "APL": 1,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
     "weapons": [],
     "abilities": [
@@ -357,7 +430,9 @@
       "Wounds": 1,
       "Save": 3,
       "APL": 1,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
     "weapons": [],
     "abilities": [
@@ -388,9 +463,15 @@
       "Wounds": 14,
       "Save": 4,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [31, 2],
+    "weapons": [
+      31,
+      2
+    ],
     "abilities": [
       {
         "name": "Mark of Khorne",
@@ -420,9 +501,15 @@
       "Wounds": 16,
       "Save": 3,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [30, 8],
+    "weapons": [
+      30,
+      8
+    ],
     "abilities": [
       {
         "name": "Dark Zeal",
@@ -452,17 +539,26 @@
       "Wounds": 14,
       "Save": 4,
       "APL": 3,
-      "body": ["universal", "astartes", "spell"]
+      "body": [
+        "universal",
+        "astartes",
+        "spell"
+      ]
     },
-    "weapons": [46, 14],
+    "weapons": [
+      46,
+      14
+    ],
     "abilities": [
       {
         "name": "Psychic Smite",
-        "effect": "Psychic, 1AP: target operative visible and within 10 inches suffers 1D3 mortal wounds. ", "prModifier": 7
+        "effect": "Psychic, 1AP: target operative visible and within 10 inches suffers 1D3 mortal wounds. ",
+        "prModifier": 7
       },
       {
         "name": "Warpfire",
-        "effect": "Psychic, Create a 3 inch hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ", "prModifier": 7
+        "effect": "Psychic, Create a 3 inch hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ",
+        "prModifier": 7
       },
       {
         "name": "Astartes",
@@ -482,9 +578,17 @@
       "Wounds": 15,
       "Save": 4,
       "APL": 3,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [29, 32, 2, 31],
+    "weapons": [
+      29,
+      32,
+      2,
+      31
+    ],
     "abilities": [
       {
         "name": "Overcharge",
@@ -508,9 +612,15 @@
       "Wounds": 7,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human"]
+      "body": [
+        "universal",
+        "human"
+      ]
     },
-    "weapons": [23, 1],
+    "weapons": [
+      23,
+      1
+    ],
     "abilities": [
       {
         "name": "Mist Resilience",
@@ -529,9 +639,14 @@
       "Wounds": 6,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human"]
+      "body": [
+        "universal",
+        "human"
+      ]
     },
-    "weapons": [25],
+    "weapons": [
+      25
+    ],
     "abilities": [
       {
         "name": "Combat Triage",
@@ -551,9 +666,17 @@
       "Wounds": 10,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human", "fellgor", "spell"]
+      "body": [
+        "universal",
+        "human",
+        "fellgor",
+        "spell"
+      ]
     },
-    "weapons": [5, 50],
+    "weapons": [
+      5,
+      50
+    ],
     "abilities": [
       {
         "name": "Tidal Surge",
@@ -573,9 +696,15 @@
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human"]
+      "body": [
+        "universal",
+        "human"
+      ]
     },
-    "weapons": [35, 2],
+    "weapons": [
+      35,
+      2
+    ],
     "abilities": [
       {
         "name": "Inspiring Presence",
@@ -595,13 +724,19 @@
       "Wounds": 7,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human"]
+      "body": [
+        "universal",
+        "human"
+      ]
     },
-    "weapons": [27],
+    "weapons": [
+      27
+    ],
     "abilities": [
       {
         "name": "Markerlight",
-        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.", "prModifier": 7
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
       }
     ]
   },
@@ -613,12 +748,17 @@
     "pr": 39,
     "attributes": {
       "Movement": 4,
-      "Wounds": 4, 
-      "Save": 6, 
-      "APL": 1, 
-      "body": ["universal"]
+      "Wounds": 4,
+      "Save": 6,
+      "APL": 1,
+      "body": [
+        "universal"
+      ]
     },
-    "weapons": [54, 55], 
+    "weapons": [
+      54,
+      55
+    ],
     "abilities": [
       {
         "name": "Disgustingly Resilient",
@@ -646,11 +786,17 @@
     "attributes": {
       "Movement": 3,
       "Wounds": 5,
-      "Save": 3, 
+      "Save": 3,
       "APL": 1,
-      "body": ["universal", "astartes"]
+      "body": [
+        "universal",
+        "astartes"
+      ]
     },
-    "weapons": [57, 56],
+    "weapons": [
+      57,
+      56
+    ],
     "abilities": [
       {
         "name": "Terminator Armor",
@@ -680,9 +826,13 @@
       "Wounds": 6,
       "Save": 5,
       "APL": 2,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
-    "weapons": [58],
+    "weapons": [
+      58
+    ],
     "abilities": [
       {
         "name": "Shadow Step",
@@ -701,15 +851,20 @@
     "name": "Mandrake Nightfiend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 135,
+    "pr": 126,
     "attributes": {
       "Movement": 7,
       "Wounds": 8,
       "Save": 4,
       "APL": 3,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
-    "weapons": [58, 59],
+    "weapons": [
+      58,
+      59
+    ],
     "abilities": [
       {
         "name": "Umbral Aura",
@@ -728,15 +883,20 @@
     "name": "Mandrake Soulrend",
     "faction": "Abyssal Cabal",
     "subgroup": "Mandrake",
-    "pr": 105,
+    "pr": 110,
     "attributes": {
       "Movement": 7,
       "Wounds": 7,
       "Save": 5,
       "APL": 2,
-      "body": ["universal"]
+      "body": [
+        "universal"
+      ]
     },
-    "weapons": [58, 59],
+    "weapons": [
+      58,
+      59
+    ],
     "abilities": [
       {
         "name": "Veil of Darkness",
@@ -761,9 +921,15 @@
       "Wounds": 25,
       "Save": 3,
       "APL": 2,
-      "body": ["universal", "plant"]
+      "body": [
+        "universal",
+        "plant"
+      ]
     },
-    "weapons": [60, 61],
+    "weapons": [
+      60,
+      61
+    ],
     "abilities": [
       {
         "name": "Living Roots",
@@ -791,9 +957,15 @@
       "Wounds": 8,
       "Save": 6,
       "APL": 2,
-      "body": ["universal", "mist", "spirit"]
+      "body": [
+        "universal",
+        "mist",
+        "spirit"
+      ]
     },
-    "weapons": [62],
+    "weapons": [
+      62
+    ],
     "abilities": [
       {
         "name": "Mistform",
@@ -821,9 +993,14 @@
       "Wounds": 18,
       "Save": 4,
       "APL": 2,
-      "body": ["universal", "plant"]
+      "body": [
+        "universal",
+        "plant"
+      ]
     },
-    "weapons": [63],
+    "weapons": [
+      63
+    ],
     "abilities": [
       {
         "name": "Guardian's Call",
@@ -846,9 +1023,16 @@
       "Wounds": 30,
       "Save": 2,
       "APL": 3,
-      "body": ["universal", "mist", "behemoth"]
+      "body": [
+        "universal",
+        "mist",
+        "behemoth"
+      ]
     },
-    "weapons": [64, 65],
+    "weapons": [
+      64,
+      65
+    ],
     "abilities": [
       {
         "name": "Mist Vortex",
@@ -871,15 +1055,22 @@
     "name": "Sister Superior",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 148,
+    "pr": 144,
     "attributes": {
       "Movement": 6,
       "Wounds": 11,
       "Save": 4,
       "APL": 3,
-      "body": ["human", "null", "universal"]
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
     },
-    "weapons": [69, 70],
+    "weapons": [
+      69,
+      70
+    ],
     "abilities": [
       {
         "name": "Psychic Abomination",
@@ -898,15 +1089,21 @@
     "name": "Vigilator",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 136,
+    "pr": 132,
     "attributes": {
       "Movement": 7,
       "Wounds": 10,
       "Save": 4,
       "APL": 2,
-      "body": ["human", "null", "universal"]
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
     },
-    "weapons": [69],
+    "weapons": [
+      69
+    ],
     "abilities": [
       {
         "name": "Null Charge",
@@ -920,15 +1117,22 @@
     "name": "Witchseeker",
     "faction": "Imperium",
     "subgroup": "Sisters of Silence",
-    "pr": 116,
+    "pr": 124,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
       "Save": 4,
       "APL": 2,
-      "body": ["human", "null", "universal"]
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
     },
-    "weapons": [3,71],
+    "weapons": [
+      3,
+      71
+    ],
     "abilities": [
       {
         "name": "Cleansing Flame",
@@ -942,15 +1146,22 @@
     "name": "Inquisitor Alaric Dresdan",
     "faction": "Imperium",
     "subgroup": "Inquisition",
-    "pr": 167,
+    "pr": 163,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
       "Save": 3,
       "APL": 3,
-      "body": ["human", "spell", "universal"]
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
     },
-    "weapons": [69, 70],
+    "weapons": [
+      69,
+      70
+    ],
     "abilities": [
       {
         "name": "Psychic Dominion",
@@ -963,10 +1174,12 @@
         "prModifier": 10
       }
     ],
-    "items": [{
-      "id": 62,
-      "quant": 1
-    }]
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ]
   },
   {
     "id": 36,
@@ -979,9 +1192,15 @@
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["human", "universal"]
+      "body": [
+        "human",
+        "universal"
+      ]
     },
-    "weapons": [71, 2],
+    "weapons": [
+      71,
+      2
+    ],
     "abilities": [
       {
         "name": "Sanctioned Tactics",
@@ -1001,9 +1220,15 @@
       "Wounds": 12,
       "Save": 4,
       "APL": 2,
-      "body": ["daemon", "spell", "universal"]
+      "body": [
+        "daemon",
+        "spell",
+        "universal"
+      ]
     },
-    "weapons": [72],
+    "weapons": [
+      72
+    ],
     "abilities": [
       {
         "name": "Bound Wrath",
@@ -1028,9 +1253,15 @@
       "Wounds": 9,
       "Save": 4,
       "APL": 2,
-      "body": ["human", "universal"]
+      "body": [
+        "human",
+        "universal"
+      ]
     },
-    "weapons": [23, 2],
+    "weapons": [
+      23,
+      2
+    ],
     "abilities": [
       {
         "name": "Authority of the Ordos",
@@ -1038,10 +1269,12 @@
         "prModifier": 3
       }
     ],
-    "items": [{
-      "id": 62,
-      "quant": 1
-    }]
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ]
   },
   {
     "id": 39,
@@ -1054,9 +1287,15 @@
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["human", "universal"]
+      "body": [
+        "human",
+        "universal"
+      ]
     },
-    "weapons": [24, 1],
+    "weapons": [
+      24,
+      1
+    ],
     "abilities": [
       {
         "name": "Sanctioned Vigilance",
@@ -1076,9 +1315,15 @@
       "Wounds": 7,
       "Save": 5,
       "APL": 2,
-      "body": ["human", "spell", "universal"]
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
     },
-    "weapons": [50],
+    "weapons": [
+      50
+    ],
     "abilities": [
       {
         "name": "Warp Insight",
@@ -1281,15 +1526,21 @@
     "name": "Deathkorps Sniper",
     "faction": "Imperium",
     "subgroup": "Human",
-    "pr": 95,
+    "pr": 117,
     "attributes": {
       "Movement": 6,
       "Wounds": 8,
       "Save": 5,
       "APL": 2,
-      "body": ["universal", "human"]
+      "body": [
+        "universal",
+        "human"
+      ]
     },
-    "weapons": [26, 1],
+    "weapons": [
+      26,
+      1
+    ],
     "abilities": [
       {
         "name": "Grim Determination",
