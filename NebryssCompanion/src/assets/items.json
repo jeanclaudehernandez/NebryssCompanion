@@ -459,7 +459,7 @@
       "id": 57,
       "name": "Light Barricade",
       "subType": "construct",
-      "description": "light barricade terrain, 2 inches x 1 inch, provides light cover.",
+      "description": "Light barricade terrain, 2 inches wide x 1 inch high,  provides light cover.",
       "weapons": [],
       "type": "deployable"
     },
@@ -702,5 +702,14 @@
       "buildMaterials": [
         { "id": 83, "amount": 5 }
       ]
+    },
+    {
+      "id": 86,
+      "name": "Portable Barricade",
+      "price": 30,
+      "subType": "construct",
+      "description": "Standard deployable barricade. Provides light cover and +1 to save, only provides it's benefits if the base of the operative is connected to both of it's feet, operatives connected to the inside of it can perform 'Move with Barricade 1AP: remove the barricade, move up to the movement stat -2 inches and place the barricade connected to the operative', this is treated a reposition",
+      "weapons": [],
+      "type": "deployable"
     }
 ]
