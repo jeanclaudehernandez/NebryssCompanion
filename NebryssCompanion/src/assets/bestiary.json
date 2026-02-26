@@ -1558,5 +1558,341 @@
         "prModifier": 5
       }
     ]
+  },
+  {
+    "id": 48,
+    "name": "Kommando Nob",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 150,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 13,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      87,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Get it Done!",
+        "effect": "0AP: Pick a friendly Kommando within 6 inches. They get +1 APL.",
+        "prModifier": 5
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 49,
+    "name": "Kommando Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 116,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      89,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 50,
+    "name": "Kommando Grot",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 70,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 5,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      90
+    ],
+    "abilities": [
+      {
+        "name": "Nimble",
+        "effect": "Can move through small gaps and climb without penalty.",
+        "prModifier": 2
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 51,
+    "name": "Kommando Snipa Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 119,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      91,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 52,
+    "name": "Kommando Dakka Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      92,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      },
+      {
+        "name": "More Dakka",
+        "effect": "Can shoot twice if he hasn't moved.",
+        "prModifier": 4
+      }
+    ]
+  },
+  {
+    "id": 53,
+    "name": "Kommando Burna Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 118,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      93,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 54,
+    "name": "Kommando Breacha Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      94,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Breach",
+        "effect": "Can move through walls as if they were not there.",
+        "prModifier": 5
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 55,
+    "name": "Kommando Slasha Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 137,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      95,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      },
+      {
+        "name": "Throwing Knives",
+        "effect": "Can perform a free shoot action with a 6 inch range (3A, 4+, 2/3).",
+        "prModifier": 3
+      }
+    ]
+  },
+  {
+    "id": 56,
+    "name": "Kommando Rokkit Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      96,
+      89
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 57,
+    "name": "Kommando Comms Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      89,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Signal",
+        "effect": "1AP: Select a friendly operative within 6 inches. Add 1 to their APL.",
+        "prModifier": 4
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ]
+  },
+  {
+    "id": 58,
+    "name": "Bomb Squig",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 123,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 4,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "squig"
+      ]
+    },
+    "weapons": [
+      99
+    ],
+    "abilities": [
+      {
+        "name": "Seek",
+        "effect": "Must move towards the nearest enemy.",
+        "prModifier": -2
+      }
+    ]
   }
 ]

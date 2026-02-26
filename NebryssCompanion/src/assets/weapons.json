@@ -1731,5 +1731,243 @@
         "body": "universal"
       }
     ]
+  },
+  {
+    "id": 87,
+    "name": "Power Klaw",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 5, "max": 7 },
+        "specialRules": [
+          { "ruleId": 19, "modValue": null },
+          { "ruleId": 15, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 88,
+    "name": "Slugga",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [],
+        "body": "ork"
+      }
+    ]
+  },
+  {
+    "id": 89,
+    "name": "Choppa",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+           { "ruleId": 16, "modValue": null }
+        ],
+        "body": "ork"
+      }
+    ]
+  },
+  {
+    "id": 90,
+    "name": "Grot Shiv",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+           { "ruleId": 16, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 91,
+    "name": "Scoped Big Shoota",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 12,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 26, "modValue": null },
+          { "ruleId": 28, "modValue": null },
+          { "ruleId": 25, "modValue": 1 }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 92,
+    "name": "Dakka Shoota",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 10,
+        "attacks": 5,
+        "ws": 5,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 18, "modValue": 1 },
+          { "ruleId": 24, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 93,
+    "name": "Burna",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 5,
+        "ws": 2,
+        "damage": { "min": 2, "max": 2 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 2 },
+          { "ruleId": 6, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 94,
+    "name": "Breacha Ram",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 5, "max": 6 },
+        "specialRules": [
+          { "ruleId": 19, "modValue": null },
+          { "ruleId": 17, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 95,
+    "name": "Slasha Choppas",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 5,
+        "ws": 3,
+        "damage": { "min": 3, "max": 5 },
+        "specialRules": [
+          { "ruleId": 24, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 96,
+    "name": "Rokkit Launcha",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 12,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 34, "modValue": 1 },
+          { "ruleId": 30, "modValue": 2 }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 97,
+    "name": "Snipa Rifle",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 12,
+        "attacks": 4,
+        "ws": 2,
+        "damage": { "min": 3, "max": 3 },
+        "specialRules": [
+           { "ruleId": 28, "modValue": null },
+           { "ruleId": 25, "modValue": 3 }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 98,
+    "name": "Kommando Knife",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 99,
+    "name": "Bomb Squig Attack",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 2,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 2 }
+        ],
+        "body": "universal"
+      }
+    ]
   }
 ]
