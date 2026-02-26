@@ -675,5 +675,32 @@
         { "id": 75, "amount": 1 },
         { "id": 81, "amount": 1 }
       ]
+    },
+    {
+      "id": 83,
+      "name": "Broken Power Armor",
+      "price": 20,
+      "description": "Ceramite shards and fiber bundles salvaged from fallen Astartes.",
+      "type": "material",
+      "bestiaryId": 8
+    },
+    {
+      "id": 84,
+      "name": "Bomb shell",
+      "price": 10,
+      "description": "Shell of a frag missile used by space marines.",
+      "type": "material",
+      "bestiaryId": 8
+    },
+    {
+      "id": 85,
+      "name": "Blueprint: Frag Missile Launcher",
+      "price": 15,
+      "description": "Blueprint for crafting a Frag Missile Launcher.",
+      "type": "blueprint",
+      "blueprintFor": 86,
+      "buildMaterials": [
+        { "id": 83, "amount": 5 }
+      ]
     }
 ]
