@@ -99,7 +99,7 @@ function runForFile(fileRel) {
 function run() {
   const args = process.argv.slice(2);
   if (args.length === 0) {
-    runForFile('src/assets/bestiaryFiles/NebryssianLiberationRepublicBestiary.json');
+    runForFile('src/assets/bestiary.json');
   } else {
     for (const fileRel of args) {
       runForFile(fileRel);
