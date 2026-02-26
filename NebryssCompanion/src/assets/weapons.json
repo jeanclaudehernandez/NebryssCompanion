@@ -236,7 +236,7 @@
   },
   {
     "id": 13,
-    "name": "Royal Trident",
+    "name": "Royal Bone Sword",
     "price": 0,
     "profiles": [
       {
@@ -285,6 +285,34 @@
           { "ruleId": 15, "modValue": null }
         ],
         "body": "astartes"
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "name": "Aetherwing Talon Gauntlet",
+    "price": 35,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 3,
+        "ws": 3,
+        "damage": {
+          "min": 2,
+          "max": 4
+        },
+        "specialRules": [
+          {
+            "ruleId": 17,
+            "modValue": null
+          },
+          {
+            "ruleId": 18,
+            "modValue": null
+          }
+        ],
+        "body": "universal"
       }
     ]
   },
