@@ -443,7 +443,7 @@
       },
       {
         "name": "Arcane Bargain",
-        "effect": "Psychic, Once per activation: roll 1d6 and an enemy visible and within control range suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative and that operative, restore result/2 wounds rounded up from Summoner. ",
+        "effect": "Psychic, Once per activation: roll 1d6 and an enemy visible and within control range suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative or the other operative, restore result/2 wounds rounded up from Summoner. ",
         "prModifier": 7
       },
       {
