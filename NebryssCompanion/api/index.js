@@ -80,6 +80,11 @@ function createInsertRoute(path, options) {
       return res.status(400).json({ error: 'Request body is required' });
     }
 
+    // Ensure we don't carry over the _id from a cloned item
+    if (item._id) {
+      delete item._id;
+    }
+
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;

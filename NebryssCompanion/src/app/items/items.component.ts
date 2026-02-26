@@ -264,6 +264,7 @@ export class ItemsComponent implements OnInit {
     if (this.itemToClone) {
       const newItem = { ...this.itemToClone };
       delete newItem._id;
+      delete newItem.__id;
       delete newItem.id; // Let the backend or logic handle ID generation
       newItem.name = this.clonedItemName;
       
@@ -287,6 +288,7 @@ export class ItemsComponent implements OnInit {
     } else if (this.weaponToClone) {
       const newWeapon = { ...this.weaponToClone };
       delete (newWeapon as any).id;
+      delete (newWeapon as any).__id;
       newWeapon.name = this.clonedItemName;
 
       this.dataService.createWeapon(newWeapon).subscribe({
