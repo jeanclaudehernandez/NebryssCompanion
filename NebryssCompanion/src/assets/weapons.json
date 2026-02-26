@@ -1961,5 +1961,33 @@
         "body": "human"
       }
     ]
+  },
+  {
+    "id": 101,
+    "name": "Murloc King's sword",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": {
+          "min": 2,
+          "max": 3
+        },
+        "specialRules": [
+          {
+            "ruleId": 14,
+            "modValue": null
+          },
+          {
+            "ruleId": 15,
+            "modValue": null
+          }
+        ],
+        "body": "human"
+      }
+    ]
   }
 ]
