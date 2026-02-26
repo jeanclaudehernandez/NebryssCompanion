@@ -1146,7 +1146,7 @@
     "name": "Inquisitor Alaric Dresdan",
     "faction": "Imperium",
     "subgroup": "Inquisition",
-    "pr": 163,
+    "pr": 172,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -1159,7 +1159,7 @@
       ]
     },
     "weapons": [
-      69,
+      100,
       70
     ],
     "abilities": [

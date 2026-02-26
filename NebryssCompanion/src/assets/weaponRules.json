@@ -334,5 +334,11 @@
     "name": "Executioner",
     "effect": "If the target has less than half of its wounds remaining, add 1 to both Damage characteristics of this weapon.",
     "prModifier": 3
+  },
+  {
+    "id": 58,
+    "name": "Fate Seal",
+    "effect": "The target of this fight, retaliation or shoot cannot re-roll dices during this action.",
+    "prModifier": 8
   }
 ]
