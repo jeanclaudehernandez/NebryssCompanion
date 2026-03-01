@@ -32,4 +32,16 @@
   border-radius: 0.5rem;
   background-color: #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-} 
+  position: relative;
+  z-index: 0;
+}  
+
+:host-context(body.dark-theme) .player-detail-container {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+}
+
+.player-dropdown-container {
+  margin: 20px 50px;
+  position: relative;
+}

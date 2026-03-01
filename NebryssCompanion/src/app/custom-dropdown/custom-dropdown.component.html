@@ -1,0 +1,23 @@
+<div class="custom-dropdown" [class.open]="isOpen">
+  <div class="dropdown-trigger" (click)="toggleDropdown()">
+    <div class="selected-content" *ngIf="selectedOption; else placeholderTpl">
+      <div class="option-main">{{ selectedOption.name }} - {{ selectedOption.race }}</div>
+      <div class="option-sub">{{ selectedOption.origin }}</div>
+    </div>
+    <ng-template #placeholderTpl>
+      <div class="placeholder">{{ placeholder }}</div>
+    </ng-template>
+    <div class="arrow" [class.up]="isOpen">▼</div>
+  </div>
+
+  <div class="dropdown-menu" *ngIf="isOpen">
+    <div 
+      class="dropdown-item" 
+      *ngFor="let option of options" 
+      (click)="selectOption(option)"
+      [class.selected]="option.id === selectedOption?.id">
+      <div class="option-main">{{ option.name }} - {{ option.race }}</div>
+      <div class="option-sub">{{ option.origin }}</div>
+    </div>
+  </div>
+</div>

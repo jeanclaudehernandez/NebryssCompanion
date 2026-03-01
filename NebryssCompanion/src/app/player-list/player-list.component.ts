@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { AlteredState, Items, Player, Weapon, WeaponRule } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { Subject, takeUntil } from 'rxjs';
+import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
 
 @Component({
   selector: 'app-player-list',
@@ -13,7 +14,8 @@ import { Subject, takeUntil } from 'rxjs';
   imports: [
     CommonModule,
     PlayerDetailComponent,
-    HttpClientModule
+    HttpClientModule,
+    CustomDropdownComponent
   ],
   templateUrl: './player-list.component.html',
   styleUrls: ['./player-list.component.css']
@@ -21,11 +23,11 @@ import { Subject, takeUntil } from 'rxjs';
 export class PlayerListComponent implements OnInit, OnDestroy {
   @ViewChild('playerDetailContainer') playerDetailContainer!: ElementRef;
   players: Player[] = [];
+  selectedPlayer: Player | null = null;
   weaponsData: Weapon[] = [];
   itemsData!: Items;
   weaponRulesData: WeaponRule[] = [];
   alteredStates: AlteredState[] = [];
-  expandedPlayers: Set<number> = new Set();
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -44,7 +46,7 @@ export class PlayerListComponent implements OnInit, OnDestroy {
       // Check if we have an active player and expand it
       const activePlayer = this.activePlayerService.activePlayer;
       if (activePlayer) {
-        this.expandedPlayers.add(activePlayer.id);
+        this.selectedPlayer = activePlayer;
         this.scrollToPlayer();
         
         // Override player data with active player if it exists in the players array
@@ -57,13 +59,12 @@ export class PlayerListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe(player => {
         if (player) {
-          // Collapse all players
-          this.expandedPlayers.clear();
-          // Expand only the active player
-          this.expandedPlayers.add(player.id);
+          this.selectedPlayer = player;
           
           // Override player data with active player data
           this.updatePlayerFromActivePlayer();
+        } else {
+          this.selectedPlayer = null;
         }
       });
   }
@@ -85,24 +86,18 @@ export class PlayerListComponent implements OnInit, OnDestroy {
   }
 
   selectPlayer(player: Player): void {
-    const isExpanded = this.expandedPlayers.has(player.id);
+    // If the same player is selected, do nothing or maybe just ensure it's expanded
+    // In dropdown mode, selecting usually means "switch to this one"
     
-    if (isExpanded) {
-      // If already expanded, just remove from expanded set
-      this.expandedPlayers.delete(player.id);
-      // If this was the active player, clear it
-      if (this.activePlayerService.activePlayer?.id === player.id) {
-        this.activePlayerService.clearActivePlayer();
-      }
-    } else {
-      // Set as active player (this will trigger the subscription that collapses others)
-      this.activePlayerService.setActivePlayer(player);
-      this.scrollToPlayer();
+    if (this.selectedPlayer?.id === player.id) {
+       // Optional: toggle off if clicking same one? 
+       // For a dropdown, usually re-selecting doesn't deselect.
+       // But let's stick to the active player service logic.
+       return;
     }
-  }
 
-  isPlayerExpanded(player: Player): boolean {
-    return this.expandedPlayers.has(player.id);
+    this.activePlayerService.setActivePlayer(player);
+    this.scrollToPlayer();
   }
 
   scrollToPlayer(): void {

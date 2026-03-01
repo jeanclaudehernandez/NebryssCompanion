@@ -1,26 +1,21 @@
 <div class="player-list-container">
     <h2 style="margin-left:50px; margin-top: 20px;">Players</h2>
     
-    <div class="player-grid">
-      <div *ngFor="let player of players" 
-           class="player-card" 
-           (click)="selectPlayer(player)"
-           [class.selected]="isPlayerExpanded(player)">
-        <h3>{{ player.name }}</h3>
-        <p>{{ player.race }} - {{ player.origin }}</p>
-        <p>Wounds: {{ player.attributes.Wounds }}</p>
-      </div>
+    <div class="player-dropdown-container" [style.z-index]="dropdown.isOpen ? 1002 : 'auto'">
+      <app-custom-dropdown #dropdown
+        [options]="players"
+        [selectedOption]="selectedPlayer"
+        (selectionChange)="selectPlayer($event)">
+      </app-custom-dropdown>
     </div>
     
-    <div *ngFor="let player of players">
-      <div *ngIf="isPlayerExpanded(player)" class="player-detail-container" #playerDetailContainer>
+    <div *ngIf="selectedPlayer" class="player-detail-container" #playerDetailContainer>
         <app-player-detail 
-          [character]="player"
+          [character]="selectedPlayer"
           [weaponsData]="weaponsData"
           [itemsData]="itemsData"
           [weaponRulesData]="weaponRulesData"
           [alteredStates]="alteredStates">
         </app-player-detail>
-      </div>
     </div>
   </div>

@@ -1,0 +1,137 @@
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  user-select: none;
+}
+
+.dropdown-trigger {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s ease;
+  min-height: 48px;
+}
+
+.dropdown-trigger:hover {
+  border-color: #2196f3;
+}
+
+.selected-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder {
+  color: #888;
+}
+
+.arrow {
+  font-size: 0.8rem;
+  color: #666;
+  transition: transform 0.2s ease;
+  margin-left: 10px;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 0 0 4px 4px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  z-index: 10000;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: -1px; /* Overlap border */
+}
+
+.dropdown-item {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item.selected {
+  background-color: #e3f2fd; /* Light blue */
+  border-left: 4px solid #2196f3;
+}
+
+.option-main {
+  font-weight: bold;
+  font-size: 1rem;
+  color: #333;
+}
+
+.option-sub {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+/* Dark Theme Support */
+:host-context(body.dark-theme) .dropdown-trigger {
+  background-color: #1f1f1f;
+  border-color: #444;
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-theme) .dropdown-trigger:hover {
+  border-color: #64b5f6;
+}
+
+:host-context(body.dark-theme) .placeholder {
+  color: #aaa;
+}
+
+:host-context(body.dark-theme) .arrow {
+  color: #aaa;
+}
+
+:host-context(body.dark-theme) .dropdown-menu {
+  background-color: #1f1f1f;
+  border-color: #444;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+:host-context(body.dark-theme) .dropdown-item {
+  border-bottom-color: #333;
+}
+
+:host-context(body.dark-theme) .dropdown-item:hover {
+  background-color: #2d2d2d;
+}
+
+:host-context(body.dark-theme) .dropdown-item.selected {
+  background-color: #2c3e50; /* Darker blue */
+  border-left-color: #64b5f6;
+}
+
+:host-context(body.dark-theme) .option-main {
+  color: #e0e0e0;
+}
+
+:host-context(body.dark-theme) .option-sub {
+  color: #aaa;
+}
