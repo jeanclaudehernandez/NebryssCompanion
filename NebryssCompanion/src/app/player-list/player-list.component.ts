@@ -85,11 +85,11 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     }
   }
 
-  selectPlayer(player: Player): void {
+  selectPlayer(player: Player | null): void {
     // If the same player is selected, do nothing or maybe just ensure it's expanded
     // In dropdown mode, selecting usually means "switch to this one"
     
-    if (this.selectedPlayer?.id === player.id) {
+    if (this.selectedPlayer?.id === player?.id) {
        // Optional: toggle off if clicking same one? 
        // For a dropdown, usually re-selecting doesn't deselect.
        // But let's stick to the active player service logic.
@@ -97,7 +97,9 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     }
 
     this.activePlayerService.setActivePlayer(player);
-    this.scrollToPlayer();
+    if (player) {
+      this.scrollToPlayer();
+    }
   }
 
   scrollToPlayer(): void {

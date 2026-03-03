@@ -13,6 +13,14 @@
   <div class="dropdown-menu" *ngIf="isOpen">
     <div 
       class="dropdown-item" 
+      *ngIf="showClearOption" 
+      (click)="selectOption(null)"
+      [class.selected]="selectedOption === null">
+      <div class="option-main">None</div>
+      <div class="option-sub">Clear selection</div>
+    </div>
+    <div 
+      class="dropdown-item" 
       *ngFor="let option of options" 
       (click)="selectOption(option)"
       [class.selected]="option.id === selectedOption?.id">

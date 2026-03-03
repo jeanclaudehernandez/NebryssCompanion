@@ -5,6 +5,7 @@
       <app-custom-dropdown #dropdown
         [options]="players"
         [selectedOption]="selectedPlayer"
+        [showClearOption]="true"
         (selectionChange)="selectPlayer($event)">
       </app-custom-dropdown>
     </div>

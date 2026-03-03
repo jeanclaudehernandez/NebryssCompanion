@@ -13,7 +13,8 @@ export class CustomDropdownComponent {
   @Input() options: Player[] = [];
   @Input() selectedOption: Player | null = null;
   @Input() placeholder: string = 'Select a player...';
-  @Output() selectionChange = new EventEmitter<Player>();
+  @Input() showClearOption: boolean = false;
+  @Output() selectionChange = new EventEmitter<Player | null>();
 
   isOpen = false;
 
@@ -23,7 +24,7 @@ export class CustomDropdownComponent {
     this.isOpen = !this.isOpen;
   }
 
-  selectOption(option: Player) {
+  selectOption(option: Player | null) {
     this.selectedOption = option;
     this.selectionChange.emit(option);
     this.isOpen = false;
