@@ -51,8 +51,11 @@ import { ToastService } from '../toast.service';
                     <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
                       <i class="icon-wrench">🔧</i>
                     </button>
-                    <button *ngIf="!isPlayerDetail" (click)="addToInventory(item)" class="btn-add">+</button>
-                    <button (click)="removeFromInventory(item)" class="btn-remove">-</button>
+                    <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
+                      <span class="icon">🛒</span>
+                    </button>
+                    <button *ngIf="!isPlayerDetail && !shoppingMode" (click)="addToInventory(item)" class="btn-add">+</button>
+                    <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">-</button>
                   </ng-container>
                 </div>
               </td>
@@ -78,11 +81,13 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableCloning: boolean = false;
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
+  @Input() shoppingMode: boolean = false;
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
+  @Output() addToCart = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -132,6 +137,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onEdit(item: any) {
     this.edit.emit(item);
+  }
+
+  onAddToCart(item: any) {
+    this.addToCart.emit(item);
   }
 
   onDelete(item: any) {

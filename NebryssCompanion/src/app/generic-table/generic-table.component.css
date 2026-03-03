@@ -54,7 +54,7 @@ h3 {
     justify-content: center;
 }
 
-.btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete, .btn-edit {
+.btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete, .btn-edit, .btn-cart {
     width: 24px;
     height: 24px;
     border-radius: 50%;
@@ -71,6 +71,16 @@ h3 {
 .btn-add {
     background-color: #4caf50;
     color: white;
+}
+
+.btn-cart {
+    background-color: #2196F3; /* Blue */
+    color: white;
+    font-size: 0.8rem;
+}
+
+.btn-cart:hover {
+    background-color: #1976D2;
 }
 
 .btn-add:hover {

@@ -9,6 +9,10 @@
     "imgUrl": "https://iili.io/fv04hIj.jpg",
     "thumbnail": "https://iili.io/fv04hIj.th.jpg",
     "categories": [2],
+    "paymentMethod": {
+      "digital": false,
+      "physical": true
+    },
     "items": [
       { "id": 16, "price": 5, "type": "item" },
       { "id": 17, "price": 3, "type": "item" },
@@ -30,6 +34,10 @@
     "imgUrl": "https://iili.io/fv04Wmb.jpg",
     "thumbnail": "https://iili.io/fv04Wmb.th.jpg",
     "categories": [1],
+    "paymentMethod": {
+      "digital": true,
+      "physical": true
+    },
     "items": [
       { "id": 1, "price": 8, "type": "item" },
       { "id": 2, "price": 18, "type": "item" },
@@ -49,6 +57,10 @@
     "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
     "imgUrl": "https://iili.io/fv04jhx.jpg",
     "thumbnail": "https://iili.io/fv04jhx.th.jpg",
+    "paymentMethod": {
+      "digital": true,
+      "physical": true
+    },
     "items": [
       { "id": 25, "price": 15, "type": "weapon" },
       { "id": 2, "price": 12, "type": "weapon" }, 
@@ -70,6 +82,10 @@
     "imgUrl": "https://iili.io/fv04wLQ.jpg",
     "thumbnail": "https://iili.io/fv04wLQ.th.jpg",
     "categories": [4, 5, 6, 7],
+    "paymentMethod": {
+      "digital": true,
+      "physical": false
+    },
     "items": [
       { "id": 40, "price": 500, "type": "item" },
       { "id": 41, "price": 450, "type": "item" },
@@ -99,6 +115,10 @@
     "imgUrl": "https://iili.io/fv04eEB.jpg",
     "thumbnail": "https://iili.io/fv04eEB.th.jpg",
     "categories": [2],
+    "paymentMethod": {
+      "digital": false,
+      "physical": true
+    },
     "items": [
       { "id": 20, "price": 2, "type": "item" },
       { "id": 17, "price": 3, "type": "item" },
@@ -114,6 +134,10 @@
     "location": "Zephyria's Sky Bazaar",
     "locationName": "Zephyria",
     "categories": [2],
+    "paymentMethod": {
+      "digital": false,
+      "physical": true
+    },
     "items": [
       { "id": 16, "price": 5, "type": "item" },
       { "id": 8, "price": 12, "type": "item" },

@@ -41,10 +41,12 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Input() enableCloning: boolean = false;
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
+  @Input() shoppingMode: boolean = false;
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
+  @Output() addToCart = new EventEmitter<any>();
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
@@ -132,6 +134,10 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
 
   onDelete(weapon: any) {
     this.delete.emit(weapon);
+  }
+
+  onAddToCart(weaponId: number) {
+    this.addToCart.emit(weaponId);
   }
 
   onEdit(weapon: any) {

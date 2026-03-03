@@ -119,16 +119,12 @@
 }
 
 .mistral-dialog {
-  padding: 20px;
-  background-color: white;
-  border-radius: 8px;
   min-width: 300px;
 }
 
 .mistral-dialog h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  color: #333;
 }
 
 .mistral-dialog-body {
@@ -173,15 +169,6 @@
 }
 
 
-
-body.dark-theme .mistral-dialog {
-  background-color: #2d2d2d;
-  color: #e0e0e0;
-}
-
-body.dark-theme .mistral-dialog h3 {
-  color: #fff;
-}
 
 body.dark-theme .mistral-dialog-body input {
   background-color: #333;

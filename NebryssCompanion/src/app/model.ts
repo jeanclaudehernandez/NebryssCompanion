@@ -327,6 +327,10 @@ export interface AlteredState {
     items: ShopItem[];
     imgUrl?: string;
     thumbnail?: string;
+    paymentMethod: {
+      digital: boolean;
+      physical: boolean;
+    }
   }
   
   // talents.ts

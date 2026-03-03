@@ -22,7 +22,9 @@
         [data]="getShopItemsWithPrices(shop, category.key) || []"
         [headers]="category.headers"
         [headerKeys]="category.keys"
-        [inventoryManagement]="hasActivePlayer()">
+        [inventoryManagement]="hasActivePlayer()"
+        [shoppingMode]="true"
+        (addToCart)="onAddToCart($event, shop.id, 'item')">
       </app-generic-table>
     </div>
     
@@ -38,10 +40,111 @@
                 [alteredStates]="alteredStates"
                 [displayPrice]="true"
                 [displayBody]="true"
-                [inventoryManagement]="hasActivePlayer()">
+                [inventoryManagement]="hasActivePlayer()"
+                [shoppingMode]="true"
+                (addToCart)="onAddToCart($event, shop.id, 'weapon')">
             </app-weapon-table>
           </div>
       </div>
   </div>
 </div>
 <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+
+<!-- Shopping Cart Toggle Button -->
+<button 
+    class="cart-toggle-btn" 
+    *ngIf="cartItemsCount > 0" 
+    (click)="toggleCartSidebar()"
+    [class.open]="showCartSidebar">
+    <span class="icon">🛒</span>
+    <span class="text">Cart ({{cartItemsCount}})</span>
+</button>
+
+<!-- Shopping Cart Sidebar -->
+<div class="cart-sidebar" [class.open]="showCartSidebar">
+    <div class="sidebar-header">
+        <h3>Shopping Cart</h3>
+        <button class="close-sidebar-btn" (click)="toggleCartSidebar()">✕</button>
+    </div>
+    <div class="sidebar-content">
+        <div *ngIf="cartItemsCount === 0" class="no-items">
+            Your cart is empty.
+        </div>
+        
+        <div *ngFor="let shopId of cartShopIds" class="shop-cart-group">
+            <h4 class="shop-cart-title">{{ getShopName(shopId) }}</h4>
+            <div class="cart-items-list">
+                <div *ngFor="let item of cart[shopId]" class="cart-item">
+                    <div class="cart-item-details">
+                        <span class="item-name">{{ item.name }}</span>
+                        <span class="item-price">{{ item.price }} x {{ item.quantity }}</span>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="btn-remove-cart" (click)="removeFromCart(item, shopId)">-</button>
+                    </div>
+                </div>
+            </div>
+            <div class="shop-total">
+                <div class="payment-methods">
+                    <!-- Digital (Credit Card) -->
+                    @let digitalStatus = canPay(shopId, 'digital');
+                    <button 
+                        class="btn-payment" 
+                        [class.allowed]="digitalStatus.allowed"
+                        [class.denied]="!digitalStatus.allowed"
+                        [matTooltip]="digitalStatus.reason"
+                        (click)="processPayment(shopId, 'digital')">
+                        💳
+                    </button>
+                   
+                    <!-- Physical (Money Bill) -->
+                    @let physicalStatus = canPay(shopId, 'physical');
+                    <button 
+                        class="btn-payment" 
+                        [class.allowed]="physicalStatus.allowed"
+                        [class.denied]="!physicalStatus.allowed"
+                        [matTooltip]="physicalStatus.reason"
+                        (click)="processPayment(shopId, 'physical')">
+                        💵
+                    </button>
+                </div>
+                <strong>Total: {{ getShopTotal(shopId) }}</strong>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal Template -->
+<ng-template #confirmPurchaseModal let-data>
+    <div class="confirm-purchase-modal">
+        <h3>Confirm Purchase</h3>
+        <p>You are about to purchase the following items using <strong>{{ data.method }}</strong> mistrals:</p>
+        
+        <div class="modal-items-list">
+            <div *ngFor="let item of data.items" class="modal-item">
+                <span>{{ item.name }} (x{{ item.quantity }})</span>
+                <span>{{ item.price * item.quantity }} M</span>
+            </div>
+        </div>
+
+        <div class="modal-summary">
+            <div class="summary-line">
+                <span>Total Cost:</span>
+                <span class="cost-value">{{ data.totalCost }} M</span>
+            </div>
+            <div class="summary-line">
+                <span>Current Balance:</span>
+                <span>{{ data.currentBalance }} M</span>
+            </div>
+            <div class="summary-line highlight">
+                <span>Balance After:</span>
+                <span [class.insufficient]="data.remainingBalance < 0">{{ data.remainingBalance }} M</span>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="btn-cancel" (click)="cancelPurchase()">Cancel</button>
+            <button class="btn-confirm" (click)="confirmPurchase()">Confirm Purchase</button>
+        </div>
+    </div>
+</ng-template>
