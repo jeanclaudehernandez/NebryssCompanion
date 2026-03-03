@@ -16,8 +16,8 @@
     
     <div class="payment-methods-info">
       <span class="payment-label">Accepts:</span>
-      <span *ngIf="shop.paymentMethod?.digital" class="payment-badge digital" title="Accepts Digital Mistrals">💳 Digital</span>
-      <span *ngIf="shop.paymentMethod?.physical" class="payment-badge physical" title="Accepts Physical Mistrals">💵 Physical</span>
+      <span *ngIf="shop.paymentMethod.digital" class="payment-badge digital" title="Accepts Digital Mistrals">💳 Digital</span>
+      <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">💵 Physical</span>
     </div>
 
     <div *ngFor="let categoryId of shop.categories">
