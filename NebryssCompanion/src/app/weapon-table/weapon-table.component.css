@@ -1,5 +1,5 @@
 .table-container {
-  position: relative; /* Add this to create a positioning context */
+  position: relative;
   overflow-x: auto;
   margin: 1rem 0;
   border: 1px solid #ddd;
@@ -10,72 +10,99 @@
 .weapons-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 600px;
-  font-size: 0.9rem;
+  min-width: 320px; /* Reduced min-width to prevent early scrolling */
+  font-size: 0.85rem; /* Slightly smaller font to fit more */
 }
   
 .weapons-table th {
   background-color: #f5f5f5;
   position: sticky;
   top: 0;
-  padding: 0.75rem;
-  /*text-align: left;*/
+  padding: 0.25rem 0.5rem; /* Reduced padding */
+  text-align: left;
   border-bottom: 2px solid #ddd;
-  z-index: 2; /* Ensures header stays above table but below tooltips */
+  z-index: 2;
   transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+  white-space: nowrap; /* Keep headers on one line */
+}
+
+/* Grouping by tbody */
+.weapons-table tbody {
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.3s;
 }
   
 .weapons-table td {
-  padding: 0.5rem;
-  border-bottom: 1px solid #eee;
+  padding: 0.25rem 0.5rem; /* Reduced padding */
+  text-align: left;
+  border-bottom: none; /* Removed cell borders */
   transition: border-color 0.3s;
 }
   
-.weapons-table tr:last-child td {
+/* Inventory Highlight */
+.weapons-table tbody.in-inventory {
+    background-color: #e8f5e9;
+}
+
+/* Stats Row Styling */
+.stats-row td {
+    padding-bottom: 0.2rem;
+    vertical-align: middle;
     border-bottom: none;
-}
-
-.in-inventory {
-    background-color: #e8f5e9;  /* Light green background */
-    transition: background-color 0.3s;
-}
-  
-.rule-text {
-  cursor: help;
-  border-bottom: 1px dotted #666;
-  transition: all 0.2s ease;
-}
-  
-.rule-text:hover {
-  color: #0066cc;
-  border-bottom-color: currentColor;
-}
-
-/* Style for weapon rows */
-.weapon-row {
-    vertical-align: top;
 }
 
 .weapon-row td:first-child {
     font-weight: 500;
 }
 
-/* Style for special rules */
+/* Rules and Body Row Styling */
+.rules-row td, .body-row td {
+    padding-top: 0;
+    padding-bottom: 0.5rem;
+    border-top: none;
+}
+
+.rules-container, .body-cell {
+    /* padding-left: 2rem; Removed indentation as now aligned via columns */
+    font-size: 0.85rem;
+    color: #555;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.rules-label, .body-label {
+    font-weight: 500;
+    color: #777;
+    margin-right: 0.25rem;
+}
+
+.rule-text {
+  cursor: help;
+  border-bottom: 1px dotted #666;
+  transition: all 0.2s ease;
+  color: #007bff;
+}
+  
+.rule-text:hover {
+  color: #0056b3;
+  border-bottom-color: currentColor;
+}
+
 .rule-item {
     display: inline-block;
 }
 
-.rule-text {
-    color: #007bff;
-    cursor: pointer;
-    border-bottom: 1px dotted #007bff;
-    transition: color 0.3s, border-color 0.3s;
+/* Mod Description */
+.mod-description {
+    display: inline-block;
+    margin-left: 1rem;
+    font-style: italic;
+    color: #666;
 }
 
-.rule-text:hover {
-    color: #0056b3;
-}
-
+/* Buttons */
 .inventory-actions {
   display: flex;
   gap: 0.5rem;
@@ -96,63 +123,23 @@
   transition: background-color 0.3s;
 }
 
-.btn-add {
-  background-color: #4caf50;
-  color: white;
-}
+.btn-add { background-color: #4caf50; color: white; }
+.btn-add:hover { background-color: #388e3c; }
 
-.btn-cart {
-  background-color: #2196F3; /* Blue */
-  color: white;
-  font-size: 0.8rem;
-}
+.btn-cart { background-color: #2196F3; color: white; font-size: 0.8rem; }
+.btn-cart:hover { background-color: #1976D2; }
 
-.btn-cart:hover {
-  background-color: #1976D2;
-}
+.btn-remove { background-color: #f44336; color: white; }
+.btn-remove:hover { background-color: #d32f2f; }
 
-.btn-add:hover {
-  background-color: #388e3c;
-}
+.btn-clone { background-color: #FFC107; color: black; font-size: 0.8rem; }
+.btn-clone:hover { background-color: #FFA000; }
 
-.btn-remove {
-  background-color: #f44336;
-  color: white;
-}
+.btn-delete { background-color: #8B0000; color: white; font-size: 0.8rem; }
+.btn-delete:hover { background-color: #a50000; }
 
-.btn-remove:hover {
-  background-color: #d32f2f;
-}
-
-.btn-clone {
-  background-color: #FFC107;
-  color: black;
-  font-size: 0.8rem;
-}
-
-.btn-clone:hover {
-  background-color: #FFA000;
-}
-
-.btn-delete {
-  background-color: #8B0000;
-  color: white;
-  font-size: 0.8rem;
-}
-
-.btn-delete:hover {
-  background-color: #a50000;
-}
-
-.btn-edit {
-  background-color: #9C27B0;
-  color: white;
-  font-size: 0.8rem;
-}
-
-.btn-edit:hover {
-  background-color: #7B1FA2;
-}
+.btn-edit { background-color: #9C27B0; color: white; font-size: 0.8rem; }
+.btn-edit:hover { background-color: #7B1FA2; }
 
 /* Dark Theme Styles */
 body.dark-theme .table-container {
@@ -166,26 +153,16 @@ body.dark-theme .weapons-table th {
   border-bottom-color: #444;
 }
 
-body.dark-theme .weapons-table td {
+body.dark-theme .weapons-table tbody {
   border-bottom-color: #444;
+}
+
+body.dark-theme .weapons-table td {
   color: #e0e0e0;
 }
 
-body.dark-theme .weapons-table tr {
-  color: #e0e0e0;
-}
-
-body.dark-theme .in-inventory {
-  background-color: #0d2015 !important;  /* Darker green background for dark mode */
-}
-
-body.dark-theme tr.in-inventory td {
-  background-color: #0d2015;
-  color: #e0e0e0;
-}
-
-body.dark-theme .weapons-table tr.in-inventory {
-  background-color: #0d2015;
+body.dark-theme .weapons-table tbody.in-inventory {
+  background-color: #0d2015 !important;
 }
 
 body.dark-theme .rule-text {
@@ -197,13 +174,13 @@ body.dark-theme .rule-text:hover {
   color: #90caf9;
 }
 
-body.dark-theme .rule-description {
-  background-color: #1f1f1f;
-  color: #e0e0e0;
-  border-color: #444;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+body.dark-theme .rules-container, 
+body.dark-theme .body-cell,
+body.dark-theme .mod-description {
+    color: #aaa;
 }
 
-body.dark-theme .weapon-row {
-  background-color: #1f1f1f;
+body.dark-theme .rules-label, 
+body.dark-theme .body-label {
+    color: #888;
 }

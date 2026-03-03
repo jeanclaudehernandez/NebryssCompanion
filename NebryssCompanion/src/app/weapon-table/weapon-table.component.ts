@@ -48,6 +48,17 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Output() edit = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
 
+  get showActions(): boolean {
+    return this.inventoryManagement || this.enableCloning || this.enableDeleting || this.enableEditing || this.shoppingMode;
+  }
+
+  get totalColumns(): number {
+    let cols = 5; // Name, Range, Attacks, WS/BS, Damage
+    if (this.displayPrice) cols++;
+    if (this.showActions) cols++;
+    return cols;
+  }
+
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   private playerSubscription: Subscription | null = null;

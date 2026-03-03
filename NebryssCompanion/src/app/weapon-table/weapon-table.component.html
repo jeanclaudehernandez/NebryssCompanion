@@ -2,26 +2,23 @@
     <table class="weapons-table">
       <thead>
         <tr>
-          <th>Weapon</th>
+          <th>Name</th>
+          <th>R</th>
+          <th>A</th>
+          <th>HIT</th>
+          <th>D</th>
           <th *ngIf="displayPrice">Price</th>
-          <th>Range</th>
-          <th>Attacks</th>
-          <th>WS/BS</th>
-          <th>Damage</th>
-          <th>Special Rules</th>
-          <th *ngIf="displayBody">Body</th>
-          <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">Actions</th>
+          <th *ngIf="showActions">Actions</th>
         </tr>
       </thead>
-      <tbody>
-        <ng-container *ngFor="let entry of sortedProfiles">
-          <ng-container *ngIf="filterByBody(entry.profile) || !isCharacterDisplayPage">
-            <tr class="weapon-row" [class.in-inventory]="isInInventory(entry.weapon.id)">
-                <td>
+      <ng-container *ngFor="let entry of sortedProfiles">
+        <tbody *ngIf="filterByBody(entry.profile) || !isCharacterDisplayPage" [class.in-inventory]="isInInventory(entry.weapon.id)">
+            <!-- Row 1: Stats -->
+            <tr class="weapon-row stats-row">
+                <td class="name-cell">
                   {{ entry.weapon.name }}
                   <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
                 </td>
-                <td *ngIf="displayPrice">{{entry.weapon.price || '-'}}</td>
                 <td>{{ entry.profile.rng | weaponRange}}</td>
                 <td>{{ entry.profile.attacks }}</td>
                 <td>{{ entry.profile.ws }}</td>
@@ -33,48 +30,59 @@
                     {{ entry.profile.damage.min }}/{{ entry.profile.damage.max }}
                   </span>
                 </td>
-                <td>
-                  <div>
-                    <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
-                        <span 
-                          class="rule-text weapon-rule-link"
-                          (click)="showRuleDetails(getRuleDisplay(rule))">
-                          {{ getRuleDisplay(rule).name }}
-                        </span>
-                        <span *ngIf="!last">, </span>
-                    </span>
-                  </div>
-                  <div *ngIf="attachedModDescriptions[entry.weapon.id]?.length" class="mod-description">
-                    <strong>Mod:</strong>
-                    <span *ngFor="let modDesc of attachedModDescriptions[entry.weapon.id]; let lastMod = last">
-                      {{ processModDescription(modDesc) }}<span *ngIf="!lastMod"> | </span>
-                    </span>
-                  </div>
+                <td *ngIf="displayPrice">{{entry.weapon.price || '-'}}</td>
+                <td *ngIf="showActions">
+                    <div class="inventory-actions">
+                        <button *ngIf="enableEditing" (click)="onEdit(entry.weapon)" class="btn-edit" title="Edit">
+                            <span class="icon">✏️</span>
+                        </button>
+                        <button *ngIf="enableCloning" (click)="onClone(entry.weapon)" class="btn-clone" title="Clone">
+                            <span class="icon">❐</span>
+                        </button>
+                        <button *ngIf="enableDeleting" (click)="onDelete(entry.weapon)" class="btn-delete" title="Delete">
+                            <span class="icon">🗑️</span>
+                        </button>
+                        <button *ngIf="shoppingMode" (click)="onAddToCart(entry.weapon.id)" class="btn-cart" title="Add to Cart">
+                            <span class="icon">🛒</span>
+                        </button>
+                        <button *ngIf="inventoryManagement && !isCharacterDisplayPage && !shoppingMode" (click)="addToInventory(entry.weapon.id)" class="btn-add">+</button>
+                        <button *ngIf="inventoryManagement && !shoppingMode" (click)="removeFromInventory(entry.weapon.id)" class="btn-remove">-</button>
+                    </div>
                 </td>
-                <td *ngIf="displayBody">{{entry.profile.body}}</td>
-          <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">
-            <div class="inventory-actions">
-              <!-- Admin Actions -->
-              <button *ngIf="enableEditing" (click)="onEdit(entry.weapon)" class="btn-edit" title="Edit">
-                <span class="icon">✏️</span>
-              </button>
-              <button *ngIf="enableCloning" (click)="onClone(entry.weapon)" class="btn-clone" title="Clone">
-                <span class="icon">❐</span>
-              </button>
-              <button *ngIf="enableDeleting" (click)="onDelete(entry.weapon)" class="btn-delete" title="Delete">
-                <span class="icon">🗑️</span>
-              </button>
-              
-              <button *ngIf="shoppingMode" (click)="onAddToCart(entry.weapon.id)" class="btn-cart" title="Add to Cart">
-                <span class="icon">🛒</span>
-              </button>
-              <button *ngIf="inventoryManagement && !isCharacterDisplayPage && !shoppingMode" (click)="addToInventory(entry.weapon.id)" class="btn-add">+</button>
-              <button *ngIf="inventoryManagement && !shoppingMode" (click)="removeFromInventory(entry.weapon.id)" class="btn-remove">-</button>
-            </div>
-          </td>
-        </tr>
-          </ng-container>
-        </ng-container>
-      </tbody>
+            </tr>
+            <!-- Row 2: Rules (Conditional) -->
+            <tr class="weapon-row rules-row" *ngIf="entry.profile.specialRules?.length || attachedModDescriptions[entry.weapon.id]?.length">
+                <td></td> <!-- Spacer for Name column -->
+                <td [attr.colspan]="totalColumns - 1" class="rules-cell">
+                    <div class="rules-container">
+                        <span class="rules-label">specialRules: </span>
+                        <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
+                            <span 
+                              class="rule-text weapon-rule-link"
+                              (click)="showRuleDetails(getRuleDisplay(rule))">
+                              {{ getRuleDisplay(rule).name }}
+                            </span>
+                            <span *ngIf="!last">, </span>
+                        </span>
+                        
+                        <!-- Attached Mods -->
+                        <div *ngIf="attachedModDescriptions[entry.weapon.id]?.length" class="mod-description">
+                            <strong>Mod:</strong>
+                            <span *ngFor="let modDesc of attachedModDescriptions[entry.weapon.id]; let lastMod = last">
+                              {{ processModDescription(modDesc) }}<span *ngIf="!lastMod"> | </span>
+                            </span>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+             <!-- Row 3: Body (Conditional) -->
+             <tr class="weapon-row body-row" *ngIf="displayBody">
+                 <td></td> <!-- Spacer for Name column -->
+                 <td [attr.colspan]="totalColumns - 1" class="body-cell">
+                     <span class="body-label">Body: </span>{{entry.profile.body}}
+                 </td>
+             </tr>
+        </tbody>
+      </ng-container>
     </table>
 </div>
