@@ -3,7 +3,7 @@
       "id": 1,
       "name": "Armor", 
       "key": "armor",
-      "headers": ["Name", "Price", "Description", "Race Requirement"],
+      "headers": ["Name", "Price", "Description", "Body"],
       "keys": ["name", "price", "description", "raceReq"]
     },
     { 
