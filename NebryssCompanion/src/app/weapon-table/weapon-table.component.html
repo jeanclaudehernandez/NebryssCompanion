@@ -51,7 +51,7 @@
                 </td>
             </tr>
             <!-- Row 2: Rules (Conditional) -->
-            <tr class="weapon-row rules-row" *ngIf="entry.profile.specialRules?.length || attachedModDescriptions[entry.weapon.id]?.length">
+            <tr class="weapon-row rules-row" *ngIf="entry.profile.specialRules.length || attachedModDescriptions[entry.weapon.id]?.length">
                 <td></td> <!-- Spacer for Name column -->
                 <td [attr.colspan]="totalColumns - 1" class="rules-cell">
                     <div class="rules-container">
