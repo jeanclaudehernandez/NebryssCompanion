@@ -332,6 +332,15 @@ export interface AlteredState {
       physical: boolean;
     }
   }
+
+  export interface CartItem {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    type: 'item' | 'weapon';
+  }
+  
   
   // talents.ts
   export interface Talent {
