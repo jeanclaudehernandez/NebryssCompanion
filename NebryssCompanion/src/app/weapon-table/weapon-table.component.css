@@ -109,6 +109,13 @@
   justify-content: center;
 }
 
+.dice-suffix{
+  font-size: 0.6rem;
+  color: #636363;
+  position:relative;
+  top: -1px;
+}
+
 .btn-add, .btn-remove, .btn-clone, .btn-delete, .btn-edit, .btn-cart {
   width: 24px;
   height: 24px;

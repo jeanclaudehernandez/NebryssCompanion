@@ -20,7 +20,7 @@
                   <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
                 </td>
                 <td>{{ entry.profile.rng | weaponRange}}</td>
-                <td>{{ entry.profile.attacks }}</td>
+                <td>{{ entry.profile.attacks }}<span class="dice-suffix">d6</span></td>
                 <td>{{ entry.profile.ws }}+</td>
                 <td>
                   <span *ngIf="entry.profile.damage.min === entry.profile.damage.max">
