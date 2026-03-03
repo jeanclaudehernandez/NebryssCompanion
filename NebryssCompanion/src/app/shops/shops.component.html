@@ -84,7 +84,7 @@
                 <div *ngFor="let item of cart[shopId]" class="cart-item">
                     <div class="cart-item-details">
                         <span class="item-name">{{ item.name }}</span>
-                        <span class="item-price">{{ item.price }} x {{ item.quantity }}</span>
+                        <span class="item-price">{{ item.price }}₥ x {{ item.quantity }}</span>
                     </div>
                     <div class="cart-item-actions">
                         <button class="btn-remove-cart" (click)="removeFromCart(item, shopId)">-</button>
@@ -117,7 +117,7 @@
                         💵
                     </button>
                 </div>
-                <strong>Total: {{ getShopTotal(shopId) }}</strong>
+                <strong>Total: {{ getShopTotal(shopId) }}₥</strong>
             </div>
         </div>
     </div>
@@ -132,22 +132,22 @@
         <div class="modal-items-list">
             <div *ngFor="let item of data.items" class="modal-item">
                 <span>{{ item.name }} (x{{ item.quantity }})</span>
-                <span>{{ item.price * item.quantity }} M</span>
+                <span>{{ item.price * item.quantity }} ₥</span>
             </div>
         </div>
 
         <div class="modal-summary">
             <div class="summary-line">
                 <span>Total Cost:</span>
-                <span class="cost-value">{{ data.totalCost }} M</span>
+                <span class="cost-value">{{ data.totalCost }} ₥</span>
             </div>
             <div class="summary-line">
                 <span>Current Balance:</span>
-                <span>{{ data.currentBalance }} M</span>
+                <span>{{ data.currentBalance }} ₥</span>
             </div>
             <div class="summary-line highlight">
                 <span>Balance After:</span>
-                <span [class.insufficient]="data.remainingBalance < 0">{{ data.remainingBalance }} M</span>
+                <span [class.insufficient]="data.remainingBalance < 0">{{ data.remainingBalance }} ₥</span>
             </div>
         </div>
 

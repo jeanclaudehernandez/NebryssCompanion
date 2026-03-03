@@ -7,7 +7,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class WeaponRangePipe implements PipeTransform {
 
   transform(range: number | null): unknown {
-    return range == 0 ? 'melee' : range ?? '-';
+    return range == 0 ? 'melee' : (range ? range + '"' : '-');
   }
 
 }

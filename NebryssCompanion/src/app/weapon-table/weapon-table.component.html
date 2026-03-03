@@ -21,7 +21,7 @@
                 </td>
                 <td>{{ entry.profile.rng | weaponRange}}</td>
                 <td>{{ entry.profile.attacks }}</td>
-                <td>{{ entry.profile.ws }}</td>
+                <td>{{ entry.profile.ws }}+</td>
                 <td>
                   <span *ngIf="entry.profile.damage.min === entry.profile.damage.max">
                     {{ entry.profile.damage.min }}
@@ -30,7 +30,7 @@
                     {{ entry.profile.damage.min }}/{{ entry.profile.damage.max }}
                   </span>
                 </td>
-                <td *ngIf="displayPrice">{{entry.weapon.price || '-'}}</td>
+                <td *ngIf="displayPrice">{{entry.weapon.price ? entry.weapon.price + '₥' : '-'}}</td>
                 <td *ngIf="showActions">
                     <div class="inventory-actions">
                         <button *ngIf="enableEditing" (click)="onEdit(entry.weapon)" class="btn-edit" title="Edit">
@@ -75,11 +75,13 @@
                     </div>
                 </td>
             </tr>
-             <!-- Row 3: Body (Conditional) -->
+            <!-- Row 3: Body (Conditional) -->
              <tr class="weapon-row body-row" *ngIf="displayBody">
                  <td></td> <!-- Spacer for Name column -->
-                 <td [attr.colspan]="totalColumns - 1" class="body-cell">
-                     <span class="body-label">Body: </span>{{entry.profile.body}}
+                 <td [attr.colspan]="totalColumns - 1">
+                     <div class="body-cell">
+                        <span class="body-label">Body: </span>{{entry.profile.body}}
+                     </div>
                  </td>
              </tr>
         </tbody>

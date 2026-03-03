@@ -33,7 +33,8 @@ import { ToastService } from '../toast.service';
           <tbody>
             <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
               <td *ngFor="let header of headerKeys">
-                <span *ngIf="!renderHtml?.includes(header)">{{ item[header] }}</span>
+                <span *ngIf="!renderHtml?.includes(header) && header !== 'price'">{{ item[header] }}</span>
+                <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
               <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">
