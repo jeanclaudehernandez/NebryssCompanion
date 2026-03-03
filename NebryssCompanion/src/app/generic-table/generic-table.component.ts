@@ -254,7 +254,17 @@ export class GenericTableComponent implements OnInit, OnChanges {
   
   removeFromInventory(item: any) {
     const player = this.activePlayerService.activePlayer;
-    if (!player || !player.items) return;
+    if (!player) return;
+    
+    // Check if it's a weapon in the weapon list (for invalid weapons displayed as items)
+    if (item.type === 'weapon' && player.weapons && player.weapons.includes(item.id)) {
+      player.weapons = player.weapons.filter(id => id !== item.id);
+      this.activePlayerService.updateActivePlayer({ ...player });
+      this.toastService.show(`Removed ${item.name} from weapons`, 'error');
+      return;
+    }
+
+    if (!player.items) return;
     
     // Find the item in the inventory
     const existingItemIndex = player.items.findIndex((inventoryItem) => inventoryItem.id === item.id);

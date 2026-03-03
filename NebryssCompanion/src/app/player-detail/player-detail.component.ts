@@ -36,6 +36,7 @@ export class PlayerDetailComponent implements OnChanges {
   itemTableHeaderKeys: string[] = ['name', 'description', 'quant'];
   modItems: { inventory: Inventory; item: any }[] = [];
   ownedWeapons: Weapon[] = [];
+  visibleWeaponIds: number[] = [];
   
   // Talent table properties
   talentTableData: any[] = [];
@@ -74,6 +75,8 @@ export class PlayerDetailComponent implements OnChanges {
       });
     }
     
+    // Initialize itemTableData
+    this.itemTableData = [];
     if (this.character.items && this.character.items.length > 0) {
       this.itemTableData = this.character.items.map(inventory => {
         const item = this.getItemById(inventory.id);
@@ -117,7 +120,47 @@ export class PlayerDetailComponent implements OnChanges {
 
     if (this.isPlayer(this.character)) {
       const player = this.character as Player;
-      this.ownedWeapons = this.weaponsData.filter(w => player.weapons?.includes(w.id));
+      
+      const playerBodyTypes = player.attributes.body || [];
+      const allWeaponIds = player.weapons || [];
+      const validWeaponIds: number[] = [];
+      const invalidWeapons: Weapon[] = [];
+
+      allWeaponIds.forEach(wid => {
+          const weapon = this.weaponsData.find(w => w.id === wid);
+          if (!weapon) return;
+
+          const weaponBodyTypes = new Set<string>();
+          weapon.profiles.forEach(p => {
+              if (p.body) weaponBodyTypes.add(p.body);
+          });
+          
+          const hasMatch = Array.from(weaponBodyTypes).some(wb => playerBodyTypes.includes(wb));
+          
+          if (hasMatch) {
+              validWeaponIds.push(wid);
+          } else {
+              invalidWeapons.push(weapon);
+          }
+      });
+
+      this.visibleWeaponIds = validWeaponIds;
+      this.ownedWeapons = this.weaponsData.filter(w => validWeaponIds.includes(w.id));
+
+      const invalidWeaponItems = invalidWeapons.map(w => ({
+          id: w.id,
+          name: w.name,
+          description: 'Weapon (Incompatible Body Type)',
+          quant: 1,
+          type: 'weapon',
+          canCraft: false,
+          blueprintForName: '',
+          buildMaterials: [],
+          _blueprintForId: null
+      }));
+
+      this.itemTableData = [...this.itemTableData, ...invalidWeaponItems];
+
       if (player.items && player.items.length > 0) {
         this.modItems = player.items
           .map((inventory: Inventory) => {
@@ -134,6 +177,7 @@ export class PlayerDetailComponent implements OnChanges {
     } else {
       this.modItems = [];
       this.ownedWeapons = [];
+      this.visibleWeaponIds = this.character.weapons || [];
     }
     
     if (this.character.abilities && this.character.abilities.length > 0) {
@@ -158,7 +202,7 @@ export class PlayerDetailComponent implements OnChanges {
     if (this.character.abilities && this.character.abilities.length > 0) {
       this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Abilities`, id: `abilities-${this.character.id}`});
     }
-    if ((this.isPlayer(this.character) || this.isBestiary(this.character)) && this.character.items?.length) {
+    if ((this.isPlayer(this.character) || this.isBestiary(this.character)) && this.itemTableData.length > 0) {
       this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Items`, id: `items-${this.character.id}` });
     }
     if (this.character.deployables?.length) {

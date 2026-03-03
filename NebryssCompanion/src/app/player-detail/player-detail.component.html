@@ -66,7 +66,7 @@
   <div [id]="'weapons-' + character.id" class="weapons">
     <h3>Weapons</h3>
       <app-weapon-table 
-        [weaponIds]="character.weapons"
+        [weaponIds]="visibleWeaponIds"
         [weaponsData]="weaponsData"
         [weaponRulesData]="weaponRulesData"
         [isCharacterDisplayPage]="true"
@@ -134,7 +134,7 @@
     </div>
   </div>
   
-  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && character.items?.length">
+  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
