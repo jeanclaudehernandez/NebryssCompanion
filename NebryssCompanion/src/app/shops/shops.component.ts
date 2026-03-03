@@ -5,22 +5,15 @@ import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState } from '../model';
+import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState, CartItem } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
+import { CartService } from '../cart.service';
 
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
-
-export interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  type: 'item' | 'weapon';
-}
 
 @Component({
   selector: 'app-shops',
@@ -54,6 +47,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
   scrollSections: ScrollSection[] = [];
   isDarkMode: boolean = false;
   private themeSubscription: Subscription = new Subscription();
+  private cartSubscription: Subscription = new Subscription();
 
   // Shopping Cart
   cart: { [shopId: number]: CartItem[] } = {};
@@ -67,12 +61,17 @@ export class ShopsComponent implements OnInit, OnDestroy {
     private activePlayerService: ActivePlayerService,
     private themeService: ThemeService,
     private toastService: ToastService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private cartService: CartService
   ) {}
 
   ngOnInit() {
     this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
+    });
+    
+    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
     });
     
     this.dataService.getAllData().subscribe(response => {
@@ -91,6 +90,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
+    this.cartSubscription.unsubscribe();
   }
 
   getOwnerName(owner: number) {
@@ -162,15 +162,11 @@ export class ShopsComponent implements OnInit, OnDestroy {
   }
 
   get cartItemsCount(): number {
-    let count = 0;
-    Object.values(this.cart).forEach(items => {
-      items.forEach(item => count += item.quantity);
-    });
-    return count;
+    return this.cartService.getCartItemsCount();
   }
 
   get cartShopIds(): number[] {
-    return Object.keys(this.cart).map(Number);
+    return this.cartService.getCartShopIds();
   }
 
   getShopName(shopId: number): string {
@@ -179,24 +175,14 @@ export class ShopsComponent implements OnInit, OnDestroy {
   }
 
   getShopTotal(shopId: number): number {
-    return this.cart[shopId]?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0;
+    return this.cartService.getShopTotal(shopId);
   }
 
   onAddToCart(data: any, shopId: number, type: 'item' | 'weapon') {
-    if (!this.cart[shopId]) {
-      this.cart[shopId] = [];
-    }
-
     let itemToAdd: CartItem;
 
     if (type === 'item') {
       // data is the item object
-      const existingItem = this.cart[shopId].find(i => i.id === data.id && i.type === 'item');
-      if (existingItem) {
-        existingItem.quantity++;
-        return;
-      }
-      
       itemToAdd = {
         id: data.id,
         name: data.name,
@@ -207,12 +193,6 @@ export class ShopsComponent implements OnInit, OnDestroy {
     } else {
       // data is the weapon ID
       const weaponId = data;
-      const existingItem = this.cart[shopId].find(i => i.id === weaponId && i.type === 'weapon');
-      if (existingItem) {
-        existingItem.quantity++;
-        return;
-      }
-
       const weapon = this.weaponsData.find(w => w.id === weaponId);
       if (!weapon) return;
 
@@ -225,26 +205,19 @@ export class ShopsComponent implements OnInit, OnDestroy {
       };
     }
 
-    this.cart[shopId].push(itemToAdd);
-    // Auto-open sidebar on first add? Maybe not, usually annoying.
-    // User requested "blue button... when clicked added... when user opens shopping cart..."
+    this.cartService.addToCart(itemToAdd, shopId);
   }
 
   removeFromCart(item: CartItem, shopId: number) {
-    const shopCart = this.cart[shopId];
-    if (!shopCart) return;
-
-    const index = shopCart.findIndex(i => i.id === item.id && i.type === item.type);
-    if (index === -1) return;
-
-    if (shopCart[index].quantity > 1) {
-      shopCart[index].quantity--;
-    } else {
-      shopCart.splice(index, 1);
-      if (shopCart.length === 0) {
-        delete this.cart[shopId];
-      }
+    this.cartService.removeFromCart(item, shopId);
+    if (this.cartItemsCount === 0) {
+        this.showCartSidebar = false;
     }
+  }
+
+  shopSupportsPayment(shopId: number, method: 'digital' | 'physical'): boolean {
+    const shop = this.shops.find(s => s.id === shopId);
+    return !!(shop && shop.paymentMethod && shop.paymentMethod[method]);
   }
 
   canPay(shopId: number, method: 'digital' | 'physical'): { allowed: boolean, reason: string } {
@@ -359,10 +332,10 @@ export class ShopsComponent implements OnInit, OnDestroy {
     this.activePlayerService.updateActivePlayer({ ...player });
     
     // Clear cart for this shop
-    delete this.cart[shopId];
+    this.cartService.clearCart(shopId);
 
     // Close sidebar if no carts remain
-    if (Object.keys(this.cart).length === 0) {
+    if (this.cartItemsCount === 0) {
       this.showCartSidebar = false;
     }
 

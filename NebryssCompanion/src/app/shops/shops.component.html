@@ -13,6 +13,13 @@
     <p class="location" (click)="onLocationClick(shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
     <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
     <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
+    
+    <div class="payment-methods-info">
+      <span class="payment-label">Accepts:</span>
+      <span *ngIf="shop.paymentMethod?.digital" class="payment-badge digital" title="Accepts Digital Mistrals">💳 Digital</span>
+      <span *ngIf="shop.paymentMethod?.physical" class="payment-badge physical" title="Accepts Physical Mistrals">💵 Physical</span>
+    </div>
+
     <div *ngFor="let categoryId of shop.categories">
       @let category = findCategory(categoryId);
       
@@ -89,6 +96,7 @@
                     <!-- Digital (Credit Card) -->
                     @let digitalStatus = canPay(shopId, 'digital');
                     <button 
+                        *ngIf="shopSupportsPayment(shopId, 'digital')"
                         class="btn-payment" 
                         [class.allowed]="digitalStatus.allowed"
                         [class.denied]="!digitalStatus.allowed"
@@ -100,6 +108,7 @@
                     <!-- Physical (Money Bill) -->
                     @let physicalStatus = canPay(shopId, 'physical');
                     <button 
+                        *ngIf="shopSupportsPayment(shopId, 'physical')"
                         class="btn-payment" 
                         [class.allowed]="physicalStatus.allowed"
                         [class.denied]="!physicalStatus.allowed"

@@ -10,6 +10,14 @@ export interface AlteredState {
     quant: number;
   }
 
+  export interface CartItem {
+    id: number;
+    name: string;
+    price: number;
+    quantity: number;
+    type: 'item' | 'weapon';
+  }
+
   // locations.ts
   export interface Location {
     name: string;

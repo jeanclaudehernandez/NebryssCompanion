@@ -328,33 +328,91 @@ body.dark-theme .shop-total {
     border-top-color: #444;
 }
 
-/* Confirmation Modal Styles */
+/* Payment Methods Display */
+.payment-methods-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+}
+
+.payment-label {
+    color: #7f8c8d;
+    font-weight: 500;
+}
+
+.payment-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.85em;
+    gap: 4px;
+}
+
+.payment-badge.digital {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    border: 1px solid #bbdefb;
+}
+
+.payment-badge.physical {
+    background-color: #f1f8e9;
+    color: #388e3c;
+    border: 1px solid #c8e6c9;
+}
+
+/* Dark theme support for payment badges */
+body.dark-theme .payment-methods-info {
+    color: #bdc3c7;
+}
+
+body.dark-theme .payment-label {
+    color: #95a5a6;
+}
+
+body.dark-theme .payment-badge.digital {
+    background-color: #1565c0;
+    color: #e3f2fd;
+    border-color: #0d47a1;
+}
+
+body.dark-theme .payment-badge.physical {
+    background-color: #2e7d32;
+    color: #e8f5e9;
+    border-color: #1b5e20;
+}
+
+/* Modal Styles */
 .confirm-purchase-modal {
-    color: #333;
+    padding: 20px;
+    max-width: 500px;
 }
 
 .confirm-purchase-modal h3 {
     margin-top: 0;
-    color: #2c3e50;
     border-bottom: 2px solid #3498db;
     padding-bottom: 10px;
+    color: #2c3e50;
 }
 
 .modal-items-list {
-    margin: 15px 0;
-    max-height: 200px;
+    max-height: 300px;
     overflow-y: auto;
+    margin: 15px 0;
     border: 1px solid #eee;
     border-radius: 4px;
-    padding: 10px;
     background: #f9f9f9;
 }
 
 .modal-item {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
-    border-bottom: 1px dashed #ddd;
+    padding: 8px 12px;
+    border-bottom: 1px solid #eee;
 }
 
 .modal-item:last-child {
@@ -362,9 +420,9 @@ body.dark-theme .shop-total {
 }
 
 .modal-summary {
-    background-color: #ecf0f1;
+    background-color: #f0f0f0;
     padding: 15px;
-    border-radius: 6px;
+    border-radius: 4px;
     margin-bottom: 20px;
 }
 
@@ -377,9 +435,14 @@ body.dark-theme .shop-total {
 .summary-line.highlight {
     margin-top: 10px;
     padding-top: 10px;
-    border-top: 1px solid #bdc3c7;
+    border-top: 1px solid #ddd;
     font-weight: bold;
     font-size: 1.1em;
+}
+
+.cost-value {
+    color: #e74c3c;
+    font-weight: bold;
 }
 
 .insufficient {
@@ -389,14 +452,14 @@ body.dark-theme .shop-total {
 .modal-actions {
     display: flex;
     justify-content: flex-end;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 10px;
 }
 
 .btn-cancel {
     padding: 10px 20px;
     border: 1px solid #ccc;
-    background: white;
+    background: #fff;
+    color: #333;
     border-radius: 4px;
     cursor: pointer;
     font-weight: 500;
