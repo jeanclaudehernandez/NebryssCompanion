@@ -71,6 +71,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   ) {
     this.playerSubscription = this.activePlayerService.activePlayer$.subscribe(() => {
       this.updateAttachedMods();
+      this.updateSortedProfiles();
     });
   }
 
