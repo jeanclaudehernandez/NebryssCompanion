@@ -126,6 +126,14 @@
     </app-generic-table>
   </div>
   
+  <div [id]="'afflictions-' + character.id" class="afflictions" *ngIf="isPlayer(character) && $any(character).progression?.afflictions?.length">
+    <h3>Afflictions</h3>
+    <app-afflictions-display 
+      [player]="$any(character)" 
+      [isEditable]="isActionAllowed(character)">
+    </app-afflictions-display>
+  </div>
+
   <div [id]="'abilities-' + character.id" class="abilities">
     <h3>Abilities</h3>
     <div *ngFor="let ability of processedAbilities" class="ability">

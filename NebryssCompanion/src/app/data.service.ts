@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction } from './model';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +23,7 @@ export class DataService {
   private locations: Locations = { locations: [] };
   private mistEffects: MistEffect[] = [];
   private terrains: Terrain[] = [];
+  private afflictions: Affliction[] = [];
 
   private playersCache$: Observable<Player[]> | null = null;
   private npcsCache$: Observable<NPC[]> | null = null;
@@ -37,6 +38,7 @@ export class DataService {
   private alteredStatesCache$: Observable<AlteredState[]> | null = null;
   private mistEffectsCache$: Observable<MistEffect[]> | null = null;
   private terrainsCache$: Observable<Terrain[]> | null = null;
+  private afflictionsCache$: Observable<Affliction[]> | null = null;
   private allDataCache$: Observable<any> | null = null;
 
   constructor(private http: HttpClient) { }
@@ -238,6 +240,18 @@ export class DataService {
     return this.terrainsCache$;
   }
 
+  getAfflictions(): Observable<Affliction[]> {
+    if (!this.afflictionsCache$) {
+      this.afflictionsCache$ = this.http.get<Affliction[]>('assets/data/afflictions.json').pipe(
+        tap(afflictions => {
+          this.afflictions = afflictions;
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.afflictionsCache$;
+  }
+
   getAllData(): Observable<{
     players: Player[],
     npcs: NPC[],
@@ -250,7 +264,8 @@ export class DataService {
     alteredStates: AlteredState[],
     mistEffects: any[],
     terrains: Terrain[],
-    talents: Talent[]
+    talents: Talent[],
+    afflictions: Affliction[]
   }> {
     if (!this.allDataCache$) {
       this.allDataCache$ = forkJoin({
@@ -265,7 +280,8 @@ export class DataService {
         alteredStates: this.getAlteredStates(),
         mistEffects: this.getMistEffects(),
         terrains: this.getTerrains(),
-        talents: this.getTalents()
+        talents: this.getTalents(),
+        afflictions: this.getAfflictions()
       }).pipe(shareReplay(1));
     }
     return this.allDataCache$;

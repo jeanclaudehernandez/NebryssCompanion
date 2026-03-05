@@ -1,0 +1,93 @@
+.table-container {
+  margin: 1rem 0;
+  border-radius: 4px;
+  overflow-x: auto;
+  transition: border-color 0.3s;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.items-table th {
+  background-color: #f5f5f5;
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 2px solid #ddd;
+  transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+}
+
+.items-table td {
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  transition: border-color 0.3s;
+}
+
+.items-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* Dark Theme Support */
+:host-context(body.dark-theme) .items-table th {
+  background-color: #2d2d2d;
+  color: #e0e0e0;
+  border-bottom-color: #444;
+}
+
+:host-context(body.dark-theme) .items-table td {
+  color: #ccc;
+  border-bottom-color: #333;
+}
+
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+:host-context(body.dark-theme) .progress-btn {
+  background-color: #444;
+  color: white;
+}
+
+.progress-btn:hover {
+  background-color: #d5d5d5;
+}
+
+:host-context(body.dark-theme) .progress-btn:hover {
+  background-color: #555;
+}
+
+.progress-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-text {
+  min-width: 50px;
+  text-align: center;
+}
+
+.completed {
+  color: #4caf50;
+  font-weight: bold;
+}

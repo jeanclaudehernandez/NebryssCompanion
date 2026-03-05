@@ -1,0 +1,45 @@
+<div class="table-container">
+  <table class="items-table" *ngIf="player && player.progression">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Effect</th>
+        <th>Treatment</th>
+        <th>Progress</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="player.progression.afflictions && player.progression.afflictions.length > 0; else noAfflictions">
+        <tr *ngFor="let affliction of player.progression.afflictions">
+          <td>{{ affliction.name }}</td>
+          <td>{{ affliction.effect }}</td>
+          <td>{{ affliction.treatment }}</td>
+          <td>
+            <div class="progress-cell">
+              <button 
+                *ngIf="isEditable" 
+                class="progress-btn" 
+                (click)="decreaseProgress(affliction)"
+                [disabled]="affliction.progress <= 0">-</button>
+              
+              <span class="progress-text" [class.completed]="affliction.progress >= affliction.toHeal">
+                {{ affliction.progress }} / {{ affliction.toHeal }}
+              </span>
+              
+              <button 
+                *ngIf="isEditable" 
+                class="progress-btn" 
+                (click)="increaseProgress(affliction)"
+                [disabled]="affliction.progress >= affliction.toHeal">+</button>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-template #noAfflictions>
+        <tr>
+          <td colspan="4" style="text-align: center; color: #888;">No afflictions suffering.</td>
+        </tr>
+      </ng-template>
+    </tbody>
+  </table>
+</div>

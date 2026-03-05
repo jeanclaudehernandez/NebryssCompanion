@@ -10,11 +10,12 @@ import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
 import { FormsModule } from '@angular/forms';
+import { AfflictionsDisplayComponent } from '../afflictions-display/afflictions-display.component';
 
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent, FormsModule],
+  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent, FormsModule, AfflictionsDisplayComponent],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
@@ -198,6 +199,9 @@ export class PlayerDetailComponent implements OnChanges {
     }
     if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
       this.scrollSections.push({ title: 'Talents', id: `talents-${this.character.id}` });
+    }
+    if (this.isPlayer(this.character) && this.character.progression?.afflictions?.length) {
+      this.scrollSections.push({ title: 'Afflictions', id: `afflictions-${this.character.id}` });
     }
     if (this.character.abilities && this.character.abilities.length > 0) {
       this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Abilities`, id: `abilities-${this.character.id}`});

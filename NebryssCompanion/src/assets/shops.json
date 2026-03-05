@@ -152,6 +152,8 @@
     "owner": 16,
     "location": "Misthaven",
     "locationName": "Misthaven",
+    "imgUrl": "https://iili.io/qngopF1.jpg",
+    "thumbnail": "https://iili.io/qngopF1.th.jpg",
     "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
     "paymentMethod": {
       "digital": false,
