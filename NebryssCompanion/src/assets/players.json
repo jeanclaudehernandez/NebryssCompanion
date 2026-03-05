@@ -33,7 +33,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": [
         {
@@ -75,7 +76,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": [
         {
@@ -113,7 +115,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": []
     },
@@ -162,7 +165,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": [
         {
@@ -216,7 +220,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": []
     },
@@ -262,7 +267,8 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": [
         { "id": 57, "quant": 2 },
@@ -273,7 +279,7 @@
       "id": 7,
       "name": "Cassios Edilecto",
       "race": "Astartes",
-      "origin": "Imperium - Adeptus Astartes (Bladeguard)",
+      "origin": "Imperium - Adeptus Astartes (Survivor)",
       "attributes": {
         "Movement": 5,
         "Wounds": 12,
@@ -289,15 +295,15 @@
         },
         {
           "name": "Noble Sacrifice",
-          "effect": "Reaction, Once per battle: When an enemy declares shoot action against allies within 3 inches, you can perform a dash action towards that ally and become the target of that shoot action."
+          "effect": "Reaction, Once per battle: When an enemy declares shoot action against an ally <strong>within 3 inches<strong>, you can perform a dash action towards that ally and become the target of that shoot action."
         },
         {
           "name":  "Shield Stance",
-          "effect": "0AP: until you switch your stance, when you are the target of a shoot action, you can reroll one failed dice"
+          "effect": "0AP: until you switch your stance, when you are the target of a shoot action, you can <strong>reroll one failed defense dice.<strong>"
         },
         {
           "name": "Two-handed stance",
-          "effect": "0AP: choose a melee weapon, until you switch your stance. When you perform a fight action, that weapon gains one of the following weapon rules: relentless, rending, brutal, parry."
+          "effect": "0AP: choose <strong>a melee weapon<strong>, until you switch your stance. <strong>When you perform a fight action<strong>, that weapon gains one of the following weapon rules: <strong>relentless, rending, brutal, parry.<strong>"
         }
       ],
       "progression": {
@@ -306,8 +312,49 @@
         "mistrals": {
           "digital": 0,
           "physical": 0
-        }
+        },
+        "afflictions": []
       },
       "items": []
+    },
+    {
+      "id": 8,
+      "name": "Karumnekiá",
+      "race": "Eldar",
+      "origin": "Mandrake (pending)",
+      "attributes": {
+        "Movement": 6,
+        "Wounds": 8,
+        "Save": 5,
+        "APL": 2,
+        "body": ["universal", "human", "spell"]
+      },
+      "weapons": [8, 52],
+      "abilities": [
+        {
+          "name": "Within Shadow",
+          "effect": "To be considered <strong>in the shadow<strong>, you have to be in <strong>control range of Heavy terrain taller than you or a shadow portal or  underneath vantage terrain<strong>"
+        },
+        {
+          "name": "Shadow Passage",
+          "effect": "1AP, Once per battle: Place a Shadow Portal token within shadow and within your control range and another one within shadow and within 16 inches of you"
+        },
+        {
+          "name":  "Shadow Veil",
+          "effect": "<strong> When you are within shadow</strong> improve your save by 1 when an enemy is shooting you <strong>from more than 6 inches.</strong>"
+        }
+      ],
+      "progression": {
+        "talentPoints": 0,
+        "talents": [],
+        "mistrals": {
+          "digital": 0,
+          "physical": 0
+        },
+        "afflictions": []
+      },
+      "items": [
+        { "id": 87, "quant": 2 }
+      ]
     }
   ]

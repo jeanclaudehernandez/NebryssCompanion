@@ -711,5 +711,14 @@
       "description": "Standard deployable barricade. Provides light cover and +1 to save, only provides it's benefits if the base of the operative is connected to both of it's feet, operatives connected to the inside of it can perform 'Move with Barricade 1AP: remove the barricade, move up to the movement stat -2 inches and place the barricade connected to the operative', this is treated a reposition",
       "weapons": [],
       "type": "deployable"
+    },
+    {
+      "id": 87,
+      "name": "Shadow Portal",
+      "price": 0,
+      "subType": "construct",
+      "description": "(Exposed terrain) Operatives within control range of this terran gain the following action: 1AP: remove your operative from the battlefield and place it within control range of another Shadow Portal.",
+      "weapons": [],
+      "type": "deployable"
     }
 ]
