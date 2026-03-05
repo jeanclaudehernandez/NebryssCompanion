@@ -304,6 +304,7 @@ export interface AlteredState {
       physical: number;
     };
     talents: string[];
+    afflictions: string[];
   }
 
   export interface Inventory extends Item {
@@ -355,6 +356,17 @@ export interface AlteredState {
     id: string;
     name: string;
     cost: number;
+    effect: string;
+    prModifier?: number | null;
+    requirements?: string[];
+    maxStacks?: number;
+    selectedCount?: number;
+  }
+
+  export interface Affliction {
+    id: string;
+    name: string;
+    toHeal: number;
     effect: string;
     prModifier?: number | null;
     requirements?: string[];

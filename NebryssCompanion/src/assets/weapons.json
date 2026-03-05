@@ -1989,5 +1989,106 @@
         "body": "human"
       }
     ]
+  },
+  {
+    "id": 102,
+    "name": "Fireball",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 8,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 32, "modValue": null },
+          { "ruleId": 30, "modValue": 2 },
+          { "ruleId": 6, "modValue": null }
+        ],
+        "body": "spell"
+      }
+    ]
+  },
+  {
+    "id": 103,
+    "name": "Thunderbolt",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": null,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 32, "modValue": null },
+          { "ruleId": 17, "modValue": null },
+          { "ruleId": 21, "modValue": 5 }
+        ],
+        "body": "spell"
+      }
+    ]
+  },
+  {
+    "id": 104,
+    "name": "Psychic Scream",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 5,
+        "ws": 2,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 32, "modValue": null },
+          { "ruleId": 45, "modValue": 3 },
+          { "ruleId": 23, "modValue": null }
+        ],
+        "body": "spell"
+      }
+    ]
+  },
+  {
+    "id": 105,
+    "name": "Arcane Missiles",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 12,
+        "attacks": 5,
+        "ws": 2,
+        "damage": { "min": 3, "max": 3 },
+        "specialRules": [
+          { "ruleId": 32, "modValue": null },
+          { "ruleId": 16, "modValue": null },
+          { "ruleId": 18, "modValue": null }
+        ],
+        "body": "spell"
+      }
+    ]
+  },
+  {
+    "id": 106,
+    "name": "Warp Tear",
+    "price": 0,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 3,
+        "ws": 4,
+        "damage": { "min": 5, "max": 7 },
+        "specialRules": [
+          { "ruleId": 32, "modValue": null },
+          { "ruleId": 15, "modValue": null },
+          { "ruleId": 34, "modValue": 2 },
+          {"ruleId": 35, "modValue": null}
+        ],
+        "body": "spell"
+      }
+    ]
   }
 ]
