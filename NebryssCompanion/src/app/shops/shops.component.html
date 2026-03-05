@@ -42,7 +42,7 @@
           <div *ngIf="!isWeaponCollapsed(shop.id)">
             <app-weapon-table 
                 [weaponIds]="getWeaponIds(shop)"
-                [weaponsData]="weaponsData"
+                [weaponsData]="getShopWeaponsWithPrices(shop)"
                 [weaponRulesData]="weaponRulesData"
                 [alteredStates]="alteredStates"
                 [displayPrice]="true"

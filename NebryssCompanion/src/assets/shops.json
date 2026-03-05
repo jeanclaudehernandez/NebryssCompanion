@@ -139,7 +139,7 @@
       "physical": true
     },
     "items": [
-      { "id": 16, "price": 5, "type": "item" },
+      { "id": 16, "price": 4, "type": "item" },
       { "id": 8, "price": 12, "type": "item" },
       { "id": 25, "price": 10, "type": "item" },
       { "id": 19, "price": 7, "type": "item" },

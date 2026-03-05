@@ -116,9 +116,11 @@ export class ShopsComponent implements OnInit, OnDestroy {
   getShopItemsWithPrices(shop: Shop, categoryKey: string) {
     const shopItems = this.dataService.getShopItems(shop.id).map((shopItem) => {
       const itemInfo = this.dataService.getItemById(shopItem.id);
+      if (!itemInfo) return shopItem;
       return {
+        ...itemInfo,
         ...shopItem,
-        ...itemInfo
+        type: itemInfo.type // Restore correct type from item definition
       };
     }).filter((shopItem) => String(shopItem.type) == String(categoryKey));
     
@@ -136,6 +138,21 @@ export class ShopsComponent implements OnInit, OnDestroy {
       const aOwned = a.id !== undefined && playerItemIds.has(a.id) ? 1 : 0;
       const bOwned = b.id !== undefined && playerItemIds.has(b.id) ? 1 : 0;
       return bOwned - aOwned; // Sort descending so owned items come first
+    });
+  }
+
+  getShopWeaponsWithPrices(shop: Shop): Weapon[] {
+    const shopWeaponsStock = this.dataService.getShopWeapons(shop.id);
+    
+    // Filter and map global weapons to include shop-specific pricing
+    return this.weaponsData.filter(weapon => 
+      shopWeaponsStock.some(stockItem => stockItem.id === weapon.id)
+    ).map(weapon => {
+      const stockItem = shopWeaponsStock.find(item => item.id === weapon.id);
+      return {
+        ...weapon,
+        price: (stockItem && stockItem.price !== undefined) ? stockItem.price : weapon.price
+      };
     });
   }
 
@@ -196,10 +213,15 @@ export class ShopsComponent implements OnInit, OnDestroy {
       const weapon = this.weaponsData.find(w => w.id === weaponId);
       if (!weapon) return;
 
+      // Find shop specific price
+      const shopWeapons = this.dataService.getShopWeapons(shopId);
+      const shopItem = shopWeapons.find(i => i.id === weaponId);
+      const price = (shopItem && shopItem.price !== undefined) ? shopItem.price : (weapon.price || 0);
+
       itemToAdd = {
         id: weaponId,
         name: weapon.name,
-        price: weapon.price || 0,
+        price: price,
         quantity: 1,
         type: 'weapon'
       };
@@ -293,7 +315,8 @@ export class ShopsComponent implements OnInit, OnDestroy {
       player.progression = { 
         talentPoints: 0, 
         mistrals: { digital: 0, physical: 0 }, 
-        talents: [] 
+        talents: [],
+        afflictions: [],
       };
     }
     if (!player.progression.mistrals) {
