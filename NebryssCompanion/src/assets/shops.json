@@ -145,5 +145,21 @@
       { "id": 19, "price": 7, "type": "item" },
       { "id": 27, "price": 20, "type": "item" }
     ]
+  },
+  {
+    "id": 7,
+    "name": "The Shaman's Circle",
+    "owner": 16,
+    "location": "Misthaven",
+    "locationName": "Misthaven",
+    "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
+    "paymentMethod": {
+      "digital": false,
+      "physical": true
+    },
+    "items": [
+      { "id": 102, "price": 50, "type": "weapon" },
+      { "id": 105, "price": 40, "type": "weapon" }
+    ]
   }
 ]

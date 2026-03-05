@@ -153,5 +153,15 @@
         "flagship": "The Bloodied Cutlass – A massive, heavily armored raider with reinforced hulls and a ramming prow designed to tear through enemy ships.",
         "tactics": "Prefers direct assaults, using his flagship’s surprising speed and firepower to overwhelm his targets.",
         "motivations": "Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality."
+      },
+      {
+        "id": 16,
+        "name": "Korgar <Mist-Breather> Gorehorn",
+        "faction": "Nebryssian Liberation Republic",
+        "subgroup": "Mistweaver",
+        "role": "Fellgor Shaman & Shopkeeper",
+        "location": "Misthaven",
+        "description": "A hulking Fellgor Shaman, his fur matted with ritualistic trinkets and warp-touched stones. He breathes the mist as if it were air, teaching those brave enough to harness its volatile power.",
+        "personality": "Primal, cryptic, and deeply connected to the mist's whispers. He respects strength and the willingness to sacrifice for power."
       }
     ]
