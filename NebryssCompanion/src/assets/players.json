@@ -342,6 +342,14 @@
         {
           "name":  "Shadow Veil",
           "effect": "<strong> When you are within shadow</strong> improve your save by 1 when an enemy is shooting you <strong>from more than 6 inches.</strong>"
+        }, 
+        {
+          "name": "Balefire smite",
+          "effect": "1AP: Select one enemy operative, until the start of this operative next action, or until it's incapacitated, that operative gains one of your balefire tokens. When an enemy with a balefire token is being shot, the weapon gains saturate."
+        },
+        {
+          "name": "Balefire skin",
+          "effect": "1AP: Select one allied operative. Until the start of this operative next action, or until it's incapacitated, that operative gains one of your balefire tokens. When that operative is being shot, subtract 1 from the damage."
         }
       ],
       "progression": {
