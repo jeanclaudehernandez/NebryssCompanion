@@ -108,6 +108,7 @@ export interface AlteredState {
     part?: string;
     attachedTo?: number;
     blueprintFor?: number;
+    isEquippable?: boolean;
     buildMaterials?: {
       id: number;
       amount: number;
@@ -305,6 +306,7 @@ export interface AlteredState {
     };
     talents: string[];
     afflictions: Affliction[];
+    equipment: number[];
   }
 
   export interface Inventory extends Item {

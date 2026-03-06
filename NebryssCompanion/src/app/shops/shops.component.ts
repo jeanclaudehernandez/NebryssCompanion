@@ -326,6 +326,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
         mistrals: { digital: 0, physical: 0 }, 
         talents: [],
         afflictions: [],
+        equipment: [],
       };
     }
     if (!player.progression.mistrals) {

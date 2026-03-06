@@ -35,6 +35,12 @@ export class PlayerDetailComponent implements OnChanges {
   itemTableData: any[] = [];
   itemTableHeaders: string[] = ['Name', 'Description', 'Quantity'];
   itemTableHeaderKeys: string[] = ['name', 'description', 'quant'];
+  
+  // Equipment table properties
+  equipmentTableData: any[] = [];
+  equipmentTableHeaders: string[] = ['Name', 'Description'];
+  equipmentTableHeaderKeys: string[] = ['name', 'description'];
+
   modItems: { inventory: Inventory; item: any }[] = [];
   ownedWeapons: Weapon[] = [];
   visibleWeaponIds: number[] = [];
@@ -114,9 +120,28 @@ export class PlayerDetailComponent implements OnChanges {
           canCraft,
           blueprintForName,
           buildMaterials,
-          _blueprintForId
+          _blueprintForId,
+          isEquippable: item?.isEquippable
         };
       });
+    }
+
+    // Initialize equipmentTableData - Moved outside items check
+    this.equipmentTableData = [];
+    if (this.isPlayer(this.character)) {
+      const player = this.character as Player;
+      if (player.progression?.equipment) {
+          this.equipmentTableData = player.progression.equipment.map(equipId => {
+            const item = this.getItemById(equipId);
+            const rawDescription = item?.description || 'No description available';
+            return {
+              id: equipId,
+              name: item?.name || 'Unknown Item',
+              description: this.processItemDescription(rawDescription),
+              type: item?.type
+            };
+          });
+      }
     }
 
     if (this.isPlayer(this.character)) {
@@ -292,8 +317,17 @@ export class PlayerDetailComponent implements OnChanges {
 
   getItemById(id: number): any {
     // With the new structure, items are in a single array
-    if (!this.itemsData || !this.itemsData.items) return null;
-    return this.itemsData.items.find((item: any) => item.id === id);
+    let item = null;
+    if (this.itemsData && this.itemsData.items) {
+      item = this.itemsData.items.find((item: any) => item.id === id);
+    }
+    
+    // Also check weapons data as equipment/inventory might contain weapons
+    if (!item && this.weaponsData) {
+      item = this.weaponsData.find(w => w.id === id);
+    }
+    
+    return item;
   }
 
   isActivePlayer(character: Character): boolean {
@@ -332,6 +366,79 @@ export class PlayerDetailComponent implements OnChanges {
       this.modalService.openFromTemplate(this.craftConfirmModal);
     } else {
       console.error('craftConfirmModal is undefined!');
+    }
+  }
+
+  onEquip(item: any) {
+    if (!this.isPlayer(this.character)) return;
+    const player = this.character as Player;
+    
+    // Ensure structure exists
+    if (!player.progression) {
+        player.progression = { 
+            talentPoints: 0, 
+            mistrals: { digital: 0, physical: 0 }, 
+            talents: [], 
+            afflictions: [], 
+            equipment: [] 
+        };
+    }
+    if (!player.progression.equipment) {
+        player.progression.equipment = [];
+    }
+
+    // Add if not present
+    if (!player.progression.equipment.includes(item.id)) {
+        player.progression.equipment.push(item.id);
+        
+        // Find the item in player's inventory and decrement quantity
+        const inventoryItem = player.items.find(i => i.id === item.id);
+        if (inventoryItem) {
+            inventoryItem.quant--;
+
+            if (inventoryItem.quant <= 0) {
+                player.items = player.items.filter(i => i.id !== item.id);
+            }
+        }
+
+        this.activePlayerService.updateActivePlayer(player);
+        
+        // Refresh UI
+        this.character = { ...player };
+        this.ngOnChanges();
+        
+        this.toastService.show('Item equipped', 'success');
+    }
+  }
+
+  onUnequip(item: any) {
+    if (!this.isPlayer(this.character)) return;
+    const player = this.character as Player;
+
+    if (!player.progression || !player.progression.equipment) return;
+
+    const index = player.progression.equipment.indexOf(item.id);
+    if (index > -1) {
+        // Remove from equipment
+        player.progression.equipment.splice(index, 1);
+
+        // Add to inventory
+        if (!player.items) player.items = [];
+        const inventoryItem = player.items.find(i => i.id === item.id);
+        
+        if (inventoryItem) {
+            inventoryItem.quant++;
+        } else {
+            player.items.push({ id: item.id, quant: 1 });
+        }
+
+        this.activePlayerService.updateActivePlayer(player);
+        
+        // Refresh UI
+        this.character = { ...player };
+        this.ngOnChanges();
+        
+        this.toastService.show('Item unequipped', 'success');
     }
   }
 

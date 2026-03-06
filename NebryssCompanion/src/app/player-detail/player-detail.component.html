@@ -62,6 +62,22 @@
       </tr>
     </table>
   </div>
+
+  <div [id]="'equipment-' + character.id" class="equipment" *ngIf="equipmentTableData.length > 0">
+    <h3>Equipment</h3>
+    <app-generic-table 
+      [storageKey]="'player-equipment-' + character.id"
+      [data]="equipmentTableData"
+      [headers]="equipmentTableHeaders"
+      [headerKeys]="equipmentTableHeaderKeys"
+      [renderHtml]="['description']"
+      [inventoryManagement]="false"
+      [isPlayerDetail]="true"
+      [collapsible]="false"
+      [enableUnequipping]="isActionAllowed(character)"
+      (unequip)="onUnequip($event)">
+    </app-generic-table>
+  </div>
   
   <div [id]="'weapons-' + character.id" class="weapons">
     <h3>Weapons</h3>
@@ -141,7 +157,7 @@
       <p [innerHtml]="ability.effect | sanitizeHtml"></p>
     </div>
   </div>
-  
+
   <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
     <h3>Items</h3>
     <app-generic-table 
@@ -153,7 +169,9 @@
       [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true"
       [collapsible]="false"
-      (craft)="onCraft($event)">
+      [enableEquipping]="isActionAllowed(character)"
+      (craft)="onCraft($event)"
+      (equip)="onEquip($event)">
     </app-generic-table>
   </div>
 

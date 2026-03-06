@@ -40,7 +40,7 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                   {{ sortDirection === 'asc' ? '▲' : '▼' }}
                 </span>
               </th>
-              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd">Actions</th>
+              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -50,8 +50,17 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                 <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
-              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd">
+              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">
                 <div class="inventory-actions">
+                  <button *ngIf="enableEquipping && item.isEquippable" (click)="onEquip(item)" class="btn-equip" title="Equip Item">
+                    <span class="icon">👕</span>
+                  </button>
+                  <button *ngIf="enableUnequipping" (click)="onUnequip(item)" class="btn-unequip" title="Unequip Item">
+                    <div class="icon-container">
+                      <span class="icon-layer-base">👕</span>
+                      <span class="icon-layer-overlay">❌</span>
+                    </div>
+                  </button>
                   <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
                     <span class="icon">+</span>
                   </button>
@@ -101,15 +110,19 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableCustomAdd: boolean = false;
   @Input() shoppingMode: boolean = false;
   @Input() collapsible: boolean = true;
-  @Input() enableBodyFilter: boolean = false;
+  @Input() enableEquipping: boolean = false;
+  @Input() enableUnequipping: boolean = false;
   @Input() characterBody: string[] = [];
-  
+  @Input() enableBodyFilter: boolean = false;
+
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() customAdd = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
+  @Output() equip = new EventEmitter<any>();
+  @Output() unequip = new EventEmitter<any>();
   
   isCollapsed = true;
   sortedData: any[] = [];
@@ -212,6 +225,14 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onAddToCart(item: any) {
     this.addToCart.emit(item);
+  }
+
+  onEquip(item: any) {
+    this.equip.emit(item);
+  }
+
+  onUnequip(item: any) {
+    this.unequip.emit(item);
   }
 
   onDelete(item: any) {
