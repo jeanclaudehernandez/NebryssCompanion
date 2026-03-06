@@ -1630,6 +1630,7 @@
         "ws": 3,
         "damage": { "min": 4, "max": 5 },
         "specialRules": [
+          { "ruleId": 32, "modValue": null },
           { "ruleId": 23, "modValue": null }
         ],
         "body": "spell"
@@ -1675,6 +1676,7 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [
+          { "ruleId": 32, "modValue": null },
           { "ruleId": 30, "modValue": 2 },
           { "ruleId": 40, "modValue": null },
           { "ruleId": 23, "modValue": null },
