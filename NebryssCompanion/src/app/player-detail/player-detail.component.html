@@ -117,11 +117,11 @@
     <h3>Talents</h3>
     <app-generic-table 
       [storageKey]="'player-talents-' + character.id"
-      [title]="'Character Talents'"
       [data]="talentTableData"
       [headers]="talentTableHeaders"
       [headerKeys]="talentTableHeaderKeys"
       [isPlayerDetail]="true"
+      [collapsible]="false"
       [renderHtml]="['effect']">
     </app-generic-table>
   </div>
@@ -146,13 +146,13 @@
     <h3>Items</h3>
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
-      [title]="'Character Items'"
       [data]="itemTableData"
       [headers]="itemTableHeaders"
       [headerKeys]="itemTableHeaderKeys"
       [renderHtml]="['description']"
       [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true"
+      [collapsible]="false"
       (craft)="onCraft($event)">
     </app-generic-table>
   </div>

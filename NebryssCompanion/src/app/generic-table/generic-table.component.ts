@@ -11,10 +11,13 @@ import { ToastService } from '../toast.service';
   imports: [CommonModule, SanitizeHtmlPipe],
   template: `
     <div class="table-container">
-      <h3 (click)="toggleCollapse()" style="cursor: pointer;">
+      <h3 *ngIf="collapsible" (click)="toggleCollapse()" style="cursor: pointer;">
         {{ title }} <span>{{ isCollapsed ? '▶' : '▼' }}</span>
       </h3>
-      <div *ngIf="!isCollapsed">
+      <h3 *ngIf="!collapsible && title">
+        {{ title }}
+      </h3>
+      <div *ngIf="!isCollapsed || !collapsible">
         <table class="items-table">
           <thead>
             <tr>
@@ -87,6 +90,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableEditing: boolean = false;
   @Input() enableCustomAdd: boolean = false;
   @Input() shoppingMode: boolean = false;
+  @Input() collapsible: boolean = true;
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
