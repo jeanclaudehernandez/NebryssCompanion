@@ -31,7 +31,7 @@
             "id": "c4",
             "name": "Trained shooter",
             "cost": 2,
-            "effect": "Improve by <strong>1</strong> the <strong>WS</strong> of ranged weapons of a selected type",
+            "effect": "Improve by <strong>1</strong> the <strong>Hit</strong> of ranged weapons of a selected type",
             "prModifier": 2,
             "requirements": [],
             "maxStacks": 1
@@ -56,7 +56,7 @@
             "id": "c7",
             "name": "Mist Duelist",
             "cost": 2,
-            "effect": "In mist zones, gain <strong>+1 WS</strong> and <strong>rending</strong>.",
+            "effect": "In mist zones, improve the  <strong>Hit by 1</strong> and <strong>rending</strong> of melee weapons.",
             "prModifier": 4,
             "requirements": ["c1"],
             "maxStacks": 1
@@ -86,7 +86,7 @@
             "id": "m2",
             "name": "Addept Magician",
             "cost": 2,
-            "effect": "Improve <strong>WS of PSYCHIC</strong> weapons by <strong>1</strong>",
+            "effect": "Improve <strong>the Hit of PSYCHIC</strong> weapons by <strong>1</strong>",
             "prModifier": 2,
             "requirements": ["m1"],
             "maxStacks": 1
