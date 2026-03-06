@@ -47,6 +47,8 @@
                 [alteredStates]="alteredStates"
                 [displayPrice]="true"
                 [displayBody]="true"
+                [enableBodyFilter]="true"
+                [characterBody]="activePlayerBodyTypes"
                 [inventoryManagement]="hasActivePlayer()"
                 [shoppingMode]="true"
                 (addToCart)="onAddToCart($event, shop.id, 'weapon')">

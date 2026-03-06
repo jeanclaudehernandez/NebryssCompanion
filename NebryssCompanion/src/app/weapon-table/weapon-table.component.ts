@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, TemplateRef, SimpleChanges, OnChanges, ViewChild, ViewEncapsulation, OnDestroy } from '@angular/core';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
+import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
 import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
@@ -20,8 +22,10 @@ interface ruleDisplay {
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     MatTooltipModule,
     WeaponRangePipe,
+    CustomDropdownComponent
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css'],
@@ -42,6 +46,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
   @Input() shoppingMode: boolean = false;
+  @Input() enableBodyFilter: boolean = false;
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
@@ -61,6 +66,8 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
+  availableBodyTypes: string[] = [];
+  selectedBodyType: string = '';
   private playerSubscription: Subscription | null = null;
 
   constructor(
@@ -76,10 +83,37 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['weaponsData'] || changes['characterBody']) {
+      this.extractBodyTypes();
+    }
     if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
       this.updateSortedProfiles();
     }
     this.updateAttachedMods();
+  }
+
+  extractBodyTypes() {
+    // If body filter is enabled and characterBody is provided (meaning there's an active player),
+    // use the player's body types directly.
+    if (this.enableBodyFilter && this.characterBody && this.characterBody.length > 0) {
+      this.availableBodyTypes = [...this.characterBody].sort();
+      return;
+    }
+
+    const types = new Set<string>();
+    this.weaponsData.forEach(weapon => {
+      weapon.profiles.forEach(profile => {
+        if (profile.body) {
+          types.add(profile.body);
+        }
+      });
+    });
+    this.availableBodyTypes = Array.from(types).sort();
+  }
+
+  onBodyTypeChange(selected: any) {
+    this.selectedBodyType = selected;
+    this.updateSortedProfiles();
   }
 
   isInInventory(weaponId: number): boolean {
@@ -164,6 +198,9 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
       const weapon = this.getWeaponById(weaponId);
       if (weapon) {
         weapon.profiles.forEach(profile => {
+          if (this.enableBodyFilter && this.selectedBodyType && profile.body !== this.selectedBodyType) {
+            return;
+          }
           allProfiles.push({ weapon, profile });
         });
       }

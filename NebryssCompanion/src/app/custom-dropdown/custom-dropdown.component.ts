@@ -10,11 +10,12 @@ import { Player } from '../model';
   styleUrls: ['./custom-dropdown.component.css']
 })
 export class CustomDropdownComponent {
-  @Input() options: Player[] = [];
-  @Input() selectedOption: Player | null = null;
+  @Input() options: any[] = [];
+  @Input() selectedOption: any | null = null;
   @Input() placeholder: string = 'Select a player...';
   @Input() showClearOption: boolean = false;
-  @Output() selectionChange = new EventEmitter<Player | null>();
+  @Input() type: 'player' | 'simple' = 'player';
+  @Output() selectionChange = new EventEmitter<any | null>();
 
   isOpen = false;
 
@@ -24,7 +25,7 @@ export class CustomDropdownComponent {
     this.isOpen = !this.isOpen;
   }
 
-  selectOption(option: Player | null) {
+  selectOption(option: any | null) {
     this.selectedOption = option;
     this.selectionChange.emit(option);
     this.isOpen = false;

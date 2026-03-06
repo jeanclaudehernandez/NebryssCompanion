@@ -46,6 +46,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
   isLoading = true;
   scrollSections: ScrollSection[] = [];
   isDarkMode: boolean = false;
+  activePlayerBodyTypes: string[] = [];
   private themeSubscription: Subscription = new Subscription();
   private cartSubscription: Subscription = new Subscription();
 
@@ -72,6 +73,14 @@ export class ShopsComponent implements OnInit, OnDestroy {
     
     this.cartSubscription = this.cartService.cart$.subscribe(cart => {
       this.cart = cart;
+    });
+
+    this.activePlayerService.activePlayer$.subscribe(player => {
+      if (player) {
+        this.activePlayerBodyTypes = player.attributes?.body || [];
+      } else {
+        this.activePlayerBodyTypes = [];
+      }
     });
     
     this.dataService.getAllData().subscribe(response => {

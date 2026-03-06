@@ -1,4 +1,15 @@
 <div class="table-container">
+    <div *ngIf="enableBodyFilter" class="filter-container" style="margin: 10px; max-width: 300px;">
+        <label style="margin-bottom: 5px; font-size: 0.9em; display: block;">Filter by Body:</label>
+        <app-custom-dropdown
+            [options]="availableBodyTypes"
+            [selectedOption]="selectedBodyType"
+            [placeholder]="'All Body Types'"
+            [showClearOption]="true"
+            [type]="'simple'"
+            (selectionChange)="onBodyTypeChange($event)">
+        </app-custom-dropdown>
+    </div>
     <table class="weapons-table">
       <thead>
         <tr>

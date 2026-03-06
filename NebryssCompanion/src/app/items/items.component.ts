@@ -30,6 +30,8 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
             [alteredStates]="alteredStates"
             [displayPrice]="true"
             [displayBody]="true"
+            [enableBodyFilter]="true"
+            [characterBody]="activePlayerBodyTypes"
             [inventoryManagement]="hasActivePlayer()"
             [enableCloning]="isAdmin"
             [enableDeleting]="isAdmin"
@@ -130,6 +132,7 @@ export class ItemsComponent implements OnInit {
   allWeaponIds: number[] = [];
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
+  activePlayerBodyTypes: string[] = [];
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
@@ -203,6 +206,14 @@ export class ItemsComponent implements OnInit {
           }
         })
       ]
+    });
+
+    this.activePlayerService.activePlayer$.subscribe(player => {
+      if (player) {
+        this.activePlayerBodyTypes = player.attributes?.body || [];
+      } else {
+        this.activePlayerBodyTypes = [];
+      }
     });
   }
 
