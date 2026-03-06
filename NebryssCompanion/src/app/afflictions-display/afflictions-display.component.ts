@@ -24,6 +24,11 @@ export class AfflictionsDisplayComponent {
     
     if (affliction.progress < affliction.toHeal) {
       affliction.progress++;
+      
+      if (affliction.progress >= affliction.toHeal) {
+        this.player.progression.afflictions = this.player.progression.afflictions.filter(a => a !== affliction);
+      }
+      
       this.save();
     }
   }

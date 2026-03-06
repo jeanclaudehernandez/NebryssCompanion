@@ -1,0 +1,12 @@
+<div class="afflictions-container">
+  <h2>Afflictions</h2>
+  <app-generic-table 
+    [data]="afflictions" 
+    [headers]="headers" 
+    [headerKeys]="headerKeys" 
+    title="All Afflictions"
+    storageKey="afflictions-table"
+    [enableCustomAdd]="true"
+    (customAdd)="onAddAffliction($event)">
+  </app-generic-table>
+</div>

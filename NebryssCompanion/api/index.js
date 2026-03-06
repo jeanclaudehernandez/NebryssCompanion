@@ -472,6 +472,26 @@ createDeleteRoute('/api/terrainRule', {
   collectionName: 'terrainRule',
 });
 
+createCollectionRoute('/api/afflictions', {
+  usePlayersDb: false,
+  collectionName: 'affliction',
+});
+
+createUpdateRoute('/api/afflictions', {
+  usePlayersDb: false,
+  collectionName: 'affliction',
+});
+
+createInsertRoute('/api/afflictions', {
+  usePlayersDb: false,
+  collectionName: 'affliction',
+});
+
+createDeleteRoute('/api/afflictions', {
+  usePlayersDb: false,
+  collectionName: 'affliction',
+});
+
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

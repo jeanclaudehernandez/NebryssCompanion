@@ -41,6 +41,47 @@ export class DataService {
   private afflictionsCache$: Observable<Affliction[]> | null = null;
   private allDataCache$: Observable<any> | null = null;
 
+  getAfflictions(): Observable<Affliction[]> {
+    if (!this.afflictionsCache$) {
+      this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+        tap(afflictions => {
+          this.afflictions = afflictions;
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.afflictionsCache$;
+  }
+
+  refreshAfflictions(): Observable<Affliction[]> {
+    this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+      tap(afflictions => {
+        this.afflictions = afflictions;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.afflictionsCache$;
+  }
+
+  createAffliction(affliction: Affliction): Observable<Affliction> {
+    return this.http.post<Affliction>(`${this.apiUrl}/afflictions`, affliction).pipe(
+      tap(() => this.refreshAfflictions().subscribe())
+    );
+  }
+
+  updateAffliction(affliction: Affliction): Observable<Affliction> {
+    return this.http.put<Affliction>(`${this.apiUrl}/afflictions`, affliction).pipe(
+      tap(() => this.refreshAfflictions().subscribe())
+    );
+  }
+
+  deleteAffliction(id: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/afflictions/${id}`).pipe(
+      tap(() => this.refreshAfflictions().subscribe())
+    );
+  }
+
   constructor(private http: HttpClient) { }
 
   getPlayers(): Observable<Player[]> {
@@ -240,17 +281,7 @@ export class DataService {
     return this.terrainsCache$;
   }
 
-  getAfflictions(): Observable<Affliction[]> {
-    if (!this.afflictionsCache$) {
-      this.afflictionsCache$ = this.http.get<Affliction[]>('assets/data/afflictions.json').pipe(
-        tap(afflictions => {
-          this.afflictions = afflictions;
-        }),
-        shareReplay(1)
-      );
-    }
-    return this.afflictionsCache$;
-  }
+
 
   getAllData(): Observable<{
     players: Player[],

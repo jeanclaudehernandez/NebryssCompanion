@@ -18,7 +18,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions'>();
   isOpen = false;
   isDarkMode = false;
   isAdmin = false;
@@ -75,7 +75,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates') {
+  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }

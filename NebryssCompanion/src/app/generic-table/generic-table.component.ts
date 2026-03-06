@@ -27,7 +27,7 @@ import { ToastService } from '../toast.service';
                   {{ sortDirection === 'asc' ? '▲' : '▼' }}
                 </span>
               </th>
-              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">Actions</th>
+              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -37,8 +37,11 @@ import { ToastService } from '../toast.service';
                 <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                 <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
               </td>
-              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing">
+              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd">
                 <div class="inventory-actions">
+                  <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
+                    <span class="icon">+</span>
+                  </button>
                   <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
                     <span class="icon">✏️</span>
                   </button>
@@ -82,12 +85,14 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableCloning: boolean = false;
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
+  @Input() enableCustomAdd: boolean = false;
   @Input() shoppingMode: boolean = false;
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
+  @Output() customAdd = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
   
   isCollapsed = true;
@@ -138,6 +143,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onEdit(item: any) {
     this.edit.emit(item);
+  }
+
+  onCustomAdd(item: any) {
+    this.customAdd.emit(item);
   }
 
   onAddToCart(item: any) {

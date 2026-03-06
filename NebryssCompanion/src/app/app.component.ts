@@ -21,6 +21,7 @@ import { LoadingService } from './loading.service';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from './weapon-rule/weapon-rule.component';
 import { WeaponRule } from './model';
+import { AfflictionsListComponent } from './afflictions-list/afflictions-list.component';
 
   @Component({
   selector: 'app-root',
@@ -41,7 +42,8 @@ import { WeaponRule } from './model';
     TerrainsComponent,
     MistEngineBattlesComponent,
     WeaponRulesPageComponent,
-    AlteredStatesPageComponent
+    AlteredStatesPageComponent,
+    AfflictionsListComponent
   ],
   template: `
     @if (loadingService.loading$ | async) {
@@ -88,12 +90,15 @@ import { WeaponRule } from './model';
       @if (currentView === 'alteredStates') {
         <app-altered-states-page [initialStateName]="selectedStateName"></app-altered-states-page>
       }
+      @if (currentView === 'afflictions') {
+        <app-afflictions-list></app-afflictions-list>
+      }
     </div>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' = 'players';
   selectedLocationName: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
@@ -111,10 +116,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates'].includes(view);
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions') {
     this.currentView = view;
     // Reset selectedLocationName when manually changing views, unless we are navigating specifically
     // Ideally this logic should be more granular, but for now this is fine.
