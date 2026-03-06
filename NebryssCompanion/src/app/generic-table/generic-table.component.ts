@@ -1,23 +1,33 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { ToastService } from '../toast.service';
+import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
 
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [CommonModule, SanitizeHtmlPipe],
+  imports: [CommonModule, SanitizeHtmlPipe, FormsModule, CustomDropdownComponent],
   template: `
     <div class="table-container">
-      <h3 *ngIf="collapsible" (click)="toggleCollapse()" style="cursor: pointer;">
-        {{ title }} <span>{{ isCollapsed ? '▶' : '▼' }}</span>
-      </h3>
-      <h3 *ngIf="!collapsible && title">
-        {{ title }}
-      </h3>
+      <div class="table-header" *ngIf="collapsible || title" (click)="collapsible ? toggleCollapse() : null" [style.cursor]="collapsible ? 'pointer' : 'default'">
+         <h3 style="display: inline-block;">{{ title }} <span *ngIf="collapsible">{{ isCollapsed ? '▶' : '▼' }}</span></h3>
+      </div>
       <div *ngIf="!isCollapsed || !collapsible">
+        <div *ngIf="enableBodyFilter" class="filter-container" style="margin: 10px; max-width: 300px;">
+          <label style="margin-bottom: 5px; font-size: 0.9em; display: block;">Filter by Body:</label>
+          <app-custom-dropdown
+              [options]="availableBodyTypes"
+              [selectedOption]="selectedBodyType"
+              [placeholder]="'All Body Types'"
+              [showClearOption]="true"
+              [type]="'simple'"
+              (selectionChange)="onBodyTypeChange($event)">
+          </app-custom-dropdown>
+        </div>
         <table class="items-table">
           <thead>
             <tr>
@@ -91,6 +101,8 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableCustomAdd: boolean = false;
   @Input() shoppingMode: boolean = false;
   @Input() collapsible: boolean = true;
+  @Input() enableBodyFilter: boolean = false;
+  @Input() characterBody: string[] = [];
   
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
@@ -103,6 +115,9 @@ export class GenericTableComponent implements OnInit, OnChanges {
   sortedData: any[] = [];
   sortKey: string | null = null;
   sortDirection: 'asc' | 'desc' = 'asc';
+  
+  availableBodyTypes: string[] = [];
+  selectedBodyType: string | null = null;
 
   constructor(
     private activePlayerService: ActivePlayerService,
@@ -112,13 +127,55 @@ export class GenericTableComponent implements OnInit, OnChanges {
   ngOnInit() {
     const savedState = localStorage.getItem(this.storageKey);
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
+    this.extractBodyTypes();
     this.initializeSortedData();
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['data'] || changes['headerKeys']) {
+    if (changes['data'] || changes['headerKeys'] || changes['characterBody']) {
+      this.extractBodyTypes();
       this.initializeSortedData();
     }
+  }
+
+  extractBodyTypes() {
+    if (!this.enableBodyFilter) return;
+
+    if (this.characterBody && this.characterBody.length > 0) {
+      // Filter out invalid entries just in case
+      const validBodyTypes = this.characterBody.filter(b => b && b.trim() !== '');
+      if (validBodyTypes.length > 0) {
+        this.availableBodyTypes = [...validBodyTypes].sort();
+        return;
+      }
+    }
+
+    const types = new Set<string>();
+    (this.data || []).forEach(item => {
+      // Check for body (weapons/other)
+      if (item.body) {
+         if (Array.isArray(item.body)) {
+             item.body.forEach((b: string) => types.add(b));
+         } else {
+             types.add(item.body);
+         }
+      }
+      // Check for raceReq (items/armor)
+      if (item.raceReq) {
+         if (Array.isArray(item.raceReq)) {
+             item.raceReq.forEach((b: string) => types.add(b));
+         } else {
+             types.add(item.raceReq);
+         }
+      }
+    });
+    const validTypes = Array.from(types).filter(t => t && t.trim() !== '');
+    this.availableBodyTypes = validTypes.sort();
+  }
+
+  onBodyTypeChange(selected: any) {
+    this.selectedBodyType = selected;
+    this.applySort();
   }
 
   toggleCollapse() {
@@ -162,25 +219,52 @@ export class GenericTableComponent implements OnInit, OnChanges {
   }
 
   private initializeSortedData() {
-    this.sortedData = [...(this.data || [])];
     const defaultKey = this.headerKeys.includes('name')
       ? 'name'
       : (this.headerKeys[0] || null);
-    if (defaultKey) {
+      
+    if (defaultKey && !this.sortKey) {
       this.sortKey = defaultKey;
       this.sortDirection = 'asc';
-      this.applySort();
     }
+    
+    this.applySort();
   }
 
   private applySort() {
+    let filteredData = [...(this.data || [])];
+
+    if (this.enableBodyFilter && this.selectedBodyType) {
+        filteredData = filteredData.filter(item => {
+            // Check raceReq (items/armor)
+            if (item.raceReq) {
+                if (Array.isArray(item.raceReq)) {
+                    return item.raceReq.includes(this.selectedBodyType);
+                }
+                return item.raceReq === this.selectedBodyType;
+            }
+
+            // Check body (weapons/other)
+            if (item.body) {
+                if (Array.isArray(item.body)) {
+                    return item.body.includes(this.selectedBodyType);
+                }
+                return item.body === this.selectedBodyType;
+            }
+            
+            // If neither property exists, keep item (e.g. other categories without restriction)
+            return true;
+        });
+    }
+
     if (!this.sortKey) {
-      this.sortedData = [...(this.data || [])];
+      this.sortedData = filteredData;
       return;
     }
+
     const key = this.sortKey;
     const direction = this.sortDirection === 'asc' ? 1 : -1;
-    this.sortedData = [...(this.data || [])].sort((a, b) => {
+    this.sortedData = filteredData.sort((a, b) => {
       const aVal = a[key];
       const bVal = b[key];
 

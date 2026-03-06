@@ -54,6 +54,8 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
           [enableCloning]="isAdmin"
           [enableDeleting]="isAdmin"
           [enableEditing]="isAdmin"
+          [enableBodyFilter]="category.key === 'armor'"
+          [characterBody]="activePlayerBodyTypes"
           (craft)="onCraftItem($event)"
           (clone)="onCloneItem($event)"
           (delete)="onDeleteItem($event)"

@@ -71,16 +71,16 @@ export class ShopsComponent implements OnInit, OnDestroy {
       this.isDarkMode = isDark;
     });
     
-    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
-      this.cart = cart;
-    });
-
     this.activePlayerService.activePlayer$.subscribe(player => {
       if (player) {
         this.activePlayerBodyTypes = player.attributes?.body || [];
       } else {
         this.activePlayerBodyTypes = [];
       }
+    });
+
+    this.cartSubscription = this.cartService.cart$.subscribe(cart => {
+      this.cart = cart;
     });
     
     this.dataService.getAllData().subscribe(response => {

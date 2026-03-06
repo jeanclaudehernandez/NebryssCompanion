@@ -31,6 +31,8 @@
         [headerKeys]="category.keys"
         [inventoryManagement]="hasActivePlayer()"
         [shoppingMode]="true"
+        [enableBodyFilter]="category.key === 'armor'"
+        [characterBody]="activePlayerBodyTypes"
         (addToCart)="onAddToCart($event, shop.id, 'item')">
       </app-generic-table>
     </div>
