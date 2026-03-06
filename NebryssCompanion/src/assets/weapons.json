@@ -2092,5 +2092,63 @@
         "body": "spell"
       }
     ]
+  },
+  {
+    "id": 107,
+    "name": "Frag Grenade Mk I",
+    "price": 3,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 2, "max": 3 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 3 },
+          { "ruleId": 48, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 108,
+    "name": "Frag Grenade Mk II",
+    "price": 4,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 4,
+        "ws": 4,
+        "damage": { "min": 3, "max": 4 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 3 },
+          { "ruleId": 48, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
+  },
+  {
+    "id": 109,
+    "name": "Frag Grenade Mk III",
+    "price": 10,
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 6,
+        "attacks": 4,
+        "ws": 3,
+        "damage": { "min": 4, "max": 5 },
+        "specialRules": [
+          { "ruleId": 30, "modValue": 3 },
+          { "ruleId": 48, "modValue": null },
+          { "ruleId": 23, "modValue": null }
+        ],
+        "body": "universal"
+      }
+    ]
   }
 ]
