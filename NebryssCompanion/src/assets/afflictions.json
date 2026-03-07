@@ -41,14 +41,6 @@
   },
   {
     "id": "6",
-    "name": "Sprained hand",
-    "effect": "+1 to Hit on melee weapons ",
-    "treatment": "Resting or Medical Atention",
-    "toHeal": 5,
-    "progress": 0
-  },
-  {
-    "id": "6",
     "name": "Twisted hand",
     "effect": "Worsen by 1 the Hit requirement on melee weapons ",
     "treatment": "Resting or Medical Atention",
