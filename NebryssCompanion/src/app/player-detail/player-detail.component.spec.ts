@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { PlayerDetailComponent } from './player-detail.component';
 import { DataService } from '../data.service';
-import { Player } from '../model';
+import { Player, StatModification } from '../model';
 
 describe('PlayerDetailComponent', () => {
   let component: PlayerDetailComponent;
@@ -52,7 +52,9 @@ describe('PlayerDetailComponent', () => {
           digital: 0,
           physical: 0
         },
-        talents: []
+        talents: [],
+        afflictions: [],
+        equipment: []
       }
     };
 
@@ -73,7 +75,7 @@ describe('PlayerDetailComponent', () => {
     const mockItem = {
       id: 100,
       name: 'Stat Booster Item',
-      statModifications: [{ stat: 'Wounds', mod: 5 }, { stat: 'Save', mod: 1 }]
+      statModifications: [{ stat: 'Wounds', mod: 5 }, { stat: 'Save', mod: 1 }] as StatModification[]
     };
     
     component.itemsData = { items: [mockItem] };
@@ -81,7 +83,7 @@ describe('PlayerDetailComponent', () => {
     const mockTalent = {
       id: 't1',
       name: 'Stat Booster Talent',
-      statModifications: [{ stat: 'Movement', mod: 1 }]
+      statModifications: [{ stat: 'Movement', mod: 1 }] as StatModification[]
     };
     mockDataService.getTalentById.and.returnValue(mockTalent as any);
     
@@ -98,7 +100,7 @@ describe('PlayerDetailComponent', () => {
         progress: 0,
         toHeal: 0,
         effect: '',
-        statModifications: [{ stat: 'APL', mod: -1 }]
+        statModifications: [{ stat: 'APL', mod: -1 }] as StatModification[]
       }]
     };
     
