@@ -154,108 +154,106 @@ export interface AlteredState {
   
   // lore.ts
   export interface Lore {
-    planetOverview: {
-      planet: {
-        name: string;
-        imgUrl: string;
-        thumbnail: string;
-        location: string;
-        geography: string;
-        theMist: string;
-        mistTradeRoutes: {
-          description: string;
-          importance: string;
-        };
+    planet: {
+      name: string;
+      imgUrl: string;
+      thumbnail: string;
+      location: string;
+      geography: string;
+      theMist: string;
+      mistTradeRoutes: {
+        description: string;
+        importance: string;
       };
-      currency: {
-        name: string;
-        appearance: string;
-        value: string;
-        usage: {
-          physicalCoins: string;
-          digitalTransactions: string;
+    };
+    currency: {
+      name: string;
+      appearance: string;
+      value: string;
+      usage: {
+        physicalCoins: string;
+        digitalTransactions: string;
+      };
+      culturalSignificance: string;
+    };
+    mistEffects: {
+      densityLevels: {
+        denserMist: string;
+        lighterMist: string;
+      };
+      navigation: string;
+      mistWeavingTechnology: {
+        overview: string;
+        howItWorks: {
+          ritualsAndSacrifice: string;
+          temporaryMistZones: {
+            escape: string;
+            ambush: string;
+          };
+          limitations: string;
+        };
+        limitationsAndRisks: {
+          psychicStrain: string;
+          culturalSecrecy: string;
         };
         culturalSignificance: string;
       };
-      mistEffects: {
-        densityLevels: {
-          denserMist: string;
-          lighterMist: string;
-        };
-        navigation: string;
-        mistWeavingTechnology: {
-          overview: string;
-          howItWorks: {
-            ritualsAndSacrifice: string;
-            temporaryMistZones: {
-              escape: string;
-              ambush: string;
-            };
-            limitations: string;
-          };
-          limitationsAndRisks: {
-            psychicStrain: string;
-            culturalSecrecy: string;
-          };
-          culturalSignificance: string;
-        };
-      };
-      technologyAndInfrastructure: {
-        flyingShipsAndMistEngines: {
-          description: string;
-          mistEngines: {
-            gildedAccordsRole: string;
-            otherFactions: string;
-          };
-          optimizationCategories: {
-            speed: string;
-            endurance: string;
-            cargoCapacity: string;
-          };
-        };
-        weapons: {
-          description: string;
-          types: string[];
-        };
-      };
-      dailyLife: {
-        settlements: string;
-        transportation: string;
-      };
-      factions: Array<{
-        name: string;
-        control: string;
-        role: string;
-        goals?: string[];
-        challenges?: string | string[];
-        mistKnowledge?: string;
-        naming?: string;
-        image?: string;
-        thumbnail?: string;
-        notableIslands?: Array<{
-          name: string;
-          description?: string;
-          imgUrl?: string;
-          thumbnail?: string;
-        }>;
-        // ... other faction-specific properties
-      }>;
-      struggleForNebryss: string[];
-      storyHooks: Array<{
-        name: string;
-        premise: string;
-        keyElements: string;
-        potentialImpact: string;
-      }>;
-      mistBasedGameplayMechanics: Array<{
-        name: string;
-        description: string;
-      }>;
-      potentialEndgameScenarios: Array<{
-        name: string;
-        description: string;
-      }>;
     };
+    technologyAndInfrastructure: {
+      flyingShipsAndMistEngines: {
+        description: string;
+        mistEngines: {
+          gildedAccordsRole: string;
+          otherFactions: string;
+        };
+        optimizationCategories: {
+          speed: string;
+          endurance: string;
+          cargoCapacity: string;
+        };
+      };
+      weapons: {
+        description: string;
+        types: string[];
+      };
+    };
+    dailyLife: {
+      settlements: string;
+      transportation: string;
+    };
+    factions: Array<{
+      name: string;
+      control: string;
+      role: string;
+      goals?: string[];
+      challenges?: string | string[];
+      mistKnowledge?: string;
+      naming?: string;
+      image?: string;
+      thumbnail?: string;
+      notableIslands?: Array<{
+        name: string;
+        description?: string;
+        imgUrl?: string;
+        thumbnail?: string;
+      }>;
+      // ... other faction-specific properties
+    }>;
+    struggleForNebryss: string[];
+    storyHooks: Array<{
+      name: string;
+      premise: string;
+      keyElements: string;
+      potentialImpact: string;
+    }>;
+    mistBasedGameplayMechanics: Array<{
+      name: string;
+      description: string;
+    }>;
+    potentialEndgameScenarios: Array<{
+      name: string;
+      description: string;
+    }>;
   }
   
   // mistEffects.ts

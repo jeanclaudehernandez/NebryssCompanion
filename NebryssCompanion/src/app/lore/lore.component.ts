@@ -1,6 +1,6 @@
-import { Component, ViewEncapsulation, Output, EventEmitter, Input } from '@angular/core';
+import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
 import { DataService } from '../data.service';
-import { CommonModule, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
@@ -10,7 +10,6 @@ import { Lore, ScrollSection, Locations, Location } from '../model';
   selector: 'app-lore',
   imports: [
     CommonModule,
-    NgFor,
     CapitalCasePipe,
     ImageViewerComponent,
     ScrollNavComponent
@@ -53,14 +52,17 @@ export class LoreComponent {
   ];
   scrollSections: ScrollSection[] = [];
 
-  constructor(private dataService: DataService) {}
+  constructor(
+    private dataService: DataService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
-    this.dataService.getLore().subscribe(data => {
-      this.loreData = data;
-      this.dataService.getLocations().subscribe(locations => {
-        this.locationsData = locations;
+    this.dataService.getLore().subscribe({
+      next: (data) => {
+        this.loreData = data;
         this.prepareLoreSections();
+        this.cdr.markForCheck();
         
         if (this.initialFactionName) {
           // Allow time for view to render
@@ -68,7 +70,16 @@ export class LoreComponent {
             this.scrollToFaction(this.initialFactionName!);
           }, 100);
         }
-      });
+      },
+      error: (err) => console.error('Error loading lore:', err)
+    });
+
+    this.dataService.getLocations().subscribe({
+      next: (locations) => {
+        this.locationsData = locations;
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Error loading locations:', err)
     });
   }
 
@@ -117,55 +128,56 @@ export class LoreComponent {
   }
 
   prepareLoreSections() {
-    if (!this.loreData?.planetOverview) return;
+    if (!this.loreData?.planet) {
+      return
+    };
     
-    const overview = this.loreData.planetOverview;
     this.loreSections = [
       {
         title: 'Planet',
-        content: overview.planet,
+        content: this.loreData.planet,
         key: 'planet',
-        imgUrl: overview.planet.imgUrl,
-        thumbnail: overview.planet.thumbnail
+        imgUrl: this.loreData.planet.imgUrl,
+        thumbnail: this.loreData.planet.thumbnail
       },
       {
         title: 'Currency',
-        content: overview.currency,
+        content: this.loreData.currency,
         key: 'currency'
       },
       {
         title: 'Mist Effects',
-        content: overview.mistEffects,
+        content: this.loreData.mistEffects,
         key: 'mistEffects'
       },
       {
         title: 'Technology and Infrastructure',
-        content: overview.technologyAndInfrastructure,
+        content: this.loreData.technologyAndInfrastructure,
         key: 'technologyAndInfrastructure'
       },
       {
         title: 'Daily Life',
-        content: overview.dailyLife,
+        content: this.loreData.dailyLife,
         key: 'dailyLife'
       },
       {
         title: 'Factions',
-        content: {factions: overview.factions},
+        content: {factions: this.loreData.factions},
         key: 'factions'
       },
       {
         title: 'Struggle for Nebryss',
-        content: {struggle: overview.struggleForNebryss},
+        content: {struggle: this.loreData.struggleForNebryss},
         key: 'struggleForNebryss'
       },
       {
         title: 'Story Hooks',
-        content: {hooks: overview.storyHooks},
+        content: {hooks: this.loreData.storyHooks},
         key: 'storyHooks'
       },
       {
         title: 'Potential Endgame Scenarios',
-        content: {endgames: overview.potentialEndgameScenarios},
+        content: {endgames: this.loreData.potentialEndgameScenarios},
         key: 'potentialEndgameScenarios'
       }
     ];
@@ -182,7 +194,7 @@ export class LoreComponent {
       {
         title: 'Factions', id: 'factions'
       },
-      ...overview.factions.map((faction: any) => ({
+      ...this.loreData.factions.map((faction: any) => ({
       title: faction.name,
       id: `faction-${faction.name.toLowerCase().replace(/\s+/g, '-')}`
     })),

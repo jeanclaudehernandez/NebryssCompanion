@@ -102,9 +102,9 @@ export class LocationsComponent implements OnInit {
   }
 
   getFactionThumbnail(factionName: string): string {
-    if (!this.loreData) return '';
+    if (!this.loreData?.factions) return '';
     
-    const faction = this.loreData.planetOverview.factions.find(
+    const faction = this.loreData.factions.find(
       faction => faction.name === factionName
     );
     
