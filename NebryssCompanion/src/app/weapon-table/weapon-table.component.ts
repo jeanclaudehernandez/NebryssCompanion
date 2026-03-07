@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
 import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
 import { MatDialog } from '@angular/material/dialog';
 import { WeaponRuleDialogComponent } from '../weapon-rule/weapon-rule.component';
-import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState } from '../model';
+import { Weapon, WeaponProfile, SpecialRule, WeaponRule, AlteredState, TalentCategory, Talent, StatModification, Affliction } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ToastService } from '../toast.service';
 import { DataService } from '../data.service';
@@ -31,7 +31,7 @@ interface ruleDisplay {
   styleUrls: ['./weapon-table.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class WeaponTableComponent implements OnChanges, OnDestroy {
+export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() weaponIds: number[] = [];
   @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: WeaponRule[] = [];
@@ -52,6 +52,8 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
+
+  talentsData: TalentCategory[] = [];
 
   get showActions(): boolean {
     return this.inventoryManagement || this.enableCloning || this.enableDeleting || this.enableEditing || this.shoppingMode;
@@ -78,6 +80,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   ) {
     this.playerSubscription = this.activePlayerService.activePlayer$.subscribe(() => {
       this.updateAttachedMods();
+      this.updateSortedProfiles();
+    });
+  }
+
+  ngOnInit(): void {
+    this.dataService.getTalents().subscribe(talents => {
+      this.talentsData = talents;
       this.updateSortedProfiles();
     });
   }
@@ -193,6 +202,30 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
   private updateSortedProfiles(): void {
     const allProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
     
+    // Get active modifiers (talents + afflictions)
+    const player = this.activePlayerService.activePlayer;
+    const activeModifiers: { statModifications?: StatModification[] }[] = [];
+    
+    if (player && player.progression) {
+      // Talents
+      if (player.progression.talents && this.talentsData.length > 0) {
+        this.talentsData.forEach(category => {
+          category.talents.forEach(talent => {
+            if (player.progression.talents.includes(talent.id)) {
+              activeModifiers.push(talent);
+            }
+          });
+        });
+      }
+      
+      // Afflictions
+      if (player.progression.afflictions) {
+        player.progression.afflictions.forEach(affliction => {
+          activeModifiers.push(affliction);
+        });
+      }
+    }
+    
     // Collect all profiles
     this.weaponIds.forEach(weaponId => {
       const weapon = this.getWeaponById(weaponId);
@@ -201,7 +234,9 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
           if (this.enableBodyFilter && this.selectedBodyType && profile.body !== this.selectedBodyType) {
             return;
           }
-          allProfiles.push({ weapon, profile });
+          
+          const modifiedProfile = this.applyStatModifications(profile, activeModifiers);
+          allProfiles.push({ weapon, profile: modifiedProfile });
         });
       }
     });
@@ -210,6 +245,49 @@ export class WeaponTableComponent implements OnChanges, OnDestroy {
     this.sortedProfiles = this.sortByRange 
       ? this.sortProfiles(allProfiles)
       : allProfiles;
+  }
+
+  private applyStatModifications(profile: WeaponProfile, activeModifiers: { statModifications?: StatModification[] }[]): WeaponProfile {
+    if (activeModifiers.length === 0) {
+      return profile;
+    }
+
+    // Clone profile
+    const modifiedProfile: WeaponProfile = JSON.parse(JSON.stringify(profile));
+
+    // Apply modifications
+    activeModifiers.forEach(source => {
+      if (source.statModifications) {
+        source.statModifications.forEach(mod => {
+          let applies = false;
+          
+          if (!mod.applyToType) {
+             applies = true;
+          } else if (mod.applyToType === 'body') {
+             if (mod.applyToValue && modifiedProfile.body && modifiedProfile.body.toLowerCase() === mod.applyToValue.toLowerCase()) {
+               applies = true;
+             }
+          } else if (mod.applyToType === 'type') {
+             if (mod.applyToValue && modifiedProfile.type && modifiedProfile.type.toLowerCase() === mod.applyToValue.toLowerCase()) {
+               applies = true;
+             }
+          }
+
+          if (applies) {
+            if (mod.stat === 'hit') {
+               modifiedProfile.ws += (mod.mod * -1);
+            } else if (mod.stat === 'attacks') {
+               modifiedProfile.attacks += mod.mod;
+            } else if (mod.stat === 'damage') {
+               modifiedProfile.damage.min += mod.mod;
+               modifiedProfile.damage.max += mod.mod;
+            }
+          }
+        });
+      }
+    });
+
+    return modifiedProfile;
   }
 
   private sortProfiles(profiles: { weapon: Weapon, profile: WeaponProfile }[]): {weapon: Weapon, profile: WeaponProfile}[] {

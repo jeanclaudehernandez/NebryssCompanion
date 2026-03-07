@@ -11,7 +11,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "human"
+        "body": "human",
+        "type": "knife"
       }
     ]
   },
@@ -27,7 +28,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 15, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed sword"
       },
       {
         "profileName": "power cell",
@@ -36,7 +38,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 5 },
         "specialRules": [{ "ruleId": 15, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -55,7 +58,8 @@
           { "ruleId": 16, "modValue": null },
           { "ruleId": 4, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -74,7 +78,8 @@
           { "ruleId": 17, "modValue": null },
           { "ruleId": 18, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "gauntlet"
       }
     ]
   },
@@ -90,7 +95,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 12, "modValue": null }],
-        "body": "human"
+        "body": "human",
+        "type": "staff"
       },
       {
         "profileName": "astartes",
@@ -99,7 +105,8 @@
         "ws": 3,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "staff"
       }
     ]
   },
@@ -118,7 +125,8 @@
           { "ruleId": 15, "modValue": null },
           { "ruleId": 2, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "whip"
       }
     ]
   },
@@ -138,7 +146,8 @@
           { "ruleId": 1, "modValue": 1 },
           { "ruleId": 3, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "two-handed hammer"
       }
     ]
   },
@@ -157,7 +166,8 @@
           { "ruleId": 15, "modValue": null },
           { "ruleId": 16, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "two-handed sword"
       },
       {
         "profileName": "",
@@ -166,7 +176,8 @@
         "ws": 4,
         "damage": { "min": 4, "max": 4 },
         "specialRules": [],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -182,7 +193,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 15, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "narthecium"
       }
     ]
   },
@@ -198,7 +210,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "universal"
+        "body": "universal",
+        "type": "spear"
       }
     ]
   },
@@ -214,7 +227,8 @@
         "ws": 4,
         "damage": { "min": 1, "max": 2 },
         "specialRules": [{ "ruleId": 18, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -230,7 +244,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 20, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "spear"
       }
     ]
   },
@@ -249,7 +264,8 @@
           { "ruleId": 21, "modValue": 5 },
           { "ruleId": 22, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -265,7 +281,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 13, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -284,7 +301,8 @@
           { "ruleId": 19, "modValue": null },
           { "ruleId": 15, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "gauntlet"
       }
     ]
   },
@@ -312,7 +330,8 @@
             "modValue": null
           }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "gauntlet"
       }
     ]
   },
@@ -328,7 +347,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 14, "modValue": null }],
-        "body": "human"
+        "body": "human",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -344,7 +364,8 @@
         "ws": 3,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 15, "modValue": null }],
-        "body": "fellgor"
+        "body": "fellgor",
+        "type": "gauntlet"
       }
     ]
   },
@@ -360,7 +381,8 @@
         "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 15, "modValue": null }],
-        "body": "aetherwing"
+        "body": "aetherwing",
+        "type": "gauntlet"
       }
     ]
   },
@@ -376,7 +398,8 @@
         "ws": 4,
         "damage": { "min": 4, "max": 5 },
         "specialRules": [{ "ruleId": 19, "modValue": null }],
-        "body": "aetherwing"
+        "body": "aetherwing",
+        "type": "beak"
       }
     ]
   },
@@ -392,7 +415,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 21, "modValue": 5 }],
-        "body": "screamer"
+        "body": "screamer",
+        "type": "beak"
       }
     ]
   },
@@ -408,7 +432,8 @@
         "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 19, "modValue": null }],
-        "body": "golem"
+        "body": "golem",
+        "type": "gauntlet"
       }
     ]
   },
@@ -424,7 +449,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "human"
+        "body": "human",
+        "type": "rifle"
       }
     ]
   },
@@ -440,7 +466,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "human"
+        "body": "human",
+        "type": "pistol"
       }
     ]
   },
@@ -459,7 +486,8 @@
           { "ruleId": 21, "modValue": 5 },
           { "ruleId": 4, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "pistol"
       }
     ]
   },
@@ -475,7 +503,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 23, "modValue": null }],
-        "body": "human"
+        "body": "human",
+        "type": "rifle"
       }
     ]
   },
@@ -491,7 +520,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 16, "modValue": null }],
-        "body": "human"
+        "body": "human",
+        "type": "plasma rifle"
       }
     ]
   },
@@ -507,7 +537,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 34, "modValue": 1 }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma pistol"
       }
     ]
   },
@@ -523,7 +554,8 @@
         "ws": 4,
         "damage": { "min": 4, "max": 5 },
         "specialRules": [{ "ruleId": 35, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma rifle"
       },
       {
         "profileName": "over charge",
@@ -536,7 +568,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 33, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma rifle"
       }
     ]
   },
@@ -552,7 +585,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 5 },
         "specialRules": [{ "ruleId": 34, "modValue": 1 }],
-        "body": "universal"
+        "body": "universal",
+        "type": "plasma pistol"
       },
       {
         "profileName": "super charge",
@@ -564,7 +598,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 21, "modValue": 5 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma pistol"
       }
     ]
   },
@@ -580,7 +615,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 24, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "bolter rifle"
       }
     ]
   },
@@ -599,7 +635,8 @@
           { "ruleId": 25, "modValue": 2 },
           { "ruleId": 34, "modValue": 1 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "flamer"
       },
       {
         "profileName": "heavy",
@@ -612,7 +649,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "flamer"
       }
     ]
   },
@@ -628,7 +666,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [{ "ruleId": 27, "modValue": 1 }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "bolter rifle"
       },
       {
         "profileName": "heavy",
@@ -641,7 +680,8 @@
           { "ruleId": 21, "modValue": 5 },
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "bolter rifle"
       }
     ]
   },
@@ -660,7 +700,8 @@
           { "ruleId": 5, "modValue": 3 },
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "spear"
       }
     ]
   },
@@ -676,7 +717,8 @@
         "ws": 3,
         "damage": { "min": 2, "max": 4 },
         "specialRules": [{ "ruleId": 18, "modValue": null }],
-        "body": "human"
+        "body": "human",
+        "type": "rifle"
       }
     ]
   },
@@ -696,7 +738,8 @@
           { "ruleId": 28, "modValue": null },
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "sniper"
       }
     ]
   },
@@ -716,7 +759,8 @@
           { "ruleId": 6, "modValue": null },
           { "ruleId": 35, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "bolter rifle"
       }
     ]
   },
@@ -736,7 +780,8 @@
           { "ruleId": 28, "modValue": null },
           { "ruleId": 4, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "plasma rifle"
       }
     ]
   },
@@ -756,7 +801,8 @@
           { "ruleId": 34, "modValue": 2 },
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "launcher"
       }
     ]
   },
@@ -772,7 +818,8 @@
         "ws": 5,
         "damage": { "min": 1, "max": 2 },
         "specialRules": [{ "ruleId": 29, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "launcher"
       }
     ]
   },
@@ -788,7 +835,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [{ "ruleId": 33, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "spear"
       }
     ]
   },
@@ -812,7 +860,8 @@
           "modValue": null
         }
       ],
-        "body": "spell"
+        "body": "spell",
+        "type": "mist"
       }
     ]
   },
@@ -835,7 +884,8 @@
             "modValue": null
           }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "mist"
       }
     ]
   },
@@ -858,7 +908,8 @@
             "modValue": null
           }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "mist"
       }
     ]
   },
@@ -877,7 +928,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 18, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -896,7 +948,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 30, "modValue": 2 }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -915,7 +968,8 @@
           { "ruleId": 16, "modValue": null },
           { "ruleId": 34, "modValue": 1 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma rifle"
       },
       {
         "profileName": "super charge",
@@ -928,7 +982,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 35, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "plasma rifle"
       }
     ]
   },
@@ -944,7 +999,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 3 },
         "specialRules": [],
-        "body": "golem"
+        "body": "golem",
+        "type": "mist"
       }
     ]
   },
@@ -964,7 +1020,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 35, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -988,7 +1045,8 @@
             "modValue": null
           }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "mist"
       }
     ]
   },
@@ -1004,7 +1062,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 4 },
         "specialRules": [{ "ruleId": 19, "modValue": null }],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "two-handed hammer"
       }
     ]
   },
@@ -1020,7 +1079,8 @@
         "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "bolter pistol"
       }
     ]
   },
@@ -1036,7 +1096,8 @@
         "ws": 4,
         "damage": { "min": 2, "max": 2 },
         "specialRules": [],
-        "body": "construct"
+        "body": "construct",
+        "type": "rifle"
       }
     ]
   },
@@ -1052,7 +1113,8 @@
         "ws": 5,
         "damage": { "min": 1, "max": 2 },
         "specialRules": [{ "ruleId": 36, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1068,7 +1130,8 @@
         "ws": 5,
         "damage": { "min": 0, "max": 1 },
         "specialRules": [{ "ruleId": 37, "modValue": null }],
-        "body": "universal"
+        "body": "universal",
+        "type": "spray"
       }
     ]
   },
@@ -1086,7 +1149,8 @@
         "specialRules": [
           { "ruleId": 26, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "launcher"
       }
     ]
   },
@@ -1104,7 +1168,8 @@
         "specialRules": [
           { "ruleId": 20, "modValue": null }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1123,7 +1188,8 @@
           { "ruleId": 38, "modValue": null }, 
           { "ruleId": 49, "modValue": null } 
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1142,7 +1208,8 @@
           { "ruleId": 39, "modValue": null },
           { "ruleId": 49, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "warp"
       }
     ]
   },
@@ -1161,7 +1228,8 @@
           { "ruleId": 21, "modValue": 5 }, 
           { "ruleId": 29, "modValue": null }
         ],
-        "body": "plant"
+        "body": "plant",
+        "type": "whip"
       }
     ]
   },
@@ -1180,7 +1248,8 @@
           { "ruleId": 19, "modValue": null },
           { "ruleId": 17, "modValue": null }
         ],
-        "body": "plant"
+        "body": "plant",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1199,7 +1268,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 5, "modValue": 5 }
         ],
-        "body": "spirit"
+        "body": "spirit",
+        "type": "mist"
       }
     ]
   },
@@ -1218,7 +1288,8 @@
           { "ruleId": 31, "modValue": 3 },
           { "ruleId": 19, "modValue": null }
         ],
-        "body": "plant"
+        "body": "plant",
+        "type": "two-handed hammer"
       }
     ]
   },
@@ -1238,7 +1309,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 7, "modValue": null }
         ],
-        "body": "behemoth"
+        "body": "behemoth",
+        "type": "mist"
       }
     ]
   },
@@ -1257,7 +1329,8 @@
           { "ruleId": 15, "modValue": null }, 
           { "ruleId": 25, "modValue": 2 }
         ],
-        "body": "behemoth"
+        "body": "behemoth",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1276,7 +1349,8 @@
           { "ruleId": 40, "modValue": null }, 
           { "ruleId": 26, "modValue": null } 
         ],
-        "body": "human"
+        "body": "human",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -1295,7 +1369,8 @@
           { "ruleId": 34, "modValue": 1 },  
           { "ruleId": 35, "modValue": null } 
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "launcher"
       },
       {
         "profileName": "Overload",
@@ -1307,7 +1382,8 @@
           { "ruleId": 33, "modValue": null },
           { "ruleId": 34, "modValue": 2 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "launcher"
       }
     ]
   },
@@ -1326,7 +1402,8 @@
           { "ruleId": 31, "modValue": 3 },    
           { "ruleId": 11, "modValue": null }  
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1345,7 +1422,8 @@
           { "ruleId": 15, "modValue": null },
           { "ruleId": 16, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -1364,7 +1442,8 @@
           { "ruleId": 6, "modValue": null },
           { "ruleId": 30, "modValue": 2 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "flamer"
       }
     ]
   },
@@ -1383,7 +1462,8 @@
           { "ruleId": 6, "modValue": null },
           { "ruleId": 32, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "flamer"
       }
     ]
   },
@@ -1402,7 +1482,8 @@
           {"ruleId": 38, "modValue": null},
           {"ruleId": 7, "modValue": null}
         ],
-        "body": "daemon"
+        "body": "daemon",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1421,7 +1502,8 @@
           { "ruleId": 30, "modValue": 2 },
           { "ruleId": 17, "modValue": null }
         ],
-        "body": "human"
+        "body": "human",
+        "type": "launcher"
       }
     ]
   },
@@ -1440,7 +1522,8 @@
           { "ruleId": 15, "modValue": null },
           { "ruleId": 36, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "knife"
       }
     ]
   },
@@ -1459,7 +1542,8 @@
           { "ruleId": 28, "modValue": null },
           { "ruleId": 16, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "bow"
       }
     ]
   },
@@ -1478,7 +1562,8 @@
           { "ruleId": 17, "modValue": null },
           { "ruleId": 19, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed hammer"
       }
     ]
   },
@@ -1497,7 +1582,8 @@
           { "ruleId": 20, "modValue": null },
           { "ruleId": 21, "modValue": 5 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "whip"
       }
     ]
   },
@@ -1516,7 +1602,8 @@
           { "ruleId": 17, "modValue": null },
           { "ruleId": 19, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed hammer"
       }
     ]
   },
@@ -1535,7 +1622,8 @@
           { "ruleId": 30, "modValue": 2 },
           { "ruleId": 6, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "flamer"
       }
     ]
   },
@@ -1555,7 +1643,8 @@
           { "ruleId": 21, "modValue": 5 },
           { "ruleId": 34, "modValue": 1 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "rifle"
       }
     ]
   },
@@ -1575,7 +1664,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 18, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "launcher"
       }
     ]
   },
@@ -1594,7 +1684,8 @@
           { "ruleId": 19, "modValue": null },
           { "ruleId": 21, "modValue": 5 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "spear"
       },
       {
         "profileName": "Ranged",
@@ -1605,7 +1696,8 @@
         "specialRules": [
           { "ruleId": 34, "modValue": 1 }
         ],
-        "body": "astartes"
+        "body": "astartes",
+        "type": "spear"
       }
     ]
   },
@@ -1621,7 +1713,8 @@
         "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed sword"
       },
       {
         "profileName": "Psychic Strike",
@@ -1633,7 +1726,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 23, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -1649,7 +1743,8 @@
         "ws": 4,
         "damage": { "min": 4, "max": 5 },
         "specialRules": [],
-        "body": "universal"
+        "body": "universal",
+        "type": "two-handed axe"
       },
       {
         "profileName": "Frenzy",
@@ -1660,7 +1755,8 @@
         "specialRules": [
           { "ruleId": 18, "modValue": 1 }
         ],
-        "body": "fellgor"
+        "body": "fellgor",
+        "type": "two-handed axe"
       }
     ]
   },
@@ -1682,7 +1778,8 @@
           { "ruleId": 23, "modValue": null },
           { "ruleId": 31, "modValue": 3 }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "mist"
       }
     ]
   },
@@ -1702,7 +1799,8 @@
           { "ruleId": 26, "modValue": null },
           { "ruleId": 34, "modValue": 1 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "launcher"
       }
     ]
   },
@@ -1721,7 +1819,8 @@
           { "ruleId": 19, "modValue": null },
           { "ruleId": 15, "modValue": null }
         ],
-        "body": "ork"
+        "body": "ork",
+        "type": "gauntlet"
       }
     ]
   },
@@ -1737,7 +1836,8 @@
         "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [],
-        "body": "ork"
+        "body": "ork",
+        "type": "rifle"
       }
     ]
   },
@@ -1755,7 +1855,8 @@
         "specialRules": [
            { "ruleId": 16, "modValue": null }
         ],
-        "body": "ork"
+        "body": "ork",
+        "type": "two-handed axe"
       }
     ]
   },
@@ -1773,7 +1874,8 @@
         "specialRules": [
            { "ruleId": 16, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "one-handed sword"
       }
     ]
   },
@@ -1793,7 +1895,8 @@
           { "ruleId": 28, "modValue": null },
           { "ruleId": 25, "modValue": 1 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "sniper"
       }
     ]
   },
@@ -1812,7 +1915,8 @@
           { "ruleId": 18, "modValue": 1 },
           { "ruleId": 24, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "rifle"
       }
     ]
   },
@@ -1831,7 +1935,8 @@
           { "ruleId": 30, "modValue": 2 },
           { "ruleId": 6, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "flamer"
       }
     ]
   },
@@ -1850,7 +1955,8 @@
           { "ruleId": 19, "modValue": null },
           { "ruleId": 17, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "ram"
       }
     ]
   },
@@ -1868,7 +1974,8 @@
         "specialRules": [
           { "ruleId": 24, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "one-handed axe"
       }
     ]
   },
@@ -1887,7 +1994,8 @@
           { "ruleId": 34, "modValue": 1 },
           { "ruleId": 30, "modValue": 2 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "launcher"
       }
     ]
   },
@@ -1906,7 +2014,8 @@
            { "ruleId": 28, "modValue": null },
            { "ruleId": 25, "modValue": 3 }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "sniper"
       }
     ]
   },
@@ -1922,7 +2031,8 @@
         "ws": 3,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [],
-        "body": "universal"
+        "body": "universal",
+        "type": "knife"
       }
     ]
   },
@@ -1940,7 +2050,8 @@
         "specialRules": [
           { "ruleId": 30, "modValue": 2 }
         ],
-        "body": "squig"
+        "body": "universal",
+        "type": "grenade"
       }
     ]
   },
@@ -1960,7 +2071,8 @@
           {"ruleId": 19, "modValue": null},
           {"ruleId": 58, "modValue": null}
         ],
-        "body": "human"
+        "body": "universal",
+        "type": "two-handed axe"
       }
     ]
   },
@@ -1988,7 +2100,8 @@
             "modValue": null
           }
         ],
-        "body": "human"
+        "body": "universal",
+        "type": "two-handed sword"
       }
     ]
   },
@@ -2008,7 +2121,8 @@
           { "ruleId": 30, "modValue": 2 },
           { "ruleId": 6, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -2028,7 +2142,8 @@
           { "ruleId": 17, "modValue": null },
           { "ruleId": 21, "modValue": 5 }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -2048,7 +2163,8 @@
           { "ruleId": 45, "modValue": 3 },
           { "ruleId": 23, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -2067,7 +2183,8 @@
           { "ruleId": 32, "modValue": null },
           { "ruleId": 18, "modValue": null }
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -2088,7 +2205,8 @@
           { "ruleId": 34, "modValue": 2 },
           {"ruleId": 35, "modValue": null}
         ],
-        "body": "spell"
+        "body": "spell",
+        "type": "warp"
       }
     ]
   },
@@ -2107,7 +2225,8 @@
           { "ruleId": 30, "modValue": 3 },
           { "ruleId": 48, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "grenade"
       }
     ]
   },
@@ -2126,7 +2245,8 @@
           { "ruleId": 30, "modValue": 3 },
           { "ruleId": 48, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "grenade"
       }
     ]
   },
@@ -2146,7 +2266,8 @@
           { "ruleId": 48, "modValue": null },
           { "ruleId": 23, "modValue": null }
         ],
-        "body": "universal"
+        "body": "universal",
+        "type": "grenade"
       }
     ]
   }

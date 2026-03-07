@@ -376,6 +376,7 @@ export interface AlteredState {
     damage: Damage;
     specialRules: SpecialRule[];
     body: string;
+    type?: string;
   }
   
   export interface Weapon {
@@ -402,6 +403,9 @@ export interface AlteredState {
   }
 
   export interface StatModification {
-    stat: keyof PlayerAttributes;
+    stat: keyof PlayerAttributes | "hit" | "damage" | "attacks";
     mod: number;
+    applyTo?: string;
+    applyToValue?: string;
+    applyToType?: "body" | "type";
   }

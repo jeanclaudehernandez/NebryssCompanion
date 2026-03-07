@@ -31,10 +31,18 @@
             "id": "c4",
             "name": "Trained shooter",
             "cost": 2,
-            "effect": "Improve by <strong>1</strong> the <strong>Hit</strong> of ranged weapons of a selected type",
+            "effect": "Improve by <strong>1</strong> the <strong>Hit</strong> of rifle ranged weapons (non bolter, non plasma, non sniper)",
             "prModifier": 2,
             "requirements": [],
-            "maxStacks": 1
+            "maxStacks": 1,
+            "statModifications": [
+                {
+                    "stat": "hit",
+                    "mod": 1,
+                    "applyToValue": "rifle",
+                    "applyToType": "type"
+                }
+            ]
         }, {
             "id": "c5",
             "name": "Obliterator",
@@ -89,7 +97,15 @@
             "effect": "Improve <strong>the Hit of PSYCHIC</strong> weapons by <strong>1</strong>",
             "prModifier": 2,
             "requirements": ["m1"],
-            "maxStacks": 1
+            "maxStacks": 1,
+            "statModifications": [
+                {
+                    "stat": "hit",
+                    "mod": 1,
+                    "applyToValue": "spell",
+                    "applyToType": "body"
+                }
+            ]
         },{
             "id": "m3",
             "name": "Ethreal Support",
