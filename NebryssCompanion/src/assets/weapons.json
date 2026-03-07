@@ -2001,7 +2001,7 @@
         "profileName": "",
         "rng": 8,
         "attacks": 4,
-        "ws": 3,
+        "ws": 4,
         "damage": { "min": 3, "max": 4 },
         "specialRules": [
           { "ruleId": 32, "modValue": null },
