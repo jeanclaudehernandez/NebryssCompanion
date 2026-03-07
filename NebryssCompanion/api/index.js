@@ -198,7 +198,7 @@ app.put('/api/player', async (req, res) => {
 
     res.json(player);
   } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error });
   }
 });
 
