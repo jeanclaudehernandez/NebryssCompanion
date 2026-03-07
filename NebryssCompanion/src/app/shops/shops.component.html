@@ -104,7 +104,7 @@
                         class="btn-payment" 
                         [class.allowed]="digitalStatus.allowed"
                         [class.denied]="!digitalStatus.allowed"
-                        [matTooltip]="digitalStatus.reason"
+                        [matTooltip]="!digitalStatus.allowed ? digitalStatus.reason : ''"
                         (click)="processPayment(shopId, 'digital')">
                         💳
                     </button>
@@ -116,7 +116,7 @@
                         class="btn-payment" 
                         [class.allowed]="physicalStatus.allowed"
                         [class.denied]="!physicalStatus.allowed"
-                        [matTooltip]="physicalStatus.reason"
+                        [matTooltip]="!physicalStatus.allowed ? physicalStatus.reason : ''"
                         (click)="processPayment(shopId, 'physical')">
                         💵
                     </button>

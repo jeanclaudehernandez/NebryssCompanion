@@ -23,7 +23,7 @@ import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, Vi
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1002;
+      z-index: 2000;
     }
     
     .modal-content {
