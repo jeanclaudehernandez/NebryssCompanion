@@ -1,11 +1,14 @@
-[[
+[
   {
     "id": "1",
     "name": "Deep Wound",
     "effect": "Movement reduced by 2",
     "treatment": "Resting",
     "toHeal": 5,
-    "progress": 0
+    "progress": 0,
+    "statModifications": [
+      { "stat": "Movement", "mod": -2 }
+    ]
   },
   {
     "id": "2",
@@ -21,7 +24,10 @@
     "effect": "-2 Wounds.",
     "treatment": "Resting or drink antidote",
     "toHeal": 4,
-    "progress": 0
+    "progress": 0,
+    "statModifications": [
+      { "stat": "Wounds", "mod": -2 }
+    ]
   },
   {
     "id": "4",
@@ -37,7 +43,10 @@
     "effect": "-1 to APL",
     "treatment": "Sanctuary Ritual",
     "toHeal": 1,
-    "progress": 0
+    "progress": 0,
+    "statModifications": [
+      { "stat": "APL", "mod": -1 }
+    ]
   },
   {
     "id": "6",
@@ -55,5 +64,4 @@
     "toHeal": 5,
     "progress": 0
   }
-]
 ]

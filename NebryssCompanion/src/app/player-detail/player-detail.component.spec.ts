@@ -68,4 +68,45 @@ describe('PlayerDetailComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should calculate attributes correctly with modifiers', () => {
+    const mockItem = {
+      id: 100,
+      name: 'Stat Booster Item',
+      statModifications: [{ stat: 'Wounds', mod: 5 }, { stat: 'Save', mod: 1 }]
+    };
+    
+    component.itemsData = { items: [mockItem] };
+    
+    const mockTalent = {
+      id: 't1',
+      name: 'Stat Booster Talent',
+      statModifications: [{ stat: 'Movement', mod: 1 }]
+    };
+    mockDataService.getTalentById.and.returnValue(mockTalent as any);
+    
+    const player = component.character as Player;
+    player.progression = {
+      talentPoints: 0,
+      mistrals: { digital: 0, physical: 0 },
+      equipment: [100],
+      talents: ['t1'],
+      afflictions: [{
+        id: 'a1',
+        name: 'Stat Reducer Affliction',
+        treatment: '',
+        progress: 0,
+        toHeal: 0,
+        effect: '',
+        statModifications: [{ stat: 'APL', mod: -1 }]
+      }]
+    };
+    
+    component.ngOnChanges();
+    
+    expect(component.calculatedAttributes.Wounds).toBe(17);
+    expect(component.calculatedAttributes.Movement).toBe(7);
+    expect(component.calculatedAttributes.APL).toBe(1);
+    expect(component.calculatedAttributes.Save).toBe(3); // 4 + (1 * -1) = 3
+  });
 });

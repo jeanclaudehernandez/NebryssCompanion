@@ -192,28 +192,40 @@
             "cost": 2,
             "effect": "+1 inch to <strong>Movement</strong> characteristic",
             "maxStacks": 3,
-            "prModifier": null
+            "prModifier": null,
+            "statModifications": [
+                { "stat": "Movement", "mod": 1 }
+            ]
         }, {
             "id": "att2",
             "name": "+2 Wounds",
             "cost": 3,
             "effect": "+2 <strong>Wounds</strong>",
             "maxStacks": 2,
-            "prModifier": null
+            "prModifier": null,
+            "statModifications": [
+                { "stat": "Wounds", "mod": 2 }
+            ]
         }, {
             "id": "att3",
             "name": "Better Save",
             "cost": 4,
             "effect": "Improve <strong>Save</strong> characteristic by <strong>1</strong>",
             "maxStacks": 1,
-            "prModifier": 2
+            "prModifier": 2,
+            "statModifications": [
+                { "stat": "Save", "mod": 1 }
+            ]
         }, {
             "id": "att4",
             "name": "+1 APL",
             "cost": 5,
             "effect": "Permanent <strong>+1 Action Point Limit</strong>",
             "maxStacks": 1,
-            "prModifier": 7
+            "prModifier": 7,
+            "statModifications": [
+                { "stat": "APL", "mod": 1 }
+            ]
         }]
     }, {
         "id": "situationalUpgrades",

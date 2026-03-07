@@ -36,6 +36,8 @@ export class PlayerDetailComponent implements OnChanges {
   itemTableHeaders: string[] = ['Name', 'Description', 'Quantity'];
   itemTableHeaderKeys: string[] = ['name', 'description', 'quant'];
   
+  calculatedAttributes: any = {};
+
   // Equipment table properties
   equipmentTableData: any[] = [];
   equipmentTableHeaders: string[] = ['Name', 'Description'];
@@ -69,7 +71,77 @@ export class PlayerDetailComponent implements OnChanges {
     public modalService: ModalService
   ) {}
 
+  getCalculatedAttributes(): any {
+    if (!this.character || !this.character.attributes) {
+      return {};
+    }
+
+    const attrs = { ...this.character.attributes };
+    
+    // Helper to apply mods
+    const applyMods = (mods: any[]) => {
+      if (!mods) return;
+      mods.forEach(mod => {
+        if (mod.stat && typeof mod.mod === 'number') {
+          // Check if the attribute exists and is a number before adding
+          if (typeof attrs[mod.stat as keyof typeof attrs] === 'number') {
+            let valueToAdd = mod.mod;
+            if (mod.stat === 'Save') {
+              valueToAdd = mod.mod * -1;
+            }
+            (attrs[mod.stat as keyof typeof attrs] as number) += valueToAdd;
+          }
+        }
+      });
+    };
+
+    if (this.isPlayer(this.character)) {
+      const player = this.character as Player;
+      if (player.progression) {
+        // Equipment
+        if (player.progression.equipment) {
+          player.progression.equipment.forEach(equipId => {
+            const item = this.getItemById(equipId);
+            if (item && item.statModifications) {
+              applyMods(item.statModifications);
+            }
+          });
+        }
+
+        // Talents
+        if (player.progression.talents) {
+          player.progression.talents.forEach(talentId => {
+            const talent = this.dataService.getTalentById(talentId);
+            if (talent && talent.statModifications) {
+              applyMods(talent.statModifications);
+            }
+          });
+        }
+
+        // Afflictions
+        if (player.progression.afflictions) {
+          player.progression.afflictions.forEach(affliction => {
+            // Afflictions in progression might be the object itself, 
+            // but we should ensure we have the static data if needed.
+            // However, the interface says Affliction[] so it should have the props.
+            // But usually statModifications are static data. 
+            // If the saved affliction doesn't have it, we might need to look it up?
+            // Assuming the saved affliction object is complete or we trust it.
+            // Actually, if we look at afflictions.json, they have statModifications.
+            // If the player's affliction is a copy, it should have it.
+            if (affliction.statModifications) {
+              applyMods(affliction.statModifications);
+            }
+          });
+        }
+      }
+    }
+
+    return attrs;
+  }
+
   ngOnChanges(): void {
+    this.calculatedAttributes = this.getCalculatedAttributes();
     this.bodyString = this.character.attributes.body.join(', ');
     
     if (this.isPlayer(this.character) && this.character.progression?.talents) {
