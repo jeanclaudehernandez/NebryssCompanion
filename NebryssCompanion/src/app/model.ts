@@ -113,39 +113,7 @@ export interface AlteredState {
       id: number;
       amount: number;
     }[];
-  }
-  
-
-  interface ArmorItem extends BaseItem {
-    type?: 'armor';
-  }
-  
-  interface ConsumableItem extends BaseItem {
-    type?: 'consumable';
-  }
-  
-  interface AmmunitionItem extends BaseItem {
-    type?: 'ammunition';
-  }
-  
-  interface MistEngineItem extends BaseItem {
-    type?: 'mistEngine';
-  }
-  
-  interface ShipHullItem extends BaseItem {
-    type?: 'shipHull';
-  }
-  
-  interface CannonItem extends BaseItem {
-    type?: 'cannon';
-  }
-  
-  interface CannonballItem extends BaseItem {
-    type?: 'cannonball';
-  }
-  
-  interface DeployableItem extends BaseItem {
-    type?: 'deployable';
+    statModifications?: StatModification[];
   }
   
   export interface Items {
@@ -361,6 +329,7 @@ export interface AlteredState {
     requirements?: string[];
     maxStacks?: number;
     selectedCount?: number;
+    statModifications?: StatModification[];
   }
 
   export interface Affliction {
@@ -370,6 +339,7 @@ export interface AlteredState {
     progress: number;
     toHeal: number;
     effect: string;
+    statModifications?: StatModification[];
   }
   
   export interface TalentCategory {
@@ -429,4 +399,9 @@ export interface AlteredState {
     description: string;
     imageUrl: string;
     thumbnailUrl: string;
+  }
+
+  export interface StatModification {
+    stat: keyof PlayerAttributes;
+    mod: number;
   }
