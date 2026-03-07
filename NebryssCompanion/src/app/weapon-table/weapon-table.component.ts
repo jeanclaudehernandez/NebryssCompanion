@@ -54,6 +54,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Output() addToCart = new EventEmitter<any>();
 
   talentsData: TalentCategory[] = [];
+  afflictionsData: Affliction[] = [];
 
   get showActions(): boolean {
     return this.inventoryManagement || this.enableCloning || this.enableDeleting || this.enableEditing || this.shoppingMode;
@@ -87,6 +88,11 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   ngOnInit(): void {
     this.dataService.getTalents().subscribe(talents => {
       this.talentsData = talents;
+      this.updateSortedProfiles();
+    });
+
+    this.dataService.getAfflictions().subscribe(afflictions => {
+      this.afflictionsData = afflictions;
       this.updateSortedProfiles();
     });
   }
@@ -220,8 +226,15 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       
       // Afflictions
       if (player.progression.afflictions) {
-        player.progression.afflictions.forEach(affliction => {
-          activeModifiers.push(affliction);
+        player.progression.afflictions.forEach(playerAffliction => {
+           // Find the definition in afflictionsData to ensure we have the latest statModifications
+           const definition = this.afflictionsData.find(a => a.id === playerAffliction.id);
+           if (definition) {
+              activeModifiers.push(definition);
+           } else {
+              // Fallback to player's copy if definition not found (though unlikely if data is synced)
+              activeModifiers.push(playerAffliction);
+           }
         });
       }
     }
@@ -271,8 +284,8 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
              if (mod.applyToValue && modifiedProfile.type && modifiedProfile.type.toLowerCase() === mod.applyToValue.toLowerCase()) {
                applies = true;
              }
-          } else if (mod.applyToType === 'range' && mod.applyToValue) {
-             const val = mod.applyToValue;
+          } else if (mod.applyToType === 'range' && mod.applyToValue !== undefined && mod.applyToValue !== null) {
+             const val = String(mod.applyToValue);
              const rng = modifiedProfile.rng;
 
              if (val === '0') {

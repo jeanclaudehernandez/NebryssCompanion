@@ -60,7 +60,7 @@
         "stat": "hit", 
         "mod": -1, 
         "applyToType": "range", 
-        "applyToValue": 0 
+        "applyToValue": "0" 
       }
     ]
   },
