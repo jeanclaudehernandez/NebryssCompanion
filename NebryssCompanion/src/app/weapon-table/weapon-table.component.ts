@@ -271,6 +271,24 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
              if (mod.applyToValue && modifiedProfile.type && modifiedProfile.type.toLowerCase() === mod.applyToValue.toLowerCase()) {
                applies = true;
              }
+          } else if (mod.applyToType === 'range' && mod.applyToValue) {
+             const val = mod.applyToValue;
+             const rng = modifiedProfile.rng;
+
+             if (val === '0') {
+                if (rng === 0) applies = true;
+             } else if (val === '-') {
+                if (rng === null || rng > 0) applies = true;
+             } else {
+                const threshold = parseInt(val);
+                if (!isNaN(threshold) && threshold > 0) {
+                   if (rng === null) {
+                      applies = true;
+                   } else {
+                      if (rng <= threshold) applies = true;
+                   }
+                }
+             }
           }
 
           if (applies) {

@@ -407,5 +407,5 @@ export interface AlteredState {
     mod: number;
     applyTo?: string;
     applyToValue?: string;
-    applyToType?: "body" | "type";
+    applyToType?: "body" | "type" | "range";
   }
