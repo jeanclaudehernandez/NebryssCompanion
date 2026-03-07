@@ -2061,11 +2061,10 @@
         "profileName": "",
         "rng": 12,
         "attacks": 5,
-        "ws": 2,
+        "ws": 3,
         "damage": { "min": 3, "max": 3 },
         "specialRules": [
           { "ruleId": 32, "modValue": null },
-          { "ruleId": 16, "modValue": null },
           { "ruleId": 18, "modValue": null }
         ],
         "body": "spell"
