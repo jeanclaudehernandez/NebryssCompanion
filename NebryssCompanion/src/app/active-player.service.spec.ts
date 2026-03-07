@@ -43,7 +43,9 @@ describe('ActivePlayerService', () => {
           digital: 0,
           physical: 0
         },
-        talents: []
+        talents: [],
+        afflictions: [],
+        equipment: []
       }
     };
 

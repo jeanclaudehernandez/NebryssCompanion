@@ -23,7 +23,8 @@ describe('BestiaryComponent', () => {
       itemCategories: [],
       mistEffects: [],
       terrains: [],
-      talents: []
+      talents: [],
+      afflictions: []
     }));
     mockDataService.validateBestiaryPR.and.returnValue([]);
 

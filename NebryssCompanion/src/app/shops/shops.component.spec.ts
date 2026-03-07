@@ -30,7 +30,8 @@ describe('ShopsComponent', () => {
       alteredStates: [],
       mistEffects: [],
       terrains: [],
-      talents: []
+      talents: [],
+      afflictions: []
     }));
 
     mockDataService.getNpcByd.and.returnValue({ name: '' });

@@ -22,8 +22,14 @@
         <button
           *ngIf="isActionAllowed(character)"
           class="mistrals-add-button"
-          (click)="openMistralModal('digital')">
+          (click)="openMistralModal('digital', 'add')">
           +
+        </button>
+        <button
+          *ngIf="isActionAllowed(character)"
+          class="mistrals-remove-button"
+          (click)="openMistralModal('digital', 'subtract')">
+          -
         </button>
       </p>
       <p class="mistrals-row">
@@ -31,8 +37,14 @@
         <button
           *ngIf="isActionAllowed(character)"
           class="mistrals-add-button"
-          (click)="openMistralModal('physical')">
+          (click)="openMistralModal('physical', 'add')">
           +
+        </button>
+        <button
+          *ngIf="isActionAllowed(character)"
+          class="mistrals-remove-button"
+          (click)="openMistralModal('physical', 'subtract')">
+          -
         </button>
       </p>
     </div>
@@ -210,9 +222,9 @@
   </div>
 </div>
 
-<ng-template #mistralDialog let-type="type" let-confirm="confirm" let-cancel="cancel" let-setAmount="setAmount">
+<ng-template #mistralDialog let-type="type" let-mode="mode" let-confirm="confirm" let-cancel="cancel" let-setAmount="setAmount">
   <div class="mistral-dialog">
-    <h3>Add {{ type === 'digital' ? 'Digital' : 'Physical' }} Mistrals</h3>
+    <h3>{{ mode === 'subtract' ? 'Remove' : 'Add' }} {{ type === 'digital' ? 'Digital' : 'Physical' }} Mistrals</h3>
     <div class="mistral-dialog-body">
       <label>
         Amount
@@ -223,7 +235,7 @@
     </div>
     <div class="dialog-buttons">
       <button class="btn-cancel" (click)="cancel()">Cancel</button>
-      <button class="btn-confirm" (click)="confirm()">Add</button>
+      <button class="btn-confirm" (click)="confirm()">{{ mode === 'subtract' ? 'Remove' : 'Add' }}</button>
     </div>
   </div>
 </ng-template>

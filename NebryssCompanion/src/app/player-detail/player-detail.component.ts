@@ -62,6 +62,7 @@ export class PlayerDetailComponent implements OnChanges {
   @ViewChild('craftConfirmModal', { read: TemplateRef }) craftConfirmModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   mistralModalType: 'digital' | 'physical' | null = null;
+  mistralModalMode: 'add' | 'subtract' = 'add';
   mistralModalAmount = 0;
 
   constructor(
@@ -607,7 +608,7 @@ export class PlayerDetailComponent implements OnChanges {
     return progression.mistrals.physical || 0;
   }
 
-  openMistralModal(type: 'digital' | 'physical'): void {
+  openMistralModal(type: 'digital' | 'physical', mode: 'add' | 'subtract' = 'add'): void {
     if (!this.isActionAllowed(this.character)) {
       return;
     }
@@ -615,9 +616,11 @@ export class PlayerDetailComponent implements OnChanges {
       return;
     }
     this.mistralModalType = type;
+    this.mistralModalMode = mode;
     this.mistralModalAmount = 0;
     const context = {
       type,
+      mode,
       confirm: () => this.confirmMistralAddition(),
       cancel: () => this.modalService.close(),
       setAmount: (value: number) => {
@@ -636,8 +639,11 @@ export class PlayerDetailComponent implements OnChanges {
       this.modalService.close();
       return;
     }
-    const amount = this.mistralModalAmount;
-    console.log(amount)
+    let amount = this.mistralModalAmount;
+    if (this.mistralModalMode === 'subtract') {
+        amount = -amount;
+    }
+    
     const activePlayer = this.activePlayerService.activePlayer;
     if (
       !activePlayer ||
@@ -664,7 +670,9 @@ export class PlayerDetailComponent implements OnChanges {
       this.character = { ...activePlayer };
     }
     const label = this.mistralModalType === 'digital' ? 'digital' : 'physical';
-    this.toastService.show(`Added ${amount} ${label} mistrals`, 'success');
+    const action = this.mistralModalMode === 'add' ? 'Added' : 'Removed';
+    const absAmount = Math.abs(amount);
+    this.toastService.show(`${action} ${absAmount} ${label} mistrals`, 'success');
     this.modalService.close();
     this.mistralModalType = null;
     this.mistralModalAmount = 0;
