@@ -1,6 +1,7 @@
 .content-area {
     margin-left: 0;
     transition: margin-left 0.3s;
+    position: relative; /* Ensure z-index works if needed */
 }
 
 .menu-open {
@@ -36,4 +37,33 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Pull to Refresh Indicator */
+.pull-refresh-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    z-index: 1900; /* Below loading overlay but above content */
+    transition: height 0.1s ease-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    color: #555;
+    font-size: 0.9rem;
+    pointer-events: none; /* Let touches pass through */
+}
+
+.spinner-small {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: #3498db;
+    animation: spin 1s linear infinite;
+    margin-right: 10px;
 }

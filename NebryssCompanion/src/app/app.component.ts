@@ -46,6 +46,14 @@ import { AfflictionsListComponent } from './afflictions-list/afflictions-list.co
     AfflictionsListComponent
   ],
   template: `
+    <!-- Pull to Refresh Indicator -->
+    <div class="pull-refresh-indicator" [style.height.px]="pullIndicatorHeight" [style.opacity]="pullProgress > 0 ? 1 : 0">
+       <div class="spinner-small" *ngIf="isRefreshing || pullProgress > 0.8"></div>
+       <span *ngIf="!isRefreshing && pullProgress <= 0.8">Pull to refresh...</span>
+       <span *ngIf="!isRefreshing && pullProgress > 0.8">Release to refresh</span>
+       <span *ngIf="isRefreshing">Refreshing...</span>
+    </div>
+
     @if (loadingService.loading$ | async) {
       <div class="loading-overlay">
         <div class="spinner"></div>
@@ -53,7 +61,7 @@ import { AfflictionsListComponent } from './afflictions-list/afflictions-list.co
     }
     <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
     
-    <div class="content-area" #contentArea>
+    <div class="content-area" #contentArea [style.transform]="contentTransform">
       @if (currentView === 'players') {
         <app-player-list></app-player-list>
       }
@@ -104,6 +112,23 @@ export class AppComponent {
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
 
+  // Pull to refresh variables
+  private pullStartY = 0;
+  private isPulling = false;
+  private readonly PULL_THRESHOLD = 150; // px to trigger refresh
+  public pullProgress = 0; // 0 to 1
+  public isRefreshing = false;
+  
+  get pullIndicatorHeight(): number {
+    return Math.min(this.pullProgress * 60, 80);
+  }
+  
+  get contentTransform(): string {
+    // Optional: push content down as we pull
+    // return `translateY(${this.pullIndicatorHeight}px)`;
+    return 'none'; // Keep content static for now, overlay indicator
+  }
+
   constructor(
     private themeService: ThemeService,
     public loadingService: LoadingService,
@@ -112,6 +137,73 @@ export class AppComponent {
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
+  }
+
+  // Detect if we are in standalone PWA mode (iOS or Android)
+  private get isStandalone(): boolean {
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    const isIOSStandalone = (window.navigator as any).standalone === true;
+    return isStandalone || isIOSStandalone;
+  }
+
+  @HostListener('touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    // Only enable if in standalone mode to avoid conflict with native browser pull-to-refresh
+    if (!this.isStandalone) return;
+    
+    // Check if we are at the top of the page
+    if (window.scrollY <= 0 && !this.isRefreshing) {
+      this.pullStartY = event.touches[0].clientY;
+      this.isPulling = true;
+    } else {
+      this.isPulling = false;
+    }
+  }
+
+  @HostListener('touchmove', ['$event'])
+  onTouchMove(event: TouchEvent) {
+    if (!this.isPulling || this.isRefreshing) return;
+    
+    const currentY = event.touches[0].clientY;
+    const diff = currentY - this.pullStartY;
+    
+    // Only track if pulling down
+    if (diff > 0 && window.scrollY <= 0) {
+      // If we are not in standalone mode, native refresh might kick in.
+      // But if user says "it doesn't refresh", maybe native is disabled or not working.
+      // So we show our indicator.
+      
+      this.pullProgress = Math.min(diff / this.PULL_THRESHOLD, 1.5); 
+      
+      // If pullProgress is small, we might want to ignore to avoid jitter
+      if (this.pullProgress < 0.1) {
+          this.pullProgress = 0;
+      }
+    } else {
+       this.pullProgress = 0;
+       // If we scroll down, stop tracking
+       this.isPulling = false; 
+    }
+  }
+
+  @HostListener('touchend')
+  onTouchEnd() {
+    if (this.isPulling && this.pullProgress >= 0.8 && !this.isRefreshing) {
+       this.triggerRefresh();
+    } else {
+       this.pullProgress = 0;
+    }
+    this.isPulling = false;
+  }
+
+  private triggerRefresh() {
+    this.isRefreshing = true;
+    this.pullProgress = 1; // Keep indicator shown
+    
+    // Simulate refresh delay then reload
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
   }
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
