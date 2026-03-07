@@ -63,6 +63,46 @@
     </table>
   </div>
 
+  <div [id]="'weapons-' + character.id" class="weapons">
+    <h3>Weapons</h3>
+      <app-weapon-table 
+        [weaponIds]="visibleWeaponIds"
+        [weaponsData]="weaponsData"
+        [weaponRulesData]="weaponRulesData"
+        [isCharacterDisplayPage]="true"
+        [characterBody]="character.attributes.body"
+        [alteredStates]="alteredStates"
+        [inventoryManagement]="isActionAllowed(character)">
+      </app-weapon-table>
+  </div>
+
+  
+  <div [id]="'abilities-' + character.id" class="abilities">
+    <h3>Abilities</h3>
+    <div *ngFor="let ability of processedAbilities" class="ability">
+      <h4>{{ ability.name }}</h4>
+      <p [innerHtml]="ability.effect | sanitizeHtml"></p>
+    </div>
+  </div>
+
+  
+  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
+    <h3>Items</h3>
+    <app-generic-table 
+      [storageKey]="'player-items-' + character.id"
+      [data]="itemTableData"
+      [headers]="itemTableHeaders"
+      [headerKeys]="itemTableHeaderKeys"
+      [renderHtml]="['description']"
+      [inventoryManagement]="isActionAllowed(character)"
+      [isPlayerDetail]="true"
+      [collapsible]="false"
+      [enableEquipping]="isActionAllowed(character)"
+      (craft)="onCraft($event)"
+      (equip)="onEquip($event)">
+    </app-generic-table>
+  </div>
+
   <div [id]="'equipment-' + character.id" class="equipment" *ngIf="equipmentTableData.length > 0">
     <h3>Equipment</h3>
     <app-generic-table 
@@ -79,19 +119,6 @@
     </app-generic-table>
   </div>
   
-  <div [id]="'weapons-' + character.id" class="weapons">
-    <h3>Weapons</h3>
-      <app-weapon-table 
-        [weaponIds]="visibleWeaponIds"
-        [weaponsData]="weaponsData"
-        [weaponRulesData]="weaponRulesData"
-        [isCharacterDisplayPage]="true"
-        [characterBody]="character.attributes.body"
-        [alteredStates]="alteredStates"
-        [inventoryManagement]="isActionAllowed(character)">
-      </app-weapon-table>
-  </div>
-
   <div [id]="'mods-' + character.id" class="mods" *ngIf="isPlayer(character) && modItems.length">
     <h3>Mods</h3>
     <div class="table-container">
@@ -150,30 +177,7 @@
     </app-afflictions-display>
   </div>
 
-  <div [id]="'abilities-' + character.id" class="abilities">
-    <h3>Abilities</h3>
-    <div *ngFor="let ability of processedAbilities" class="ability">
-      <h4>{{ ability.name }}</h4>
-      <p [innerHtml]="ability.effect | sanitizeHtml"></p>
-    </div>
-  </div>
 
-  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
-    <h3>Items</h3>
-    <app-generic-table 
-      [storageKey]="'player-items-' + character.id"
-      [data]="itemTableData"
-      [headers]="itemTableHeaders"
-      [headerKeys]="itemTableHeaderKeys"
-      [renderHtml]="['description']"
-      [inventoryManagement]="isActionAllowed(character)"
-      [isPlayerDetail]="true"
-      [collapsible]="false"
-      [enableEquipping]="isActionAllowed(character)"
-      (craft)="onCraft($event)"
-      (equip)="onEquip($event)">
-    </app-generic-table>
-  </div>
 
   <div [id]="'deployables-' + character.id" class="deployables" *ngIf="character.deployables?.length">
     <h3>Deployables</h3>
