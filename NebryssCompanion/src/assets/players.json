@@ -303,7 +303,7 @@
         },
         {
           "name": "Two-handed stance",
-          "effect": "0AP: choose <strong>a melee weapon<strong>, until you switch your stance. <strong>When you perform a fight action<strong>, that weapon gains one of the following weapon rules: <strong>relentless, rending, brutal, parry.<strong>"
+          "effect": "0AP: choose <strong>a melee weapon<strong>, until you switch your stance. <strong>When you perform a fight action<strong>, that weapon gains one of the following weapon rules: <strong>ceaseless, rending, brutal, parry.<strong>"
         }
       ],
       "progression": {
