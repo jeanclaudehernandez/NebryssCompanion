@@ -38,6 +38,11 @@ export class UpdateService {
     this.swUpdate.versionUpdates.subscribe(event => {
       if (event.type === 'VERSION_READY') {
         console.log('New version available');
+        this.swUpdate.activateUpdate().then(() => {
+          if (confirm('A new version is available. Reload now?')) {
+            window.location.reload();
+          }
+        });
       }
     });
   }

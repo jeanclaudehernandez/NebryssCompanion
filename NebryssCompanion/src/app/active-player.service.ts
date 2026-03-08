@@ -55,13 +55,34 @@ export class ActivePlayerService {
     const storedPlayer = localStorage.getItem(this.STORAGE_KEY);
     if (storedPlayer) {
       try {
-        const player = JSON.parse(storedPlayer) as Player;
-        this.activePlayerSubject.next(player);
+        const player = JSON.parse(storedPlayer);
+        if (this.isValidPlayer(player)) {
+          this.activePlayerSubject.next(player);
+        } else {
+          console.warn('Stored player data is invalid or outdated. Clearing storage.');
+          localStorage.removeItem(this.STORAGE_KEY);
+        }
       } catch (error) {
         console.error('Error parsing stored player:', error);
         localStorage.removeItem(this.STORAGE_KEY);
       }
     }
+  }
+
+  private isValidPlayer(player: any): player is Player {
+    return (
+      player &&
+      typeof player === 'object' &&
+      typeof player.id === 'number' &&
+      typeof player.name === 'string' &&
+      player.attributes &&
+      typeof player.attributes === 'object' &&
+      typeof player.attributes.Movement === 'number' &&
+      typeof player.attributes.Wounds === 'number' &&
+      typeof player.attributes.Save === 'number' &&
+      typeof player.attributes.APL === 'number' &&
+      Array.isArray(player.attributes.body)
+    );
   }
 
   private syncActivePlayerFromDatabase(): void {
