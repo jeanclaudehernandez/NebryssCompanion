@@ -13,12 +13,7 @@ export class ThemeService {
   }
 
   private getInitialThemeValue(): boolean {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      return savedTheme === 'dark';
-    }
-    // If no saved preference, check system preference
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return true; // Default to dark theme
   }
 
   toggleTheme(): void {

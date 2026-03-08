@@ -20,7 +20,6 @@ export class SidebarComponent {
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation'>();
   isOpen = false;
-  isDarkMode = false;
   isAdmin = false;
 
   constructor(
@@ -30,10 +29,6 @@ export class SidebarComponent {
     public themeService: ThemeService,
     private adminService: AdminService
   ) {
-    this.themeService.darkMode$.subscribe(isDark => {
-      this.isDarkMode = isDark;
-    });
-    
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
@@ -98,28 +93,24 @@ export class SidebarComponent {
     this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
   }
 
-  toggleTheme() {
-    this.themeService.toggleTheme();
+  openAdminDialog(template: TemplateRef<any>) {
+    const dialogContext = {
+      check: (password: string) => {
+        if (password === '2602') {
+          this.adminService.setAdminStatus(true);
+          this.modalService.close();
+        } else {
+          alert('Incorrect password');
+        }
+      },
+      cancel: () => {
+        this.modalService.close();
+      }
+    };
+    this.modalService.openFromTemplate(template, dialogContext);
   }
 
-  toggleAdmin() {
-    if (this.isAdmin) {
-      this.adminService.setAdminStatus(false);
-    } else {
-      const dialogContext = {
-        check: (password: string) => {
-          if (password === '2602') {
-            this.adminService.setAdminStatus(true);
-            this.modalService.close();
-          } else {
-            alert('Incorrect password');
-          }
-        },
-        cancel: () => {
-          this.modalService.close();
-        }
-      };
-      this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext);
-    }
+  logoutAdmin() {
+    this.adminService.setAdminStatus(false);
   }
 }

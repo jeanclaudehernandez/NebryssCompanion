@@ -18,14 +18,8 @@
     
     <div class="update-section">
       <button class="update-button clean-storage" (click)="clearStorageAndUpdate()">Refresh</button>
-      <button class="update-button admin-btn" (click)="toggleAdmin()">
-        {{ isAdmin ? 'Admin Mode: ON' : 'Admin Mode: OFF' }}
-      </button>
-    </div>
-    
-    <div class="theme-switch" (click)="toggleTheme()">
-      <span class="theme-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
-      <span class="theme-text">{{ isDarkMode ? 'Light Mode' : 'Dark Mode' }}</span>
+      <button *ngIf="!isAdmin" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">Admin Access</button>
+      <button *ngIf="isAdmin" class="update-button admin-btn" (click)="logoutAdmin()">Logout Admin</button>
     </div>
   </div>
 </nav>

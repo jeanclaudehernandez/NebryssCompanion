@@ -133,27 +133,3 @@
     color: white;
   }
 
-  /* Theme Switch */
-  .theme-switch {
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-  }
-
-  .theme-switch:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
-
-  .theme-icon {
-    font-size: 1.2rem;
-    margin-right: 10px;
-  }
-
-  .theme-text {
-    font-size: 0.9rem;
-  }
