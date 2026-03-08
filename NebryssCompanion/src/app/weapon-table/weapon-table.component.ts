@@ -312,6 +312,8 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
             } else if (mod.stat === 'damage') {
                modifiedProfile.damage.min += mod.mod;
                modifiedProfile.damage.max += mod.mod;
+            } else if (mod.stat === 'crit') {
+               modifiedProfile.damage.max += mod.mod;
             }
           }
         });

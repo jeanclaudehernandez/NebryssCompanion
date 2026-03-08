@@ -10,7 +10,15 @@
             "effect": "Critical hits in melee deal <strong>+1 damage</strong>",
             "prModifier": 1,
             "requirements": [],
-            "maxStacks": 1
+            "maxStacks": 1,
+            "statModifications": [
+                {
+                    "stat": "crit",
+                    "mod": 1,
+                    "applyToType": "range",
+                    "applyToValue": "0"
+                }
+            ]
         }, {
             "id": "c2",
             "name": "Overwatch Tactics",

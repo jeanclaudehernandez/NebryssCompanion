@@ -403,7 +403,7 @@ export interface AlteredState {
   }
 
   export interface StatModification {
-    stat: keyof PlayerAttributes | "hit" | "damage" | "attacks";
+    stat: keyof PlayerAttributes | "hit" | "damage" | "attacks" | "crit";
     mod: number;
     applyTo?: string;
     applyToValue?: string;
