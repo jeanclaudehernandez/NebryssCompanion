@@ -1,6 +1,6 @@
 <div class="shops-container">
   <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
-  <div *ngFor="let shop of shops" class="shop-card" [id]="'shop-' + shop.id">
+  <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
     <div class="shop-header">
       <h3>{{ shop.name }}</h3>
       <app-image-viewer 
@@ -20,31 +20,29 @@
       <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">💵 Physical</span>
     </div>
 
-    <div *ngFor="let categoryId of shop.categories">
-      @let category = findCategory(categoryId);
-      
+    <div *ngFor="let catData of shop.categoriesData; trackBy: trackByCategory">
       <app-generic-table 
-        [storageKey]="'shop-' + shop.id + '-category-' + category.id"
-        [title]="category.name"
-        [data]="getShopItemsWithPrices(shop, category.key) || []"
-        [headers]="category.headers"
-        [headerKeys]="category.keys"
+        [storageKey]="'shop-' + shop.id + '-category-' + catData.category.id"
+        [title]="catData.category.name"
+        [data]="catData.items"
+        [headers]="catData.category.headers"
+        [headerKeys]="catData.category.keys"
         [inventoryManagement]="hasActivePlayer()"
         [shoppingMode]="true"
-        [enableBodyFilter]="category.key === 'armor'"
+        [enableBodyFilter]="catData.category.key === 'armor'"
         [characterBody]="activePlayerBodyTypes"
         (addToCart)="onAddToCart($event, shop.id, 'item')">
       </app-generic-table>
     </div>
     
-      <div *ngIf="hasWeapons(shop)" class="weapons-section">
+      <div *ngIf="shop.hasWeapons" class="weapons-section">
           <h4 (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
             Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}
           </h4>
           <div *ngIf="!isWeaponCollapsed(shop.id)">
             <app-weapon-table 
-                [weaponIds]="getWeaponIds(shop)"
-                [weaponsData]="getShopWeaponsWithPrices(shop)"
+                [weaponIds]="shop.weaponIds"
+                [weaponsData]="shop.weaponsData"
                 [weaponRulesData]="weaponRulesData"
                 [alteredStates]="alteredStates"
                 [displayPrice]="true"

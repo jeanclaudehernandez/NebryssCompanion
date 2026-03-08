@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
@@ -14,6 +14,18 @@ import { CartService } from '../cart.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
+
+interface ShopCategoryData {
+  category: ItemCategory;
+  items: any[];
+}
+
+interface ProcessedShop extends Shop {
+  categoriesData: ShopCategoryData[];
+  weaponsData: Weapon[];
+  weaponIds: number[];
+  hasWeapons: boolean;
+}
 
 @Component({
   selector: 'app-shops',
@@ -42,6 +54,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
   alteredStates: AlteredState[] = [];
   itemsCategories: ItemCategory[] = [];
   shops: Shop[] = [];
+  processedShops: ProcessedShop[] = [];
   npcs: NPC[] = [];
   isLoading = true;
   scrollSections: ScrollSection[] = [];
@@ -63,7 +76,8 @@ export class ShopsComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private toastService: ToastService,
     private modalService: ModalService,
-    private cartService: CartService
+    private cartService: CartService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -77,6 +91,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
       } else {
         this.activePlayerBodyTypes = [];
       }
+      this.processShops();
     });
 
     this.cartSubscription = this.cartService.cart$.subscribe(cart => {
@@ -94,12 +109,48 @@ export class ShopsComponent implements OnInit, OnDestroy {
         title: shop.name,
         id: `shop-${shop.id}`
       }));
+      this.processShops();
     });
   }
 
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
     this.cartSubscription.unsubscribe();
+  }
+
+  processShops() {
+    if (!this.shops || !this.itemsCategories) return;
+
+    this.processedShops = this.shops.map(shop => {
+      const categoriesData: ShopCategoryData[] = (shop.categories || []).map(catId => {
+        const category = this.findCategory(catId);
+        if (!category) return null;
+        return {
+          category,
+          items: this.getShopItemsWithPrices(shop, category.key)
+        };
+      }).filter((d): d is ShopCategoryData => d !== null);
+
+      const weaponsData = this.getShopWeaponsWithPrices(shop);
+      const weaponIds = weaponsData.map(w => w.id);
+
+      return {
+        ...shop,
+        categoriesData,
+        weaponsData,
+        weaponIds,
+        hasWeapons: weaponsData.length > 0
+      };
+    });
+    this.cdr.markForCheck();
+  }
+
+  trackByShop(index: number, shop: ProcessedShop): number {
+    return shop.id;
+  }
+
+  trackByCategory(index: number, item: ShopCategoryData): number {
+    return item.category.id;
   }
 
   getOwnerName(owner: number) {
