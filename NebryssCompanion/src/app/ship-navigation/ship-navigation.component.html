@@ -1,0 +1,153 @@
+<div class="ship-navigation-container">
+  <h2>Ship Navigation</h2>
+
+  <div class="ship-selection">
+    <div class="selection-row">
+        <label>Select Ship:</label>
+        <select [(ngModel)]="selectedShipId" (change)="resetMoves()">
+        <option value="" disabled>Select a ship</option>
+        <option *ngFor="let ship of ships" [value]="ship.id">{{ ship.name }} ({{ ship.type }})</option>
+        </select>
+        <button *ngIf="selectedShipId" (click)="deleteShip(selectedShipId)" class="delete-btn">Delete Ship</button>
+    </div>
+  </div>
+
+  <div class="add-ship">
+    <h3>Add New Ship</h3>
+    <div class="add-row">
+        <input type="text" placeholder="Ship Name" [(ngModel)]="newShipName">
+        <select [(ngModel)]="newShipType">
+        <option value="Sloop">Sloop</option>
+        <option value="Cutter">Cutter</option>
+        <option value="Dhow">Dhow</option>
+        <option value="Fanchuan">Fanchuan</option>
+        <option value="Longship">Longship</option>
+        <option value="Baghlah">Baghlah</option>
+        <option value="Merchant Brig">Merchant Brig</option>
+        <option value="Junk">Junk</option>
+        <option value="War Brig">War Brig</option>
+        <option value="Merchant Galleon">Merchant Galleon</option>
+        <option value="Xebec">Xebec</option>
+        <option value="War Galleon">War Galleon</option>
+        <option value="Grand Frigate">Grand Frigate</option>
+        </select>
+        <button (click)="addShip()" [disabled]="!newShipName.trim()">Add Ship</button>
+    </div>
+  </div>
+
+  <div *ngIf="selectedShip" class="navigation-interface">
+    <h3>Battle Navigation for {{ selectedShip.name }}</h3>
+    
+    <div class="battle-station">
+        <!-- Moves Palette (Source) -->
+        <div class="moves-palette-container">
+            <h4>Moves</h4>
+            <div class="moves-palette" 
+                 cdkDropList 
+                 [cdkDropListData]="availableMoves"
+                 [cdkDropListConnectedTo]="['turn-0', 'turn-1', 'turn-2', 'turn-3']"
+                 [cdkDropListEnterPredicate]="noReturnPredicate">
+                
+                <div *ngFor="let move of availableMoves" 
+                     class="move-token source" 
+                     cdkDrag 
+                     [cdkDragData]="move"
+                     [cdkDragStartDelay]="0">
+                    
+                    <div class="move-icon-wrapper">
+                        <ng-container [ngSwitch]="move">
+                            <svg *ngSwitchCase="'Forward'" viewBox="0 0 24 24" class="nav-icon forward"><path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg>
+                            <svg *ngSwitchCase="'Left'" viewBox="0 0 24 24" class="nav-icon left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-45 12 12)"/></svg>
+                            <svg *ngSwitchCase="'Right'" viewBox="0 0 24 24" class="nav-icon right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(45 12 12)"/></svg>
+                            <svg *ngSwitchCase="'Hard Left'" viewBox="0 0 24 24" class="nav-icon hard-left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-90 12 12)"/></svg>
+                            <svg *ngSwitchCase="'Hard Right'" viewBox="0 0 24 24" class="nav-icon hard-right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(90 12 12)"/></svg>
+                        </ng-container>
+                    </div>
+                    <span class="move-label">{{move}}</span>
+                    
+                    <!-- Preview when dragging -->
+                    <div *cdkDragPreview class="move-token preview">
+                        <div class="move-icon-wrapper">
+                             <ng-container [ngSwitch]="move">
+                                <svg *ngSwitchCase="'Forward'" viewBox="0 0 24 24" class="nav-icon forward"><path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg>
+                                <svg *ngSwitchCase="'Left'" viewBox="0 0 24 24" class="nav-icon left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-45 12 12)"/></svg>
+                                <svg *ngSwitchCase="'Right'" viewBox="0 0 24 24" class="nav-icon right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(45 12 12)"/></svg>
+                                <svg *ngSwitchCase="'Hard Left'" viewBox="0 0 24 24" class="nav-icon hard-left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-90 12 12)"/></svg>
+                                <svg *ngSwitchCase="'Hard Right'" viewBox="0 0 24 24" class="nav-icon hard-right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(90 12 12)"/></svg>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <div *cdkDragPlaceholder class="move-token placeholder"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ship Silhouette Board -->
+        <div class="ship-board-container">
+            <div class="ship-silhouette">
+                <!-- Bow (Front) -->
+                <div class="ship-bow"></div>
+                
+                <!-- Deck with Slots -->
+                <div class="ship-deck">
+                    <div *ngFor="let m of moves; let i = index" class="turn-row">
+                        <!-- Left Cannon -->
+                        <div class="cannon-control left" 
+                             [class.active]="leftCannons[i]" 
+                             (click)="toggleCannon(i, 'left')"
+                             title="Fire Left">
+                             <div class="cannon-circle"></div>
+                        </div>
+
+                        <!-- Turn Slot -->
+                        <div class="turn-slot-wrapper">
+                            <div class="turn-number">{{ i + 1 }}</div>
+                            <div class="turn-slot"
+                                 cdkDropList
+                                 id="turn-{{i}}"
+                                 [cdkDropListData]="[moves[i]]"
+                                 (cdkDropListDropped)="drop($event)">
+                                 
+                                 <div *ngIf="moves[i]" class="placed-token" (click)="clearSlot(i)">
+                                    <ng-container [ngSwitch]="moves[i]">
+                                        <svg *ngSwitchCase="'Forward'" viewBox="0 0 24 24" class="nav-icon forward"><path fill="currentColor" d="M12,2L4.5,20.29L5.21,21L12,18L18.79,21L19.5,20.29L12,2Z"/></svg>
+                                        <svg *ngSwitchCase="'Left'" viewBox="0 0 24 24" class="nav-icon left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-45 12 12)"/></svg>
+                                        <svg *ngSwitchCase="'Right'" viewBox="0 0 24 24" class="nav-icon right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(45 12 12)"/></svg>
+                                        <svg *ngSwitchCase="'Hard Left'" viewBox="0 0 24 24" class="nav-icon hard-left"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(-90 12 12)"/></svg>
+                                        <svg *ngSwitchCase="'Hard Right'" viewBox="0 0 24 24" class="nav-icon hard-right"><path fill="currentColor" d="M14,20H10V11L6.5,14.5L4.08,12.08L12,4.16L19.92,12.08L17.5,14.5L14,11V20Z" transform="rotate(90 12 12)"/></svg>
+                                    </ng-container>
+                                 </div>
+                                 <div *ngIf="!moves[i]" class="slot-empty-indicator"></div>
+                            </div>
+                        </div>
+
+                        <!-- Right Cannon -->
+                        <div class="cannon-control right" 
+                             [class.active]="rightCannons[i]" 
+                             (click)="toggleCannon(i, 'right')"
+                             title="Fire Right">
+                             <div class="cannon-circle"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stern (Back) -->
+                <div class="ship-stern"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="actions-summary">
+        <h4>Planned Moves:</h4>
+        <div class="moves-summary-list">
+            <div *ngFor="let move of moves; let i = index" class="summary-item">
+                <span class="turn-num">Turn {{ i + 1 }}:</span>
+                <span class="move-text">{{ move || 'Wait' }}</span>
+                <span *ngIf="leftCannons[i]" class="cannon-text left"> (Fire Left)</span>
+                <span *ngIf="rightCannons[i]" class="cannon-text right"> (Fire Right)</span>
+            </div>
+        </div>
+        <button class="reset-btn" (click)="resetMoves()">Reset Moves</button>
+    </div>
+  </div>
+</div>

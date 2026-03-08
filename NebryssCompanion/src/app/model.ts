@@ -18,6 +18,12 @@ export interface AlteredState {
     type: 'item' | 'weapon';
   }
 
+  export interface Ship {
+    id: string;
+    name: string;
+    type: string;
+  }
+
   // locations.ts
   export interface Location {
     name: string;
