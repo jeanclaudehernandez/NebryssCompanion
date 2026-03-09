@@ -329,7 +329,7 @@
         "APL": 2,
         "body": ["universal", "human", "spell"]
       },
-      "weapons": [8, 52],
+      "weapons": [58,59],
       "abilities": [
         {
           "name": "Within Shadow",

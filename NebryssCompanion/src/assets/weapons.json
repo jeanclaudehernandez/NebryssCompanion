@@ -1186,7 +1186,7 @@
         "damage": { "min": 2, "max": 3 },
         "specialRules": [
           { "ruleId": 38, "modValue": null }, 
-          { "ruleId": 49, "modValue": null } 
+          { "ruleId": 39, "modValue": null } 
         ],
         "body": "universal",
         "type": "gauntlet"
