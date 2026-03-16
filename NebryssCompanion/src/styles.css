@@ -23,12 +23,21 @@ body {
     --mat-dialog-title-color: #2c3e50;
     --mat-dialog-border-color: #333;
     --mat-dialog-button-color: #3498db;
+    --footer-menu-height: 64px;
+    --footer-menu-bg: rgba(245, 245, 245, 0.92);
+    --footer-menu-border: rgba(0, 0, 0, 0.08);
+    --footer-menu-fg: #34495e;
+    --footer-menu-active: #1976d2;
   }
   
   /* Dark Theme */
   body.dark-theme {
     background-color: #121212;
     color: #e0e0e0;
+    --footer-menu-bg: rgba(18, 18, 18, 0.92);
+    --footer-menu-border: rgba(255, 255, 255, 0.08);
+    --footer-menu-fg: #d0d0d0;
+    --footer-menu-active: #64b5f6;
   }
   
   body.dark-theme h1, 

@@ -1,7 +1,7 @@
 .scroll-nav-btn {
     position: fixed;
     right: 30px;
-    bottom: 30px;
+    bottom: calc(var(--footer-menu-height, 64px) + env(safe-area-inset-bottom, 0px) + 16px);
     z-index: 1000;
     width: 50px;
     height: 50px;
@@ -24,7 +24,7 @@
   
   .scroll-nav-dropdown-menu {
     position: fixed; /* Changed from absolute to fixed */
-    bottom: 90px; /* Button height (50px) + bottom position (30px) + 10px gap */
+    bottom: calc(var(--footer-menu-height, 64px) + env(safe-area-inset-bottom, 0px) + 76px);
     right: 30px; /* Matches button's right position */
     background: white;
     border-radius: 8px;

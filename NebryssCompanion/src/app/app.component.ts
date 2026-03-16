@@ -107,6 +107,43 @@ import { ShipNavigationComponent } from './ship-navigation/ship-navigation.compo
         <app-afflictions-list></app-afflictions-list>
       }
     </div>
+
+    <nav class="footer-menu" aria-label="Footer menu">
+      <button
+        type="button"
+        class="footer-btn"
+        [class.active]="currentView === 'talents'"
+        (click)="onViewChange('talents')"
+        aria-label="Open Talents"
+      >
+        <span class="material-icons" aria-hidden="true">fitness_center</span>
+        <span class="footer-label">Talents</span>
+      </button>
+
+      <div class="footer-spacer" aria-hidden="true"></div>
+
+      <button
+        type="button"
+        class="footer-btn footer-btn-center"
+        [class.active]="currentView === 'players'"
+        (click)="onViewChange('players')"
+        aria-label="Open Player"
+      >
+        <span class="material-icons" aria-hidden="true">person</span>
+        <span class="footer-label">Player</span>
+      </button>
+
+      <button
+        type="button"
+        class="footer-btn"
+        [class.active]="currentView === 'shops'"
+        (click)="onViewChange('shops')"
+        aria-label="Open Shops"
+      >
+        <span class="material-icons" aria-hidden="true">storefront</span>
+        <span class="footer-label">Shops</span>
+      </button>
+    </nav>
   `,
   styleUrls: ['./app.component.css']
 })

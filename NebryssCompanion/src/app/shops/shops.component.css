@@ -86,7 +86,7 @@ body.dark-theme .owner {
 .cart-toggle-btn {
     position: fixed;
     right: 20px;
-    bottom: 20px;
+    bottom: calc(var(--footer-menu-height, 64px) + env(safe-area-inset-bottom, 0px) + 16px);
     z-index: 1000;
     padding: 12px 20px;
     background-color: #2196F3;
