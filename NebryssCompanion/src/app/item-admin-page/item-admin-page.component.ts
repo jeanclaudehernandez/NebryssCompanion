@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { AdminEditorSession } from '../admin-editor.models';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { BestiaryEntry, Item, ItemCategory, SpecialRule, StatModification, Talent, TalentCategory, Weapon, WeaponProfile, WeaponRule } from '../model';
@@ -60,7 +61,9 @@ interface WeaponProfileDraft {
   templateUrl: './item-admin-page.component.html',
   styleUrls: ['./item-admin-page.component.css']
 })
-export class ItemAdminPageComponent implements OnInit {
+export class ItemAdminPageComponent implements OnInit, OnChanges {
+  @Input() editSession: AdminEditorSession | null = null;
+
   private readonly destroyRef = inject(DestroyRef);
 
   readonly statOptions: StatName[] = ['Movement', 'Wounds', 'Save', 'APL', 'hit', 'damage', 'attacks', 'crit'];
@@ -73,6 +76,10 @@ export class ItemAdminPageComponent implements OnInit {
 
   isAdmin = false;
   isSaving = false;
+  optionsLoaded = false;
+  pendingEditSession: AdminEditorSession | null = null;
+  editingItemId: number | null = null;
+  editingWeaponId: number | null = null;
 
   creatorMode: 'item' | 'weapon' = 'item';
   categories: ItemCategory[] = [];
@@ -132,6 +139,13 @@ export class ItemAdminPageComponent implements OnInit {
     private readonly toastService: ToastService
   ) {}
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['editSession']) {
+      this.pendingEditSession = this.editSession;
+      this.applyPendingEditSession();
+    }
+  }
+
   ngOnInit(): void {
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -177,9 +191,13 @@ export class ItemAdminPageComponent implements OnInit {
           .filter(item => item.type === 'material')
           .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
+        this.optionsLoaded = true;
+
         if (!this.weaponProfiles.length) {
           this.addWeaponProfile();
         }
+
+        this.applyPendingEditSession();
       });
   }
 
@@ -215,6 +233,46 @@ export class ItemAdminPageComponent implements OnInit {
 
   get lastCreatedDeployableSubtype(): string {
     return ((this.lastCreatedItem as any)?.subType as string | undefined) ?? '';
+  }
+
+  get isEditing(): boolean {
+    return this.editingItemId !== null || this.editingWeaponId !== null;
+  }
+
+  get headerTitle(): string {
+    if (this.creatorMode === 'weapon') {
+      return this.editingWeaponId !== null ? 'Edit Weapon' : 'Admin Creator';
+    }
+
+    return this.editingItemId !== null ? 'Edit Item' : 'Admin Creator';
+  }
+
+  get headerDescription(): string {
+    if (this.creatorMode === 'weapon') {
+      return this.editingWeaponId !== null
+        ? 'Update an existing weapon using the same structured form as creation.'
+        : 'Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.';
+    }
+
+    return this.editingItemId !== null
+      ? 'Update an existing item using the same structured form as creation.'
+      : 'Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.';
+  }
+
+  get submitLabel(): string {
+    if (this.isSaving) {
+      if (this.creatorMode === 'weapon') {
+        return this.editingWeaponId !== null ? 'Saving...' : 'Creating...';
+      }
+
+      return this.editingItemId !== null ? 'Saving...' : 'Creating...';
+    }
+
+    if (this.creatorMode === 'weapon') {
+      return this.editingWeaponId !== null ? 'Save Weapon' : 'Create Weapon';
+    }
+
+    return this.editingItemId !== null ? 'Save Item' : 'Create Item';
   }
 
   setCreatorMode(mode: 'item' | 'weapon'): void {
@@ -329,19 +387,33 @@ export class ItemAdminPageComponent implements OnInit {
       }
 
       this.isSaving = true;
-      this.dataService.createWeapon(weaponPayload).subscribe({
-        next: createdWeapon => {
-          this.lastCreatedWeapon = createdWeapon;
-          this.toastService.show(`Created ${createdWeapon.name ?? 'weapon'} successfully`, 'success');
+      const request$ = this.editingWeaponId !== null
+        ? this.dataService.updateWeapon(weaponPayload)
+        : this.dataService.createWeapon(weaponPayload);
+
+      request$.subscribe({
+        next: savedWeapon => {
+          this.lastCreatedWeapon = savedWeapon;
+          this.toastService.show(
+            `${this.editingWeaponId !== null ? 'Updated' : 'Created'} ${savedWeapon.name ?? 'weapon'} successfully`,
+            'success'
+          );
           this.dataService.refreshWeapons().subscribe(weapons => {
             this.weapons = [...weapons].sort((a, b) => a.name.localeCompare(b.name));
           });
-          this.resetWeaponForm();
+          if (this.editingWeaponId !== null) {
+            this.loadWeaponIntoForm(savedWeapon);
+          } else {
+            this.resetWeaponForm();
+          }
           this.isSaving = false;
         },
         error: err => {
           const message = err?.error?.error || err?.message || 'Unknown error';
-          this.toastService.show(`Failed to create weapon: ${message}`, 'error');
+          this.toastService.show(
+            `Failed to ${this.editingWeaponId !== null ? 'update' : 'create'} weapon: ${message}`,
+            'error'
+          );
           this.isSaving = false;
         }
       });
@@ -354,17 +426,31 @@ export class ItemAdminPageComponent implements OnInit {
     }
 
     this.isSaving = true;
-    this.dataService.createItem(payload).subscribe({
-      next: createdItem => {
-        this.lastCreatedItem = createdItem;
-        this.toastService.show(`Created ${createdItem.name ?? 'item'} successfully`, 'success');
+    const request$ = this.editingItemId !== null
+      ? this.dataService.updateItem(payload)
+      : this.dataService.createItem(payload);
+
+    request$.subscribe({
+      next: savedItem => {
+        this.lastCreatedItem = savedItem;
+        this.toastService.show(
+          `${this.editingItemId !== null ? 'Updated' : 'Created'} ${savedItem.name ?? 'item'} successfully`,
+          'success'
+        );
         this.dataService.refreshItems().subscribe();
-        this.resetForm();
+        if (this.editingItemId !== null) {
+          this.loadItemIntoForm(savedItem);
+        } else {
+          this.resetForm();
+        }
         this.isSaving = false;
       },
       error: err => {
         const message = err?.error?.error || err?.message || 'Unknown error';
-        this.toastService.show(`Failed to create item: ${message}`, 'error');
+        this.toastService.show(
+          `Failed to ${this.editingItemId !== null ? 'update' : 'create'} item: ${message}`,
+          'error'
+        );
         this.isSaving = false;
       }
     });
@@ -398,6 +484,94 @@ export class ItemAdminPageComponent implements OnInit {
   ruleNeedsValue(ruleId: number): boolean {
     const rule = this.weaponRules.find(entry => entry.id === ruleId);
     return !!rule && /<x>/i.test(rule.name);
+  }
+
+  private applyPendingEditSession(): void {
+    if (!this.optionsLoaded) {
+      return;
+    }
+
+    if (!this.pendingEditSession) {
+      this.startCreateMode();
+      return;
+    }
+
+    if (this.pendingEditSession.mode === 'item') {
+      this.loadItemIntoForm(this.pendingEditSession.item);
+      return;
+    }
+
+    this.loadWeaponIntoForm(this.pendingEditSession.weapon);
+  }
+
+  private startCreateMode(): void {
+    this.clearEditState();
+    this.creatorMode = 'item';
+    this.resetForm();
+    this.resetWeaponForm();
+  }
+
+  private clearEditState(): void {
+    this.editingItemId = null;
+    this.editingWeaponId = null;
+  }
+
+  private loadItemIntoForm(item: Item): void {
+    this.clearEditState();
+    this.creatorMode = 'item';
+    this.resetForm();
+
+    this.editingItemId = item.id ?? null;
+    this.selectedCategoryKey = (item.type as CategoryKey | undefined) ?? '';
+    this.name = item.name ?? '';
+    this.price = item.price ?? null;
+    this.description = item.description ?? '';
+    this.quantity = item.quantity ?? null;
+    this.isEquippable = !!item.isEquippable;
+    this.raceReq = item.raceReq ?? 'universal';
+    this.ammunitionSubtype = item.subtype ?? '';
+    this.modificationPart = item.part ?? 'Any';
+    this.damage = item.damage ?? '';
+    this.optimalConditions = item.optimalConditions ?? '';
+    this.maxSpeed = item.maxSpeed ?? '';
+    this.maxWeight = item.maxWeight ?? null;
+    this.weight = item.weight ?? null;
+    this.shipWounds = item.shipWounds ?? null;
+    this.defense = item.defense ?? null;
+    this.maxCargo = item.maxCargo ?? null;
+    this.ammoType = item.ammoType ?? '';
+    this.talentId = item.talentId ?? '';
+    this.deployableSubtype = ((item as any).subType as DeployableSubtype | undefined) ?? '';
+    this.deployableWeaponSelection = null;
+    this.deployableWeaponIds = [...(item.weapons ?? [])];
+    this.deployableBestiaryId = item.bestiaryId ?? null;
+    this.blueprintFor = item.blueprintFor ?? null;
+    this.buildMaterialSelection = null;
+    this.buildMaterialAmount = 1;
+    this.buildMaterials = (item.buildMaterials ?? []).map(material => ({
+      id: material.id,
+      amount: material.amount
+    }));
+    this.materialBestiaryId = item.bestiaryId ?? null;
+    this.statModifications = (item.statModifications ?? []).map(modification => ({
+      stat: modification.stat,
+      mod: modification.mod,
+      applyToType: modification.applyToType ?? '',
+      applyToValue: modification.applyToValue ?? ''
+    }));
+  }
+
+  private loadWeaponIntoForm(weapon: Weapon): void {
+    this.clearEditState();
+    this.creatorMode = 'weapon';
+    this.resetWeaponForm();
+
+    this.editingWeaponId = weapon.id ?? null;
+    this.weaponName = weapon.name ?? '';
+    this.weaponPrice = weapon.price ?? null;
+    this.weaponProfiles = weapon.profiles.length
+      ? weapon.profiles.map(profile => this.mapWeaponProfileToDraft(profile))
+      : [this.createEmptyWeaponProfile()];
   }
 
   private resetForm(): void {
@@ -453,6 +627,10 @@ export class ItemAdminPageComponent implements OnInit {
       name,
       type: this.selectedCategoryKey
     };
+
+    if (this.editingItemId !== null) {
+      payload['id'] = this.editingItemId;
+    }
 
     this.assignIfPresent(payload, 'description', this.description);
     this.assignIfPresent(payload, 'price', this.price);
@@ -581,6 +759,10 @@ export class ItemAdminPageComponent implements OnInit {
       profiles
     };
 
+    if (this.editingWeaponId !== null) {
+      payload.id = this.editingWeaponId;
+    }
+
     if (typeof this.weaponPrice === 'number' && !Number.isNaN(this.weaponPrice)) {
       payload.price = this.weaponPrice;
     }
@@ -633,6 +815,24 @@ export class ItemAdminPageComponent implements OnInit {
       type: '',
       selectedRuleIds: [],
       specialRules: []
+    };
+  }
+
+  private mapWeaponProfileToDraft(profile: WeaponProfile): WeaponProfileDraft {
+    return {
+      profileName: profile.profileName ?? '',
+      rngInput: profile.rng === null ? '' : String(profile.rng),
+      attacks: profile.attacks ?? null,
+      ws: profile.ws ?? null,
+      damageMin: profile.damage?.min ?? null,
+      damageMax: profile.damage?.max ?? null,
+      body: profile.body ?? (this.bodyTypeOptions[0] ?? 'universal'),
+      type: profile.type ?? '',
+      selectedRuleIds: profile.specialRules.map(rule => rule.ruleId),
+      specialRules: profile.specialRules.map(rule => ({
+        ruleId: rule.ruleId,
+        modValue: rule.modValue
+      }))
     };
   }
 

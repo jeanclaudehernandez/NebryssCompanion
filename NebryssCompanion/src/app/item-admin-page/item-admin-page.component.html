@@ -1,8 +1,8 @@
 <div class="admin-page">
   <div class="player-detail-container admin-header">
     <div>
-      <h2>Admin Creator</h2>
-      <p>Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.</p>
+      <h2>{{ headerTitle }}</h2>
+      <p>{{ headerDescription }}</p>
     </div>
   </div>
 
@@ -418,7 +418,7 @@
 
       <div class="actions dialog-buttons">
         <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
-          {{ isSaving ? 'Creating...' : creatorMode === 'item' ? 'Create Item' : 'Create Weapon' }}
+          {{ submitLabel }}
         </button>
       </div>
     </form>
@@ -430,7 +430,7 @@
       </section>
 
       <section class="item admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
-        <h3>Last Created Item</h3>
+        <h3>{{ editingItemId !== null ? 'Last Saved Item' : 'Last Created Item' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedItem.name }}</div>
           <div><strong>Type:</strong> {{ lastCreatedItem.type }}</div>
@@ -442,7 +442,7 @@
       </section>
 
       <section class="item admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
-        <h3>Last Created Weapon</h3>
+        <h3>{{ editingWeaponId !== null ? 'Last Saved Weapon' : 'Last Created Weapon' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedWeapon.name }}</div>
           <div><strong>Price:</strong> {{ lastCreatedWeapon.price }}</div>

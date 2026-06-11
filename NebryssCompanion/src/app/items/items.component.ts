@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
@@ -10,12 +10,12 @@ import { ActivePlayerService } from '../active-player.service';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
 import { AdminService } from '../admin.service';
-import { JsonEditorComponent } from '../json-editor/json-editor.component';
+import { AdminEditorSession } from '../admin-editor.models';
 
 @Component({
   selector: 'app-items',
   standalone: true,
-  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent, JsonEditorComponent],
+  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
       <div class="weapons-section" [id]="'weapon'">
@@ -96,20 +96,6 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
       </div>
     </ng-template>
 
-    <ng-template #editModal>
-      <div class="edit-modal">
-        <h3>Edit Item</h3>
-        <div style="margin: 20px 0;">
-            <label for="itemData" style="display: block; margin-bottom: 5px;">Item Data (JSON):</label>
-            <app-json-editor [(value)]="editedItemJson"></app-json-editor>
-        </div>
-        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-          <button (click)="modalService.close()" style="padding: 8px 16px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer;">Cancel</button>
-          <button (click)="confirmEdit()" style="padding: 8px 16px; border: none; background: #9C27B0; color: white; border-radius: 4px; cursor: pointer;">Save</button>
-        </div>
-      </div>
-    </ng-template>
-
     <ng-template #deleteModal>
       <div class="delete-modal">
         <h3>Delete Item</h3>
@@ -125,6 +111,8 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
   styleUrls: ['./items.component.css']
 })
 export class ItemsComponent implements OnInit {
+  @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
+
   itemsData!: Items; // Use Items interface
   weaponsData: Weapon[] = [];
   weaponRules: WeaponRule[] = [];
@@ -140,23 +128,17 @@ export class ItemsComponent implements OnInit {
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
   @ViewChild('deleteModal') deleteModal!: TemplateRef<any>;
-  @ViewChild('editModal') editModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   
   // Cloning
   itemToClone: any = null;
   clonedItemName: string = '';
 
-  // Editing
-  itemToEdit: any = null;
-  editedItemJson: string = '';
-
   // Deleting
   itemToDelete: any = null;
   
   // Weapon Management
   weaponToClone: Weapon | null = null;
-  weaponToEdit: Weapon | null = null;
   weaponToDelete: Weapon | null = null;
   
   isAdmin = false;
@@ -232,9 +214,10 @@ export class ItemsComponent implements OnInit {
   }
 
   onEditWeapon(weapon: Weapon) {
-    this.weaponToEdit = weapon;
-    this.editedItemJson = JSON.stringify(weapon, null, 2);
-    this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
+    this.openAdminEditor.emit({
+      mode: 'weapon',
+      weapon: JSON.parse(JSON.stringify(weapon))
+    });
   }
 
   getMaterialName(id: number): string {
@@ -254,11 +237,11 @@ export class ItemsComponent implements OnInit {
   }
 
   onEditItem(item: any) {
-    this.itemToEdit = item;
-    // Edit the raw item data rather than the view-model used by the table.
     const rawItem = this.itemsData.items.find(i => i.id === item.id);
-    this.editedItemJson = JSON.stringify(rawItem || item, null, 2);
-    this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
+    this.openAdminEditor.emit({
+      mode: 'item',
+      item: JSON.parse(JSON.stringify((rawItem || item)))
+    });
   }
 
   onDeleteItem(item: any) {
@@ -360,61 +343,6 @@ export class ItemsComponent implements OnInit {
           this.toastService.show(`Failed to delete weapon: ${err.message}`, 'error');
         }
       });
-    }
-  }
-
-  confirmEdit() {
-    try {
-      const editedData = JSON.parse(this.editedItemJson);
-      
-      if (this.itemToEdit) {
-        // Ensure the ID matches
-        if (this.itemToEdit.id && editedData.id !== this.itemToEdit.id) {
-          if (!confirm('You are changing the Item ID. This might break references. Continue?')) {
-            return;
-          }
-        }
-
-        this.dataService.updateItem(editedData).subscribe({
-          next: (result) => {
-            this.toastService.show('Item updated successfully', 'success');
-            this.modalService.close();
-            this.itemToEdit = null;
-            
-            // Refresh items
-            this.dataService.refreshItems().subscribe(items => {
-              this.itemsData = items;
-              this.refreshCategoryData();
-            });
-          },
-          error: (err) => {
-            console.error('Error updating item', err);
-            this.toastService.show('Failed to update item', 'error');
-          }
-        });
-      } else if (this.weaponToEdit) {
-        this.dataService.updateWeapon(editedData).subscribe({
-          next: (updatedWeapon) => {
-            this.toastService.show('Weapon updated successfully', 'success');
-            this.modalService.close();
-            
-            // Refresh weapons
-            this.dataService.refreshWeapons().subscribe(weapons => {
-              this.weaponsData = weapons;
-              this.allWeaponIds = this.weaponsData.map(w => w.id);
-              this.refreshCategoryData();
-            });
-            
-            this.weaponToEdit = null;
-          },
-          error: (err) => {
-            console.error('Error updating weapon', err);
-            this.toastService.show('Failed to update weapon', 'error');
-          }
-        });
-      }
-    } catch (e) {
-      this.toastService.show('Invalid JSON format', 'error');
     }
   }
 

@@ -24,6 +24,7 @@ import { WeaponRule } from './model';
 import { AfflictionsListComponent } from './afflictions-list/afflictions-list.component';
 import { ShipNavigationComponent } from './ship-navigation/ship-navigation.component';
 import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.component';
+import { AdminEditorSession } from './admin-editor.models';
 
   @Component({
   selector: 'app-root',
@@ -73,7 +74,7 @@ import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.compon
         <app-bestiary></app-bestiary>
       }
       @if (currentView === 'items') {
-        <app-items></app-items>
+        <app-items (openAdminEditor)="onOpenAdminEditor($event)"></app-items>
       }
       @if (currentView === 'shops') {
         <app-shops (navigateToLocation)="onNavigateToLocation($event)"></app-shops>
@@ -109,7 +110,7 @@ import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.compon
         <app-afflictions-list></app-afflictions-list>
       }
       @if (currentView === 'adminItemCreator') {
-        <app-item-admin-page></app-item-admin-page>
+        <app-item-admin-page [editSession]="adminEditSession"></app-item-admin-page>
       }
     </div>
 
@@ -158,6 +159,7 @@ export class AppComponent {
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
+  adminEditSession: AdminEditorSession | null = null;
 
   // Pull to refresh variables
   private pullStartY = 0;
@@ -307,6 +309,9 @@ export class AppComponent {
 
   onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.currentView = view;
+    if (view === 'adminItemCreator') {
+      this.adminEditSession = null;
+    }
     // Reset selectedLocationName when manually changing views, unless we are navigating specifically
     // Ideally this logic should be more granular, but for now this is fine.
     // Actually, if we just clicked sidebar, we probably want to reset it.
@@ -319,6 +324,17 @@ export class AppComponent {
     
     // Save current view
     localStorage.setItem('lastView', view);
+    window.scrollTo({ top: 0 });
+  }
+
+  onOpenAdminEditor(session: AdminEditorSession) {
+    this.adminEditSession = session;
+    this.currentView = 'adminItemCreator';
+    this.selectedLocationName = null;
+    this.selectedFactionName = null;
+    this.selectedRuleName = null;
+    this.selectedStateName = null;
+    localStorage.setItem('lastView', 'adminItemCreator');
     window.scrollTo({ top: 0 });
   }
 
