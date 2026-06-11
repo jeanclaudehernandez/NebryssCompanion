@@ -23,6 +23,7 @@ import { WeaponRuleDialogComponent } from './weapon-rule/weapon-rule.component';
 import { WeaponRule } from './model';
 import { AfflictionsListComponent } from './afflictions-list/afflictions-list.component';
 import { ShipNavigationComponent } from './ship-navigation/ship-navigation.component';
+import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.component';
 
   @Component({
   selector: 'app-root',
@@ -45,7 +46,8 @@ import { ShipNavigationComponent } from './ship-navigation/ship-navigation.compo
     WeaponRulesPageComponent,
     AlteredStatesPageComponent,
     AfflictionsListComponent,
-    ShipNavigationComponent
+    ShipNavigationComponent,
+    ItemAdminPageComponent
   ],
   template: `
     <!-- Pull to Refresh Indicator -->
@@ -106,6 +108,9 @@ import { ShipNavigationComponent } from './ship-navigation/ship-navigation.compo
       @if (currentView === 'afflictions') {
         <app-afflictions-list></app-afflictions-list>
       }
+      @if (currentView === 'adminItemCreator') {
+        <app-item-admin-page></app-item-admin-page>
+      }
     </div>
 
     <nav class="footer-menu" aria-label="Footer menu">
@@ -148,7 +153,7 @@ import { ShipNavigationComponent } from './ship-navigation/ship-navigation.compo
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' = 'players';
+  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
   selectedLocationName: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
@@ -297,10 +302,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation'].includes(view);
+      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation') {
+  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.currentView = view;
     // Reset selectedLocationName when manually changing views, unless we are navigating specifically
     // Ideally this logic should be more granular, but for now this is fine.

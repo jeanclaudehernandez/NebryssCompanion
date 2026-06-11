@@ -341,6 +341,31 @@ h6 { font-size: 0.8rem; margin: 0.1rem 0; }
   --mat-dialog-button-color: #3498db;
 }
 
+/* Admin weapon rules select overlay */
+.cdk-overlay-pane .weapon-rules-panel[role="listbox"] {
+  background-color: #ffffff !important;
+}
+
+.cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mat-mdc-option {
+  background-color: #ffffff !important;
+}
+
+.cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mdc-list-item__primary-text {
+  color: #333333 !important;
+}
+
+body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mat-mdc-option {
+  background-color: #2d2d2d !important;
+}
+
+body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mdc-list-item__primary-text {
+  color: #e0e0e0 !important;
+}
+
 /* Toast notification styles */
 .toast {
   position: fixed;

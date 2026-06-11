@@ -1,0 +1,455 @@
+<div class="admin-page">
+  <div class="player-detail-container admin-header">
+    <div>
+      <h2>Admin Creator</h2>
+      <p>Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+    <p>This page is only available after logging in with the admin password from the sidebar.</p>
+  </div>
+
+  <div *ngIf="isAdmin" class="layout">
+    <div class="player-detail-container admin-mode-panel">
+      <div class="item admin-section">
+        <h3>Creator Type</h3>
+        <div class="creator-mode-buttons">
+          <button
+            *ngFor="let mode of creatorModes"
+            type="button"
+            class="inline-btn"
+            [class.active-mode]="creatorMode === mode.value"
+            (click)="setCreatorMode(mode.value)"
+          >
+            {{ mode.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <form class="player-detail-container" (ngSubmit)="submit()">
+      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+        <h3>Basic Details</h3>
+
+        <label class="field">
+          <span>Item Category</span>
+          <select [(ngModel)]="selectedCategoryKey" name="selectedCategoryKey" (ngModelChange)="onCategoryChange()">
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categories" [value]="category.key">
+              {{ category.name }}
+            </option>
+          </select>
+        </label>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Name</span>
+            <input [(ngModel)]="name" name="name" type="text" placeholder="Item name" />
+          </label>
+
+          <label class="field">
+            <span>Price</span>
+            <input [(ngModel)]="price" name="price" type="number" min="0" placeholder="Optional" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Description</span>
+          <textarea [(ngModel)]="description" name="description" rows="4" placeholder="Item effect or flavor text"></textarea>
+        </label>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Granted Talent</span>
+            <select [(ngModel)]="talentId" name="talentId">
+              <option value="">None</option>
+              <option *ngFor="let talent of talents" [value]="talent.id">
+                {{ talent.name }} ({{ talent.categoryName }})
+              </option>
+            </select>
+          </label>
+
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isEquippable" name="isEquippable" type="checkbox" />
+            <span>Equippable item</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'armor'">
+        <h3>Armor Options</h3>
+        <label class="field">
+          <span>Body Type</span>
+          <select [(ngModel)]="raceReq" name="raceReq">
+            <option *ngFor="let bodyType of bodyTypeOptions" [value]="bodyType">{{ bodyType }}</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'ammunition'">
+        <h3>Ammunition Options</h3>
+        <div class="field-grid">
+          <label class="field">
+            <span>Quantity</span>
+            <input [(ngModel)]="quantity" name="quantity" type="number" min="1" />
+          </label>
+
+          <label class="field">
+            <span>Subtype</span>
+            <select [(ngModel)]="ammunitionSubtype" name="ammunitionSubtype">
+              <option value="">Select a subtype</option>
+              <option *ngFor="let subtype of ammoSubtypeOptions" [value]="subtype">{{ subtype }}</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'mistEngine'">
+        <h3>Mist Engine Options</h3>
+        <div class="field-grid">
+          <label class="field">
+            <span>Optimal Conditions</span>
+            <input [(ngModel)]="optimalConditions" name="optimalConditions" type="text" />
+          </label>
+
+          <label class="field">
+            <span>Max Speed</span>
+            <input [(ngModel)]="maxSpeed" name="maxSpeed" type="text" />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Max Weight</span>
+          <input [(ngModel)]="maxWeight" name="maxWeight" type="number" min="0" />
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'shipHull'">
+        <h3>Ship Hull Options</h3>
+        <div class="field-grid">
+          <label class="field">
+            <span>Weight</span>
+            <input [(ngModel)]="weight" name="shipHullWeight" type="number" min="0" />
+          </label>
+
+          <label class="field">
+            <span>Ship Wounds</span>
+            <input [(ngModel)]="shipWounds" name="shipWounds" type="number" min="0" />
+          </label>
+
+          <label class="field">
+            <span>Defense</span>
+            <input [(ngModel)]="defense" name="defense" type="number" min="0" />
+          </label>
+
+          <label class="field">
+            <span>Max Cargo</span>
+            <input [(ngModel)]="maxCargo" name="maxCargo" type="number" min="0" />
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannon'">
+        <h3>Cannon Options</h3>
+        <div class="field-grid">
+          <label class="field">
+            <span>Ammo Type</span>
+            <input [(ngModel)]="ammoType" name="ammoType" type="text" />
+          </label>
+
+          <label class="field">
+            <span>Weight</span>
+            <input [(ngModel)]="weight" name="cannonWeight" type="number" min="0" />
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannonball'">
+        <h3>Cannonball Options</h3>
+        <label class="field">
+          <span>Damage</span>
+          <input [(ngModel)]="damage" name="damage" type="text" placeholder="Example: 20/25" />
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'modification'">
+        <h3>Modification Options</h3>
+        <label class="field">
+          <span>Part</span>
+          <select [(ngModel)]="modificationPart" name="modificationPart">
+            <option *ngFor="let part of modificationPartOptions" [value]="part">{{ part }}</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'material'">
+        <h3>Material Options</h3>
+        <label class="field">
+          <span>Dropped By</span>
+          <select [(ngModel)]="materialBestiaryId" name="materialBestiaryId">
+            <option [ngValue]="null">None</option>
+            <option *ngFor="let creature of bestiary" [ngValue]="creature.id">{{ creature.name }}</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'blueprint'">
+        <h3>Blueprint Options</h3>
+
+        <label class="field">
+          <span>Weapon</span>
+          <select [(ngModel)]="blueprintFor" name="blueprintFor">
+            <option [ngValue]="null">Select a weapon</option>
+            <option *ngFor="let weapon of weapons" [ngValue]="weapon.id">{{ weapon.name }}</option>
+          </select>
+        </label>
+
+        <div class="picker-row">
+          <label class="field grow">
+            <span>Add Build Material</span>
+            <select [(ngModel)]="buildMaterialSelection" name="buildMaterialSelection">
+              <option [ngValue]="null">Select a material</option>
+              <option *ngFor="let material of buildMaterialOptions" [ngValue]="material.id">{{ material.name }}</option>
+            </select>
+          </label>
+
+          <label class="field amount-field">
+            <span>Amount</span>
+            <input [(ngModel)]="buildMaterialAmount" name="buildMaterialAmount" type="number" min="1" />
+          </label>
+
+          <button class="inline-btn" type="button" (click)="addBuildMaterial()">Add</button>
+        </div>
+
+        <ul class="admin-list" *ngIf="buildMaterials.length">
+          <li *ngFor="let material of buildMaterials">
+            <span>{{ getMaterialName(material.id) }} x{{ material.amount }}</span>
+            <button class="inline-btn" type="button" (click)="removeBuildMaterial(material.id)">Remove</button>
+          </li>
+        </ul>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'deployable'">
+        <h3>Deployable Options</h3>
+
+        <label class="field">
+          <span>Subtype</span>
+          <select [(ngModel)]="deployableSubtype" name="deployableSubtype">
+            <option value="">Select a subtype</option>
+            <option *ngFor="let subtype of deployableSubtypeOptions" [value]="subtype">{{ subtype }}</option>
+          </select>
+        </label>
+
+        <div *ngIf="deployableSubtype === 'construct'">
+          <div class="picker-row">
+            <label class="field grow">
+              <span>Weapon</span>
+              <select [(ngModel)]="deployableWeaponSelection" name="deployableWeaponSelection">
+                <option [ngValue]="null">Select a weapon</option>
+                <option *ngFor="let weapon of weapons" [ngValue]="weapon.id">{{ weapon.name }}</option>
+              </select>
+            </label>
+
+            <button class="inline-btn" type="button" (click)="addDeployableWeapon()">Add</button>
+          </div>
+
+          <ul class="admin-list" *ngIf="deployableWeaponIds.length">
+            <li *ngFor="let weaponId of deployableWeaponIds">
+              <span>{{ getWeaponName(weaponId) }}</span>
+              <button class="inline-btn" type="button" (click)="removeDeployableWeapon(weaponId)">Remove</button>
+            </li>
+          </ul>
+        </div>
+
+        <label class="field" *ngIf="deployableSubtype === 'mob'">
+          <span>Creature</span>
+          <select [(ngModel)]="deployableBestiaryId" name="deployableBestiaryId">
+            <option [ngValue]="null">Select a creature</option>
+            <option *ngFor="let creature of bestiary" [ngValue]="creature.id">{{ creature.name }}</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+        <div class="section-header">
+          <h3>Stat Modifications</h3>
+          <button class="inline-btn" type="button" (click)="addStatModification()">Add Modification</button>
+        </div>
+
+        <p class="hint">Use this for direct stat changes such as wounds, save, hit, damage, attacks, or crit effects.</p>
+
+        <div class="profile admin-subsection" *ngFor="let modification of statModifications; let i = index">
+          <div class="field-grid">
+            <label class="field">
+              <span>Stat</span>
+              <select [(ngModel)]="modification.stat" [name]="'stat-' + i">
+                <option *ngFor="let stat of statOptions" [value]="stat">{{ stat }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Modifier</span>
+              <input [(ngModel)]="modification.mod" [name]="'mod-' + i" type="number" />
+            </label>
+
+            <label class="field">
+              <span>Apply To</span>
+              <select [(ngModel)]="modification.applyToType" [name]="'applyToType-' + i">
+                <option value="">None</option>
+                <option *ngFor="let applyToType of applyToTypeOptions" [value]="applyToType">{{ applyToType }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Apply To Value</span>
+              <input [(ngModel)]="modification.applyToValue" [name]="'applyToValue-' + i" type="text" placeholder="human, rifle, 0..." />
+            </label>
+          </div>
+
+          <button class="remove-btn" type="button" (click)="removeStatModification(i)">Remove modification</button>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+        <h3>Weapon Details</h3>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Name</span>
+            <input [(ngModel)]="weaponName" name="weaponName" type="text" placeholder="Weapon name" />
+          </label>
+
+          <label class="field">
+            <span>Price</span>
+            <input [(ngModel)]="weaponPrice" name="weaponPrice" type="number" min="0" placeholder="0-150" />
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+        <div class="section-header">
+          <h3>Profiles</h3>
+          <button class="inline-btn" type="button" (click)="addWeaponProfile()">Add Profile</button>
+        </div>
+
+        <div class="profile admin-subsection" *ngFor="let profile of weaponProfiles; let i = index">
+          <div class="section-header">
+            <h4>Profile {{ i + 1 }}</h4>
+            <button class="remove-btn" type="button" (click)="removeWeaponProfile(i)">Remove profile</button>
+          </div>
+
+          <div class="field-grid">
+            <label class="field">
+              <span>Profile Name</span>
+              <input [(ngModel)]="profile.profileName" [name]="'weapon-profile-name-' + i" type="text" placeholder='Leave empty for default "" profile' />
+            </label>
+
+            <label class="field">
+              <span>Body</span>
+              <select [(ngModel)]="profile.body" [name]="'weapon-body-' + i">
+                <option *ngFor="let bodyType of bodyTypeOptions" [value]="bodyType">{{ bodyType }}</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>Type</span>
+              <input [(ngModel)]="profile.type" [name]="'weapon-type-' + i" type="text" placeholder="rifle, sword, staff..." />
+            </label>
+
+            <label class="field">
+              <span>Range</span>
+              <input [(ngModel)]="profile.rngInput" [name]="'weapon-range-' + i" type="text" placeholder='Use 0 for melee, blank for null/infinite' />
+            </label>
+
+            <label class="field">
+              <span>Attacks</span>
+              <input [(ngModel)]="profile.attacks" [name]="'weapon-attacks-' + i" type="number" min="0" />
+            </label>
+
+            <label class="field">
+              <span>WS</span>
+              <input [(ngModel)]="profile.ws" [name]="'weapon-ws-' + i" type="number" min="1" max="6" />
+            </label>
+
+            <label class="field">
+              <span>Damage Min</span>
+              <input [(ngModel)]="profile.damageMin" [name]="'weapon-damage-min-' + i" type="number" min="0" />
+            </label>
+
+            <label class="field">
+              <span>Damage Max</span>
+              <input [(ngModel)]="profile.damageMax" [name]="'weapon-damage-max-' + i" type="number" min="0" />
+            </label>
+          </div>
+
+          <div class="field">
+            <span>Weapon Rules</span>
+            <mat-form-field appearance="outline" class="weapon-rules-field">
+              <mat-select
+                multiple
+                panelClass="weapon-rules-panel"
+                [(ngModel)]="profile.selectedRuleIds"
+                [name]="'weapon-rules-' + i"
+                (selectionChange)="onWeaponRuleSelectionChange(profile)"
+              >
+                <mat-option *ngFor="let rule of weaponRules" [value]="rule.id">
+                  {{ rule.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="field-grid" *ngIf="profile.specialRules.length">
+            <label class="field" *ngFor="let rule of profile.specialRules; let ruleIndex = index">
+              <span>{{ getRuleName(rule.ruleId) }} Value</span>
+              <input
+                [(ngModel)]="rule.modValue"
+                [name]="'weapon-rule-value-' + i + '-' + ruleIndex"
+                [disabled]="!ruleNeedsValue(rule.ruleId)"
+                type="number"
+                placeholder="Optional"
+              />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <div class="actions dialog-buttons">
+        <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
+          {{ isSaving ? 'Creating...' : creatorMode === 'item' ? 'Create Item' : 'Create Weapon' }}
+        </button>
+      </div>
+    </form>
+
+    <aside class="player-detail-container">
+      <section class="item admin-section">
+        <h3>{{ creatorMode === 'item' ? 'Item' : 'Weapon' }} JSON Preview</h3>
+        <pre class="admin-preview-json">{{ previewJson }}</pre>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
+        <h3>Last Created Item</h3>
+        <div class="summary-list">
+          <div><strong>Name:</strong> {{ lastCreatedItem.name }}</div>
+          <div><strong>Type:</strong> {{ lastCreatedItem.type }}</div>
+          <div><strong>ID:</strong> {{ lastCreatedItem.id }}</div>
+          <div *ngIf="lastCreatedItem.talentId"><strong>Talent:</strong> {{ getTalentLabel(lastCreatedItem.talentId) }}</div>
+          <div *ngIf="lastCreatedDeployableSubtype"><strong>Deployable Subtype:</strong> {{ lastCreatedDeployableSubtype }}</div>
+          <div *ngIf="lastCreatedItem.bestiaryId"><strong>Creature:</strong> {{ getCreatureName(lastCreatedItem.bestiaryId) }}</div>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
+        <h3>Last Created Weapon</h3>
+        <div class="summary-list">
+          <div><strong>Name:</strong> {{ lastCreatedWeapon.name }}</div>
+          <div><strong>Price:</strong> {{ lastCreatedWeapon.price }}</div>
+          <div><strong>ID:</strong> {{ lastCreatedWeapon.id }}</div>
+          <div><strong>Profiles:</strong> {{ lastCreatedWeapon.profiles.length }}</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

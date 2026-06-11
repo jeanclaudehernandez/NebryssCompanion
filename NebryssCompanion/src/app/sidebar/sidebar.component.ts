@@ -18,7 +18,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
   isOpen = false;
   isAdmin = false;
 
@@ -70,9 +70,20 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation') {
+  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.viewChange.emit(view);
     this.toggleMenu();
+  }
+
+  openAdminItemCreator(): void {
+    if (this.isAdmin) {
+      this.changeView('adminItemCreator');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminItemCreator');
+    });
   }
 
   forceUpdate() {
@@ -93,12 +104,13 @@ export class SidebarComponent {
     this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
   }
 
-  openAdminDialog(template: TemplateRef<any>) {
+  openAdminDialog(template: TemplateRef<any>, onSuccess?: () => void) {
     const dialogContext = {
       check: (password: string) => {
         if (password === '2602') {
           this.adminService.setAdminStatus(true);
           this.modalService.close();
+          onSuccess?.();
         } else {
           alert('Incorrect password');
         }
