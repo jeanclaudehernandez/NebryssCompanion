@@ -46,7 +46,7 @@ import { JsonEditorComponent } from '../json-editor/json-editor.component';
         <app-generic-table 
           [storageKey]="'items-category-' + category.key"
           [title]="category.name"
-          [data]="getCategoryData(category.key)"
+          [data]="categoryDataMap[category.key] || []"
           [headers]="category.headers"
           [headerKeys]="category.keys"
           [renderHtml]="['description']"
@@ -129,6 +129,7 @@ export class ItemsComponent implements OnInit {
   weaponsData: Weapon[] = [];
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
+  categoryDataMap: Record<string, any[]> = {};
   alteredStates: AlteredState[] = [];
   bestiary: BestiaryEntry[] = [];
   allWeaponIds: number[] = [];
@@ -158,9 +159,6 @@ export class ItemsComponent implements OnInit {
   weaponToEdit: Weapon | null = null;
   weaponToDelete: Weapon | null = null;
   
-  // Map of item types to categories for display purposes
-  private typeToCategory: {[key: string]: ItemCategory} = {};
-  
   isAdmin = false;
 
   constructor(
@@ -178,9 +176,6 @@ export class ItemsComponent implements OnInit {
   ngOnInit() {
     this.dataService.getAllData().subscribe(data => {
       this.itemsData = data.items;
-      console.log(this.itemsData);
-    
-      
       this.weaponsData = data.weapons;
       this.weaponRules = data.weaponRules;
       this.alteredStates = data.alteredStates;
@@ -188,11 +183,6 @@ export class ItemsComponent implements OnInit {
       this.bestiary = data.bestiary;
       
       this.allWeaponIds = this.weaponsData.map(w => w.id);
-      
-      // Set up type to category mapping
-      this.itemCategories.forEach(category => {
-        this.typeToCategory[category.key] = category;
-      });
       
       const saved = localStorage.getItem('items-weapons-collapsed');
       this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
@@ -207,7 +197,9 @@ export class ItemsComponent implements OnInit {
             title: category.name
           }
         })
-      ]
+      ];
+
+      this.refreshCategoryData();
     });
 
     this.activePlayerService.activePlayer$.subscribe(player => {
@@ -216,6 +208,8 @@ export class ItemsComponent implements OnInit {
       } else {
         this.activePlayerBodyTypes = [];
       }
+
+      this.refreshCategoryData();
     });
   }
 
@@ -261,8 +255,7 @@ export class ItemsComponent implements OnInit {
 
   onEditItem(item: any) {
     this.itemToEdit = item;
-    // We want to edit the raw item data, so we should find it in the main list
-    // because the item passed here might have been processed by getCategoryData
+    // Edit the raw item data rather than the view-model used by the table.
     const rawItem = this.itemsData.items.find(i => i.id === item.id);
     this.editedItemJson = JSON.stringify(rawItem || item, null, 2);
     this.modalService.openFromTemplate(this.editModal, undefined, { width: '98vw', height: '90vh' });
@@ -291,6 +284,7 @@ export class ItemsComponent implements OnInit {
           // Refresh items
           this.dataService.refreshItems().subscribe(items => {
             this.itemsData = items;
+            this.refreshCategoryData();
           });
         },
         error: (err) => {
@@ -313,6 +307,7 @@ export class ItemsComponent implements OnInit {
           this.dataService.refreshWeapons().subscribe(weapons => {
             this.weaponsData = weapons;
             this.allWeaponIds = this.weaponsData.map(w => w.id);
+            this.refreshCategoryData();
           });
           
           this.weaponToClone = null;
@@ -336,6 +331,7 @@ export class ItemsComponent implements OnInit {
           // Refresh items
           this.dataService.refreshItems().subscribe(items => {
             this.itemsData = items;
+            this.refreshCategoryData();
           });
         },
         error: (err) => {
@@ -353,6 +349,7 @@ export class ItemsComponent implements OnInit {
           this.dataService.refreshWeapons().subscribe(weapons => {
             this.weaponsData = weapons;
             this.allWeaponIds = this.weaponsData.map(w => w.id);
+            this.refreshCategoryData();
           });
           
           this.weaponToDelete = null;
@@ -387,6 +384,7 @@ export class ItemsComponent implements OnInit {
             // Refresh items
             this.dataService.refreshItems().subscribe(items => {
               this.itemsData = items;
+              this.refreshCategoryData();
             });
           },
           error: (err) => {
@@ -404,6 +402,7 @@ export class ItemsComponent implements OnInit {
             this.dataService.refreshWeapons().subscribe(weapons => {
               this.weaponsData = weapons;
               this.allWeaponIds = this.weaponsData.map(w => w.id);
+              this.refreshCategoryData();
             });
             
             this.weaponToEdit = null;
@@ -459,7 +458,19 @@ export class ItemsComponent implements OnInit {
     this.selectedBlueprint = null;
   }
 
-  getCategoryData(key: string): any[] {
+  private refreshCategoryData(): void {
+    if (!this.itemsData?.items || !this.itemCategories.length) {
+      this.categoryDataMap = {};
+      return;
+    }
+
+    this.categoryDataMap = this.itemCategories.reduce((acc, category) => {
+      acc[category.key] = this.buildCategoryData(category.key);
+      return acc;
+    }, {} as Record<string, any[]>);
+  }
+
+  private buildCategoryData(key: string): any[] {
     // Filter items by type
     if (!this.itemsData || !this.itemsData.items) {
       return [];

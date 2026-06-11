@@ -31,10 +31,19 @@ export class CustomDropdownComponent {
     this.isOpen = false;
   }
 
-  @HostListener('document:click', ['$event'])
-  onClick(event: MouseEvent) {
-    if (!this.elementRef.nativeElement.contains(event.target)) {
+  private closeIfClickedOutside(target: EventTarget | null) {
+    if (!this.elementRef.nativeElement.contains(target)) {
       this.isOpen = false;
     }
+  }
+
+  @HostListener('document:click', ['$event'])
+  onClick(event: MouseEvent) {
+    this.closeIfClickedOutside(event.target);
+  }
+
+  @HostListener('document:touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    this.closeIfClickedOutside(event.target);
   }
 }

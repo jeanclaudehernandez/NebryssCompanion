@@ -11,6 +11,7 @@ import { ActivePlayerService } from '../active-player.service';
 import { ToastService } from '../toast.service';
 import { DataService } from '../data.service';
 import { Subscription } from 'rxjs';
+import { getEffectiveTalentApplications } from '../talent-stacks';
 
 interface ruleDisplay {
   name: string,
@@ -86,6 +87,10 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.dataService.getItems().subscribe(() => {
+      this.updateSortedProfiles();
+    });
+
     this.dataService.getTalents().subscribe(talents => {
       this.talentsData = talents;
       this.updateSortedProfiles();
@@ -213,15 +218,14 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     const activeModifiers: { statModifications?: StatModification[] }[] = [];
     
     if (player && player.progression) {
-      // Talents
-      if (player.progression.talents && this.talentsData.length > 0) {
-        this.talentsData.forEach(category => {
-          category.talents.forEach(talent => {
-            if (player.progression.talents.includes(talent.id)) {
-              activeModifiers.push(talent);
-            }
-          });
-        });
+      if (this.talentsData.length > 0) {
+        activeModifiers.push(
+          ...getEffectiveTalentApplications(
+            player,
+            itemId => this.dataService.getItemById(itemId),
+            talentId => this.dataService.getTalentById(talentId)
+          )
+        );
       }
       
       // Afflictions

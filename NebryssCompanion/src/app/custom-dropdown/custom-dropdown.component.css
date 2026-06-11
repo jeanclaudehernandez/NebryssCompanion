@@ -15,6 +15,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: all 0.2s ease;
   min-height: 48px;
 }
@@ -62,6 +64,8 @@
   padding: 10px;
   cursor: pointer;
   border-bottom: 1px solid #eee;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color 0.2s;
 }
 

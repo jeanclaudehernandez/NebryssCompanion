@@ -206,4 +206,68 @@ describe('PlayerDetailComponent', () => {
     expect(mockActivePlayerService.updateActivePlayer).toHaveBeenCalled();
     expect(mockToastService.show).toHaveBeenCalledWith('Removed 50 digital mistrals', 'success');
   });
+
+  it('should not apply an equipment talent beyond the talent max stack', () => {
+    component.itemsData = {
+      items: [
+        { id: 101, name: 'Talent Armor', talentId: 't1' }
+      ] as any
+    };
+
+    mockDataService.getTalentById.and.callFake((talentId: string) => {
+      if (talentId !== 't1') {
+        return null;
+      }
+
+      return {
+        id: 't1',
+        name: 'Fleet Footed',
+        cost: 1,
+        effect: 'Movement +1',
+        maxStacks: 1,
+        statModifications: [{ stat: 'Movement', mod: 1 }] as StatModification[]
+      };
+    });
+
+    const player = component.character as Player;
+    player.progression.talents = ['t1'];
+    player.progression.equipment = [101];
+
+    component.ngOnChanges();
+
+    expect(component.calculatedAttributes.Movement).toBe(7);
+  });
+
+  it('should show equipment and acquired tags for talents in the talents table', () => {
+    component.itemsData = {
+      items: [
+        { id: 101, name: 'Verdant Hex-Torque', talentId: 't1' }
+      ] as any
+    };
+
+    mockDataService.getTalentById.and.callFake((talentId: string) => {
+      if (talentId !== 't1') {
+        return null;
+      }
+
+      return {
+        id: 't1',
+        name: 'Adept Magician',
+        cost: 1,
+        effect: 'Improve psychic hit by 1',
+        maxStacks: 1
+      };
+    });
+
+    const player = component.character as Player;
+    player.progression.talents = ['t1'];
+    player.progression.equipment = [101];
+
+    component.ngOnChanges();
+
+    expect(component.talentTableData.length).toBe(1);
+    expect(component.talentTableData[0].name).toContain('Adept Magician');
+    expect(component.talentTableData[0].name).toContain('🛡 Verdant Hex-Torque');
+    expect(component.talentTableData[0].name).toContain('🏋 acquired');
+  });
 });

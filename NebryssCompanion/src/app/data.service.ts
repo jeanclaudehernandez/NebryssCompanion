@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
 import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction } from './model';
+import { SKIP_LOADING_HEADER } from './loading.interceptor';
 
 @Injectable({
   providedIn: 'root'
@@ -424,7 +425,11 @@ export class DataService {
   }
 
   savePlayer(player: Player): Observable<Player> {
-    return this.http.put<Player>(`${this.apiUrl}/player`, player);
+    return this.http.put<Player>(`${this.apiUrl}/player`, player, {
+      headers: new HttpHeaders({
+        [SKIP_LOADING_HEADER]: 'true'
+      })
+    });
   }
 
   createItem(item: any): Observable<any> {

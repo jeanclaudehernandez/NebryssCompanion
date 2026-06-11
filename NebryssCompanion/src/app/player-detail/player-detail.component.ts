@@ -11,6 +11,12 @@ import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
 import { FormsModule } from '@angular/forms';
 import { AfflictionsDisplayComponent } from '../afflictions-display/afflictions-display.component';
+import { getEffectiveTalentApplications } from '../talent-stacks';
+
+type TalentTableRow = {
+  name: string;
+  effect: string;
+};
 
 @Component({
   selector: 'app-player-detail',
@@ -48,7 +54,7 @@ export class PlayerDetailComponent implements OnChanges {
   visibleWeaponIds: number[] = [];
   
   // Talent table properties
-  talentTableData: any[] = [];
+  talentTableData: TalentTableRow[] = [];
   talentTableHeaders: string[] = ['Name', 'Effect'];
   talentTableHeaderKeys: string[] = ['name', 'effect'];
   
@@ -109,15 +115,15 @@ export class PlayerDetailComponent implements OnChanges {
           });
         }
 
-        // Talents
-        if (player.progression.talents) {
-          player.progression.talents.forEach(talentId => {
-            const talent = this.dataService.getTalentById(talentId);
-            if (talent && talent.statModifications) {
-              applyMods(talent.statModifications);
-            }
-          });
-        }
+        getEffectiveTalentApplications(
+          player,
+          itemId => this.getItemById(itemId),
+          talentId => this.dataService.getTalentById(talentId)
+        ).forEach(talent => {
+          if (talent.statModifications) {
+            applyMods(talent.statModifications);
+          }
+        });
 
         // Afflictions
         if (player.progression.afflictions) {
@@ -144,16 +150,9 @@ export class PlayerDetailComponent implements OnChanges {
   ngOnChanges(): void {
     this.calculatedAttributes = this.getCalculatedAttributes();
     this.bodyString = this.character.attributes.body.join(', ');
-    
-    if (this.isPlayer(this.character) && this.character.progression?.talents) {
-      this.talentTableData = this.character.progression.talents.map((talentId: string) => {
-        const talent = this.dataService.getTalentById(talentId);
-        return {
-          name: talent?.name,
-          effect: talent?.effect
-        };
-      });
-    }
+    this.talentTableData = this.isPlayer(this.character)
+      ? this.buildTalentTableData(this.character as Player)
+      : [];
     
     // Initialize itemTableData
     this.itemTableData = [];
@@ -401,6 +400,51 @@ export class PlayerDetailComponent implements OnChanges {
     }
     
     return item;
+  }
+
+  private buildTalentTableData(player: Player): TalentTableRow[] {
+    const effectiveTalents = getEffectiveTalentApplications(
+      player,
+      itemId => this.getItemById(itemId),
+      talentId => this.dataService.getTalentById(talentId)
+    );
+
+    const effectiveCounts = new Map<string, number>();
+    effectiveTalents.forEach(talent => {
+      effectiveCounts.set(talent.id, (effectiveCounts.get(talent.id) || 0) + 1);
+    });
+
+    return Array.from(effectiveCounts.entries())
+      .map(([talentId, appliedCount]) => {
+        const talent = this.dataService.getTalentById(talentId);
+        if (!talent) {
+          return null;
+        }
+
+        const equipmentProviders = (player.progression?.equipment || [])
+          .map(itemId => this.getItemById(itemId))
+          .filter(item => item?.talentId === talentId);
+
+        const equipmentTags = equipmentProviders.map(item =>
+          `<span class="talent-source-tag talent-source-equipment">🛡 ${item.name}</span>`
+        );
+        const acquiredTag = player.progression?.talents?.includes(talentId)
+          ? `<span class="talent-source-tag talent-source-acquired">🏋 acquired</span>`
+          : '';
+        const stackTag = appliedCount > 1
+          ? `<span class="talent-source-tag talent-source-stack">x${appliedCount}</span>`
+          : '';
+        const sourceTags = [...equipmentTags, acquiredTag, stackTag].filter(Boolean).join(' ');
+        const sourceMarkup = sourceTags
+          ? `<div class="talent-source-tags">${sourceTags}</div>`
+          : '';
+
+        return {
+          name: `${talent.name}${sourceMarkup}`,
+          effect: talent.effect || ''
+        };
+      })
+      .filter((row): row is TalentTableRow => !!row);
   }
 
   isActivePlayer(character: Character): boolean {

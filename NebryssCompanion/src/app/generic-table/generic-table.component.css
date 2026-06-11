@@ -2,7 +2,13 @@
     margin: 1rem 0;
     border-radius: 4px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     transition: border-color 0.3s;
+}
+
+.table-header {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .items-table {
@@ -22,6 +28,8 @@
 .items-table th.sortable-header {
     cursor: pointer;
     user-select: none;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .items-table td {
@@ -67,6 +75,8 @@ h3 {
     cursor: pointer;
     font-weight: bold;
     font-size: 1rem;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     transition: background-color 0.3s;
 }
 
@@ -191,6 +201,40 @@ h3 {
     background-color: #a50000;
 }
 
+.talent-source-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+}
+
+.talent-source-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+.talent-source-equipment {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+}
+
+.talent-source-acquired {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.talent-source-stack {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
 /* Dark Theme Styles */
 body.dark-theme .table-container {
     border-color: #444;
@@ -214,4 +258,19 @@ body.dark-theme .in-inventory {
 
 body.dark-theme h3 {
     color: #e0e0e0;
+}
+
+body.dark-theme .talent-source-equipment {
+    background-color: #1e3a8a;
+    color: #dbeafe;
+}
+
+body.dark-theme .talent-source-acquired {
+    background-color: #78350f;
+    color: #fde68a;
+}
+
+body.dark-theme .talent-source-stack {
+    background-color: #374151;
+    color: #e5e7eb;
 }

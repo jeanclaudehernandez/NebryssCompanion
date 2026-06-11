@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TalentRequirementsDialogComponent } from './talent-requirements-dialog.component';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+import { getEffectiveTalentStackCount } from '../talent-stacks';
 
 @Component({
   selector: 'app-talents',
@@ -30,6 +31,8 @@ export class TalentsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    this.dataService.getItems().subscribe();
+
     this.dataService.getTalents().subscribe(talents => {
       this.talentCategories = talents;
       this.scrollSections = this.talentCategories.map((category: TalentCategory) => {
@@ -228,6 +231,15 @@ export class TalentsComponent implements OnInit, OnDestroy {
       return 0;
     }
     return this.activePlayer.progression.talents.filter(id => id === talent.id).length;
+  }
+
+  getEffectiveTalentSelectedCount(talent: Talent): number {
+    return getEffectiveTalentStackCount(
+      this.activePlayer,
+      talent.id,
+      itemId => this.dataService.getItemById(itemId),
+      talentId => this.dataService.getTalentById(talentId)
+    );
   }
 
   incrementTalent(talent: Talent, event: Event): void {

@@ -158,6 +158,8 @@ export class AppComponent {
   private pullStartY = 0;
   private isPulling = false;
   private readonly PULL_THRESHOLD = 150; // px to trigger refresh
+  private readonly PULL_START_MAX_Y = 32;
+  private readonly PULL_ACTIVATION_DISTANCE = 14;
   public pullProgress = 0; // 0 to 1
   public isRefreshing = false;
   
@@ -188,44 +190,84 @@ export class AppComponent {
     return isStandalone || isIOSStandalone;
   }
 
+  private resetPullState(resetProgress = true) {
+    this.isPulling = false;
+    if (resetProgress) {
+      this.pullProgress = 0;
+    }
+  }
+
+  private isInteractiveElement(target: EventTarget | null): boolean {
+    return target instanceof Element && !!target.closest(`
+      button,
+      a,
+      input,
+      textarea,
+      select,
+      option,
+      label,
+      summary,
+      [role="button"],
+      [contenteditable="true"],
+      .table-header,
+      .inventory-actions,
+      .dropdown-trigger,
+      .dropdown-menu,
+      .footer-menu,
+      .mat-mdc-dialog-surface,
+      .modal-content
+    `);
+  }
+
+  private canStartPullRefresh(event: TouchEvent): boolean {
+    if (!this.isStandalone || this.isRefreshing || event.touches.length !== 1) {
+      return false;
+    }
+
+    if (window.scrollY > 0) {
+      return false;
+    }
+
+    const touch = event.touches[0];
+    if (touch.clientY > this.PULL_START_MAX_Y) {
+      return false;
+    }
+
+    return !this.isInteractiveElement(event.target);
+  }
+
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent) {
-    // Only enable if in standalone mode to avoid conflict with native browser pull-to-refresh
-    if (!this.isStandalone) return;
-    
-    // Check if we are at the top of the page
-    if (window.scrollY <= 0 && !this.isRefreshing) {
-      this.pullStartY = event.touches[0].clientY;
-      this.isPulling = true;
-    } else {
-      this.isPulling = false;
+    if (!this.canStartPullRefresh(event)) {
+      this.resetPullState();
+      return;
     }
+
+    this.pullStartY = event.touches[0].clientY;
+    this.isPulling = true;
+    this.pullProgress = 0;
   }
 
   @HostListener('touchmove', ['$event'])
   onTouchMove(event: TouchEvent) {
-    if (!this.isPulling || this.isRefreshing) return;
+    if (!this.isPulling || this.isRefreshing || event.touches.length !== 1) return;
     
     const currentY = event.touches[0].clientY;
     const diff = currentY - this.pullStartY;
     
-    // Only track if pulling down
-    if (diff > 0 && window.scrollY <= 0) {
-      // If we are not in standalone mode, native refresh might kick in.
-      // But if user says "it doesn't refresh", maybe native is disabled or not working.
-      // So we show our indicator.
-      
-      this.pullProgress = Math.min(diff / this.PULL_THRESHOLD, 1.5); 
-      
-      // If pullProgress is small, we might want to ignore to avoid jitter
-      if (this.pullProgress < 0.1) {
-          this.pullProgress = 0;
-      }
-    } else {
-       this.pullProgress = 0;
-       // If we scroll down, stop tracking
-       this.isPulling = false; 
+    if (diff <= 0 || window.scrollY > 0) {
+      this.resetPullState();
+      return;
     }
+
+    // Ignore tiny finger movement so taps still register normally on iPhone.
+    if (diff < this.PULL_ACTIVATION_DISTANCE) {
+      this.pullProgress = 0;
+      return;
+    }
+
+    const activePullDistance = diff - this.PULL_ACTIVATION_DISTANCE;
+    this.pullProgress = Math.min(activePullDistance / this.PULL_THRESHOLD, 1.5);
   }
 
   @HostListener('touchend')
@@ -233,14 +275,19 @@ export class AppComponent {
     if (this.isPulling && this.pullProgress >= 0.8 && !this.isRefreshing) {
        this.triggerRefresh();
     } else {
-       this.pullProgress = 0;
+       this.resetPullState();
     }
-    this.isPulling = false;
+  }
+
+  @HostListener('touchcancel')
+  onTouchCancel() {
+    this.resetPullState();
   }
 
   private triggerRefresh() {
     this.isRefreshing = true;
     this.pullProgress = 1; // Keep indicator shown
+    this.isPulling = false;
     
     // Simulate refresh delay then reload
     setTimeout(() => {

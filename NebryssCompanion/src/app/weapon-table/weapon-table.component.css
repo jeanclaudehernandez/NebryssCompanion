@@ -1,6 +1,7 @@
 .table-container {
   position: relative;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin: 1rem 0;
   border-radius: 4px;
   transition: border-color 0.3s;
@@ -80,6 +81,8 @@
 .rule-text {
   cursor: help;
   border-bottom: 1px dotted #666;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: all 0.2s ease;
   color: #007bff;
 }
@@ -126,6 +129,8 @@
   cursor: pointer;
   font-weight: bold;
   font-size: 1rem;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s;
 }
 

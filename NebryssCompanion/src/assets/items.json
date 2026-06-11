@@ -780,5 +780,15 @@
       "description": "(Exposed terrain) Operatives within control range of this terran gain the following action: 1AP: remove your operative from the battlefield and place it within control range of another Shadow Portal.",
       "weapons": [],
       "type": "deployable"
+    },
+    {
+      "id": 88,
+      "name": "Verdant Hex-Torque",
+      "price": 40,
+      "description": "A pearl collar bound with gilt ward-links, set with a single emerald at its center. While worn, the bearer gains Adept Magician.",
+      "raceReq": "universal",
+      "type": "armor",
+      "isEquippable": true,
+      "talentId": "m2"
     }
 ]

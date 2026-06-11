@@ -119,6 +119,7 @@ export interface AlteredState {
       id: number;
       amount: number;
     }[];
+    talentId?: string;
     statModifications?: StatModification[];
   }
   
