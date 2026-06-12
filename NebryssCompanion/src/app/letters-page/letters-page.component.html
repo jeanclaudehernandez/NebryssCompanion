@@ -10,22 +10,21 @@
     style="cursor: pointer;"
   >
     <h4>
-      {{ getSenderName(letter) }}
+      {{ letter.subject || 'Untitled Letter' }}
       <span *ngIf="isUnread(letter)">Unread</span>
     </h4>
+    <p><strong>From:</strong> {{ getSenderName(letter) }}</p>
     <p><strong>To:</strong> {{ getTargetNames(letter).join(', ') }}</p>
     <p><strong>Sent:</strong> {{ formatImperialDate(letter.date) }}</p>
   </div>
 </div>
 
 <ng-template #letterModal>
-  <div class="player-detail-container">
-    <h3>{{ selectedLetter ? getSenderName(selectedLetter) : 'Letter' }}</h3>
-
-    <div class="profile" *ngIf="selectedLetter">
-      <p><strong>To:</strong> {{ getTargetNames(selectedLetter).join(', ') }}</p>
-      <p><strong>Sent:</strong> {{ formatImperialDate(selectedLetter.date) }}</p>
-      <div style="margin-top: 12px; overflow-x: auto;" [innerHTML]="selectedLetter.message"></div>
-    </div>
+  <div *ngIf="selectedLetter">
+    <h3>{{ selectedLetter.subject || 'Untitled Letter' }}</h3>
+    <p><strong>From:</strong> {{ getSenderName(selectedLetter) }}</p>
+    <p><strong>To:</strong> {{ getTargetNames(selectedLetter).join(', ') }}</p>
+    <p><strong>Sent:</strong> {{ formatImperialDate(selectedLetter.date) }}</p>
+    <div style="margin-top: 12px; overflow-x: auto;" [innerHTML]="selectedLetter.message"></div>
   </div>
 </ng-template>

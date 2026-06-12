@@ -126,6 +126,17 @@ import { ActivePlayerService } from './active-player.service';
       <button
         type="button"
         class="footer-btn"
+        [class.active]="currentView === 'players'"
+        (click)="onViewChange('players')"
+        aria-label="Open Player"
+      >
+        <span class="material-icons" aria-hidden="true">person</span>
+        <span class="footer-label">Player</span>
+      </button>
+
+      <button
+        type="button"
+        class="footer-btn"
         [class.active]="currentView === 'talents'"
         (click)="onViewChange('talents')"
         aria-label="Open Talents"
@@ -144,17 +155,6 @@ import { ActivePlayerService } from './active-player.service';
         <span class="footer-badge" *ngIf="letterUnreadCount > 0">{{ letterUnreadCount }}</span>
         <span class="material-icons" aria-hidden="true">mail</span>
         <span class="footer-label">Letters</span>
-      </button>
-
-      <button
-        type="button"
-        class="footer-btn footer-btn-center"
-        [class.active]="currentView === 'players'"
-        (click)="onViewChange('players')"
-        aria-label="Open Player"
-      >
-        <span class="material-icons" aria-hidden="true">person</span>
-        <span class="footer-label">Player</span>
       </button>
 
       <button

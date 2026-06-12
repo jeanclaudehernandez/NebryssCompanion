@@ -419,6 +419,7 @@ export interface AlteredState {
 
   export interface Letter {
     id: number;
+    subject?: string | null;
     senderId: number | null;
     senderName: string | null;
     message: string;

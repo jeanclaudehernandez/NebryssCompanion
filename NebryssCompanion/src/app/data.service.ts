@@ -588,6 +588,7 @@ export class DataService {
   private normalizeLetter(letter: Letter): Letter {
     return {
       ...letter,
+      subject: letter.subject ?? '',
       readBy: Array.isArray(letter.readBy) ? letter.readBy : [],
       recipientIds: Array.isArray(letter.recipientIds) ? letter.recipientIds : [],
       targetNames: Array.isArray(letter.targetNames) ? letter.targetNames : [],

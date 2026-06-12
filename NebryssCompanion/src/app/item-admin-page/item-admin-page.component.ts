@@ -56,10 +56,10 @@ interface WeaponProfileDraft {
 
 interface LetterSummaryOption {
   id: number;
+  subject: string;
   senderName: string;
   recipientSummary: string;
   date: string;
-  messagePreview: string;
 }
 
 @Component({
@@ -151,6 +151,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   weaponProfiles: WeaponProfileDraft[] = [];
   lastCreatedWeapon: Weapon | null = null;
   letterSenderId: number | null = null;
+  letterSubject = '';
   letterSenderName = '';
   letterRecipientIds: number[] = [];
   letterTargetNamesInput = '';
@@ -256,6 +257,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
 
     if (this.creatorMode === 'letter') {
       return this.letterRecipientIds.length > 0
+        && !!this.letterSubject.trim()
         && !!this.letterSenderName.trim()
         && !!this.letterDate.trim()
         && !!this.getPlainTextFromHtml(this.letterMessage).trim();
@@ -356,11 +358,27 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   get letterSummaryOptions(): LetterSummaryOption[] {
     return this.letters.map(letter => ({
       id: letter.id,
+      subject: (letter.subject ?? '').trim() || '(No subject)',
       senderName: this.resolveLetterSenderName(letter),
       recipientSummary: this.getLetterRecipientNames(letter).join(', '),
-      date: letter.date,
-      messagePreview: this.getPlainTextFromHtml(letter.message).replace(/\s+/g, ' ').trim()
+      date: letter.date
     }));
+  }
+
+  get letterDateHelper(): string {
+    const template = '0.___.___.M__';
+    const current = this.letterDate;
+
+    if (!current) {
+      return `Format: ${template}`;
+    }
+
+    const helperChars = template.split('');
+    for (let index = 0; index < Math.min(current.length, helperChars.length); index += 1) {
+      helperChars[index] = current[index];
+    }
+
+    return `Format: ${helperChars.join('')}`;
   }
 
   setCreatorMode(mode: 'item' | 'weapon' | 'letter'): void {
@@ -793,6 +811,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     this.resetLetterForm();
 
     this.editingLetterId = letter.id ?? null;
+    this.letterSubject = letter.subject ?? '';
     this.letterSenderId = letter.senderId ?? null;
     this.letterSenderName = (letter.senderName ?? '').trim() || this.resolveLetterSenderName(letter);
     this.letterRecipientIds = [...(letter.recipientIds ?? [])];
@@ -842,6 +861,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   }
 
   private resetLetterForm(): void {
+    this.letterSubject = '';
     this.letterSenderId = null;
     this.letterSenderName = '';
     this.letterRecipientIds = [];
@@ -1011,12 +1031,18 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   }
 
   private buildLetterPayload(validate: boolean): Letter | null {
+    const subject = this.letterSubject.trim();
     const senderName = this.letterSenderName.trim();
     const date = this.letterDate.trim();
     const message = this.normalizeLetterMessage(this.letterMessage);
     const messageText = this.getPlainTextFromHtml(message).trim();
     const targetNames = this.parseTargetNames(this.letterTargetNamesInput);
     const recipientIds = [...new Set(this.letterRecipientIds)];
+
+    if (validate && !subject) {
+      this.toastService.show('Subject is required', 'error');
+      return null;
+    }
 
     if (validate && recipientIds.length === 0) {
       this.toastService.show('Select at least one recipient', 'error');
@@ -1040,6 +1066,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
 
     const payload: Letter = {
       id: this.editingLetterId ?? 0,
+      subject,
       senderId: this.letterSenderId,
       senderName: senderName || null,
       message,

@@ -360,8 +360,8 @@
 
         <div class="field-grid">
           <label class="field">
-            <span>Sender Name</span>
-            <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text" placeholder="NPC name or custom sender" />
+            <span>Subject</span>
+            <input [(ngModel)]="letterSubject" name="letterSubject" type="text" placeholder="Letter subject" />
           </label>
 
           <label class="field">
@@ -370,10 +370,16 @@
               [(ngModel)]="letterDate"
               name="letterDate"
               type="text"
-              placeholder="Imperial date, e.g. 0.123.456.M41. Standard dates also work."
+              placeholder="Start typing an Imperial date"
             />
+            <small class="hint">{{ letterDateHelper }}</small>
           </label>
         </div>
+
+        <label class="field">
+          <span>Sender Name</span>
+          <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text" placeholder="NPC name or custom sender" />
+        </label>
 
         <label class="field">
           <span>Intended Targets</span>
@@ -422,9 +428,10 @@
             (click)="toggleLetterSelection(letter.id)"
           >
             <div class="selection-item-header">
-              <strong>#{{ letter.id }}</strong>
+              <strong>{{ letter.subject }}</strong>
               <span>{{ letter.date }}</span>
             </div>
+            <div><strong>ID:</strong> {{ letter.id }}</div>
             <div><strong>From:</strong> {{ letter.senderName }}</div>
             <div><strong>To:</strong> {{ letter.recipientSummary || 'No targets listed' }}</div>
           </button>
@@ -578,6 +585,7 @@
         <h3>{{ editingLetterId !== null ? 'Last Saved Letter' : 'Last Created Letter' }}</h3>
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastCreatedLetter.id }}</div>
+          <div><strong>Subject:</strong> {{ lastCreatedLetter.subject || '(No subject)' }}</div>
           <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}</div>
           <div><strong>Recipients:</strong> {{ lastCreatedLetter.recipientIds.length }}</div>
           <div><strong>Date:</strong> {{ lastCreatedLetter.date }}</div>
