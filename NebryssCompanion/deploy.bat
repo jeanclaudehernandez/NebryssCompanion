@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-if "%GCLOUD_PROJECT%"=="" set "GCLOUD_PROJECT=nebrysscompanion"
-if "%CLOUD_RUN_SERVICE%"=="" set "CLOUD_RUN_SERVICE=nebryss-companion-api"
-if "%GCLOUD_REGION%"=="" set "GCLOUD_REGION=us-east4"
-if "%IMAGE_NAME%"=="" set "IMAGE_NAME=gcr.io/%GCLOUD_PROJECT%/%CLOUD_RUN_SERVICE%"
+set "GCLOUD_PROJECT=nebrysscompanion"
+set "CLOUD_RUN_SERVICE=nebryss-companion-api"
+set "GCLOUD_REGION=us-east4"
+set "IMAGE_NAME=gcr.io/%GCLOUD_PROJECT%/%CLOUD_RUN_SERVICE%"
 
 echo Using configuration:
 echo   GCLOUD_PROJECT   = %GCLOUD_PROJECT%

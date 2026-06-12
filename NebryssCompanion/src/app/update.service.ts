@@ -38,13 +38,53 @@ export class UpdateService {
     this.swUpdate.versionUpdates.subscribe(event => {
       if (event.type === 'VERSION_READY') {
         console.log('New version available');
-        this.swUpdate.activateUpdate().then(() => {
-          if (confirm('A new version is available. Reload now?')) {
-            window.location.reload();
-          }
-        });
+        if (!confirm('A new version is available. Reload now?')) {
+          return;
+        }
+
+        this.activateAndReload();
       }
     });
+  }
+
+  private activateAndReload(): void {
+    const performReload = () => {
+      // Use replace so installed-app refreshes do not keep a stale history entry around.
+      window.location.replace(window.location.href);
+    };
+
+    if (!('serviceWorker' in navigator)) {
+      performReload();
+      return;
+    }
+
+    let hasReloaded = false;
+    const reloadOnce = () => {
+      if (hasReloaded) {
+        return;
+      }
+
+      hasReloaded = true;
+      performReload();
+    };
+
+    const controllerChangeHandler = () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', controllerChangeHandler);
+      reloadOnce();
+    };
+
+    navigator.serviceWorker.addEventListener('controllerchange', controllerChangeHandler);
+
+    this.swUpdate.activateUpdate()
+      .then(() => {
+        // Fallback in case the browser does not fire controllerchange promptly.
+        window.setTimeout(reloadOnce, 1500);
+      })
+      .catch(error => {
+        navigator.serviceWorker.removeEventListener('controllerchange', controllerChangeHandler);
+        console.error('Failed to activate update:', error);
+        performReload();
+      });
   }
 
   unregisterAndReload() {
