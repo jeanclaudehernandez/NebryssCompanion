@@ -1,0 +1,31 @@
+<div class="player-detail-container" style="max-width: 1000px; margin: 20px auto;">
+  <h2>Letters</h2>
+  <p *ngIf="!activePlayer">Select an active player to view their letters and recovered documents.</p>
+  <p *ngIf="activePlayer && !visibleLetters.length">No letters or documents are available for {{ activePlayer.name }}.</p>
+
+  <div
+    *ngFor="let letter of visibleLetters; trackBy: trackByLetterId"
+    class="item"
+    (click)="openLetter(letter)"
+    style="cursor: pointer;"
+  >
+    <h4>
+      {{ getSenderName(letter) }}
+      <span *ngIf="isUnread(letter)">Unread</span>
+    </h4>
+    <p><strong>To:</strong> {{ getTargetNames(letter).join(', ') }}</p>
+    <p><strong>Sent:</strong> {{ formatImperialDate(letter.date) }}</p>
+  </div>
+</div>
+
+<ng-template #letterModal>
+  <div class="player-detail-container">
+    <h3>{{ selectedLetter ? getSenderName(selectedLetter) : 'Letter' }}</h3>
+
+    <div class="profile" *ngIf="selectedLetter">
+      <p><strong>To:</strong> {{ getTargetNames(selectedLetter).join(', ') }}</p>
+      <p><strong>Sent:</strong> {{ formatImperialDate(selectedLetter.date) }}</p>
+      <div style="margin-top: 12px; overflow-x: auto;" [innerHTML]="selectedLetter.message"></div>
+    </div>
+  </div>
+</ng-template>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction } from './model';
+import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
 
 @Injectable({
@@ -25,6 +25,7 @@ export class DataService {
   private mistEffects: MistEffect[] = [];
   private terrains: Terrain[] = [];
   private afflictions: Affliction[] = [];
+  private letters: Letter[] = [];
 
   private playersCache$: Observable<Player[]> | null = null;
   private npcsCache$: Observable<NPC[]> | null = null;
@@ -40,7 +41,10 @@ export class DataService {
   private mistEffectsCache$: Observable<MistEffect[]> | null = null;
   private terrainsCache$: Observable<Terrain[]> | null = null;
   private afflictionsCache$: Observable<Affliction[]> | null = null;
+  private lettersCache$: Observable<Letter[]> | null = null;
   private allDataCache$: Observable<any> | null = null;
+  private lettersSubject = new BehaviorSubject<Letter[]>([]);
+  readonly letters$ = this.lettersSubject.asObservable();
 
   getAfflictions(): Observable<Affliction[]> {
     if (!this.afflictionsCache$) {
@@ -282,6 +286,31 @@ export class DataService {
     return this.terrainsCache$;
   }
 
+  getLetters(): Observable<Letter[]> {
+    if (!this.lettersCache$) {
+      this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+        tap(letters => {
+          this.letters = letters.map(letter => this.normalizeLetter(letter));
+          this.lettersSubject.next([...this.letters]);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.lettersCache$;
+  }
+
+  refreshLetters(): Observable<Letter[]> {
+    this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+      tap(letters => {
+        this.letters = letters.map(letter => this.normalizeLetter(letter));
+        this.lettersSubject.next([...this.letters]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.lettersCache$;
+  }
+
 
 
   getAllData(): Observable<{
@@ -297,7 +326,8 @@ export class DataService {
     mistEffects: any[],
     terrains: Terrain[],
     talents: Talent[],
-    afflictions: Affliction[]
+    afflictions: Affliction[],
+    letters: Letter[]
   }> {
     if (!this.allDataCache$) {
       this.allDataCache$ = forkJoin({
@@ -313,7 +343,8 @@ export class DataService {
         mistEffects: this.getMistEffects(),
         terrains: this.getTerrains(),
         talents: this.getTalents(),
-        afflictions: this.getAfflictions()
+        afflictions: this.getAfflictions(),
+        letters: this.getLetters()
       }).pipe(shareReplay(1));
     }
     return this.allDataCache$;
@@ -496,5 +527,72 @@ export class DataService {
         this.weaponsCache$ = null;
       })
     );
+  }
+
+  createLetter(letter: Letter): Observable<Letter> {
+    return this.http.post<Letter>(`${this.apiUrl}/letter`, letter).pipe(
+      tap(newLetter => {
+        this.letters.push(this.normalizeLetter(newLetter));
+        this.lettersSubject.next([...this.letters]);
+        this.lettersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateLetter(letter: Letter): Observable<Letter> {
+    return this.http.put<Letter>(`${this.apiUrl}/letter`, letter).pipe(
+      tap(updatedLetter => {
+        const normalizedLetter = this.normalizeLetter(updatedLetter);
+        const index = this.letters.findIndex(existingLetter => existingLetter.id === normalizedLetter.id);
+        if (index !== -1) {
+          this.letters[index] = normalizedLetter;
+        } else {
+          this.letters.push(normalizedLetter);
+        }
+        this.lettersSubject.next([...this.letters]);
+        this.lettersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteLetter(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/letter/${id}`).pipe(
+      tap(() => {
+        this.letters = this.letters.filter(letter => letter.id !== id);
+        this.lettersSubject.next([...this.letters]);
+        this.lettersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  markLetterAsRead(letterId: number, playerId: number): Observable<Letter> {
+    return this.http.post<Letter>(`${this.apiUrl}/letter/${letterId}/read`, { playerId }).pipe(
+      tap(updatedLetter => {
+        const normalizedLetter = this.normalizeLetter(updatedLetter);
+        const index = this.letters.findIndex(letter => letter.id === normalizedLetter.id);
+        if (index !== -1) {
+          this.letters[index] = normalizedLetter;
+        } else {
+          this.letters.push(normalizedLetter);
+        }
+        this.lettersSubject.next([...this.letters]);
+        this.lettersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  private normalizeLetter(letter: Letter): Letter {
+    return {
+      ...letter,
+      readBy: Array.isArray(letter.readBy) ? letter.readBy : [],
+      recipientIds: Array.isArray(letter.recipientIds) ? letter.recipientIds : [],
+      targetNames: Array.isArray(letter.targetNames) ? letter.targetNames : [],
+      senderId: letter.senderId ?? null,
+      senderName: letter.senderName ?? null
+    };
   }
 }

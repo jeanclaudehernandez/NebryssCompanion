@@ -1,8 +1,10 @@
 .admin-page {
   padding: 72px 16px 96px;
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .admin-header,
@@ -19,6 +21,11 @@
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   gap: 20px;
   align-items: start;
+}
+
+.layout > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .admin-mode-panel {
@@ -50,6 +57,11 @@
   gap: 16px;
 }
 
+.field-grid > *,
+.field {
+  min-width: 0;
+}
+
 .field {
   display: flex;
   flex-direction: column;
@@ -63,7 +75,8 @@
 
 .field input,
 .field textarea,
-.field select {
+.field select,
+.rich-editor {
   width: 100%;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -75,6 +88,28 @@
 .field textarea {
   resize: vertical;
   min-height: 100px;
+}
+
+.rich-editor {
+  height: 180px;
+  min-height: 180px;
+  max-height: 180px;
+  line-height: 1.5;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  resize: none;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: pre;
+  word-break: normal;
+  overflow-wrap: normal;
+}
+
+.rich-editor:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.65;
 }
 
 .checkbox-field {
@@ -193,9 +228,39 @@
   gap: 8px;
 }
 
+.editor-toolbar {
+  margin-bottom: 8px;
+}
+
+.admin-selection-list {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-selection-item {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.admin-selection-item-active {
+  border-color: currentColor;
+}
+
+.selection-item-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
 :host-context(body.dark-theme) .field input,
 :host-context(body.dark-theme) .field textarea,
-:host-context(body.dark-theme) .field select {
+:host-context(body.dark-theme) .field select,
+:host-context(body.dark-theme) .rich-editor {
   background: #2d2d2d;
   color: #e0e0e0;
   border-color: #555;

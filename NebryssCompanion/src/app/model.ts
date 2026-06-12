@@ -416,3 +416,14 @@ export interface AlteredState {
     applyToValue?: string;
     applyToType?: "body" | "type" | "range";
   }
+
+  export interface Letter {
+    id: number;
+    senderId: number | null;
+    senderName: string | null;
+    message: string;
+    date: string;
+    readBy: number[];
+    recipientIds: number[];
+    targetNames: string[];
+  }

@@ -312,6 +312,129 @@
         </div>
       </section>
 
+      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+        <div class="section-header">
+          <div>
+            <h3>Letter Details</h3>
+            <p class="hint">Create letters, dossiers, and picked-up documents for selected players.</p>
+          </div>
+          <button class="remove-btn" type="button" *ngIf="editingLetterId !== null" (click)="deleteSelectedLetter()">
+            Delete Selected Letter
+          </button>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Recipients</span>
+            <mat-form-field appearance="outline" class="weapon-rules-field">
+              <mat-select
+                multiple
+                panelClass="weapon-rules-panel"
+                [(ngModel)]="letterRecipientIds"
+                name="letterRecipientIds"
+              >
+                <mat-option *ngFor="let player of players" [value]="player.id">
+                  {{ player.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </label>
+
+          <label class="field">
+            <span>Sender NPC</span>
+            <mat-form-field appearance="outline" class="weapon-rules-field">
+              <mat-select
+                panelClass="weapon-rules-panel"
+                [(ngModel)]="letterSenderId"
+                name="letterSenderId"
+                (selectionChange)="onLetterSenderIdChange()"
+              >
+                <mat-option [value]="null">None</mat-option>
+                <mat-option *ngFor="let npc of npcs" [value]="npc.id">
+                  {{ npc.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Sender Name</span>
+            <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text" placeholder="NPC name or custom sender" />
+          </label>
+
+          <label class="field">
+            <span>Date</span>
+            <input
+              [(ngModel)]="letterDate"
+              name="letterDate"
+              type="text"
+              placeholder="Imperial date, e.g. 0.123.456.M41. Standard dates also work."
+            />
+          </label>
+        </div>
+
+        <label class="field">
+          <span>Intended Targets</span>
+          <input
+            [(ngModel)]="letterTargetNamesInput"
+            name="letterTargetNamesInput"
+            type="text"
+            placeholder="Comma-separated names shown in the To: field"
+          />
+        </label>
+
+        <div class="field">
+          <span>Message</span>
+          <div class="creator-mode-buttons editor-toolbar">
+            <button class="inline-btn" type="button" (click)="applyLetterFormatting('bold')">Bold</button>
+            <button class="inline-btn" type="button" (click)="applyLetterFormatting('italic')">Italic</button>
+            <button class="inline-btn" type="button" (click)="applyLetterFormatting('insertUnorderedList')">Bullet List</button>
+          </div>
+          <div
+            #letterMessageEditor
+            class="rich-editor"
+            contenteditable="true"
+            data-placeholder="Write the letter here. Use Enter for new lines and the toolbar for formatting."
+            (input)="onLetterMessageInput($event)"
+          ></div>
+          <p class="hint">Supports bold, italic, new lines, and bullet points.</p>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+        <div class="section-header">
+          <h3>Existing Letters</h3>
+          <button class="inline-btn" type="button" [disabled]="editingLetterId === null" (click)="clearLetterSelection()">
+            Deselect Letter
+          </button>
+        </div>
+
+        <p class="hint">Select a letter to edit it. Select it again or use the button above to clear the form.</p>
+
+        <div class="admin-selection-list" *ngIf="letterSummaryOptions.length; else noLettersState">
+          <button
+            *ngFor="let letter of letterSummaryOptions"
+            type="button"
+            class="item admin-selection-item"
+            [class.admin-selection-item-active]="editingLetterId === letter.id"
+            (click)="toggleLetterSelection(letter.id)"
+          >
+            <div class="selection-item-header">
+              <strong>#{{ letter.id }}</strong>
+              <span>{{ letter.date }}</span>
+            </div>
+            <div><strong>From:</strong> {{ letter.senderName }}</div>
+            <div><strong>To:</strong> {{ letter.recipientSummary || 'No targets listed' }}</div>
+          </button>
+        </div>
+
+        <ng-template #noLettersState>
+          <p class="hint">No letters exist yet.</p>
+        </ng-template>
+      </section>
+
       <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
         <h3>Weapon Details</h3>
 
@@ -425,7 +548,7 @@
 
     <aside class="player-detail-container">
       <section class="item admin-section">
-        <h3>{{ creatorMode === 'item' ? 'Item' : 'Weapon' }} JSON Preview</h3>
+        <h3>{{ creatorMode === 'item' ? 'Item' : creatorMode === 'weapon' ? 'Weapon' : 'Letter' }} JSON Preview</h3>
         <pre class="admin-preview-json">{{ previewJson }}</pre>
       </section>
 
@@ -448,6 +571,16 @@
           <div><strong>Price:</strong> {{ lastCreatedWeapon.price }}</div>
           <div><strong>ID:</strong> {{ lastCreatedWeapon.id }}</div>
           <div><strong>Profiles:</strong> {{ lastCreatedWeapon.profiles.length }}</div>
+        </div>
+      </section>
+
+      <section class="item admin-section" *ngIf="creatorMode === 'letter' && lastCreatedLetter">
+        <h3>{{ editingLetterId !== null ? 'Last Saved Letter' : 'Last Created Letter' }}</h3>
+        <div class="summary-list">
+          <div><strong>ID:</strong> {{ lastCreatedLetter.id }}</div>
+          <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}</div>
+          <div><strong>Recipients:</strong> {{ lastCreatedLetter.recipientIds.length }}</div>
+          <div><strong>Date:</strong> {{ lastCreatedLetter.date }}</div>
         </div>
       </section>
     </aside>

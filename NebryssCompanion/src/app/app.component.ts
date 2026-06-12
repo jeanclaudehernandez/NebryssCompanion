@@ -1,6 +1,8 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, DestroyRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { combineLatest } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { PlayerListComponent } from './player-list/player-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { DataService } from './data.service';
@@ -25,6 +27,8 @@ import { AfflictionsListComponent } from './afflictions-list/afflictions-list.co
 import { ShipNavigationComponent } from './ship-navigation/ship-navigation.component';
 import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.component';
 import { AdminEditorSession } from './admin-editor.models';
+import { LettersPageComponent } from './letters-page/letters-page.component';
+import { ActivePlayerService } from './active-player.service';
 
   @Component({
   selector: 'app-root',
@@ -48,7 +52,8 @@ import { AdminEditorSession } from './admin-editor.models';
     AlteredStatesPageComponent,
     AfflictionsListComponent,
     ShipNavigationComponent,
-    ItemAdminPageComponent
+    ItemAdminPageComponent,
+    LettersPageComponent
   ],
   template: `
     <!-- Pull to Refresh Indicator -->
@@ -72,6 +77,9 @@ import { AdminEditorSession } from './admin-editor.models';
       }
       @if (currentView === 'bestiary') {
         <app-bestiary></app-bestiary>
+      }
+      @if (currentView === 'letters') {
+        <app-letters-page></app-letters-page>
       }
       @if (currentView === 'items') {
         <app-items (openAdminEditor)="onOpenAdminEditor($event)"></app-items>
@@ -126,7 +134,17 @@ import { AdminEditorSession } from './admin-editor.models';
         <span class="footer-label">Talents</span>
       </button>
 
-      <div class="footer-spacer" aria-hidden="true"></div>
+      <button
+        type="button"
+        class="footer-btn"
+        [class.active]="currentView === 'letters'"
+        (click)="onViewChange('letters')"
+        aria-label="Open Letters"
+      >
+        <span class="footer-badge" *ngIf="letterUnreadCount > 0">{{ letterUnreadCount }}</span>
+        <span class="material-icons" aria-hidden="true">mail</span>
+        <span class="footer-label">Letters</span>
+      </button>
 
       <button
         type="button"
@@ -154,12 +172,15 @@ import { AdminEditorSession } from './admin-editor.models';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  currentView: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
+  private readonly destroyRef = inject(DestroyRef);
+
+  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
   selectedLocationName: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
+  letterUnreadCount = 0;
 
   // Pull to refresh variables
   private pullStartY = 0;
@@ -184,10 +205,28 @@ export class AppComponent {
     private themeService: ThemeService,
     public loadingService: LoadingService,
     private dataService: DataService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private activePlayerService: ActivePlayerService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
+
+    this.dataService.getLetters()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+
+    combineLatest([this.activePlayerService.activePlayer$, this.dataService.letters$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([player, letters]) => {
+        if (!player) {
+          this.letterUnreadCount = 0;
+          return;
+        }
+
+        this.letterUnreadCount = letters.filter(
+          letter => letter.recipientIds.includes(player.id) && !letter.readBy.includes(player.id)
+        ).length;
+      });
   }
 
   // Detect if we are in standalone PWA mode (iOS or Android)
@@ -304,10 +343,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
+      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.currentView = view;
     if (view === 'adminItemCreator') {
       this.adminEditSession = null;

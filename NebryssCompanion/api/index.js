@@ -492,6 +492,65 @@ createDeleteRoute('/api/afflictions', {
   collectionName: 'affliction',
 });
 
+createCollectionRoute('/api/letter', {
+  usePlayersDb: false,
+  collectionName: 'letters',
+});
+
+createUpdateRoute('/api/letter', {
+  usePlayersDb: false,
+  collectionName: 'letters',
+});
+
+createInsertRoute('/api/letter', {
+  usePlayersDb: false,
+  collectionName: 'letters',
+});
+
+createDeleteRoute('/api/letter', {
+  usePlayersDb: false,
+  collectionName: 'letters',
+});
+
+app.post('/api/letter/:id/read', async (req, res) => {
+  const idParam = req.params.id;
+  const { playerId } = req.body ?? {};
+
+  if (!idParam) {
+    return res.status(400).json({ error: 'Letter id is required' });
+  }
+
+  if (typeof playerId !== 'number') {
+    return res.status(400).json({ error: 'playerId must be a number' });
+  }
+
+  try {
+    const { mainDb } = await getDatabases();
+    const collection = mainDb.collection('letters');
+    const query = {
+      id: { $in: [idParam, Number(idParam)] },
+      isDeleted: { $ne: true }
+    };
+
+    const updateResult = await collection.updateOne(
+      query,
+      {
+        $addToSet: { readBy: playerId }
+      }
+    );
+
+    if (updateResult.matchedCount === 0) {
+      return res.status(404).json({ error: 'Letter not found' });
+    }
+
+    const updatedLetter = await collection.findOne(query);
+    res.json(updatedLetter);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 const port = process.env.PORT || 8080;
 
 app.listen(port, () => {

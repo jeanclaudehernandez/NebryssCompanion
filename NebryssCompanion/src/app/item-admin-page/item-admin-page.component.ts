@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
@@ -8,7 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { AdminEditorSession } from '../admin-editor.models';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
-import { BestiaryEntry, Item, ItemCategory, SpecialRule, StatModification, Talent, TalentCategory, Weapon, WeaponProfile, WeaponRule } from '../model';
+import { BestiaryEntry, Item, ItemCategory, Letter, NPC, Player, SpecialRule, StatModification, Talent, TalentCategory, Weapon, WeaponProfile, WeaponRule } from '../model';
 import { ToastService } from '../toast.service';
 
 type StatName = StatModification['stat'];
@@ -54,6 +54,14 @@ interface WeaponProfileDraft {
   specialRules: WeaponProfileDraftRule[];
 }
 
+interface LetterSummaryOption {
+  id: number;
+  senderName: string;
+  recipientSummary: string;
+  date: string;
+  messagePreview: string;
+}
+
 @Component({
   selector: 'app-item-admin-page',
   standalone: true,
@@ -63,15 +71,21 @@ interface WeaponProfileDraft {
 })
 export class ItemAdminPageComponent implements OnInit, OnChanges {
   @Input() editSession: AdminEditorSession | null = null;
+  @ViewChild('letterMessageEditor') set letterMessageEditorRef(value: ElementRef<HTMLDivElement> | undefined) {
+    this.letterMessageEditor = value;
+    this.syncLetterMessageEditor();
+  }
 
   private readonly destroyRef = inject(DestroyRef);
+  private letterMessageEditor?: ElementRef<HTMLDivElement>;
 
   readonly statOptions: StatName[] = ['Movement', 'Wounds', 'Save', 'APL', 'hit', 'damage', 'attacks', 'crit'];
   readonly applyToTypeOptions: ApplyToType[] = ['body', 'type', 'range'];
   readonly deployableSubtypeOptions: DeployableSubtype[] = ['construct', 'mob'];
   readonly creatorModes = [
     { value: 'item', label: 'Item Creator' },
-    { value: 'weapon', label: 'Weapon Creator' }
+    { value: 'weapon', label: 'Weapon Creator' },
+    { value: 'letter', label: 'Letter Creator' }
   ] as const;
 
   isAdmin = false;
@@ -80,13 +94,17 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   pendingEditSession: AdminEditorSession | null = null;
   editingItemId: number | null = null;
   editingWeaponId: number | null = null;
+  editingLetterId: number | null = null;
 
-  creatorMode: 'item' | 'weapon' = 'item';
+  creatorMode: 'item' | 'weapon' | 'letter' = 'item';
   categories: ItemCategory[] = [];
   weapons: Weapon[] = [];
   weaponRules: WeaponRule[] = [];
   bestiary: BestiaryEntry[] = [];
   talents: TalentOption[] = [];
+  players: Player[] = [];
+  npcs: NPC[] = [];
+  letters: Letter[] = [];
 
   bodyTypeOptions: string[] = [];
   ammoSubtypeOptions: string[] = [];
@@ -132,6 +150,14 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   weaponPrice: number | null = null;
   weaponProfiles: WeaponProfileDraft[] = [];
   lastCreatedWeapon: Weapon | null = null;
+  letterSenderId: number | null = null;
+  letterSenderName = '';
+  letterRecipientIds: number[] = [];
+  letterTargetNamesInput = '';
+  letterDate = '';
+  letterMessage = '';
+  letterReadBy: number[] = [];
+  lastCreatedLetter: Letter | null = null;
 
   constructor(
     private readonly adminService: AdminService,
@@ -159,14 +185,20 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
       weapons: this.dataService.getWeapons(),
       weaponRules: this.dataService.getWeaponRules(),
       bestiary: this.dataService.getBestiary(),
-      talents: this.dataService.getTalents()
+      talents: this.dataService.getTalents(),
+      players: this.dataService.getPlayers(),
+      npcs: this.dataService.getNpcs(),
+      letters: this.dataService.getLetters()
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ categories, items, weapons, weaponRules, bestiary, talents }) => {
+      .subscribe(({ categories, items, weapons, weaponRules, bestiary, talents, players, npcs, letters }) => {
         this.categories = categories;
         this.weapons = [...weapons].sort((a, b) => a.name.localeCompare(b.name));
         this.weaponRules = [...weaponRules].sort((a, b) => a.name.localeCompare(b.name));
         this.bestiary = [...bestiary].sort((a, b) => a.name.localeCompare(b.name));
+        this.players = [...players].sort((a, b) => a.name.localeCompare(b.name));
+        this.npcs = [...npcs].sort((a, b) => a.name.localeCompare(b.name));
+        this.letters = this.sortLetters(letters);
         this.talents = talents
           .flatMap((category: TalentCategory) =>
             category.talents.map(talent => ({
@@ -199,6 +231,18 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
 
         this.applyPendingEditSession();
       });
+
+    this.dataService.letters$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(letters => {
+        this.letters = this.sortLetters(letters);
+        if (this.editingLetterId !== null) {
+          const updatedLetter = this.letters.find(letter => letter.id === this.editingLetterId);
+          if (updatedLetter) {
+            this.loadLetterIntoForm(updatedLetter);
+          }
+        }
+      });
   }
 
   get canSubmit(): boolean {
@@ -210,10 +254,26 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
       return !!this.selectedCategoryKey && !!this.name.trim();
     }
 
+    if (this.creatorMode === 'letter') {
+      return this.letterRecipientIds.length > 0
+        && !!this.letterSenderName.trim()
+        && !!this.letterDate.trim()
+        && !!this.getPlainTextFromHtml(this.letterMessage).trim();
+    }
+
     return !!this.weaponName.trim() && this.weaponProfiles.length > 0;
   }
 
   get previewJson(): string {
+    if (this.creatorMode === 'letter') {
+      const payload = this.buildLetterPayload(false);
+      if (!payload) {
+        return '{\n  "type": "Define a letter to preview it"\n}';
+      }
+
+      return JSON.stringify(payload, null, 2);
+    }
+
     if (this.creatorMode === 'weapon') {
       const payload = this.buildWeaponPayload(false);
       if (!payload) {
@@ -236,10 +296,14 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   }
 
   get isEditing(): boolean {
-    return this.editingItemId !== null || this.editingWeaponId !== null;
+    return this.editingItemId !== null || this.editingWeaponId !== null || this.editingLetterId !== null;
   }
 
   get headerTitle(): string {
+    if (this.creatorMode === 'letter') {
+      return this.editingLetterId !== null ? 'Edit Letter' : 'Admin Creator';
+    }
+
     if (this.creatorMode === 'weapon') {
       return this.editingWeaponId !== null ? 'Edit Weapon' : 'Admin Creator';
     }
@@ -248,24 +312,38 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   }
 
   get headerDescription(): string {
+    if (this.creatorMode === 'letter') {
+      return this.editingLetterId !== null
+        ? 'Update an existing letter or document using the same structured form as creation.'
+        : 'Create valid items, weapons, and letters without editing JSON by hand. The API assigns the `id` automatically when you save.';
+    }
+
     if (this.creatorMode === 'weapon') {
       return this.editingWeaponId !== null
         ? 'Update an existing weapon using the same structured form as creation.'
-        : 'Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.';
+        : 'Create valid items, weapons, and letters without editing JSON by hand. The API assigns the `id` automatically when you save.';
     }
 
     return this.editingItemId !== null
       ? 'Update an existing item using the same structured form as creation.'
-      : 'Create valid items and weapons without editing JSON by hand. The API assigns the `id` automatically when you save.';
+      : 'Create valid items, weapons, and letters without editing JSON by hand. The API assigns the `id` automatically when you save.';
   }
 
   get submitLabel(): string {
     if (this.isSaving) {
+      if (this.creatorMode === 'letter') {
+        return this.editingLetterId !== null ? 'Saving...' : 'Creating...';
+      }
+
       if (this.creatorMode === 'weapon') {
         return this.editingWeaponId !== null ? 'Saving...' : 'Creating...';
       }
 
       return this.editingItemId !== null ? 'Saving...' : 'Creating...';
+    }
+
+    if (this.creatorMode === 'letter') {
+      return this.editingLetterId !== null ? 'Save Letter' : 'Create Letter';
     }
 
     if (this.creatorMode === 'weapon') {
@@ -275,8 +353,21 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     return this.editingItemId !== null ? 'Save Item' : 'Create Item';
   }
 
-  setCreatorMode(mode: 'item' | 'weapon'): void {
+  get letterSummaryOptions(): LetterSummaryOption[] {
+    return this.letters.map(letter => ({
+      id: letter.id,
+      senderName: this.resolveLetterSenderName(letter),
+      recipientSummary: this.getLetterRecipientNames(letter).join(', '),
+      date: letter.date,
+      messagePreview: this.getPlainTextFromHtml(letter.message).replace(/\s+/g, ' ').trim()
+    }));
+  }
+
+  setCreatorMode(mode: 'item' | 'weapon' | 'letter'): void {
     this.creatorMode = mode;
+    if (mode === 'letter') {
+      this.syncLetterMessageEditor();
+    }
   }
 
   onCategoryChange(): void {
@@ -375,8 +466,116 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     this.buildMaterials = this.buildMaterials.filter(material => material.id !== materialId);
   }
 
+  onLetterSenderIdChange(): void {
+    if (this.letterSenderId === null) {
+      this.letterSenderName = '';
+      return;
+    }
+
+    const npc = this.npcs.find(entry => entry.id === this.letterSenderId);
+    this.letterSenderName = npc?.name ?? '';
+  }
+
+  onLetterMessageInput(event: Event): void {
+    const editor = event.target as HTMLDivElement;
+    this.letterMessage = this.normalizeLetterMessage(editor.innerHTML);
+  }
+
+  applyLetterFormatting(command: 'bold' | 'italic' | 'insertUnorderedList'): void {
+    const editor = this.letterMessageEditor?.nativeElement;
+    if (!editor) {
+      return;
+    }
+
+    editor.focus();
+    document.execCommand(command, false);
+    this.letterMessage = this.normalizeLetterMessage(editor.innerHTML);
+  }
+
+  toggleLetterSelection(letterId: number): void {
+    if (this.editingLetterId === letterId) {
+      this.clearLetterSelection();
+      return;
+    }
+
+    const selectedLetter = this.letters.find(letter => letter.id === letterId);
+    if (!selectedLetter) {
+      return;
+    }
+
+    this.loadLetterIntoForm(selectedLetter);
+  }
+
+  clearLetterSelection(): void {
+    this.clearEditState();
+    this.creatorMode = 'letter';
+    this.resetLetterForm();
+  }
+
+  deleteSelectedLetter(): void {
+    if (this.editingLetterId === null) {
+      return;
+    }
+
+    const letterId = this.editingLetterId;
+    this.isSaving = true;
+
+    this.dataService.deleteLetter(letterId).subscribe({
+      next: () => {
+        this.toastService.show(`Deleted letter ${letterId} successfully`, 'success');
+        this.lastCreatedLetter = null;
+        this.dataService.refreshLetters().subscribe(letters => {
+          this.letters = this.sortLetters(letters);
+        });
+        this.clearLetterSelection();
+        this.isSaving = false;
+      },
+      error: err => {
+        const message = err?.error?.error || err?.message || 'Unknown error';
+        this.toastService.show(`Failed to delete letter: ${message}`, 'error');
+        this.isSaving = false;
+      }
+    });
+  }
+
   submit(): void {
     if (!this.canSubmit) {
+      return;
+    }
+
+    if (this.creatorMode === 'letter') {
+      const letterPayload = this.buildLetterPayload(true);
+      if (!letterPayload) {
+        return;
+      }
+
+      this.isSaving = true;
+      const request$ = this.editingLetterId !== null
+        ? this.dataService.updateLetter(letterPayload)
+        : this.dataService.createLetter(letterPayload);
+
+      request$.subscribe({
+        next: savedLetter => {
+          this.lastCreatedLetter = savedLetter;
+          this.toastService.show(
+            `${this.editingLetterId !== null ? 'Updated' : 'Created'} letter ${savedLetter.id} successfully`,
+            'success'
+          );
+          this.dataService.refreshLetters().subscribe(letters => {
+            this.letters = this.sortLetters(letters);
+          });
+          this.loadLetterIntoForm(savedLetter);
+          this.isSaving = false;
+        },
+        error: err => {
+          const message = err?.error?.error || err?.message || 'Unknown error';
+          this.toastService.show(
+            `Failed to ${this.editingLetterId !== null ? 'update' : 'create'} letter: ${message}`,
+            'error'
+          );
+          this.isSaving = false;
+        }
+      });
       return;
     }
 
@@ -481,6 +680,18 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     return this.weaponRules.find(rule => rule.id === ruleId)?.name ?? `Rule ${ruleId}`;
   }
 
+  getPlayerName(playerId: number): string {
+    return this.players.find(player => player.id === playerId)?.name ?? `Player ${playerId}`;
+  }
+
+  getNpcName(npcId: number | null): string {
+    if (npcId === null) {
+      return 'Custom Sender';
+    }
+
+    return this.npcs.find(npc => npc.id === npcId)?.name ?? `NPC ${npcId}`;
+  }
+
   ruleNeedsValue(ruleId: number): boolean {
     const rule = this.weaponRules.find(entry => entry.id === ruleId);
     return !!rule && /<x>/i.test(rule.name);
@@ -509,11 +720,13 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     this.creatorMode = 'item';
     this.resetForm();
     this.resetWeaponForm();
+    this.resetLetterForm();
   }
 
   private clearEditState(): void {
     this.editingItemId = null;
     this.editingWeaponId = null;
+    this.editingLetterId = null;
   }
 
   private loadItemIntoForm(item: Item): void {
@@ -574,6 +787,22 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
       : [this.createEmptyWeaponProfile()];
   }
 
+  private loadLetterIntoForm(letter: Letter): void {
+    this.clearEditState();
+    this.creatorMode = 'letter';
+    this.resetLetterForm();
+
+    this.editingLetterId = letter.id ?? null;
+    this.letterSenderId = letter.senderId ?? null;
+    this.letterSenderName = (letter.senderName ?? '').trim() || this.resolveLetterSenderName(letter);
+    this.letterRecipientIds = [...(letter.recipientIds ?? [])];
+    this.letterTargetNamesInput = (letter.targetNames ?? []).join(', ');
+    this.letterDate = letter.date ?? '';
+    this.letterMessage = this.normalizeLetterMessage(letter.message ?? '');
+    this.letterReadBy = [...(letter.readBy ?? [])];
+    this.syncLetterMessageEditor();
+  }
+
   private resetForm(): void {
     this.selectedCategoryKey = '';
     this.name = '';
@@ -610,6 +839,17 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     this.weaponName = '';
     this.weaponPrice = null;
     this.weaponProfiles = [this.createEmptyWeaponProfile()];
+  }
+
+  private resetLetterForm(): void {
+    this.letterSenderId = null;
+    this.letterSenderName = '';
+    this.letterRecipientIds = [];
+    this.letterTargetNamesInput = '';
+    this.letterDate = '';
+    this.letterMessage = '';
+    this.letterReadBy = [];
+    this.syncLetterMessageEditor();
   }
 
   private buildPayload(validate: boolean): Item | null {
@@ -770,6 +1010,52 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     return payload as Weapon;
   }
 
+  private buildLetterPayload(validate: boolean): Letter | null {
+    const senderName = this.letterSenderName.trim();
+    const date = this.letterDate.trim();
+    const message = this.normalizeLetterMessage(this.letterMessage);
+    const messageText = this.getPlainTextFromHtml(message).trim();
+    const targetNames = this.parseTargetNames(this.letterTargetNamesInput);
+    const recipientIds = [...new Set(this.letterRecipientIds)];
+
+    if (validate && recipientIds.length === 0) {
+      this.toastService.show('Select at least one recipient', 'error');
+      return null;
+    }
+
+    if (validate && !senderName) {
+      this.toastService.show('Sender name is required', 'error');
+      return null;
+    }
+
+    if (validate && !date) {
+      this.toastService.show('Date is required', 'error');
+      return null;
+    }
+
+    if (validate && !messageText) {
+      this.toastService.show('Message is required', 'error');
+      return null;
+    }
+
+    const payload: Letter = {
+      id: this.editingLetterId ?? 0,
+      senderId: this.letterSenderId,
+      senderName: senderName || null,
+      message,
+      date,
+      readBy: [...this.letterReadBy],
+      recipientIds,
+      targetNames
+    };
+
+    if (this.editingLetterId === null) {
+      delete (payload as Partial<Letter>).id;
+    }
+
+    return payload;
+  }
+
   private assignIfPresent(target: Record<string, any>, key: string, value: string | number | null): void {
     if (typeof value === 'number' && !Number.isNaN(value)) {
       target[key] = value;
@@ -801,6 +1087,73 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
   private buildUniqueOptions(values: Array<string | undefined>): string[] {
     return [...new Set(values.filter((value): value is string => !!value && value.trim().length > 0))]
       .sort((a, b) => a.localeCompare(b));
+  }
+
+  private sortLetters(letters: Letter[]): Letter[] {
+    return [...letters].sort((left, right) => this.getLetterSortValue(right.date) - this.getLetterSortValue(left.date));
+  }
+
+  private getLetterSortValue(dateValue: string): number {
+    const parsed = new Date(dateValue);
+    return Number.isNaN(parsed.getTime()) ? 0 : parsed.getTime();
+  }
+
+  private resolveLetterSenderName(letter: Letter): string {
+    if (letter.senderName?.trim()) {
+      return letter.senderName.trim();
+    }
+
+    if (letter.senderId !== null) {
+      return this.getNpcName(letter.senderId);
+    }
+
+    return 'Unknown Sender';
+  }
+
+  private getLetterRecipientNames(letter: Letter): string[] {
+    if (letter.targetNames?.length) {
+      return letter.targetNames;
+    }
+
+    return (letter.recipientIds ?? []).map(recipientId => this.getPlayerName(recipientId));
+  }
+
+  private parseTargetNames(value: string): string[] {
+    return value
+      .split(',')
+      .map(entry => entry.trim())
+      .filter(entry => entry.length > 0);
+  }
+
+  private getPlainTextFromHtml(value: string): string {
+    if (!value) {
+      return '';
+    }
+
+    const tempElement = document.createElement('div');
+    tempElement.innerHTML = value;
+    return tempElement.textContent ?? tempElement.innerText ?? '';
+  }
+
+  private normalizeLetterMessage(value: string): string {
+    const normalized = value
+      .replace(/<div><br><\/div>/gi, '<br>')
+      .replace(/&nbsp;/gi, ' ')
+      .trim();
+
+    return normalized === '<br>' ? '' : normalized;
+  }
+
+  private syncLetterMessageEditor(): void {
+    const editor = this.letterMessageEditor?.nativeElement;
+    if (!editor) {
+      return;
+    }
+
+    const desiredHtml = this.letterMessage || '';
+    if (editor.innerHTML !== desiredHtml) {
+      editor.innerHTML = desiredHtml;
+    }
   }
 
   private createEmptyWeaponProfile(): WeaponProfileDraft {
