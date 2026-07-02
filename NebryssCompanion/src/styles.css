@@ -1,5 +1,9 @@
 /* Global Styles */
 
+html {
+  height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
@@ -8,6 +12,7 @@ body {
     color: #333;
     transition: background-color 0.3s, color 0.3s;
     min-height: 100vh;
+    min-height: 100dvh;
     overscroll-behavior-y: auto;
   }
   
@@ -23,6 +28,8 @@ body {
     --mat-dialog-title-color: #2c3e50;
     --mat-dialog-border-color: #333;
     --mat-dialog-button-color: #3498db;
+    --safe-area-top: env(safe-area-inset-top, 0px);
+    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
     --footer-menu-height: 64px;
     --footer-menu-bg: rgba(245, 245, 245, 0.92);
     --footer-menu-border: rgba(0, 0, 0, 0.08);
