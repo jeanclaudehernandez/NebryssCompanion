@@ -209,6 +209,40 @@ body {
   .attributes th, .profile-table th {
     background-color: #f2f2f2;
   }
+
+  .attributes table {
+    background-color: #d7e7f2;
+    border: 1px solid #b6cfe0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(21, 61, 93, 0.18);
+  }
+
+  .attributes th {
+    background-color: #c7ddeb;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .attributes th,
+  .attributes td {
+    text-align: center;
+  }
+
+  .attributes td {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  body.dark-theme .attributes table {
+    background-color: #1b2a33;
+    border-color: #2b4452;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  body.dark-theme .attributes th {
+    background-color: #22323c;
+  }
   
   /* Weapon Display */
   .weapon-card {
