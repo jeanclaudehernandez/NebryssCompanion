@@ -191,16 +191,9 @@ describe('PlayerDetailComponent', () => {
 
     component.mistralDialogTemplate = {} as any; // Mock template
 
-    // Open modal in subtract mode
-    component.openMistralModal('digital', 'subtract');
-    expect(component.mistralModalMode).toBe('subtract');
-    
-    // Simulate setting amount and confirming
-    component.mistralModalAmount = 50;
-    // We need to call the confirm method. Since it's private, we access it via any or check the side effects if we could trigger it otherwise.
-    // The confirm callback is created in openMistralModal.
-    // But for testing the logic inside confirmMistralAddition, we can call it if we cast to any.
-    (component as any).confirmMistralAddition();
+    component.openMistralModal('digital');
+    component.mistralModalInput = '50';
+    component.applyMistralChange('subtract');
 
     expect(player.progression.mistrals.digital).toBe(50); // 100 - 50
     expect(mockActivePlayerService.updateActivePlayer).toHaveBeenCalled();

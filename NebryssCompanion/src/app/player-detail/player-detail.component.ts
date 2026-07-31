@@ -90,8 +90,7 @@ export class PlayerDetailComponent implements OnChanges {
   @ViewChild('craftConfirmModal', { read: TemplateRef }) craftConfirmModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   mistralModalType: 'digital' | 'physical' | null = null;
-  mistralModalMode: 'add' | 'subtract' = 'add';
-  mistralModalAmount = 0;
+  mistralModalInput = '';
 
   constructor(
     private dataService: DataService,
@@ -655,7 +654,7 @@ export class PlayerDetailComponent implements OnChanges {
     return progression.mistrals.physical || 0;
   }
 
-  openMistralModal(type: 'digital' | 'physical', mode: 'add' | 'subtract' = 'add'): void {
+  openMistralModal(type: 'digital' | 'physical'): void {
     if (!this.isActionAllowed(this.character)) {
       return;
     }
@@ -663,34 +662,65 @@ export class PlayerDetailComponent implements OnChanges {
       return;
     }
     this.mistralModalType = type;
-    this.mistralModalMode = mode;
-    this.mistralModalAmount = 0;
+    this.mistralModalInput = '';
     const context = {
-      type,
-      mode,
-      confirm: () => this.confirmMistralAddition(),
-      cancel: () => this.modalService.close(),
-      setAmount: (value: number) => {
-        if (!Number.isFinite(value)) {
-          this.mistralModalAmount = 0;
-        } else {
-          this.mistralModalAmount = Math.floor(value);
-        }
-      }
+      cancel: () => this.closeMistralModal()
     };
-    this.modalService.openFromTemplate(this.mistralDialogTemplate, context);
+    this.modalService.openFromTemplate(this.mistralDialogTemplate, context, { width: '380px' });
   }
 
-  private confirmMistralAddition(): void {
+  closeMistralModal(): void {
+    this.modalService.close();
+    this.mistralModalType = null;
+    this.mistralModalInput = '';
+  }
+
+  getMistralTotal(type: 'digital' | 'physical'): number {
+    if (type === 'digital') {
+      return this.getDigitalMistrals(this.character);
+    }
+    return this.getPhysicalMistralsTotal(this.character);
+  }
+
+  toggleMistralType(): void {
     if (!this.mistralModalType) {
-      this.modalService.close();
       return;
     }
-    let amount = this.mistralModalAmount;
-    if (this.mistralModalMode === 'subtract') {
-        amount = -amount;
+    this.mistralModalType = this.mistralModalType === 'digital' ? 'physical' : 'digital';
+  }
+
+  appendMistralDigit(digit: string): void {
+    if (!/^\d$/.test(digit)) {
+      return;
     }
-    
+    if (this.mistralModalInput.length >= 9) {
+      return;
+    }
+    const next = `${this.mistralModalInput}${digit}`.replace(/^0+(?=\d)/, '');
+    this.mistralModalInput = next;
+  }
+
+  backspaceMistralInput(): void {
+    this.mistralModalInput = this.mistralModalInput.slice(0, -1);
+  }
+
+  clearMistralInput(): void {
+    this.mistralModalInput = '';
+  }
+
+  applyMistralChange(mode: 'add' | 'subtract'): void {
+    if (!this.mistralModalType) {
+      this.closeMistralModal();
+      return;
+    }
+
+    const parsed = Number(this.mistralModalInput || '0');
+    const amount = Number.isFinite(parsed) ? Math.floor(parsed) : 0;
+    if (amount <= 0) {
+      this.toastService.show('Enter an amount', 'error');
+      return;
+    }
+
     const activePlayer = this.activePlayerService.activePlayer;
     if (
       !activePlayer ||
@@ -698,30 +728,44 @@ export class PlayerDetailComponent implements OnChanges {
       !this.isPlayer(this.character) ||
       activePlayer.id !== this.character.id
     ) {
-      this.modalService.close();
+      this.closeMistralModal();
       return;
     }
     if (!activePlayer.progression || !activePlayer.progression.mistrals) {
-      this.modalService.close();
+      this.closeMistralModal();
       return;
     }
-    if (this.mistralModalType === 'digital') {
-      activePlayer.progression.mistrals.digital =
-        (activePlayer.progression.mistrals.digital || 0) + amount;
-    } else {
-      activePlayer.progression.mistrals.physical =
-        (activePlayer.progression.mistrals.physical || 0) + amount;
+
+    const isDigital = this.mistralModalType === 'digital';
+    const current = isDigital
+      ? (activePlayer.progression.mistrals.digital || 0)
+      : (activePlayer.progression.mistrals.physical || 0);
+
+    const requestedDelta = mode === 'add' ? amount : -amount;
+    const next = Math.max(0, current + requestedDelta);
+    const appliedDelta = next - current;
+
+    if (appliedDelta === 0) {
+      this.toastService.show('Nothing to update', 'error');
+      return;
     }
+
+    if (isDigital) {
+      activePlayer.progression.mistrals.digital = next;
+    } else {
+      activePlayer.progression.mistrals.physical = next;
+    }
+
     this.activePlayerService.updateActivePlayer({ ...activePlayer });
     if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
       this.character = { ...activePlayer };
     }
-    const label = this.mistralModalType === 'digital' ? 'digital' : 'physical';
-    const action = this.mistralModalMode === 'add' ? 'Added' : 'Removed';
-    const absAmount = Math.abs(amount);
+
+    const label = isDigital ? 'digital' : 'physical';
+    const action = appliedDelta > 0 ? 'Added' : 'Removed';
+    const absAmount = Math.abs(appliedDelta);
     this.toastService.show(`${action} ${absAmount} ${label} mistrals`, 'success');
-    this.modalService.close();
-    this.mistralModalType = null;
-    this.mistralModalAmount = 0;
+
+    this.closeMistralModal();
   }
 }
