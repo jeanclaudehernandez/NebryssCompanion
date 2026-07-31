@@ -633,25 +633,6 @@ export class PlayerDetailComponent implements OnChanges {
     return item?.name || `Unknown Material (${id})`;
   }
 
-  copyToClipboard(): void {
-    if (!this.isActivePlayer(this.character)) {
-      return;
-    }
-
-    const player = this.activePlayerService.activePlayer;
-    if (player) {
-      const playerJson = JSON.stringify(player, null, 2);
-      navigator.clipboard.writeText(playerJson)
-        .then(() => {
-          this.toastService.show('Active player changes copied to clipboard', 'success');
-        })
-        .catch(err => {
-          console.error('Failed to copy to clipboard:', err);
-          this.toastService.show('Failed to copy to clipboard', 'error');
-        });
-    }
-  }
-
   getDigitalMistrals(character: Character): number {
     if (!this.isPlayer(character)) {
       return 0;

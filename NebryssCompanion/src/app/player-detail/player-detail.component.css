@@ -203,31 +203,6 @@ body.dark-theme .weapon-selector {
   margin: 0;
 }
 
-.save-button {
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.1s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.save-button:hover {
-  background-color: #388e3c;
-}
-
-.save-button:active {
-  transform: scale(0.92);
-}
-
 .mistrals-add-button {
   background-color: #4caf50;
   color: #ffffff;
