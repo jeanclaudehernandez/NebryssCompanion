@@ -1,5 +1,5 @@
 <div class="shops-container">
-  <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
+  <h2 style="margin-top:10px;">Shops</h2>
   <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
     <div class="shop-header">
       <h3>{{ shop.name }}</h3>

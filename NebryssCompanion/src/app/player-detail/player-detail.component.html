@@ -59,11 +59,11 @@
     <h3>Attributes</h3>
     <table class="attributes-table">
       <tr>
-        <th>Movement</th>
-        <th>Wounds</th>
-        <th>Save</th>
-        <th>APL</th>
-        <th>Weapon Types</th>
+        <th title="Movement">MOV</th>
+        <th title="Wounds">WND</th>
+        <th title="Save">SV</th>
+        <th title="Action Point Limit">APL</th>
+        <th title="Weapon Types">Body</th>
       </tr>
       <tr>
         <td>{{ calculatedAttributes.Movement }}"</td>
@@ -75,80 +75,86 @@
     </table>
   </div>
 
-  <div [id]="'weapons-' + character.id" class="weapons">
+  <div [id]="'weapons-' + character.id" class="weapons section-block">
     <h3>Weapons</h3>
-      <app-weapon-table 
-        [weaponIds]="visibleWeaponIds"
-        [weaponsData]="weaponsData"
-        [weaponRulesData]="weaponRulesData"
-        [isCharacterDisplayPage]="true"
-        [characterBody]="character.attributes.body"
-        [alteredStates]="alteredStates"
-        [inventoryManagement]="isActionAllowed(character)">
-      </app-weapon-table>
+    <app-weapon-table 
+      [weaponIds]="visibleWeaponIds"
+      [weaponsData]="weaponsData"
+      [weaponRulesData]="weaponRulesData"
+      [isCharacterDisplayPage]="true"
+      [characterBody]="character.attributes.body"
+      [alteredStates]="alteredStates"
+      [inventoryManagement]="isActionAllowed(character)">
+    </app-weapon-table>
   </div>
 
-  
-  <div [id]="'abilities-' + character.id" class="abilities">
-    <h3>Abilities</h3>
-    <div *ngFor="let ability of processedAbilities" class="ability">
-      <h4>{{ ability.name }}</h4>
-      <p [innerHtml]="ability.effect | sanitizeHtml"></p>
+  <div [id]="'abilities-' + character.id" class="abilities category-block section-block" *ngIf="processedAbilities.length > 0">
+    <div class="table-header" (click)="toggleAbilitiesCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Abilities <span>{{ isAbilitiesCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isAbilitiesCollapsed" class="category-content">
+      <div *ngFor="let ability of processedAbilities" class="ability">
+        <h4>{{ ability.name }}</h4>
+        <p [innerHtml]="ability.effect | sanitizeHtml"></p>
+      </div>
     </div>
   </div>
 
-  
-  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
-    <h3>Items</h3>
+  <div [id]="'items-' + character.id" class="items section-block" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
+      [title]="'Items'"
+      [collapsible]="true"
       [data]="itemTableData"
       [headers]="itemTableHeaders"
       [headerKeys]="itemTableHeaderKeys"
       [renderHtml]="['description']"
       [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true"
-      [collapsible]="false"
       [enableEquipping]="isActionAllowed(character)"
       (craft)="onCraft($event)"
       (equip)="onEquip($event)">
     </app-generic-table>
   </div>
 
-  <div [id]="'equipment-' + character.id" class="equipment" *ngIf="equipmentTableData.length > 0">
-    <h3>Equipment</h3>
+  <div [id]="'equipment-' + character.id" class="equipment section-block" *ngIf="equipmentTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-equipment-' + character.id"
+      [title]="'Equipment'"
+      [collapsible]="true"
       [data]="equipmentTableData"
       [headers]="equipmentTableHeaders"
       [headerKeys]="equipmentTableHeaderKeys"
       [renderHtml]="['description']"
       [inventoryManagement]="false"
       [isPlayerDetail]="true"
-      [collapsible]="false"
       [enableUnequipping]="isActionAllowed(character)"
       (unequip)="onUnequip($event)">
     </app-generic-table>
   </div>
   
-  <div [id]="'mods-' + character.id" class="mods" *ngIf="isPlayer(character) && modItems.length">
-    <h3>Mods</h3>
-    <div class="table-container">
-      <table class="items-table">
+  <div [id]="'mods-' + character.id" class="mods category-block section-block" *ngIf="isPlayer(character) && modItems.length">
+    <div class="table-header" (click)="toggleModsCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Mods <span>{{ isModsCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isModsCollapsed" class="table-scroll-wrapper">
+      <table class="items-table mods-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Applies to</th>
-            <th>Attached Weapon</th>
+            <th class="col-name">Name</th>
+            <th class="col-description">Description</th>
+            <th class="col-compact">Applies</th>
+            <th class="col-actions">Attached to</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let mod of modItems">
-            <td>{{ mod.item.name }}</td>
-            <td [innerHtml]="processItemDescription(mod.item.description || '') | sanitizeHtml"></td>
-            <td>{{mod.item.part}}</td>
-            <td>
+            <td class="col-name">
+              <div class="name-wrapper">{{ mod.item.name }}</div>
+            </td>
+            <td class="col-description" [innerHtml]="processItemDescription(mod.item.description || '') | sanitizeHtml"></td>
+            <td class="col-compact">{{mod.item.part}}</td>
+            <td class="col-actions">
               <select
                 class="weapon-selector"
                 [(ngModel)]="mod.inventory.attachedTo"
@@ -168,56 +174,63 @@
     </div>
   </div>
   
-  <div [id]="'talents-' + character.id" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
-    <h3>Talents</h3>
+  <div [id]="'talents-' + character.id" class="talents section-block" *ngIf="isPlayer(character) && talentTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-talents-' + character.id"
+      [title]="'Talents'"
+      [collapsible]="true"
       [data]="talentTableData"
       [headers]="talentTableHeaders"
       [headerKeys]="talentTableHeaderKeys"
       [isPlayerDetail]="true"
-      [collapsible]="false"
+      [nameColumnWidth]="'150px'"
       [renderHtml]="['name', 'effect']">
     </app-generic-table>
   </div>
   
-  <div [id]="'afflictions-' + character.id" class="afflictions" *ngIf="isPlayer(character) && $any(character).progression?.afflictions?.length">
-    <h3>Afflictions</h3>
-    <app-afflictions-display 
-      [player]="$any(character)" 
-      [isEditable]="isActionAllowed(character)">
-    </app-afflictions-display>
+  <div [id]="'afflictions-' + character.id" class="afflictions category-block section-block" *ngIf="isPlayer(character) && $any(character).progression?.afflictions?.length">
+    <div class="table-header" (click)="toggleAfflictionsCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Afflictions <span>{{ isAfflictionsCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isAfflictionsCollapsed" class="category-content">
+      <app-afflictions-display 
+        [player]="$any(character)" 
+        [isEditable]="isActionAllowed(character)">
+      </app-afflictions-display>
+    </div>
   </div>
 
-
-
-  <div [id]="'deployables-' + character.id" class="deployables" *ngIf="character.deployables?.length">
-    <h3>Deployables</h3>
-    <div *ngFor="let deployableEntry of character.deployables">
-      <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
-        <div class="deployable">
-          <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
-          <p>{{ deployable.description }}</p>
-          <app-weapon-table 
-            *ngIf="deployable.weapons?.length"
-            [weaponIds]="deployable.weapons"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates"
-            [inventoryManagement]="false">
-          </app-weapon-table>
-          <ng-container *ngIf="deployable.subType === 'mob'">
-            @let mob = getMobById(deployable.bestiaryId);
-            <app-player-detail
-            [character]="mob"
-            [weaponsData]="weaponsData"
-            [itemsData]="itemsData"
-            [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates"
-            ></app-player-detail>
-          </ng-container>   
-        </div>
-      </ng-container>
+  <div [id]="'deployables-' + character.id" class="deployables category-block section-block" *ngIf="character.deployables?.length">
+    <div class="table-header" (click)="toggleDeployablesCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Deployables <span>{{ isDeployablesCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isDeployablesCollapsed" class="category-content">
+      <div *ngFor="let deployableEntry of character.deployables">
+        <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
+          <div class="deployable">
+            <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
+            <p>{{ deployable.description }}</p>
+            <app-weapon-table 
+              *ngIf="deployable.weapons?.length"
+              [weaponIds]="deployable.weapons"
+              [weaponsData]="weaponsData"
+              [weaponRulesData]="weaponRulesData"
+              [alteredStates]="alteredStates"
+              [inventoryManagement]="false">
+            </app-weapon-table>
+            <ng-container *ngIf="deployable.subType === 'mob'">
+              @let mob = getMobById(deployable.bestiaryId);
+              <app-player-detail
+              [character]="mob"
+              [weaponsData]="weaponsData"
+              [itemsData]="itemsData"
+              [weaponRulesData]="weaponRulesData"
+              [alteredStates]="alteredStates"
+              ></app-player-detail>
+            </ng-container>   
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>

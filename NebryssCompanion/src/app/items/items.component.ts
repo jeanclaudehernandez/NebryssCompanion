@@ -18,35 +18,51 @@ import { AdminEditorSession } from '../admin-editor.models';
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
-      <div class="weapons-section" [id]="'weapon'">
-        <h2 (click)="toggleWeaponsCollapsed()" style="cursor: pointer; margin-left: 50px;">
-          Weapons {{ weaponsCollapsed ? '▶' : '▼' }}
-        </h2>
-        <div *ngIf="!weaponsCollapsed">
-          <app-weapon-table 
-            [weaponIds]="allWeaponIds" 
-            [weaponsData]="weaponsData" 
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="true"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)"></app-weapon-table>
+      <div class="items-search-container">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (ngModelChange)="onSearchChange()"
+            placeholder="Search weapons, armor, items, descriptions..." 
+            class="items-search-input">
+          <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">✕</button>
         </div>
+        <span *ngIf="searchQuery" class="search-results-count">
+          Found {{ totalSearchResultsCount }} item(s)
+        </span>
+      </div>
+
+      <div [id]="'weapon'">
+        <app-weapon-table 
+          [title]="'Weapons'"
+          [collapsible]="true"
+          [isCollapsed]="weaponsCollapsed"
+          (toggleCollapse)="toggleWeaponsCollapsed()"
+          [weaponIds]="filteredWeaponIds" 
+          [weaponsData]="weaponsData" 
+          [weaponRulesData]="weaponRules"
+          [alteredStates]="alteredStates"
+          [displayPrice]="true"
+          [displayBody]="true"
+          [enableBodyFilter]="true"
+          [characterBody]="activePlayerBodyTypes"
+          [inventoryManagement]="hasActivePlayer()"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
+          (clone)="onCloneWeapon($event)"
+          (delete)="onDeleteWeapon($event)"
+          (edit)="onEditWeapon($event)">
+        </app-weapon-table>
       </div>
 
       <div *ngFor="let category of itemCategories" [id]='category.key'>
         <app-generic-table 
           [storageKey]="'items-category-' + category.key"
           [title]="category.name"
-          [data]="categoryDataMap[category.key] || []"
+          [data]="filteredCategoryDataMap[category.key] || []"
           [headers]="category.headers"
           [headerKeys]="category.keys"
           [renderHtml]="['description']"
@@ -118,9 +134,12 @@ export class ItemsComponent implements OnInit {
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
   categoryDataMap: Record<string, any[]> = {};
+  filteredCategoryDataMap: Record<string, any[]> = {};
   alteredStates: AlteredState[] = [];
   bestiary: BestiaryEntry[] = [];
   allWeaponIds: number[] = [];
+  filteredWeaponIds: number[] = [];
+  searchQuery: string = '';
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   activePlayerBodyTypes: string[] = [];
@@ -198,6 +217,64 @@ export class ItemsComponent implements OnInit {
   toggleWeaponsCollapsed() {
     this.weaponsCollapsed = !this.weaponsCollapsed;
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
+  }
+
+  onSearchChange(): void {
+    const query = (this.searchQuery || '').toLowerCase().trim();
+
+    if (!query) {
+      this.filteredWeaponIds = [...this.allWeaponIds];
+      this.filteredCategoryDataMap = { ...this.categoryDataMap };
+      return;
+    }
+
+    // Filter weapons
+    const matchingWeapons = this.weaponsData.filter(w => {
+      const nameMatch = w.name?.toLowerCase().includes(query);
+      const profileMatch = w.profiles?.some(p => 
+        p.profileName?.toLowerCase().includes(query) || 
+        p.body?.toLowerCase().includes(query) ||
+        p.specialRules?.some((r: any) => {
+          const ruleStr = typeof r === 'string' ? r : (r?.name || r?.ruleName || '');
+          return ruleStr.toLowerCase().includes(query);
+        })
+      );
+      return nameMatch || profileMatch;
+    });
+
+    this.filteredWeaponIds = matchingWeapons.map(w => w.id);
+    if (matchingWeapons.length > 0) {
+      this.weaponsCollapsed = false;
+    }
+
+    // Filter items per category
+    this.filteredCategoryDataMap = {};
+    for (const catKey of Object.keys(this.categoryDataMap)) {
+      const items = this.categoryDataMap[catKey] || [];
+      this.filteredCategoryDataMap[catKey] = items.filter(item => {
+        const nameMatch = item.name?.toLowerCase().includes(query);
+        const descMatch = item.description?.toLowerCase().includes(query);
+        const typeMatch = item.type?.toLowerCase().includes(query);
+        const subTypeMatch = item.subType?.toLowerCase().includes(query);
+        const bodyMatch = item.raceReq?.toLowerCase().includes(query);
+        const partMatch = item.part?.toLowerCase().includes(query);
+        return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
+      });
+    }
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.onSearchChange();
+  }
+
+  get totalSearchResultsCount(): number {
+    if (!this.searchQuery) return 0;
+    let count = this.filteredWeaponIds.length;
+    for (const key of Object.keys(this.filteredCategoryDataMap)) {
+      count += (this.filteredCategoryDataMap[key] || []).length;
+    }
+    return count;
   }
 
   // Weapon Management Methods
@@ -389,6 +466,7 @@ export class ItemsComponent implements OnInit {
   private refreshCategoryData(): void {
     if (!this.itemsData?.items || !this.itemCategories.length) {
       this.categoryDataMap = {};
+      this.onSearchChange();
       return;
     }
 
@@ -396,6 +474,8 @@ export class ItemsComponent implements OnInit {
       acc[category.key] = this.buildCategoryData(category.key);
       return acc;
     }, {} as Record<string, any[]>);
+
+    this.onSearchChange();
   }
 
   private buildCategoryData(key: string): any[] {

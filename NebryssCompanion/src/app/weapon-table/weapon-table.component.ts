@@ -47,12 +47,23 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
   @Input() shoppingMode: boolean = false;
+  @Input() title: string = '';
+  @Input() collapsible: boolean = false;
+  @Input() isCollapsed: boolean = false;
   @Input() enableBodyFilter: boolean = false;
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
+  @Output() toggleCollapse = new EventEmitter<void>();
+
+  onToggleCollapse(): void {
+    if (this.collapsible) {
+      this.isCollapsed = !this.isCollapsed;
+      this.toggleCollapse.emit();
+    }
+  }
 
   talentsData: TalentCategory[] = [];
   afflictionsData: Affliction[] = [];

@@ -56,6 +56,26 @@ import { ActivePlayerService } from './active-player.service';
     LettersPageComponent
   ],
   template: `
+    <!-- Top App Bar Header -->
+    <header class="app-header">
+      <button type="button" class="header-action-btn" (click)="$event.stopPropagation(); sidebarComp.toggleMenu()" aria-label="Open navigation menu">
+        <span class="material-icons">menu</span>
+      </button>
+
+      <h1 class="header-title">{{ currentViewTitle }}</h1>
+
+      <div class="header-actions">
+        <div class="active-player-chip" *ngIf="activePlayer$ | async as player" (click)="onViewChange('players')" title="Active Player">
+          <span class="material-icons chip-icon">person</span>
+          <span class="chip-name">{{ player.name }}</span>
+        </div>
+
+        <button type="button" class="header-action-btn" (click)="themeService.toggleTheme()" [attr.aria-label]="(themeService.darkMode$ | async) ? 'Light mode' : 'Dark mode'">
+          <span class="material-icons">{{ (themeService.darkMode$ | async) ? 'light_mode' : 'dark_mode' }}</span>
+        </button>
+      </div>
+    </header>
+
     <!-- Pull to Refresh Indicator -->
     <div class="pull-refresh-indicator" [style.height.px]="pullIndicatorHeight" [style.opacity]="pullProgress > 0 ? 1 : 0">
        <div class="spinner-small" *ngIf="isRefreshing || pullProgress > 0.8"></div>
@@ -69,7 +89,7 @@ import { ActivePlayerService } from './active-player.service';
         <div class="spinner"></div>
       </div>
     }
-    <app-sidebar (viewChange)="onViewChange($event)"></app-sidebar>
+    <app-sidebar #sidebarComp (viewChange)="onViewChange($event)"></app-sidebar>
     
     <div class="content-area" #contentArea [style.transform]="contentTransform">
       @if (currentView === 'players') {
@@ -122,7 +142,7 @@ import { ActivePlayerService } from './active-player.service';
       }
     </div>
 
-    <nav class="footer-menu" aria-label="Footer menu">
+    <nav class="footer-menu" aria-label="Footer navigation">
       <button
         type="button"
         class="footer-btn"
@@ -181,6 +201,29 @@ export class AppComponent {
   selectedStateName: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
   letterUnreadCount = 0;
+  activePlayer$ = this.activePlayerService.activePlayer$;
+
+  get currentViewTitle(): string {
+    switch (this.currentView) {
+      case 'players': return 'Players';
+      case 'bestiary': return 'Bestiary';
+      case 'letters': return 'Letters';
+      case 'items': return 'Items & Equipment';
+      case 'shops': return 'Shops';
+      case 'lore': return 'Lore & Factions';
+      case 'locations': return 'Locations';
+      case 'talents': return 'Talents';
+      case 'mistEffects': return 'Mist Effects';
+      case 'terrains': return 'Terrains';
+      case 'mistEngineBattles': return 'Mist Engine';
+      case 'weaponRules': return 'Weapon Rules';
+      case 'alteredStates': return 'Altered States';
+      case 'afflictions': return 'Afflictions';
+      case 'shipNavigation': return 'Ship Navigation';
+      case 'adminItemCreator': return 'Item Creator';
+      default: return 'Nebryss Companion';
+    }
+  }
 
   // Pull to refresh variables
   private pullStartY = 0;
@@ -202,7 +245,7 @@ export class AppComponent {
   }
 
   constructor(
-    private themeService: ThemeService,
+    public themeService: ThemeService,
     public loadingService: LoadingService,
     private dataService: DataService,
     private dialog: MatDialog,

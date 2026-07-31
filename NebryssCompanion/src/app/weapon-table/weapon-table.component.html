@@ -1,39 +1,46 @@
-<div class="table-container">
-    <div *ngIf="enableBodyFilter" class="filter-container" style="margin: 10px; max-width: 300px;">
-        <label style="margin-bottom: 5px; font-size: 0.9em; display: block;">Filter by Body:</label>
-        <app-custom-dropdown
-            [options]="availableBodyTypes"
-            [selectedOption]="selectedBodyType"
-            [placeholder]="'All Body Types'"
-            [showClearOption]="true"
-            [type]="'simple'"
-            (selectionChange)="onBodyTypeChange($event)">
-        </app-custom-dropdown>
+<div class="category-block">
+    <div class="table-header" *ngIf="collapsible || title" (click)="collapsible ? onToggleCollapse() : null" [style.cursor]="collapsible ? 'pointer' : 'default'">
+        <h3 style="display: inline-block;">{{ title }} <span *ngIf="collapsible">{{ isCollapsed ? '▶' : '▼' }}</span></h3>
     </div>
-    <table class="weapons-table">
+    <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
+        <div *ngIf="enableBodyFilter" class="filter-container">
+          <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
+          <app-custom-dropdown
+              [options]="availableBodyTypes"
+              [selectedOption]="selectedBodyType"
+              [placeholder]="'All Body Types'"
+              [showClearOption]="true"
+              [type]="'simple'"
+              (selectionChange)="onBodyTypeChange($event)">
+          </app-custom-dropdown>
+        </div>
+        <div class="table-scroll-wrapper">
+          <table class="weapons-table">
       <thead>
         <tr>
-          <th>Name</th>
-          <th>R</th>
-          <th>A</th>
-          <th>Hit</th>
-          <th>D</th>
-          <th *ngIf="displayPrice">Price</th>
-          <th *ngIf="showActions">Actions</th>
+          <th class="col-name">Name</th>
+          <th class="col-compact" title="Range">Rng</th>
+          <th class="col-compact" title="Attacks">Atk</th>
+          <th class="col-compact" title="Hit Chance">Hit</th>
+          <th class="col-compact" title="Damage">Dmg</th>
+          <th class="col-compact" *ngIf="displayPrice" title="Price">Price</th>
+          <th class="col-actions" *ngIf="showActions" title="Actions">Act</th>
         </tr>
       </thead>
       <ng-container *ngFor="let entry of sortedProfiles">
         <tbody *ngIf="filterByBody(entry.profile) || !isCharacterDisplayPage" [class.in-inventory]="isInInventory(entry.weapon.id)">
             <!-- Row 1: Stats -->
             <tr class="weapon-row stats-row">
-                <td class="name-cell">
-                  {{ entry.weapon.name }}
-                  <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
+                <td class="name-cell col-name">
+                  <div class="name-wrapper">
+                    {{ entry.weapon.name }}
+                    <span *ngIf="entry.weapon.profiles.length > 1">({{ entry.profile.profileName || 'default' }})</span>
+                  </div>
                 </td>
-                <td>{{ entry.profile.rng | weaponRange}}</td>
-                <td>{{ entry.profile.attacks }}<span class="dice-suffix">d6</span></td>
-                <td>{{ entry.profile.ws }}+</td>
-                <td>
+                <td class="col-compact">{{ entry.profile.rng | weaponRange}}</td>
+                <td class="col-compact">{{ entry.profile.attacks }}<span class="dice-suffix">d6</span></td>
+                <td class="col-compact">{{ entry.profile.ws }}+</td>
+                <td class="col-compact">
                   <span *ngIf="entry.profile.damage.min === entry.profile.damage.max">
                     {{ entry.profile.damage.min }}
                   </span>
@@ -41,8 +48,8 @@
                     {{ entry.profile.damage.min }}/{{ entry.profile.damage.max }}
                   </span>
                 </td>
-                <td *ngIf="displayPrice">{{entry.weapon.price ? entry.weapon.price + '₥' : '-'}}</td>
-                <td *ngIf="showActions">
+                <td class="col-compact" *ngIf="displayPrice">{{entry.weapon.price ? entry.weapon.price + '₥' : '-'}}</td>
+                <td class="col-actions" *ngIf="showActions">
                     <div class="inventory-actions">
                         <button *ngIf="enableEditing" (click)="onEdit(entry.weapon)" class="btn-edit" title="Edit">
                             <span class="icon">✏️</span>
@@ -97,5 +104,7 @@
              </tr>
         </tbody>
       </ng-container>
-    </table>
+        </table>
+        </div>
+    </div>
 </div>

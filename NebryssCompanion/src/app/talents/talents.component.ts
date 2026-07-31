@@ -30,16 +30,22 @@ export class TalentsComponent implements OnInit, OnDestroy {
     private dialog: MatDialog
   ) {}
 
+  collapsedCategories: { [id: string]: boolean } = {};
+
   ngOnInit() {
     this.dataService.getItems().subscribe();
 
     this.dataService.getTalents().subscribe(talents => {
       this.talentCategories = talents;
       this.scrollSections = this.talentCategories.map((category: TalentCategory) => {
+        const saved = localStorage.getItem(`talent-cat-${category.id}`);
+        if (saved) {
+          this.collapsedCategories[category.id] = JSON.parse(saved);
+        }
         return {
           title: category.name,
           id: category.id
-        }
+        };
       });
     });
 
@@ -52,6 +58,17 @@ export class TalentsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  toggleCategory(categoryId: string): void {
+    this.collapsedCategories[categoryId] = !this.collapsedCategories[categoryId];
+    try {
+      localStorage.setItem(`talent-cat-${categoryId}`, JSON.stringify(this.collapsedCategories[categoryId]));
+    } catch {}
+  }
+
+  isCategoryCollapsed(categoryId: string): boolean {
+    return !!this.collapsedCategories[categoryId];
   }
 
   addTalentPoint(): void {

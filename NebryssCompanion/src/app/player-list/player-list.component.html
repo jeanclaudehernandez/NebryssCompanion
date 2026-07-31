@@ -1,22 +1,21 @@
 <div class="player-list-container">
-    <h2 style="margin-left:50px; margin-top: 20px;">Players</h2>
-    
-    <div class="player-dropdown-container" [style.z-index]="dropdown.isOpen ? 1002 : 'auto'">
-      <app-custom-dropdown #dropdown
-        [options]="players"
-        [selectedOption]="selectedPlayer"
-        [showClearOption]="true"
-        (selectionChange)="selectPlayer($event)">
-      </app-custom-dropdown>
-    </div>
-    
-    <div *ngIf="selectedPlayer" class="player-detail-container" #playerDetailContainer>
-        <app-player-detail 
-          [character]="selectedPlayer"
-          [weaponsData]="weaponsData"
-          [itemsData]="itemsData"
-          [weaponRulesData]="weaponRulesData"
-          [alteredStates]="alteredStates">
-        </app-player-detail>
-    </div>
+  <div class="player-dropdown-container" [style.z-index]="dropdown.isOpen ? 1002 : 'auto'">
+    <label class="section-label">Choose your character</label>
+    <app-custom-dropdown #dropdown
+      [options]="players"
+      [selectedOption]="selectedPlayer"
+      [showClearOption]="true"
+      (selectionChange)="selectPlayer($event)">
+    </app-custom-dropdown>
   </div>
+  
+  <div *ngIf="selectedPlayer" class="player-detail-container" #playerDetailContainer>
+      <app-player-detail 
+        [character]="selectedPlayer"
+        [weaponsData]="weaponsData"
+        [itemsData]="itemsData"
+        [weaponRulesData]="weaponRulesData"
+        [alteredStates]="alteredStates">
+      </app-player-detail>
+  </div>
+</div>

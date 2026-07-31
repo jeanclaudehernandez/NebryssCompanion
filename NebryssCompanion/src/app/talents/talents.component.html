@@ -1,33 +1,42 @@
 <div class="talents-container">
-    <h2>Talents</h2>
-    <div class="talent-points-floating" *ngIf="activePlayer">
-      <span>Talent Points: {{ activePlayer.progression.talentPoints }}</span>
-      <button class="add-talent-point-btn" (click)="addTalentPoint()">+</button>
-      <button class="remove-talent-point-btn" (click)="removeTalentPoint()" [disabled]="(activePlayer.progression.talentPoints) <= 0">-</button>
+    <div class="talents-header-row">
+      <h2>Talents</h2>
+      <div class="talent-points-pill" *ngIf="activePlayer">
+        <span class="pts-label">Points: {{ activePlayer.progression.talentPoints || 0 }}</span>
+        <button class="add-talent-point-btn" (click)="addTalentPoint()" title="Add point">+</button>
+        <button class="remove-talent-point-btn" (click)="removeTalentPoint()" [disabled]="(activePlayer.progression.talentPoints || 0) <= 0" title="Remove point">-</button>
+      </div>
     </div>
-    <div *ngFor="let category of talentCategories" class="talent-category" [id]="category.id">
-      <h3>{{category.name}}</h3>
-      <p *ngIf="category.description">{{category.description}}</p>
-      <div *ngFor="let talent of category.talents" 
-           class="talent-card"
-           [class.selected]="isTalentSelected(talent)"
-           (click)="toggleTalent(talent)">
-        <div class="talent-header">
-          <h4>{{talent.name}} (Cost: {{talent.cost}})</h4>
-          <div *ngIf="talent.maxStacks" class="stacks-counter">
-            {{ getTalentSelectedCount(talent) }}/{{ talent.maxStacks }}
+    <div *ngFor="let category of talentCategories" class="talent-category-block" [id]="category.id">
+      <div class="sticky-category-header" (click)="toggleCategory(category.id)">
+        <h3>
+          <span>{{ category.name }}</span>
+          <span class="collapse-icon">{{ isCategoryCollapsed(category.id) ? '▶' : '▼' }}</span>
+        </h3>
+      </div>
+      <div *ngIf="!isCategoryCollapsed(category.id)" class="category-content">
+        <p *ngIf="category.description" class="category-desc">{{ category.description }}</p>
+        <div *ngFor="let talent of category.talents" 
+             class="talent-card"
+             [class.selected]="isTalentSelected(talent)"
+             (click)="toggleTalent(talent)">
+          <div class="talent-header">
+            <h4>{{talent.name}} (Cost: {{talent.cost}})</h4>
+            <div *ngIf="talent.maxStacks" class="stacks-counter">
+              {{ getTalentSelectedCount(talent) }}/{{ talent.maxStacks }}
+            </div>
           </div>
-        </div>
-        <p [innerHtml]="talent.effect | sanitizeHtml"></p>
-        <div *ngIf="talent.requirements && talent.requirements.length" class="requirements" 
-          [class.requirements-not-met]="!hasRequiredTalents(talent)">
-          <small>Requires: {{getRequirementNames(talent.requirements)}}</small>
-        </div>
-        <div *ngIf="talent.maxStacks && isTalentSelected(talent)" class="stack-controls">
-          <button class="stack-btn decrement" (click)="decrementTalent(talent, $event)" 
-                  [disabled]="getTalentSelectedCount(talent) <= 0">-</button>
-          <button class="stack-btn increment" (click)="incrementTalent(talent, $event)" 
-                  [disabled]="getTalentSelectedCount(talent) >= talent.maxStacks">+</button>
+          <p [innerHtml]="talent.effect | sanitizeHtml"></p>
+          <div *ngIf="talent.requirements && talent.requirements.length" class="requirements" 
+            [class.requirements-not-met]="!hasRequiredTalents(talent)">
+            <small>Requires: {{getRequirementNames(talent.requirements)}}</small>
+          </div>
+          <div *ngIf="talent.maxStacks && isTalentSelected(talent)" class="stack-controls">
+            <button class="stack-btn decrement" (click)="decrementTalent(talent, $event)" 
+                    [disabled]="getTalentSelectedCount(talent) <= 0">-</button>
+            <button class="stack-btn increment" (click)="incrementTalent(talent, $event)" 
+                    [disabled]="getTalentSelectedCount(talent) >= talent.maxStacks">+</button>
+          </div>
         </div>
       </div>
     </div>

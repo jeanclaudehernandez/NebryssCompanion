@@ -12,13 +12,13 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
   standalone: true,
   imports: [CommonModule, SanitizeHtmlPipe, FormsModule, CustomDropdownComponent],
   template: `
-    <div class="table-container">
+    <div class="category-block">
       <div class="table-header" *ngIf="collapsible || title" (click)="collapsible ? toggleCollapse() : null" [style.cursor]="collapsible ? 'pointer' : 'default'">
          <h3 style="display: inline-block;">{{ title }} <span *ngIf="collapsible">{{ isCollapsed ? '▶' : '▼' }}</span></h3>
       </div>
-      <div *ngIf="!isCollapsed || !collapsible">
-        <div *ngIf="enableBodyFilter" class="filter-container" style="margin: 10px; max-width: 300px;">
-          <label style="margin-bottom: 5px; font-size: 0.9em; display: block;">Filter by Body:</label>
+      <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
+        <div *ngIf="enableBodyFilter" class="filter-container">
+          <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
           <app-custom-dropdown
               [options]="availableBodyTypes"
               [selectedOption]="selectedBodyType"
@@ -28,66 +28,86 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
               (selectionChange)="onBodyTypeChange($event)">
           </app-custom-dropdown>
         </div>
-        <table class="items-table">
-          <thead>
-            <tr>
-              <th 
-                *ngFor="let header of headers; let i = index"
-                (click)="onSort(headerKeys[i])"
-                class="sortable-header">
-                {{ header }}
-                <span *ngIf="sortKey === headerKeys[i]">
-                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
-                </span>
-              </th>
-              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
-              <td *ngFor="let header of headerKeys">
-                <span *ngIf="!renderHtml?.includes(header) && header !== 'price'">{{ item[header] }}</span>
-                <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
-                <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
-              </td>
-              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">
-                <div class="inventory-actions">
-                  <button *ngIf="enableEquipping && item.isEquippable" (click)="onEquip(item)" class="btn-equip" title="Equip Item">
-                    <span class="icon">👕</span>
-                  </button>
-                  <button *ngIf="enableUnequipping" (click)="onUnequip(item)" class="btn-unequip" title="Unequip Item">
-                    <div class="icon-container">
-                      <span class="icon-layer-base">👕</span>
-                      <span class="icon-layer-overlay">❌</span>
+        <div class="table-scroll-wrapper">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th 
+                  *ngFor="let header of headers; let i = index"
+                  (click)="onSort(headerKeys[i])"
+                  class="sortable-header"
+                  [class.col-compact]="isCompactColumn(headerKeys[i])"
+                  [class.col-description]="isDescriptionColumn(headerKeys[i])"
+                  [class.col-name]="headerKeys[i] === 'name'"
+                  [style.width]="headerKeys[i] === 'name' ? nameColumnWidth : null"
+                  [title]="getHeaderTooltip(header)">
+                  {{ getShortHeader(header) }}
+                  <span *ngIf="sortKey === headerKeys[i]">
+                    {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
+                <th class="col-actions" title="Actions" *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">Act</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
+                <td 
+                  *ngFor="let header of headerKeys"
+                  [class.col-compact]="isCompactColumn(header)"
+                  [class.col-description]="isDescriptionColumn(header)"
+                  [class.col-name]="header === 'name'"
+                  [style.width]="header === 'name' ? nameColumnWidth : null">
+                  <ng-container *ngIf="header === 'name'">
+                    <div class="name-wrapper" [style.max-width]="nameColumnWidth" [style.width]="nameColumnWidth">
+                      <span *ngIf="!renderHtml?.includes('name')">{{ item[header] }}</span>
+                      <span *ngIf="renderHtml?.includes('name')" [innerHtml]="item[header] | sanitizeHtml"></span>
                     </div>
-                  </button>
-                  <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
-                    <span class="icon">+</span>
-                  </button>
-                  <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
-                    <span class="icon">✏️</span>
-                  </button>
-                  <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
-                    <span class="icon">❐</span>
-                  </button>
-                  <button *ngIf="enableDeleting" (click)="onDelete(item)" class="btn-delete" title="Delete Item">
-                    <span class="icon">🗑️</span>
-                  </button>
-                  <ng-container *ngIf="inventoryManagement">
-                    <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
-                      <i class="icon-wrench">🔧</i>
-                    </button>
-                    <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
-                      <span class="icon">🛒</span>
-                    </button>
-                    <button *ngIf="!isPlayerDetail && !shoppingMode" (click)="addToInventory(item)" class="btn-add">+</button>
-                    <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">-</button>
                   </ng-container>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <ng-container *ngIf="header !== 'name'">
+                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price'">{{ item[header] }}</span>
+                    <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
+                    <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
+                  </ng-container>
+                </td>
+                <td class="col-actions" *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">
+                  <div class="inventory-actions">
+                    <button *ngIf="enableEquipping && item.isEquippable" (click)="onEquip(item)" class="btn-equip" title="Equip Item">
+                      <span class="icon">👕</span>
+                    </button>
+                    <button *ngIf="enableUnequipping" (click)="onUnequip(item)" class="btn-unequip" title="Unequip Item">
+                      <div class="icon-container">
+                        <span class="icon-layer-base">👕</span>
+                        <span class="icon-layer-overlay">❌</span>
+                      </div>
+                    </button>
+                    <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
+                      <span class="icon">+</span>
+                    </button>
+                    <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
+                      <span class="icon">✏️</span>
+                    </button>
+                    <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
+                      <span class="icon">❐</span>
+                    </button>
+                    <button *ngIf="enableDeleting" (click)="onDelete(item)" class="btn-delete" title="Delete Item">
+                      <span class="icon">🗑️</span>
+                    </button>
+                    <ng-container *ngIf="inventoryManagement">
+                      <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
+                        <i class="icon-wrench">🔧</i>
+                      </button>
+                      <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
+                        <span class="icon">🛒</span>
+                      </button>
+                      <button *ngIf="!shoppingMode" (click)="addToInventory(item)" class="btn-add">+</button>
+                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">-</button>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
@@ -114,6 +134,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableUnequipping: boolean = false;
   @Input() characterBody: string[] = [];
   @Input() enableBodyFilter: boolean = false;
+  @Input() nameColumnWidth: string = '95px';
 
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
@@ -131,6 +152,42 @@ export class GenericTableComponent implements OnInit, OnChanges {
   
   availableBodyTypes: string[] = [];
   selectedBodyType: string | null = null;
+
+  getShortHeader(header: string): string {
+    if (!header) return '';
+    const h = header.toLowerCase().trim();
+    switch (h) {
+      case 'price': return 'Price';
+      case 'quantity': return 'Qty';
+      case 'weight': return 'Wt';
+      case 'optimal conditions': return 'Opt. Cond.';
+      case 'max speed': return 'Spd';
+      case 'max weight': return 'Max Wt';
+      case 'ship wounds': return 'WND';
+      case 'defense': return 'DEF';
+      case 'max cargo': return 'Cargo';
+      case 'ammo type': return 'Ammo';
+      case 'damage': return 'Dmg';
+      case 'dropped from': return 'Drop';
+      case 'density level': return 'Lvl';
+      case 'treatment': return 'Treat';
+      case 'to heal': return 'Heal';
+      case 'subtype': return 'Subtype';
+      default: return header;
+    }
+  }
+
+  getHeaderTooltip(header: string): string {
+    return header;
+  }
+
+  isCompactColumn(key: string): boolean {
+    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subType', 'bestiaryId', 'type', 'densityLevel'].includes(key);
+  }
+
+  isDescriptionColumn(key: string): boolean {
+    return ['description', 'effect', 'optimalConditions', 'treatment'].includes(key);
+  }
 
   constructor(
     private activePlayerService: ActivePlayerService,
@@ -389,42 +446,33 @@ export class GenericTableComponent implements OnInit, OnChanges {
     
     if (existingItemIndex >= 0) {
       const existingItem = player.items[existingItemIndex];
-      let remainingQuant = existingItem.quant - 1;
       
-      if (existingItem.quant > 1) {
-        // Decrement quantity if more than 1
+      if (existingItem.quant > 0) {
+        // Decrement quantity by 1 (reaches 0 if it was 1, item is kept in inventory)
         existingItem.quant -= 1;
+        this.toastService.show(
+          `Updated ${item.name || 'Item'} (${existingItem.quant} remaining)`, 
+          'info'
+        );
       } else {
-        // Remove item if quantity is 1
+        // Quantity is ALREADY 0: pressing subtract (-) again removes the item completely
         player.items.splice(existingItemIndex, 1);
-        remainingQuant = 0;
-      }
-      
-      // Handle deployables removal
-      if (item.type === 'deployable' && player.deployables) {
-        console.log('This is a deployable, checking deployables array:', player.deployables);
-        const existingDeployableIndex = player.deployables.findIndex((deployable) => deployable.id === item.id);
         
-        if (existingDeployableIndex >= 0) {
-          const existingDeployable = player.deployables[existingDeployableIndex];
-          
-          if (existingDeployable.quant > 1) {
-            // Decrement quantity if more than 1
-            existingDeployable.quant -= 1;
-          } else {
-            // Remove deployable if quantity is 1
+        // Handle deployables removal
+        if (item.type === 'deployable' && player.deployables) {
+          const existingDeployableIndex = player.deployables.findIndex((deployable) => deployable.id === item.id);
+          if (existingDeployableIndex >= 0) {
             player.deployables.splice(existingDeployableIndex, 1);
           }
         }
+
+        this.toastService.show(
+          `Removed ${item.name || 'Item'} from inventory`, 
+          'error'
+        );
       }
       
       this.activePlayerService.updateActivePlayer({ ...player });
-      
-      // Show error toast
-      this.toastService.show(
-        `Removed ${item.name || 'Item'} from inventory (${remainingQuant} remaining)`, 
-        'error'
-      );
     }
   }
 }

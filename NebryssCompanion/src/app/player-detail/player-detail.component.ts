@@ -61,6 +61,28 @@ export class PlayerDetailComponent implements OnChanges {
   // Process abilities for display
   processedAbilities: {name: string, effect: string}[] = [];
   
+  // Section collapse states
+  isAbilitiesCollapsed = false;
+  isModsCollapsed = false;
+  isAfflictionsCollapsed = false;
+  isDeployablesCollapsed = false;
+
+  toggleAbilitiesCollapse() {
+    this.isAbilitiesCollapsed = !this.isAbilitiesCollapsed;
+  }
+
+  toggleModsCollapse() {
+    this.isModsCollapsed = !this.isModsCollapsed;
+  }
+
+  toggleAfflictionsCollapse() {
+    this.isAfflictionsCollapsed = !this.isAfflictionsCollapsed;
+  }
+
+  toggleDeployablesCollapse() {
+    this.isDeployablesCollapsed = !this.isDeployablesCollapsed;
+  }
+
   // Scroll nav
   scrollSections: ScrollSection[] = [];
 
