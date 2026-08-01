@@ -96,6 +96,24 @@
   pointer-events: none;
 }
 
+/* the source artwork has a thin beige deckled-paper border baked in on its left/right edges; paint over it instead of cropping/zooming the map itself */
+.map-border-mask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2.5%;
+  background-color: rgba(20, 20, 20, 0.95);
+  pointer-events: none;
+}
+
+.map-border-mask-left {
+  left: 0;
+}
+
+.map-border-mask-right {
+  right: 0;
+}
+
 .map-empty-state {
   display: flex;
   align-items: center;

@@ -17,6 +17,7 @@
   </div>
 
   <div
+    #mapViewport
     class="map-viewport"
     (wheel)="onWheel($event)"
     (pointerdown)="onPointerDown($event)"
@@ -25,7 +26,9 @@
     (pointercancel)="onPointerUp($event)"
   >
     <div #mapSurface class="map-surface" *ngIf="worldMapLocation" [style.transform]="mapTransform">
-      <img class="map-image" [src]="worldMapLocation.imgUrl" [alt]="worldMapLocation.name" draggable="false">
+      <img class="map-image" [src]="worldMapLocation.imgUrl" [alt]="worldMapLocation.name" draggable="false" (load)="onMapImageLoad()">
+      <div class="map-border-mask map-border-mask-left"></div>
+      <div class="map-border-mask map-border-mask-right"></div>
 
       <button
         *ngFor="let pin of pins; trackBy: trackByPin"

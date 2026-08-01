@@ -65,7 +65,10 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                   </ng-container>
                   <ng-container *ngIf="header !== 'name'">
                     <span *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [innerHtml]="formatBodyIcons(item[header]) | sanitizeHtml"></span>
-                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq'">{{ item[header] }}</span>
+                    <div *ngIf="!renderHtml?.includes(header) && header === 'subtype'" class="multiline-cell">
+                      <div *ngFor="let line of splitLines(item[header])" class="cell-line">{{ line }}</div>
+                    </div>
+                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq' && header !== 'subtype'">{{ item[header] }}</span>
                     <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                     <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
                   </ng-container>
@@ -182,7 +185,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
       case 'density level': return 'Lvl';
       case 'treatment': return 'Treat';
       case 'to heal': return 'Heal';
-      case 'subtype': return 'Subtype';
+      case 'subtype': return 'Type';
       default: return header;
     }
   }
@@ -192,7 +195,15 @@ export class GenericTableComponent implements OnInit, OnChanges {
   }
 
   isCompactColumn(key: string): boolean {
-    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subType', 'bestiaryId', 'type', 'densityLevel'].includes(key);
+    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subtype', 'bestiaryId', 'type', 'densityLevel', 'toHeal'].includes(key);
+  }
+
+  // ammo subtype values like "Pistol/Rifle" are stacked one-per-line instead of squeezed onto a single line
+  splitLines(value: string): string[] {
+    if (!value) {
+      return [];
+    }
+    return String(value).split('/').map(part => part.trim()).filter(part => part.length > 0);
   }
 
   isDescriptionColumn(key: string): boolean {

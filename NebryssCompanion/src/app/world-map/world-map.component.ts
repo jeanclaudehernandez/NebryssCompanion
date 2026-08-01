@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, inject } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
@@ -26,10 +26,11 @@ export interface MapPin {
   styleUrls: ['./world-map.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class WorldMapComponent implements OnInit, OnDestroy {
+export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number; mapY: number }>();
+  @ViewChild('mapViewport') mapViewportRef?: ElementRef<HTMLDivElement>;
   @ViewChild('mapSurface') mapSurfaceRef?: ElementRef<HTMLDivElement>;
   @ViewChild('createLocationConfirmDialog') createLocationConfirmDialog?: TemplateRef<any>;
 
@@ -107,6 +108,20 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngAfterViewInit(): void {
+    this.clampPan();
+  }
+
+  onMapImageLoad(): void {
+    this.clampPan();
+    this.cdr.markForCheck();
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this.clampPan();
+  }
+
   private rebuildPins(): void {
     // New location without a spot yet? Just add it to WORLD_MAP_PIN_COORDINATES.
     this.pins = this.locationsData
@@ -172,6 +187,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     this.scale = 1;
     this.translateX = 0;
     this.translateY = 0;
+    this.clampPan();
   }
 
   onWheel(event: WheelEvent): void {
@@ -227,6 +243,7 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       this.translateX += event.clientX - this.lastPointer.x;
       this.translateY += event.clientY - this.lastPointer.y;
       this.lastPointer = { x: event.clientX, y: event.clientY };
+      this.clampPan();
     }
   }
 
@@ -256,6 +273,33 @@ export class WorldMapComponent implements OnInit, OnDestroy {
 
   private setScale(next: number): void {
     this.scale = Math.min(this.maxScale, Math.max(this.minScale, next));
+    this.clampPan();
+  }
+
+  // keeps the map image from being panned/zoomed past its own edges, leaving empty space in the viewport
+  private clampPan(): void {
+    const surface = this.mapSurfaceRef?.nativeElement;
+    const viewport = this.mapViewportRef?.nativeElement;
+    if (!surface || !viewport || !surface.offsetWidth || !surface.offsetHeight) {
+      return;
+    }
+
+    const viewportWidth = viewport.clientWidth;
+    const viewportHeight = viewport.clientHeight;
+    const baseLeft = (viewportWidth - surface.offsetWidth) / 2;
+    const baseTop = (viewportHeight - surface.offsetHeight) / 2;
+
+    this.translateX = this.clampAxis(this.translateX, baseLeft, viewportWidth, surface.offsetWidth * this.scale);
+    this.translateY = this.clampAxis(this.translateY, baseTop, viewportHeight, surface.offsetHeight * this.scale);
+  }
+
+  private clampAxis(translate: number, base: number, viewportSize: number, scaledSize: number): number {
+    if (scaledSize <= viewportSize) {
+      // smaller than the viewport: always centered, no free panning range that could park it in a corner
+      return (viewportSize - scaledSize) / 2 - base;
+    }
+    const clampedEdge = Math.min(0, Math.max(viewportSize - scaledSize, base + translate));
+    return clampedEdge - base;
   }
 
   private startLongPress(event: PointerEvent): void {

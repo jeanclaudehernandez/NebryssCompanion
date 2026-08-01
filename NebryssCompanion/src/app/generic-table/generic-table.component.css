@@ -88,6 +88,19 @@ body.dark-theme .table-header h3 {
     text-overflow: ellipsis;
 }
 
+.multiline-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    white-space: normal;
+    line-height: 1.15;
+}
+
+.multiline-cell .cell-line {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .items-table th.col-actions,
 .items-table td.col-actions {
     width: 65px;
