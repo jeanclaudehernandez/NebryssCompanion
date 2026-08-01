@@ -13,6 +13,8 @@ import { DataService } from '../data.service';
 import { Subscription } from 'rxjs';
 import { getEffectiveTalentApplications } from '../talent-stacks';
 
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+
 interface ruleDisplay {
   name: string,
   description: string
@@ -26,7 +28,8 @@ interface ruleDisplay {
     FormsModule,
     MatTooltipModule,
     WeaponRangePipe,
-    CustomDropdownComponent
+    CustomDropdownComponent,
+    SanitizeHtmlPipe
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css'],
@@ -77,6 +80,17 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     if (this.displayPrice) cols++;
     if (this.showActions) cols++;
     return cols;
+  }
+
+  hasRules(entry: { weapon: Weapon, profile: WeaponProfile }): boolean {
+    return !!(entry.profile.specialRules?.length || this.attachedModDescriptions[entry.weapon.id]?.length);
+  }
+
+  getEntryRowCount(entry: { weapon: Weapon, profile: WeaponProfile }): number {
+    let rows = 1;
+    if (this.hasRules(entry)) rows++;
+    if (this.displayBody) rows++;
+    return rows;
   }
 
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
@@ -145,6 +159,40 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   onBodyTypeChange(selected: any) {
     this.selectedBodyType = selected;
     this.updateSortedProfiles();
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   isInInventory(weaponId: number): boolean {

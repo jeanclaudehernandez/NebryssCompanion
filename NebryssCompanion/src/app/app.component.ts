@@ -93,7 +93,7 @@ import { ActivePlayerService } from './active-player.service';
     
     <div class="content-area" #contentArea [style.transform]="contentTransform">
       @if (currentView === 'players') {
-        <app-player-list></app-player-list>
+        <app-player-list (navigateToTalents)="onViewChange('talents')"></app-player-list>
       }
       @if (currentView === 'bestiary') {
         <app-bestiary></app-bestiary>

@@ -64,7 +64,8 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                     </div>
                   </ng-container>
                   <ng-container *ngIf="header !== 'name'">
-                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price'">{{ item[header] }}</span>
+                    <span *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [innerHtml]="formatBodyIcons(item[header]) | sanitizeHtml"></span>
+                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq'">{{ item[header] }}</span>
                     <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                     <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
                   </ng-container>
@@ -99,8 +100,17 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                       <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
                         <span class="icon">🛒</span>
                       </button>
-                      <button *ngIf="!shoppingMode" (click)="addToInventory(item)" class="btn-add">+</button>
-                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">-</button>
+                      <button *ngIf="!shoppingMode" (click)="addToInventory(item)" class="btn-add">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                          <line x1="12" y1="4" x2="12" y2="20"></line>
+                          <line x1="4" y1="12" x2="20" y2="12"></line>
+                        </svg>
+                      </button>
+                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                          <line x1="4" y1="12" x2="20" y2="12"></line>
+                        </svg>
+                      </button>
                     </ng-container>
                   </div>
                 </td>
@@ -199,6 +209,40 @@ export class GenericTableComponent implements OnInit, OnChanges {
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
     this.extractBodyTypes();
     this.initializeSortedData();
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   ngOnChanges(changes: SimpleChanges) {

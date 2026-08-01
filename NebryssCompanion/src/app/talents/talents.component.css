@@ -3,42 +3,66 @@
     position: relative;
 }
 
-.talents-header-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.talents-header-row h2 {
-    margin: 0;
+.sticky-talent-header {
+    position: sticky;
+    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+    z-index: 50;
+    padding: 6px 0;
+    margin-bottom: 10px;
+    background: transparent;
 }
 
 .talent-points-pill {
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
+    gap: 10px;
     background-color: #3498db;
     color: white;
-    padding: 4px 10px;
-    border-radius: 20px;
+    padding: 6px 14px;
+    height: 38px;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 0.85rem;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    font-size: 0.88rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+body.dark-theme .talent-points-pill {
+    background-color: #2563eb;
+    color: white;
 }
 
 .pts-label {
     white-space: nowrap;
 }
 
+.talent-points-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.add-talent-point-btn,
+.remove-talent-point-btn {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    border-radius: 50%;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    color: white;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
 .add-talent-point-btn {
     background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 0.9rem;
-    cursor: pointer;
 }
 
 .add-talent-point-btn:hover {
@@ -47,12 +71,6 @@
 
 .remove-talent-point-btn {
     background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 16px;
-    font-size: 0.9rem;
-    cursor: pointer;
 }
 
 .remove-talent-point-btn:hover {
@@ -62,6 +80,7 @@
 .remove-talent-point-btn:disabled {
     background-color: #95a5a6;
     cursor: not-allowed;
+    opacity: 0.7;
 }
 
 .talent-category-block {
@@ -70,7 +89,7 @@
 
 .sticky-category-header {
     position: sticky;
-    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 46px);
     z-index: 20;
     background: #e2e8f0;
     color: #1e293b;

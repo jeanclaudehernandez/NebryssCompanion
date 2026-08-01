@@ -33,6 +33,7 @@ export class PlayerDetailComponent implements OnChanges {
   @Input() itemsData!: Items;
   @Input() hideScrollNav = false;
   @Output() scrollSectionsChange = new EventEmitter<ScrollSection[]>();
+  @Output() navigateToTalents = new EventEmitter<void>();
   
   bodyString = "";
   activeTooltip: string | null = null;
@@ -69,6 +70,40 @@ export class PlayerDetailComponent implements OnChanges {
 
   toggleAbilitiesCollapse() {
     this.isAbilitiesCollapsed = !this.isAbilitiesCollapsed;
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   toggleModsCollapse() {
@@ -495,6 +530,40 @@ export class PlayerDetailComponent implements OnChanges {
     this.activePlayerService.updateActivePlayer({ ...activePlayer });
     if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
       this.character = { ...activePlayer };
+    }
+  }
+
+  addTalentPoint(): void {
+    if (!this.isPlayer(this.character) || !this.isActionAllowed(this.character)) return;
+    const player = this.character as Player;
+    if (!player.progression) {
+      player.progression = {
+        talentPoints: 0,
+        mistrals: { digital: 0, physical: 0 },
+        talents: [],
+        afflictions: [],
+        equipment: []
+      };
+    }
+    if (player.progression.talentPoints === undefined || player.progression.talentPoints === null) {
+      player.progression.talentPoints = 0;
+    }
+    player.progression.talentPoints += 1;
+    this.activePlayerService.updateActivePlayer({ ...player });
+    this.character = { ...player };
+  }
+
+  removeTalentPoint(): void {
+    if (!this.isPlayer(this.character) || !this.isActionAllowed(this.character)) return;
+    const player = this.character as Player;
+    if (!player.progression) return;
+    if (player.progression.talentPoints === undefined || player.progression.talentPoints === null) {
+      player.progression.talentPoints = 0;
+    }
+    if (player.progression.talentPoints > 0) {
+      player.progression.talentPoints -= 1;
+      this.activePlayerService.updateActivePlayer({ ...player });
+      this.character = { ...player };
     }
   }
 

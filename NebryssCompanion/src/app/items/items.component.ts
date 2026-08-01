@@ -18,6 +18,7 @@ import { AdminEditorSession } from '../admin-editor.models';
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
+      <!-- Search Bar -->
       <div class="items-search-container">
         <div class="search-input-wrapper">
           <span class="search-icon">🔍</span>
@@ -25,7 +26,7 @@ import { AdminEditorSession } from '../admin-editor.models';
             type="text" 
             [(ngModel)]="searchQuery" 
             (ngModelChange)="onSearchChange()"
-            placeholder="Search weapons, armor, items, descriptions..." 
+            placeholder="Search items, descriptions..." 
             class="items-search-input">
           <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">✕</button>
         </div>
@@ -34,12 +35,30 @@ import { AdminEditorSession } from '../admin-editor.models';
         </span>
       </div>
 
-      <div [id]="'weapon'">
+      <!-- Category Tab Bar -->
+      <div class="items-tab-bar">
+        <button
+          class="items-tab"
+          [class.active]="activeTab === 'weapon'"
+          (click)="setTab('weapon')"
+          id="tab-weapon">
+          Weapons
+        </button>
+        <button
+          *ngFor="let category of itemCategories"
+          class="items-tab"
+          [class.active]="activeTab === category.key"
+          (click)="setTab(category.key)"
+          [id]="'tab-' + category.key">
+          {{ category.name }}
+        </button>
+      </div>
+
+      <!-- Weapons Tab -->
+      <div *ngIf="activeTab === 'weapon'">
         <app-weapon-table 
-          [title]="'Weapons'"
-          [collapsible]="true"
-          [isCollapsed]="weaponsCollapsed"
-          (toggleCollapse)="toggleWeaponsCollapsed()"
+          [title]="''"
+          [collapsible]="false"
           [weaponIds]="filteredWeaponIds" 
           [weaponsData]="weaponsData" 
           [weaponRulesData]="weaponRules"
@@ -58,28 +77,31 @@ import { AdminEditorSession } from '../admin-editor.models';
         </app-weapon-table>
       </div>
 
-      <div *ngFor="let category of itemCategories" [id]='category.key'>
-        <app-generic-table 
-          [storageKey]="'items-category-' + category.key"
-          [title]="category.name"
-          [data]="filteredCategoryDataMap[category.key] || []"
-          [headers]="category.headers"
-          [headerKeys]="category.keys"
-          [renderHtml]="['description']"
-          [inventoryManagement]="hasActivePlayer()"
-          [enableCloning]="isAdmin"
-          [enableDeleting]="isAdmin"
-          [enableEditing]="isAdmin"
-          [enableBodyFilter]="category.key === 'armor'"
-          [characterBody]="activePlayerBodyTypes"
-          (craft)="onCraftItem($event)"
-          (clone)="onCloneItem($event)"
-          (delete)="onDeleteItem($event)"
-          (edit)="onEditItem($event)">
-        </app-generic-table>
-      </div>
+      <!-- Category Tabs -->
+      <ng-container *ngFor="let category of itemCategories">
+        <div *ngIf="activeTab === category.key">
+          <app-generic-table 
+            [storageKey]="'items-category-' + category.key"
+            [title]="''"
+            [collapsible]="false"
+            [data]="filteredCategoryDataMap[category.key] || []"
+            [headers]="category.headers"
+            [headerKeys]="category.keys"
+            [renderHtml]="['description']"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            [enableBodyFilter]="category.key === 'armor'"
+            [characterBody]="activePlayerBodyTypes"
+            (craft)="onCraftItem($event)"
+            (clone)="onCloneItem($event)"
+            (delete)="onDeleteItem($event)"
+            (edit)="onEditItem($event)">
+          </app-generic-table>
+        </div>
+      </ng-container>
     </div>
-    <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
 
     <ng-template #craftConfirmModal>
       <div class="craft-modal">
@@ -143,6 +165,7 @@ export class ItemsComponent implements OnInit {
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   activePlayerBodyTypes: string[] = [];
+  activeTab: string = 'weapon';
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
@@ -219,47 +242,52 @@ export class ItemsComponent implements OnInit {
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
   }
 
+  setTab(key: string): void {
+    this.activeTab = key;
+    // Re-apply existing search to the new tab (don't clear it)
+    if (this.searchQuery) {
+      this.onSearchChange();
+    }
+  }
+
   onSearchChange(): void {
     const query = (this.searchQuery || '').toLowerCase().trim();
-
     if (!query) {
       this.filteredWeaponIds = [...this.allWeaponIds];
       this.filteredCategoryDataMap = { ...this.categoryDataMap };
       return;
     }
 
-    // Filter weapons
-    const matchingWeapons = this.weaponsData.filter(w => {
-      const nameMatch = w.name?.toLowerCase().includes(query);
-      const profileMatch = w.profiles?.some(p => 
-        p.profileName?.toLowerCase().includes(query) || 
-        p.body?.toLowerCase().includes(query) ||
-        p.specialRules?.some((r: any) => {
-          const ruleStr = typeof r === 'string' ? r : (r?.name || r?.ruleName || '');
-          return ruleStr.toLowerCase().includes(query);
-        })
-      );
-      return nameMatch || profileMatch;
-    });
-
-    this.filteredWeaponIds = matchingWeapons.map(w => w.id);
-    if (matchingWeapons.length > 0) {
-      this.weaponsCollapsed = false;
-    }
-
-    // Filter items per category
-    this.filteredCategoryDataMap = {};
-    for (const catKey of Object.keys(this.categoryDataMap)) {
-      const items = this.categoryDataMap[catKey] || [];
-      this.filteredCategoryDataMap[catKey] = items.filter(item => {
-        const nameMatch = item.name?.toLowerCase().includes(query);
-        const descMatch = item.description?.toLowerCase().includes(query);
-        const typeMatch = item.type?.toLowerCase().includes(query);
-        const subTypeMatch = item.subType?.toLowerCase().includes(query);
-        const bodyMatch = item.raceReq?.toLowerCase().includes(query);
-        const partMatch = item.part?.toLowerCase().includes(query);
-        return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
+    if (this.activeTab === 'weapon') {
+      // Filter weapons only
+      const matchingWeapons = this.weaponsData.filter(w => {
+        const nameMatch = w.name?.toLowerCase().includes(query);
+        const profileMatch = w.profiles?.some((p: any) =>
+          p.profileName?.toLowerCase().includes(query) ||
+          p.body?.toLowerCase().includes(query) ||
+          p.specialRules?.some((r: any) => {
+            const ruleStr = typeof r === 'string' ? r : (r?.name || r?.ruleName || '');
+            return ruleStr.toLowerCase().includes(query);
+          })
+        );
+        return nameMatch || profileMatch;
       });
+      this.filteredWeaponIds = matchingWeapons.map(w => w.id);
+    } else {
+      // Filter only the active category
+      const items = this.categoryDataMap[this.activeTab] || [];
+      this.filteredCategoryDataMap = {
+        ...this.categoryDataMap,
+        [this.activeTab]: items.filter(item => {
+          const nameMatch = item.name?.toLowerCase().includes(query);
+          const descMatch = item.description?.toLowerCase().includes(query);
+          const typeMatch = item.type?.toLowerCase().includes(query);
+          const subTypeMatch = item.subType?.toLowerCase().includes(query);
+          const bodyMatch = item.raceReq?.toLowerCase().includes(query);
+          const partMatch = item.part?.toLowerCase().includes(query);
+          return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
+        })
+      };
     }
   }
 
@@ -270,11 +298,10 @@ export class ItemsComponent implements OnInit {
 
   get totalSearchResultsCount(): number {
     if (!this.searchQuery) return 0;
-    let count = this.filteredWeaponIds.length;
-    for (const key of Object.keys(this.filteredCategoryDataMap)) {
-      count += (this.filteredCategoryDataMap[key] || []).length;
+    if (this.activeTab === 'weapon') {
+      return this.filteredWeaponIds.length;
     }
-    return count;
+    return (this.filteredCategoryDataMap[this.activeTab] || []).length;
   }
 
   // Weapon Management Methods

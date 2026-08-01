@@ -227,11 +227,141 @@ body {
   .attributes th,
   .attributes td {
     text-align: center;
+    vertical-align: middle !important;
   }
 
   .attributes td {
     font-size: 1.05rem;
     font-weight: 600;
+  }
+
+  .attr-header-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    margin: auto 0;
+  }
+
+  .attr-header-cell span {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .attr-icon {
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+    vertical-align: middle;
+  }
+
+  .attr-icon.attr-mov {
+    color: #1976d2;
+  }
+
+  .attr-icon.attr-wnd {
+    color: #e53935;
+  }
+
+  .attr-icon.attr-sv {
+    color: #2e7d32;
+  }
+
+  .attr-icon.attr-apl {
+    color: #f59e0b;
+  }
+
+  .attr-icon.attr-body {
+    color: #7c3aed;
+  }
+
+  body.dark-theme .attr-icon.attr-mov {
+    color: #60a5fa;
+  }
+
+  body.dark-theme .attr-icon.attr-wnd {
+    color: #f87171;
+  }
+
+  body.dark-theme .attr-icon.attr-sv {
+    color: #4ade80;
+  }
+
+  body.dark-theme .attr-icon.attr-apl {
+    color: #fbbf24;
+  }
+
+  body.dark-theme .attr-icon.attr-body {
+    color: #a78bfa;
+  }
+
+  /* Body Type Badge Icons (Human, Astartes, Universal) */
+  .body-icons-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .body-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    padding: 0;
+    line-height: 1;
+    vertical-align: middle;
+    transition: transform 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .body-icon-badge:hover {
+    transform: scale(1.15);
+  }
+
+  .body-icon-badge.human {
+    background-color: #1976d2;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.astartes {
+    background-color: #d32f2f;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.universal {
+    background-color: #7c3aed;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.human {
+    background-color: #2563eb;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.astartes {
+    background-color: #dc2626;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.universal {
+    background-color: #8b5cf6;
+    color: #ffffff;
+  }
+
+  .body-icon-badge svg {
+    display: block;
+    margin: auto;
+    flex-shrink: 0;
+    stroke: #ffffff !important;
   }
 
   body.dark-theme .attributes table {
@@ -504,15 +634,69 @@ body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mdc-list-
   background-color: #2196f3;
 }
 
-/* Global Table Cell Separation & Breathing Room */
+/* Global Table Cell Vertical Centering & Separation */
 .items-table th.col-name, .items-table td.col-name,
 .weapons-table th.col-name, .weapons-table td.col-name,
 .mods-table th.col-name, .mods-table td.col-name {
   padding-right: 12px !important;
+  text-align: left !important;
+  vertical-align: middle !important;
 }
 
 .items-table th.col-description, .items-table td.col-description,
 .weapons-table th.col-description, .weapons-table td.col-description,
 .mods-table th.col-description, .mods-table td.col-description {
   padding-left: 8px !important;
+  vertical-align: middle !important;
+}
+
+.items-table td,
+.weapons-table td,
+.mods-table td {
+  vertical-align: middle !important;
+}
+
+.name-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  text-align: left !important;
+  margin: auto 0 !important;
+}
+
+.inventory-actions {
+  display: flex !important;
+  align-items: center !important;
+  margin: auto 0 !important;
+}
+
+.weapon-selector {
+  vertical-align: middle !important;
+  margin: auto 0 !important;
+}
+
+/* Circular Action Buttons SVG Centering & Line Alignment */
+.btn-add,
+.btn-remove,
+.add-talent-point-btn,
+.remove-talent-point-btn,
+.stack-btn,
+.btn-remove-cart {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.btn-add svg,
+.btn-remove svg,
+.add-talent-point-btn svg,
+.remove-talent-point-btn svg,
+.stack-btn svg,
+.btn-remove-cart svg {
+  display: block !important;
+  margin: auto !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
 }

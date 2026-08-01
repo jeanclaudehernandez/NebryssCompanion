@@ -16,6 +16,9 @@
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
 }
 
 .table-header:hover {
@@ -27,6 +30,8 @@
   font-size: 0.95rem;
   line-height: 1.2;
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 body.dark-theme .table-header {
@@ -115,8 +120,11 @@ body.dark-theme .table-header h3 {
   overflow-wrap: break-word;
   line-height: 1.25;
   font-weight: 500;
-  display: block;
-  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  margin: auto 0;
 }
   
 .weapons-table th {
@@ -129,10 +137,6 @@ body.dark-theme .table-header h3 {
   z-index: 2;
   transition: background-color 0.3s, border-color 0.3s, color 0.3s;
   white-space: nowrap;
-}
-
-.weapons-table th.col-name {
-  text-align: left;
 }
 
 /* Grouping by tbody */

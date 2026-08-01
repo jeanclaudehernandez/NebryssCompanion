@@ -17,7 +17,7 @@
 
 .table-header {
   position: sticky;
-  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + var(--player-attrs-height, 0px));
   z-index: 20;
   background: #e2e8f0;
   color: #1e293b;
@@ -46,6 +46,8 @@ body.dark-theme .table-header {
   color: #f8fafc;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
+
+
 
 body.dark-theme .table-header:hover {
   background: #334155;
@@ -82,8 +84,11 @@ body.dark-theme .table-header h3 {
   overflow-wrap: break-word;
   line-height: 1.25;
   font-weight: 500;
-  display: block;
-  padding-right: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  margin: auto 0;
 }
 
 .mods-table th.col-compact,
@@ -168,6 +173,7 @@ body.dark-theme .weapon-selector {
   box-shadow: none;
   background: transparent;
   border: none;
+  --player-attrs-height: 72px;
 }
 
 .player-card:hover {
@@ -203,60 +209,278 @@ body.dark-theme .weapon-selector {
   margin: 0;
 }
 
-.mistrals-row {
+.player-info {
+  margin-bottom: 12px;
+}
+
+.player-top-header {
+  padding: 4px 0 8px 0;
+  margin-bottom: 8px;
+}
+
+.attributes.sticky-attributes {
+  position: sticky;
+  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+  z-index: 40;
+  padding: 4px 0 8px 0;
+  margin-bottom: 8px;
+  background-color: #f5f5f5;
+}
+
+:host-context(body.dark-theme) .attributes.sticky-attributes {
+  background-color: #121212;
+}
+
+.player-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.talent-points-row {
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.talent-points-pill {
+  display: inline-flex;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin: 0.25rem 0;
-}
-
-.mistrals-label {
-  flex: 1;
-  min-width: 0;
-}
-
-.mistrals-wallet-button {
-  background-color: #1976d2;
+  gap: 10px;
+  background-color: #3498db;
   color: #ffffff;
-  border: none;
-  border-radius: 10px;
-  width: 44px;
+  padding: 6px 14px;
   height: 38px;
-  min-width: 44px;
-  padding: 0;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body.dark-theme .talent-points-pill {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.talent-points-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-talent-point-btn,
+.remove-talent-point-btn {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  min-height: 24px;
+  border-radius: 50%;
+  border: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.1rem;
-  line-height: 1;
-  box-shadow: 0 3px 10px rgba(25, 118, 210, 0.28);
-  transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  padding: 0;
+  color: white;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.mistrals-wallet-icon {
+.add-talent-point-btn {
+  background-color: #2ecc71;
+}
+
+.add-talent-point-btn:hover {
+  background-color: #27ae60;
+}
+
+.remove-talent-point-btn {
+  background-color: #e74c3c;
+}
+
+.remove-talent-point-btn:hover {
+  background-color: #c0392b;
+}
+
+.remove-talent-point-btn:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.mistral-buttons-row {
   display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.mistral-pill-button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 12px;
+  height: 38px;
+  box-sizing: border-box;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.mistral-pill-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.mistral-pill-button:active {
+  transform: scale(0.98);
+}
+
+.mistral-pill-button.digital {
+  background-color: #1976d2;
+  color: #ffffff;
+  border-color: #1565c0;
+}
+
+.mistral-pill-button.digital:hover {
+  background-color: #1565c0;
+}
+
+.mistral-pill-button.physical {
+  background-color: #2e7d32;
+  color: #ffffff;
+  border-color: #1b5e20;
+}
+
+.mistral-pill-button.physical:hover {
+  background-color: #1b5e20;
+}
+
+.mistral-pill-button:disabled {
+  cursor: default;
+  opacity: 0.85;
+  transform: none;
+}
+
+body.dark-theme .mistral-pill-button.digital {
+  background-color: #1e3a8a;
+  color: #93c5fd;
+  border-color: #3b82f6;
+}
+
+body.dark-theme .mistral-pill-button.digital:hover {
+  background-color: #1d4ed8;
+  color: #ffffff;
+}
+
+body.dark-theme .mistral-pill-button.physical {
+  background-color: #14532d;
+  color: #86efac;
+  border-color: #22c55e;
+}
+
+body.dark-theme .mistral-pill-button.physical:hover {
+  background-color: #15803d;
+  color: #ffffff;
+}
+
+.mistral-pill-button .mistral-icon-svg {
+  flex-shrink: 0;
+  display: block;
+  margin: 0;
+}
+
+.pill-label,
+.pill-value {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+.pill-label {
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.pill-value {
+  font-weight: 700;
+}
+
+.talent-points-actions .btn-add,
+.talent-points-actions .btn-remove {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.05rem;
+  line-height: 1;
+  padding: 0;
+  color: white;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.talent-points-actions .btn-add span,
+.talent-points-actions .btn-remove span {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
+  text-align: center;
   line-height: 1;
 }
 
-.mistrals-wallet-button:hover {
-  background-color: #1565c0;
-  box-shadow: 0 6px 16px rgba(25, 118, 210, 0.32);
+.talent-points-actions .btn-add span {
+  transform: translateY(-0.5px);
 }
 
-.mistrals-wallet-button:active {
-  transform: scale(0.96);
+.talent-points-actions .btn-remove span {
+  transform: translateY(-1px);
 }
 
-.mistrals-wallet-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-  box-shadow: none;
+.talent-points-actions .btn-add {
+  background-color: #4caf50;
+}
+
+.talent-points-actions .btn-add:hover {
+  background-color: #388e3c;
+}
+
+.talent-points-actions .btn-remove {
+  background-color: #f44336;
+}
+
+.talent-points-actions .btn-remove:hover {
+  background-color: #d32f2f;
+}
+
+.talent-points-actions .btn-add:disabled,
+.talent-points-actions .btn-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .wallet-modal {
