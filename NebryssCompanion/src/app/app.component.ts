@@ -3,34 +3,15 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { combineLatest } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { PlayerListComponent } from './player-list/player-list.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import { DataService } from './data.service';
-import { BestiaryComponent } from './bestiary/bestiary.component';
-import { FormsModule } from '@angular/forms';
-import { ItemsComponent } from './items/items.component';
-import { ShopsComponent } from './shops/shops.component';
-import { LoreComponent } from './lore/lore.component';
-import { LocationsComponent } from './locations/locations.component';
-import { WorldMapComponent } from './world-map/world-map.component';
-import { TalentsComponent } from './talents/talents.component';
-import { MistEffectsComponent } from './mist-effects/mist-effects.component';
-import { TerrainsComponent } from './terrains/terrains.component';
-import { MistEngineBattlesComponent } from './mist-engine-battles/mist-engine-battles.component';
-import { WeaponRulesPageComponent } from './weapon-rules-page/weapon-rules-page.component';
-import { AlteredStatesPageComponent } from './altered-states-page/altered-states-page.component';
 import { ThemeService } from './theme.service';
 import { LoadingService } from './loading.service';
 import { MatDialog } from '@angular/material/dialog';
-import { WeaponRuleDialogComponent } from './weapon-rule/weapon-rule.component';
-import { WeaponRule } from './model';
-import { AfflictionsListComponent } from './afflictions-list/afflictions-list.component';
-import { ShipNavigationComponent } from './ship-navigation/ship-navigation.component';
-import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.component';
-import { LocationAdminPageComponent } from './location-admin-page/location-admin-page.component';
 import { AdminEditorSession } from './admin-editor.models';
-import { LettersPageComponent } from './letters-page/letters-page.component';
 import { ActivePlayerService } from './active-player.service';
+import { AppViewHostComponent } from './app-view-host.component';
+import { APP_VIEWS, AppView } from './app-view.types';
 
   @Component({
   selector: 'app-root',
@@ -38,26 +19,8 @@ import { ActivePlayerService } from './active-player.service';
   imports: [
     CommonModule,
     HttpClientModule,
-    ItemsComponent,
-    PlayerListComponent,
     SidebarComponent,
-    FormsModule,
-    BestiaryComponent,
-    ShopsComponent,
-    LoreComponent,
-    LocationsComponent,
-    WorldMapComponent,
-    TalentsComponent,
-    MistEffectsComponent,
-    TerrainsComponent,
-    MistEngineBattlesComponent,
-    WeaponRulesPageComponent,
-    AlteredStatesPageComponent,
-    AfflictionsListComponent,
-    ShipNavigationComponent,
-    ItemAdminPageComponent,
-    LocationAdminPageComponent,
-    LettersPageComponent
+    AppViewHostComponent
   ],
   template: `
     <!-- Top App Bar Header -->
@@ -98,67 +61,21 @@ import { ActivePlayerService } from './active-player.service';
     <app-sidebar #sidebarComp (viewChange)="onViewChange($event)"></app-sidebar>
     
     <div class="content-area" #contentArea [style.transform]="contentTransform" [class.content-area-no-footer]="!showFooterMenu">
-      @if (currentView === 'players') {
-        <app-player-list (navigateToTalents)="onViewChange('talents')"></app-player-list>
-      }
-      @if (currentView === 'bestiary') {
-        <app-bestiary></app-bestiary>
-      }
-      @if (currentView === 'letters') {
-        <app-letters-page></app-letters-page>
-      }
-      @if (currentView === 'items') {
-        <app-items (openAdminEditor)="onOpenAdminEditor($event)"></app-items>
-      }
-      @if (currentView === 'shops') {
-        <app-shops (navigateToLocation)="onNavigateToLocation($event)"></app-shops>
-      }
-      @if (currentView === 'lore') {
-        <app-lore (navigateToLocation)="onNavigateToLocation($event)" [initialFactionName]="selectedFactionName"></app-lore>
-      }
-      @if (currentView === 'locations') {
-        <app-locations (navigateTo)="onViewChange($event)" (navigateToLore)="onNavigateToLore($event)" [initialLocationName]="selectedLocationName" [backTarget]="selectedLocationBackTarget"></app-locations>
-      }
-      @if (currentView === 'worldMap') {
-        <app-world-map
-          (navigateToLocation)="onNavigateToLocation($event, 'worldMap')"
-          (navigateToLore)="onNavigateToLore($event)"
-          (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
-        ></app-world-map>
-      }
-      @if (currentView === 'talents') {
-        <app-talents></app-talents>
-      }
-      @if (currentView === 'mistEffects') {
-        <app-mist-effects></app-mist-effects>
-      }
-      @if (currentView === 'terrains') {
-        <app-terrains></app-terrains>
-      }
-      @if (currentView === 'mistEngineBattles') {
-        <app-mist-engine-battles></app-mist-engine-battles>
-      }
-      @if (currentView === 'weaponRules') {
-        <app-weapon-rules-page [initialRuleName]="selectedRuleName"></app-weapon-rules-page>
-      }
-      @if (currentView === 'alteredStates') {
-        <app-altered-states-page [initialStateName]="selectedStateName"></app-altered-states-page>
-      }
-      @if (currentView === 'shipNavigation') {
-        <app-ship-navigation></app-ship-navigation>
-      }
-      @if (currentView === 'afflictions') {
-        <app-afflictions-list></app-afflictions-list>
-      }
-      @if (currentView === 'adminItemCreator') {
-        <app-item-admin-page [editSession]="adminEditSession"></app-item-admin-page>
-      }
-      @if (currentView === 'adminLocationCreator') {
-        <app-location-admin-page
-          [initialMapX]="adminLocationDraft?.mapX ?? null"
-          [initialMapY]="adminLocationDraft?.mapY ?? null"
-        ></app-location-admin-page>
-      }
+      <app-view-host
+        [view]="currentView"
+        [selectedLocationName]="selectedLocationName"
+        [selectedLocationBackTarget]="selectedLocationBackTarget"
+        [selectedFactionName]="selectedFactionName"
+        [selectedRuleName]="selectedRuleName"
+        [selectedStateName]="selectedStateName"
+        [adminEditSession]="adminEditSession"
+        [adminLocationDraft]="adminLocationDraft"
+        (viewChange)="onViewChange($event)"
+        (openAdminEditor)="onOpenAdminEditor($event)"
+        (navigateToLocation)="onNavigateToLocation($event.locationName, $event.backTarget)"
+        (navigateToLore)="onNavigateToLore($event)"
+        (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
+      ></app-view-host>
     </div>
 
     @if (showFooterMenu) {
@@ -215,7 +132,7 @@ import { ActivePlayerService } from './active-player.service';
 export class AppComponent {
   private readonly destroyRef = inject(DestroyRef);
 
-  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator' = 'players';
+  currentView: AppView = 'players';
   selectedLocationName: string | null = null;
   selectedLocationBackTarget: string | null = null;
   selectedFactionName: string | null = null;
@@ -417,12 +334,11 @@ export class AppComponent {
     }, 500);
   }
 
-  private isValidView(view: string | null): view is AppComponent['currentView'] {
-    return view !== null && 
-      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'worldMap', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator', 'adminLocationCreator'].includes(view);
+  private isValidView(view: string | null): view is AppView {
+    return view !== null && APP_VIEWS.includes(view as AppView);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator') {
+  onViewChange(view: AppView) {
     this.currentView = view;
     if (view === 'adminItemCreator') {
       this.adminEditSession = null;
@@ -522,6 +438,7 @@ export class AppComponent {
 
   private openWeaponRuleModal(ruleName: string) {
     this.dataService.getAllData().subscribe(data => {
+      void import('./weapon-rule/weapon-rule.component').then(({ WeaponRuleDialogComponent }) => {
       const rule = data.weaponRules.find((r: any) => r.name === ruleName);
 
       if (!rule) {
@@ -578,6 +495,7 @@ export class AppComponent {
       setTimeout(() => {
         dialogRef.disableClose = false;
       }, 0);
+      });
     });
   }
 
