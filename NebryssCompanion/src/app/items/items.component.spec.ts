@@ -14,7 +14,20 @@ describe('ItemsComponent', () => {
     mockDataService.getAllData.and.returnValue(of({
       players: [],
       npcs: [],
-      weapons: [],
+      weapons: [
+        {
+          id: 1,
+          name: 'Sword',
+          price: 10,
+          profiles: [{ profileName: '', rng: 0, attacks: 4, ws: 3, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
+        },
+        {
+          id: 2,
+          name: 'Rifle',
+          price: 15,
+          profiles: [{ profileName: '', rng: 8, attacks: 4, ws: 4, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
+        }
+      ],
       items: { items: [] },
       weaponRules: [],
       bestiary: [],
@@ -43,5 +56,10 @@ describe('ItemsComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should separate melee and ranged weapon ids', () => {
+    expect(component.filteredMeleeWeaponIds).toEqual([1]);
+    expect(component.filteredRangedWeaponIds).toEqual([2]);
   });
 });

@@ -37,12 +37,35 @@ import { AdminEditorSession } from '../admin-editor.models';
 
       <!-- ── SEARCH MODE: show all matching results grouped by category ── -->
       <ng-container *ngIf="searchQuery">
-        <div *ngIf="filteredWeaponIds.length > 0" class="search-group">
-          <div class="search-group-title">Weapons</div>
+        <div *ngIf="filteredMeleeWeaponIds.length > 0" class="search-group">
+          <div class="search-group-title">Melee Weapons</div>
           <app-weapon-table
             [title]="''"
             [collapsible]="false"
-            [weaponIds]="filteredWeaponIds"
+            [weaponIds]="filteredMeleeWeaponIds"
+            [weaponsData]="weaponsData"
+            [weaponRulesData]="weaponRules"
+            [alteredStates]="alteredStates"
+            [displayPrice]="true"
+            [displayBody]="true"
+            [enableBodyFilter]="false"
+            [characterBody]="activePlayerBodyTypes"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            (clone)="onCloneWeapon($event)"
+            (delete)="onDeleteWeapon($event)"
+            (edit)="onEditWeapon($event)">
+          </app-weapon-table>
+        </div>
+
+        <div *ngIf="filteredRangedWeaponIds.length > 0" class="search-group">
+          <div class="search-group-title">Ranged Weapons</div>
+          <app-weapon-table
+            [title]="''"
+            [collapsible]="false"
+            [weaponIds]="filteredRangedWeaponIds"
             [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
@@ -97,10 +120,17 @@ import { AdminEditorSession } from '../admin-editor.models';
         <div class="items-tab-bar">
           <button
             class="items-tab"
-            [class.active]="activeTab === 'weapon'"
-            (click)="setTab('weapon')"
-            id="tab-weapon">
-            Weapons
+            [class.active]="activeTab === 'weapon-melee'"
+            (click)="setTab('weapon-melee')"
+            id="tab-weapon-melee">
+            Melee Weapons
+          </button>
+          <button
+            class="items-tab"
+            [class.active]="activeTab === 'weapon-ranged'"
+            (click)="setTab('weapon-ranged')"
+            id="tab-weapon-ranged">
+            Ranged Weapons
           </button>
           <button
             *ngFor="let category of itemCategories"
@@ -112,12 +142,35 @@ import { AdminEditorSession } from '../admin-editor.models';
           </button>
         </div>
 
-        <!-- Weapons Tab -->
-        <div *ngIf="activeTab === 'weapon'">
+        <!-- Melee Weapons Tab -->
+        <div *ngIf="activeTab === 'weapon-melee'">
           <app-weapon-table
             [title]="''"
             [collapsible]="false"
-            [weaponIds]="filteredWeaponIds"
+            [weaponIds]="filteredMeleeWeaponIds"
+            [weaponsData]="weaponsData"
+            [weaponRulesData]="weaponRules"
+            [alteredStates]="alteredStates"
+            [displayPrice]="true"
+            [displayBody]="true"
+            [enableBodyFilter]="true"
+            [characterBody]="activePlayerBodyTypes"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            (clone)="onCloneWeapon($event)"
+            (delete)="onDeleteWeapon($event)"
+            (edit)="onEditWeapon($event)">
+          </app-weapon-table>
+        </div>
+
+        <!-- Ranged Weapons Tab -->
+        <div *ngIf="activeTab === 'weapon-ranged'">
+          <app-weapon-table
+            [title]="''"
+            [collapsible]="false"
+            [weaponIds]="filteredRangedWeaponIds"
             [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
@@ -224,7 +277,7 @@ export class ItemsComponent implements OnInit {
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   activePlayerBodyTypes: string[] = [];
-  activeTab: string = 'weapon';
+  activeTab: string = 'weapon-melee';
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
@@ -271,8 +324,12 @@ export class ItemsComponent implements OnInit {
       this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
       this.scrollSections = [
         {
-          id: 'weapon',
-          title: 'Weapons',
+          id: 'weapon-melee',
+          title: 'Melee Weapons',
+        },
+        {
+          id: 'weapon-ranged',
+          title: 'Ranged Weapons',
         },
         ...this.itemCategories.map((category: ItemCategory) => {
           return {
@@ -360,6 +417,20 @@ export class ItemsComponent implements OnInit {
   get matchedItemCategories(): ItemCategory[] {
     if (!this.searchQuery) return [];
     return this.itemCategories.filter(c => (this.filteredCategoryDataMap[c.key] || []).length > 0);
+  }
+
+  get filteredMeleeWeaponIds(): number[] {
+    return this.filteredWeaponIds.filter(id => {
+      const weapon = this.weaponsData.find(entry => entry.id === id);
+      return !!weapon && this.isMeleeWeapon(weapon);
+    });
+  }
+
+  get filteredRangedWeaponIds(): number[] {
+    return this.filteredWeaponIds.filter(id => {
+      const weapon = this.weaponsData.find(entry => entry.id === id);
+      return !!weapon && !this.isMeleeWeapon(weapon);
+    });
   }
 
   // Weapon Management Methods
@@ -668,5 +739,9 @@ export class ItemsComponent implements OnInit {
 
   hasActivePlayer(): boolean {
     return this.activePlayerService.activePlayer !== null;
+  }
+
+  private isMeleeWeapon(weapon: Weapon): boolean {
+    return weapon.profiles.length > 0 && weapon.profiles.every(profile => profile.rng === 0);
   }
 }
