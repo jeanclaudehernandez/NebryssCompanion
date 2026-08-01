@@ -1,0 +1,84 @@
+<div class="world-map-page">
+  <div class="map-title-chip" *ngIf="worldMapLocation">
+    <span class="material-icons">explore</span>
+    <span>{{ worldMapLocation.name }}</span>
+  </div>
+
+  <div class="map-toolbar">
+    <button type="button" class="map-tool-btn" (click)="zoomOut()" aria-label="Zoom out">
+      <span class="material-icons">remove</span>
+    </button>
+    <button type="button" class="map-tool-btn" (click)="resetView()" aria-label="Reset view">
+      <span class="material-icons">center_focus_strong</span>
+    </button>
+    <button type="button" class="map-tool-btn" (click)="zoomIn()" aria-label="Zoom in">
+      <span class="material-icons">add</span>
+    </button>
+  </div>
+
+  <div
+    class="map-viewport"
+    (wheel)="onWheel($event)"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
+    <div class="map-surface" *ngIf="worldMapLocation" [style.transform]="mapTransform">
+      <img class="map-image" [src]="worldMapLocation.imgUrl" [alt]="worldMapLocation.name" draggable="false">
+
+      <button
+        *ngFor="let pin of pins; trackBy: trackByPin"
+        type="button"
+        class="map-pin"
+        [class.active]="selectedPin === pin.location"
+        [class.is-capital]="pin.location.isCapital"
+        [style.left.%]="pin.x"
+        [style.top.%]="pin.y"
+        [style.animation-delay]="pin.animationDelay"
+        [style.--faction-color]="pin.factionColor"
+        (pointerdown)="$event.stopPropagation()"
+        (click)="selectPin(pin.location)"
+        [attr.aria-label]="'View ' + pin.location.name"
+      >
+        <span class="pin-label">{{ pin.location.name }}</span>
+        <span class="pin-marker">
+          <span class="pin-pulse-ring" *ngIf="pin.location.isCapital"></span>
+          <span class="pin-badge">
+            <img *ngIf="pin.factionIcon" [src]="pin.factionIcon" [alt]="pin.location.faction" class="pin-faction-img" loading="lazy">
+            <span *ngIf="!pin.factionIcon" class="material-icons pin-icon-fallback">place</span>
+          </span>
+          <span *ngIf="pin.location.isCapital" class="material-icons pin-capital-star">star</span>
+        </span>
+      </button>
+    </div>
+
+    <div class="map-empty-state" *ngIf="!worldMapLocation">
+      <p>No world map image is set up yet. Mark a location with <code>"isWorldMap": true</code> in locations.json.</p>
+    </div>
+  </div>
+
+  <!-- Location detail popup -->
+  <div class="map-popup-backdrop" *ngIf="selectedPin" (click)="closePopup()"></div>
+  <div class="map-popup" *ngIf="selectedPin">
+    <button type="button" class="close-btn" (click)="closePopup()" aria-label="Close">×</button>
+
+    <div class="map-popup-header">
+      <h3>{{ selectedPin.name }}</h3>
+      <span *ngIf="selectedPin.isCapital" class="capital-badge">Capital</span>
+    </div>
+
+    <div class="map-popup-thumb" *ngIf="selectedPin.thumbnail || selectedPin.imgUrl">
+      <img [src]="selectedPin.thumbnail || selectedPin.imgUrl" [alt]="selectedPin.name" loading="lazy">
+    </div>
+
+    <p class="map-popup-faction" (click)="onFactionClick(selectedPin.faction)" title="Click to view in Lore">
+      {{ selectedPin.faction }}
+    </p>
+    <p class="map-popup-description">{{ selectedPin.description }}</p>
+
+    <button type="button" class="view-details-btn" (click)="goToFullDetails(selectedPin)">
+      View Full Details
+    </button>
+  </div>
+</div>

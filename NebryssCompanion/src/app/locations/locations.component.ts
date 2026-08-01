@@ -18,10 +18,12 @@ import { Location, Locations, Lore } from '../model';
 })
 export class LocationsComponent implements OnInit {
   @Input() initialLocationName: string | null = null;
+  @Input() backTarget: string | null = null;
   @Output() navigateTo = new EventEmitter<any>();
   @Output() navigateToLore = new EventEmitter<string>();
   locations: Location[] = [];
   selectedLocation: Location | null = null;
+  deepLinkMode = false;
   private readonly STORAGE_KEY = 'selectedLocationName';
   loreData: Lore | null = null;
   uniqueFactions: string[] = [];
@@ -41,6 +43,7 @@ export class LocationsComponent implements OnInit {
         const location = this.locations.find(l => l.name === this.initialLocationName);
         if (location) {
           this.selectLocation(location);
+          this.deepLinkMode = true;
         } else {
           this.loadFromLocalStorage();
         }
@@ -74,7 +77,12 @@ export class LocationsComponent implements OnInit {
   }
 
   clearSelectedLocation(): void {
+    if (this.deepLinkMode && this.backTarget) {
+      this.navigateTo.emit(this.backTarget);
+      return;
+    }
     this.selectedLocation = null;
+    this.deepLinkMode = false;
     localStorage.removeItem(this.STORAGE_KEY);
     this.cdr.markForCheck();
   }

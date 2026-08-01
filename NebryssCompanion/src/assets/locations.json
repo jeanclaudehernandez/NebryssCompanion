@@ -6,6 +6,7 @@
       "thumbnail": "https://iili.io/3R2Be6u.th.png",
       "faction": "Planet",
       "isCapital": false,
+      "isWorldMap": true,
       "notableFeatures": [
         {
           "name": "Mist Trade Routes",
@@ -20,6 +21,8 @@
       "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
       "faction": "The Imperium of Man",
       "isCapital": true,
+      "mapX": 85,
+      "mapY": 48,
       "notableFeatures": [
         {
           "name": "Cathedral of the Emperor's Light",
@@ -38,6 +41,8 @@
       "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
       "faction": "The Imperium of Man",
       "isCapital": false,
+      "mapX": 22,
+      "mapY": 38,
       "notableFeatures": [
         {
           "name": "The Stormwatch Observatory",
@@ -56,6 +61,8 @@
       "thumbnail": "https://iili.io/fvZP8AX.th.jpg",
       "faction": "The Gilded Accord",
       "isCapital": true,
+      "mapX": 52,
+      "mapY": 20,
       "notableFeatures": [
         {
           "name": "Sky Bazaar",
@@ -101,6 +108,8 @@
       "thumbnail": "https://iili.io/3YDnziX.th.jpg",
       "faction": "The Gilded Accord",
       "isCapital": false,
+      "mapX": 46,
+      "mapY": 72,
       "notableFeatures": [
         {
           "name": "The Nebryssian Reserve",
@@ -119,6 +128,8 @@
       "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
       "faction": "The Abyssal Cabal",
       "isCapital": true,
+      "mapX": 11,
+      "mapY": 10,
       "notableFeatures": [
         {
           "name": "The Veilrend Spire",
@@ -133,6 +144,8 @@
       "thumbnail": "https://iili.io/3RFipWB.th.jpg",
       "faction": "The Nebryssian Liberation Republic",
       "isCapital": true,
+      "mapX": 44,
+      "mapY": 51,
       "notableFeatures": [
         {
           "name": "The Veiled Citadel",
@@ -152,6 +165,8 @@
       "name": "Verdant Veil",
       "faction": "The Nebryssian Liberation Republic",
       "isCapital": false,
+      "mapX": 48,
+      "mapY": 59,
       "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
       "imgUrl": "https://iili.io/3Ybxd5G.png",
       "thumbnail": "https://iili.io/3Ybxd5G.th.png",
@@ -175,6 +190,8 @@
       "faction": "The Gilded Accord",
       "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
       "isCapital": false,
+      "mapX": 72,
+      "mapY": 18,
       "imgUrl": "https://iili.io/3Ybx2ef.png",
       "thumbnail": "https://iili.io/3Ybx2ef.th.png",
       "notableFeatures": [
@@ -191,6 +208,8 @@
     {
       "name": "Emberreach",
       "faction": "The Abyssal Cabal",
+      "mapX": 18,
+      "mapY": 15,
       "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
       "imgUrl": "https://iili.io/3YbxJJs.png",
       "thumbnail": "https://iili.io/3YbxJJs.th.png",

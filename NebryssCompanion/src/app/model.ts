@@ -32,6 +32,11 @@ export interface AlteredState {
     thumbnail?: string;
     faction: string;
     isCapital: boolean;
+    // Marks the location whose image is used as the background of the interactive World Map.
+    isWorldMap?: boolean;
+    // Position (percentage, 0-100) of this location's pin on the World Map image.
+    mapX?: number;
+    mapY?: number;
     notableFeatures?: Array<{
       name: string;
       description: string;

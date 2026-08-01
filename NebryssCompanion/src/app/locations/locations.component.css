@@ -8,6 +8,21 @@
   overflow: hidden;
 }
 
+/* Deep-linked from elsewhere (e.g. World Map "View Full Details"): fill the screen, skip the list */
+.locations-page.full-screen {
+  max-width: none;
+  width: 100%;
+  height: calc(100vh - 80px);
+}
+
+.locations-page.full-screen .locations-sidebar {
+  display: none;
+}
+
+.locations-page.full-screen .location-details {
+  max-width: 1400px;
+}
+
 /* Sidebar Styles */
 .locations-sidebar {
   width: 300px;

@@ -12,6 +12,7 @@ import { ItemsComponent } from './items/items.component';
 import { ShopsComponent } from './shops/shops.component';
 import { LoreComponent } from './lore/lore.component';
 import { LocationsComponent } from './locations/locations.component';
+import { WorldMapComponent } from './world-map/world-map.component';
 import { TalentsComponent } from './talents/talents.component';
 import { MistEffectsComponent } from './mist-effects/mist-effects.component';
 import { TerrainsComponent } from './terrains/terrains.component';
@@ -44,6 +45,7 @@ import { ActivePlayerService } from './active-player.service';
     ShopsComponent,
     LoreComponent,
     LocationsComponent,
+    WorldMapComponent,
     TalentsComponent,
     MistEffectsComponent,
     TerrainsComponent,
@@ -111,7 +113,10 @@ import { ActivePlayerService } from './active-player.service';
         <app-lore (navigateToLocation)="onNavigateToLocation($event)" [initialFactionName]="selectedFactionName"></app-lore>
       }
       @if (currentView === 'locations') {
-        <app-locations (navigateTo)="onViewChange($event)" (navigateToLore)="onNavigateToLore($event)" [initialLocationName]="selectedLocationName"></app-locations>
+        <app-locations (navigateTo)="onViewChange($event)" (navigateToLore)="onNavigateToLore($event)" [initialLocationName]="selectedLocationName" [backTarget]="selectedLocationBackTarget"></app-locations>
+      }
+      @if (currentView === 'worldMap') {
+        <app-world-map (navigateToLocation)="onNavigateToLocation($event, 'worldMap')" (navigateToLore)="onNavigateToLore($event)"></app-world-map>
       }
       @if (currentView === 'talents') {
         <app-talents></app-talents>
@@ -194,8 +199,9 @@ import { ActivePlayerService } from './active-player.service';
 export class AppComponent {
   private readonly destroyRef = inject(DestroyRef);
 
-  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
+  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
   selectedLocationName: string | null = null;
+  selectedLocationBackTarget: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
@@ -212,6 +218,7 @@ export class AppComponent {
       case 'shops': return 'Shops';
       case 'lore': return 'Lore & Factions';
       case 'locations': return 'Locations';
+      case 'worldMap': return 'World Map';
       case 'talents': return 'Talents';
       case 'mistEffects': return 'Mist Effects';
       case 'terrains': return 'Terrains';
@@ -386,10 +393,10 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
+      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'worldMap', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.currentView = view;
     if (view === 'adminItemCreator') {
       this.adminEditSession = null;
@@ -400,6 +407,7 @@ export class AppComponent {
     // But if it's coming from LocationsComponent navigating to Shops, we don't need to reset it (it's for Locations component input).
     // Let's just set it to null here, and have a separate method for location navigation.
     this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
@@ -413,6 +421,7 @@ export class AppComponent {
     this.adminEditSession = session;
     this.currentView = 'adminItemCreator';
     this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
@@ -420,8 +429,9 @@ export class AppComponent {
     window.scrollTo({ top: 0 });
   }
 
-  onNavigateToLocation(locationName: string) {
+  onNavigateToLocation(locationName: string, backTarget: string | null = null) {
     this.selectedLocationName = locationName;
+    this.selectedLocationBackTarget = backTarget;
     this.currentView = 'locations';
     localStorage.setItem('lastView', 'locations');
     window.scrollTo({ top: 0 });

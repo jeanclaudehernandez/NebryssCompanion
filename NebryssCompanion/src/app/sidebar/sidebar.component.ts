@@ -18,7 +18,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
   isOpen = false;
   isAdmin = false;
 
@@ -72,7 +72,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }
