@@ -2,13 +2,10 @@
   <h2 style="margin-top:10px;">Shops</h2>
   <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
     <div class="shop-header">
-      <h3>{{ shop.name }}</h3>
-      <app-image-viewer 
-        *ngIf="shop.imgUrl" 
-        [imageUrl]="shop.imgUrl" 
-        [thumbnailUrl]="shop.thumbnail" 
-        [altText]="shop.name">
-      </app-image-viewer>
+      <div class="shop-media">
+        <img *ngIf="shop.imgUrl" [src]="shopDisplayImages[shop.id] || shop.imgUrl" [alt]="shop.name" class="shop-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onShopImageLoad($event, shop.id)">
+        <h3 class="shop-title">{{ shop.name }}</h3>
+      </div>
     </div>
     <p class="location" (click)="onLocationClick(shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
     <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>

@@ -18,59 +18,37 @@ import { AdminEditorSession } from '../admin-editor.models';
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
-      <!-- Search Bar -->
+      <!-- Search Bar (always visible) -->
       <div class="items-search-container">
         <div class="search-input-wrapper">
           <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            [(ngModel)]="searchQuery" 
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
             (ngModelChange)="onSearchChange()"
-            placeholder="Search items, descriptions..." 
+            placeholder="Search all items, descriptions..."
             class="items-search-input">
           <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">✕</button>
         </div>
         <span *ngIf="searchQuery" class="search-results-count">
-          Found {{ totalSearchResultsCount }} item(s)
+          Found {{ totalSearchResultsCount }} item(s) across all categories
         </span>
       </div>
 
-      <!-- Category Tab Bar -->
-      <div class="items-tab-bar" *ngIf="!searchQuery">
-        <button
-          class="items-tab"
-          [class.active]="activeTab === 'weapon'"
-          (click)="setTab('weapon')"
-          id="tab-weapon">
-          Weapons
-        </button>
-        <button
-          *ngFor="let category of itemCategories"
-          class="items-tab"
-          [class.active]="activeTab === category.key"
-          (click)="setTab(category.key)"
-          [id]="'tab-' + category.key">
-          {{ category.name }}
-        </button>
-      </div>
-
-      <div *ngIf="searchQuery">
-        <div *ngIf="totalSearchResultsCount === 0" class="search-empty-state">
-          No results found
-        </div>
-
-        <div *ngIf="filteredWeaponIds.length > 0">
-          <h2>Weapons</h2>
-          <app-weapon-table 
+      <!-- ── SEARCH MODE: show all matching results grouped by category ── -->
+      <ng-container *ngIf="searchQuery">
+        <div *ngIf="filteredWeaponIds.length > 0" class="search-group">
+          <div class="search-group-title">Weapons</div>
+          <app-weapon-table
             [title]="''"
             [collapsible]="false"
-            [weaponIds]="filteredWeaponIds" 
-            [weaponsData]="weaponsData" 
+            [weaponIds]="filteredWeaponIds"
+            [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
             [displayPrice]="true"
             [displayBody]="true"
-            [enableBodyFilter]="true"
+            [enableBodyFilter]="false"
             [characterBody]="activePlayerBodyTypes"
             [inventoryManagement]="hasActivePlayer()"
             [enableCloning]="isAdmin"
@@ -82,37 +60,64 @@ import { AdminEditorSession } from '../admin-editor.models';
           </app-weapon-table>
         </div>
 
-        <ng-container *ngFor="let category of matchedItemCategories">
-          <h2>{{ category.name }}</h2>
-          <app-generic-table 
-            [storageKey]="'items-category-' + category.key"
-            [title]="''"
-            [collapsible]="false"
-            [data]="filteredCategoryDataMap[category.key] || []"
-            [headers]="category.headers"
-            [headerKeys]="category.keys"
-            [renderHtml]="['description']"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            [enableBodyFilter]="category.key === 'armor'"
-            [characterBody]="activePlayerBodyTypes"
-            (craft)="onCraftItem($event)"
-            (clone)="onCloneItem($event)"
-            (delete)="onDeleteItem($event)"
-            (edit)="onEditItem($event)">
-          </app-generic-table>
+        <ng-container *ngFor="let category of itemCategories">
+          <div *ngIf="(filteredCategoryDataMap[category.key] || []).length > 0" class="search-group">
+            <div class="search-group-title">{{ category.name }}</div>
+            <app-generic-table
+              [storageKey]="'items-category-' + category.key"
+              [title]="''"
+              [collapsible]="false"
+              [data]="filteredCategoryDataMap[category.key] || []"
+              [headers]="category.headers"
+              [headerKeys]="category.keys"
+              [renderHtml]="['description']"
+              [inventoryManagement]="hasActivePlayer()"
+              [enableCloning]="isAdmin"
+              [enableDeleting]="isAdmin"
+              [enableEditing]="isAdmin"
+              [enableBodyFilter]="false"
+              [characterBody]="activePlayerBodyTypes"
+              (craft)="onCraftItem($event)"
+              (clone)="onCloneItem($event)"
+              (delete)="onDeleteItem($event)"
+              (edit)="onEditItem($event)">
+            </app-generic-table>
+          </div>
         </ng-container>
-      </div>
 
-      <div *ngIf="!searchQuery">
+        <div *ngIf="totalSearchResultsCount === 0" class="search-empty">
+          No results found for "{{ searchQuery }}"
+        </div>
+      </ng-container>
+
+      <!-- ── BROWSE MODE: tab bar + active tab content ── -->
+      <ng-container *ngIf="!searchQuery">
+        <!-- Category Tab Bar -->
+        <div class="items-tab-bar">
+          <button
+            class="items-tab"
+            [class.active]="activeTab === 'weapon'"
+            (click)="setTab('weapon')"
+            id="tab-weapon">
+            Weapons
+          </button>
+          <button
+            *ngFor="let category of itemCategories"
+            class="items-tab"
+            [class.active]="activeTab === category.key"
+            (click)="setTab(category.key)"
+            [id]="'tab-' + category.key">
+            {{ category.name }}
+          </button>
+        </div>
+
+        <!-- Weapons Tab -->
         <div *ngIf="activeTab === 'weapon'">
-          <app-weapon-table 
+          <app-weapon-table
             [title]="''"
             [collapsible]="false"
-            [weaponIds]="filteredWeaponIds" 
-            [weaponsData]="weaponsData" 
+            [weaponIds]="filteredWeaponIds"
+            [weaponsData]="weaponsData"
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
             [displayPrice]="true"
@@ -152,7 +157,7 @@ import { AdminEditorSession } from '../admin-editor.models';
             </app-generic-table>
           </div>
         </ng-container>
-      </div>
+      </ng-container>
     </div>
 
     <ng-template #craftConfirmModal>

@@ -4,7 +4,6 @@ import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
-import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState, CartItem } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ThemeService } from '../theme.service';
@@ -35,7 +34,6 @@ interface ProcessedShop extends Shop {
     WeaponTableComponent,
     GenericTableComponent,
     ScrollNavComponent,
-    ImageViewerComponent,
     MatTooltipModule
   ],
   templateUrl: './shops.component.html',
@@ -55,6 +53,9 @@ export class ShopsComponent implements OnInit, OnDestroy {
   itemsCategories: ItemCategory[] = [];
   shops: Shop[] = [];
   processedShops: ProcessedShop[] = [];
+  shopDisplayImages: { [shopId: number]: string } = {};
+  private readonly shopImageMaxWidth = 640;
+  private readonly shopImageAspectRatio = 21 / 9;
   npcs: NPC[] = [];
   isLoading = true;
   scrollSections: ScrollSection[] = [];
@@ -151,6 +152,41 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   trackByCategory(index: number, item: ShopCategoryData): number {
     return item.category.id;
+  }
+
+  // Re-encodes the loaded photo at a lower resolution so the wide banner isn't served at full source size.
+  onShopImageLoad(event: Event, shopId: number) {
+    if (this.shopDisplayImages[shopId]) return;
+    const img = event.target as HTMLImageElement;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
+    try {
+      const targetWidth = Math.min(this.shopImageMaxWidth, img.naturalWidth);
+      const targetHeight = Math.round(targetWidth / this.shopImageAspectRatio);
+
+      const srcRatio = img.naturalWidth / img.naturalHeight;
+      let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+      if (srcRatio > this.shopImageAspectRatio) {
+        sw = img.naturalHeight * this.shopImageAspectRatio;
+        sx = (img.naturalWidth - sw) / 2;
+      } else {
+        sh = img.naturalWidth / this.shopImageAspectRatio;
+        sy = (img.naturalHeight - sh) / 2;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
+
+      this.shopDisplayImages[shopId] = canvas.toDataURL('image/jpeg', 0.75);
+    } catch {
+      // Cross-origin or decode failure: keep showing the original source image.
+    }
   }
 
   getOwnerName(owner: number) {

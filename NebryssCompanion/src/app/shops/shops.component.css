@@ -29,17 +29,33 @@
 }
 
 .shop-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 15px;
+  display: block;
   margin-bottom: 10px;
 }
 
-.shop-card h3 {
+.shop-media {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.shop-photo {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 21 / 9;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  image-rendering: auto;
+}
+
+.shop-title {
   color: #2c3e50;
   margin: 0;
   transition: color 0.3s;
+  font-size: 1.15rem;
 }
 
 .location {
@@ -70,7 +86,7 @@ body.dark-theme .shop-card {
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
 }
 
-body.dark-theme .shop-card h3 {
+body.dark-theme .shop-title {
   color: #e0e0e0;
 }
 
