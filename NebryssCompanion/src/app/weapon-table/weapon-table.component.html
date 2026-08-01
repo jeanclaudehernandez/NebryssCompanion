@@ -117,7 +117,7 @@
              <tr class="weapon-row body-row" *ngIf="displayBody">
                  <td [attr.colspan]="showActions ? totalColumns - 2 : totalColumns - 1">
                      <div class="body-cell">
-                        <span class="body-label">Body: </span><span [innerHtml]="formatBodyIcons(entry.profile.body) | sanitizeHtml"></span>
+                        <span class="body-label">Body: </span><app-body-type-icons [value]="entry.profile.body"></app-body-type-icons>
                      </div>
                  </td>
              </tr>
