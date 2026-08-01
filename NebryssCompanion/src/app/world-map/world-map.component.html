@@ -41,8 +41,8 @@
         (click)="selectPin(pin.location)"
         [attr.aria-label]="'View ' + pin.location.name"
       >
-        <span class="pin-label">{{ pin.location.name }}</span>
         <span class="pin-marker">
+          <span class="pin-label">{{ pin.location.name }}</span>
           <span class="pin-pulse-ring" *ngIf="pin.location.isCapital"></span>
           <span class="pin-badge">
             <img *ngIf="pin.factionIcon" [src]="pin.factionIcon" [alt]="pin.location.faction" class="pin-faction-img" loading="lazy">
