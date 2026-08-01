@@ -12,6 +12,13 @@ import { ToastService } from '../toast.service';
 import { AdminService } from '../admin.service';
 import { AdminEditorSession } from '../admin-editor.models';
 
+interface ItemsTab {
+  key: string;
+  label: string;
+  count: number;
+  category?: ItemCategory;
+}
+
 @Component({
   selector: 'app-items',
   standalone: true,
@@ -35,184 +42,95 @@ import { AdminEditorSession } from '../admin-editor.models';
         </span>
       </div>
 
-      <!-- ── SEARCH MODE: show all matching results grouped by category ── -->
-      <ng-container *ngIf="searchQuery">
-        <div *ngIf="filteredMeleeWeaponIds.length > 0" class="search-group">
-          <div class="search-group-title">Melee Weapons</div>
-          <app-weapon-table
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredMeleeWeaponIds"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="false"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
-        </div>
-
-        <div *ngIf="filteredRangedWeaponIds.length > 0" class="search-group">
-          <div class="search-group-title">Ranged Weapons</div>
-          <app-weapon-table
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredRangedWeaponIds"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="false"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
-        </div>
-
-        <ng-container *ngFor="let category of itemCategories">
-          <div *ngIf="(filteredCategoryDataMap[category.key] || []).length > 0" class="search-group">
-            <div class="search-group-title">{{ category.name }}</div>
-            <app-generic-table
-              [storageKey]="'items-category-' + category.key"
-              [title]="''"
-              [collapsible]="false"
-              [data]="filteredCategoryDataMap[category.key] || []"
-              [headers]="category.headers"
-              [headerKeys]="category.keys"
-              [nameColumnWidth]="category.key === 'modification' ? '78px' : '95px'"
-              [renderHtml]="['description']"
-              [inventoryManagement]="hasActivePlayer()"
-              [enableCloning]="isAdmin"
-              [enableDeleting]="isAdmin"
-              [enableEditing]="isAdmin"
-              [enableBodyFilter]="false"
-              [characterBody]="activePlayerBodyTypes"
-              (craft)="onCraftItem($event)"
-              (clone)="onCloneItem($event)"
-              (delete)="onDeleteItem($event)"
-              (edit)="onEditItem($event)">
-            </app-generic-table>
-          </div>
-        </ng-container>
-
-        <div *ngIf="totalSearchResultsCount === 0" class="search-empty">
-          No results found for "{{ searchQuery }}"
-        </div>
-      </ng-container>
-
-      <!-- ── BROWSE MODE: tab bar + active tab content ── -->
-      <ng-container *ngIf="!searchQuery">
-        <!-- Category Tab Bar -->
+      <!-- Category Tab Bar -->
+      <ng-container *ngIf="visibleTabs.length > 0">
         <div class="items-tab-bar">
           <button
+            *ngFor="let tab of visibleTabs"
             class="items-tab"
-            [class.active]="activeTab === 'weapon-melee'"
-            (click)="setTab('weapon-melee')"
-            id="tab-weapon-melee">
-            Melee Weapons
-          </button>
-          <button
-            class="items-tab"
-            [class.active]="activeTab === 'weapon-ranged'"
-            (click)="setTab('weapon-ranged')"
-            id="tab-weapon-ranged">
-            Ranged Weapons
-          </button>
-          <button
-            *ngFor="let category of itemCategories"
-            class="items-tab"
-            [class.active]="activeTab === category.key"
-            (click)="setTab(category.key)"
-            [id]="'tab-' + category.key">
-            {{ category.name }}
+            [class.active]="activeTab === tab.key"
+            (click)="setTab(tab.key)"
+            [id]="'tab-' + tab.key">
+            {{ getTabLabel(tab) }}
           </button>
         </div>
-
-        <!-- Melee Weapons Tab -->
-        <div *ngIf="activeTab === 'weapon-melee'">
-          <app-weapon-table
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredMeleeWeaponIds"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="true"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
-        </div>
-
-        <!-- Ranged Weapons Tab -->
-        <div *ngIf="activeTab === 'weapon-ranged'">
-          <app-weapon-table
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredRangedWeaponIds"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="true"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
-        </div>
-
-        <ng-container *ngFor="let category of itemCategories">
-          <div *ngIf="activeTab === category.key">
-            <app-generic-table 
-              [storageKey]="'items-category-' + category.key"
-              [title]="''"
-              [collapsible]="false"
-              [data]="filteredCategoryDataMap[category.key] || []"
-              [headers]="category.headers"
-              [headerKeys]="category.keys"
-              [nameColumnWidth]="category.key === 'modification' ? '78px' : '95px'"
-              [renderHtml]="['description']"
-              [inventoryManagement]="hasActivePlayer()"
-              [enableCloning]="isAdmin"
-              [enableDeleting]="isAdmin"
-              [enableEditing]="isAdmin"
-              [enableBodyFilter]="category.key === 'armor'"
-              [characterBody]="activePlayerBodyTypes"
-              (craft)="onCraftItem($event)"
-              (clone)="onCloneItem($event)"
-              (delete)="onDeleteItem($event)"
-              (edit)="onEditItem($event)">
-            </app-generic-table>
-          </div>
-        </ng-container>
       </ng-container>
+
+      <!-- Active Tab Content -->
+      <div *ngIf="activeTab === 'weapon-melee' && visibleTabKeys.has('weapon-melee')">
+        <app-weapon-table
+          [title]="''"
+          [collapsible]="false"
+          [weaponIds]="filteredMeleeWeaponIds"
+          [weaponsData]="weaponsData"
+          [weaponRulesData]="weaponRules"
+          [alteredStates]="alteredStates"
+          [displayPrice]="true"
+          [displayBody]="true"
+          [enableBodyFilter]="true"
+          [filterStorageKey]="'items-weapon-melee-body-filter'"
+          [characterBody]="activePlayerBodyTypes"
+          [inventoryManagement]="hasActivePlayer()"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
+          (clone)="onCloneWeapon($event)"
+          (delete)="onDeleteWeapon($event)"
+          (edit)="onEditWeapon($event)">
+        </app-weapon-table>
+      </div>
+
+      <div *ngIf="activeTab === 'weapon-ranged' && visibleTabKeys.has('weapon-ranged')">
+        <app-weapon-table
+          [title]="''"
+          [collapsible]="false"
+          [weaponIds]="filteredRangedWeaponIds"
+          [weaponsData]="weaponsData"
+          [weaponRulesData]="weaponRules"
+          [alteredStates]="alteredStates"
+          [displayPrice]="true"
+          [displayBody]="true"
+          [enableBodyFilter]="true"
+          [filterStorageKey]="'items-weapon-ranged-body-filter'"
+          [characterBody]="activePlayerBodyTypes"
+          [inventoryManagement]="hasActivePlayer()"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
+          (clone)="onCloneWeapon($event)"
+          (delete)="onDeleteWeapon($event)"
+          (edit)="onEditWeapon($event)">
+        </app-weapon-table>
+      </div>
+
+      <ng-container *ngFor="let category of itemCategories">
+        <div *ngIf="activeTab === category.key && visibleTabKeys.has(category.key)">
+          <app-generic-table
+            [storageKey]="'items-category-' + category.key"
+            [title]="''"
+            [collapsible]="false"
+            [data]="filteredCategoryDataMap[category.key] || []"
+            [headers]="category.headers"
+            [headerKeys]="category.keys"
+            [nameColumnWidth]="category.key === 'modification' ? '78px' : '95px'"
+            [renderHtml]="['description']"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            [enableBodyFilter]="category.key === 'armor'"
+            [characterBody]="activePlayerBodyTypes"
+            (craft)="onCraftItem($event)"
+            (clone)="onCloneItem($event)"
+            (delete)="onDeleteItem($event)"
+            (edit)="onEditItem($event)">
+          </app-generic-table>
+        </div>
+      </ng-container>
+
+      <div *ngIf="searchQuery && totalSearchResultsCount === 0" class="search-empty-state">
+        No results found for "{{ searchQuery }}"
+      </div>
     </div>
 
     <ng-template #craftConfirmModal>
@@ -360,10 +278,6 @@ export class ItemsComponent implements OnInit {
 
   setTab(key: string): void {
     this.activeTab = key;
-    // Re-apply existing search to the new tab (don't clear it)
-    if (this.searchQuery) {
-      this.onSearchChange();
-    }
   }
 
   onSearchChange(): void {
@@ -371,6 +285,7 @@ export class ItemsComponent implements OnInit {
     if (!query) {
       this.filteredWeaponIds = [...this.allWeaponIds];
       this.filteredCategoryDataMap = { ...this.categoryDataMap };
+      this.ensureActiveTabIsVisible();
       return;
     }
 
@@ -394,13 +309,15 @@ export class ItemsComponent implements OnInit {
         const nameMatch = item.name?.toLowerCase().includes(query);
         const descMatch = item.description?.toLowerCase().includes(query);
         const typeMatch = item.type?.toLowerCase().includes(query);
-        const subTypeMatch = item.subType?.toLowerCase().includes(query);
+        const subTypeMatch = item.subtype?.toLowerCase().includes(query);
         const bodyMatch = item.raceReq?.toLowerCase().includes(query);
         const partMatch = item.part?.toLowerCase().includes(query);
         return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
       });
       return acc;
     }, {} as Record<string, any[]>);
+
+    this.ensureActiveTabIsVisible();
   }
 
   clearSearch(): void {
@@ -419,6 +336,37 @@ export class ItemsComponent implements OnInit {
     return this.itemCategories.filter(c => (this.filteredCategoryDataMap[c.key] || []).length > 0);
   }
 
+  get isSearchActive(): boolean {
+    return !!this.searchQuery.trim();
+  }
+
+  get visibleTabs(): ItemsTab[] {
+    const tabs: ItemsTab[] = [
+      {
+        key: 'weapon-melee',
+        label: 'Melee Weapons',
+        count: this.filteredMeleeWeaponIds.length
+      },
+      {
+        key: 'weapon-ranged',
+        label: 'Ranged Weapons',
+        count: this.filteredRangedWeaponIds.length
+      },
+      ...this.itemCategories.map(category => ({
+        key: category.key,
+        label: category.name,
+        count: (this.filteredCategoryDataMap[category.key] || []).length,
+        category
+      }))
+    ];
+
+    return this.isSearchActive ? tabs.filter(tab => tab.count > 0) : tabs;
+  }
+
+  get visibleTabKeys(): Set<string> {
+    return new Set(this.visibleTabs.map(tab => tab.key));
+  }
+
   get filteredMeleeWeaponIds(): number[] {
     return this.filteredWeaponIds.filter(id => {
       const weapon = this.weaponsData.find(entry => entry.id === id);
@@ -431,6 +379,10 @@ export class ItemsComponent implements OnInit {
       const weapon = this.weaponsData.find(entry => entry.id === id);
       return !!weapon && !this.isMeleeWeapon(weapon);
     });
+  }
+
+  getTabLabel(tab: ItemsTab): string {
+    return this.isSearchActive ? `${tab.label}(${tab.count})` : tab.label;
   }
 
   // Weapon Management Methods
@@ -743,5 +695,16 @@ export class ItemsComponent implements OnInit {
 
   private isMeleeWeapon(weapon: Weapon): boolean {
     return weapon.profiles.length > 0 && weapon.profiles.every(profile => profile.rng === 0);
+  }
+
+  private ensureActiveTabIsVisible(): void {
+    if (this.visibleTabKeys.has(this.activeTab)) {
+      return;
+    }
+
+    const firstVisibleTab = this.visibleTabs[0];
+    if (firstVisibleTab) {
+      this.activeTab = firstVisibleTab.key;
+    }
   }
 }

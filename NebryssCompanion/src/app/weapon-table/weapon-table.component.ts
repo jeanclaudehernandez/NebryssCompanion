@@ -56,6 +56,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() collapsible: boolean = false;
   @Input() isCollapsed: boolean = false;
   @Input() enableBodyFilter: boolean = false;
+  @Input() filterStorageKey: string = '';
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
@@ -98,10 +99,11 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   availableBodyTypes: string[] = [];
-  selectedBodyType: string = '';
+  selectedBodyType: string | null = null;
   sortKey: WeaponSortKey | null = null;
   sortDir: 'asc' | 'desc' = 'asc';
   private playerSubscription: Subscription | null = null;
+  private bodyFilterRestored = false;
 
   constructor(
     private dialog: MatDialog, 
@@ -116,6 +118,10 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.restoreBodyFilterSelection();
+    this.validateBodyFilterSelection();
+    this.updateSortedProfiles();
+
     this.dataService.getItems().subscribe(() => {
       this.updateSortedProfiles();
     });
@@ -134,8 +140,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponsData'] || changes['characterBody']) {
       this.extractBodyTypes();
+      this.validateBodyFilterSelection();
     }
-    if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
+    if ((changes['filterStorageKey'] || !this.bodyFilterRestored) && this.enableBodyFilter) {
+      this.restoreBodyFilterSelection();
+      this.validateBodyFilterSelection();
+    }
+    if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange'] || changes['characterBody'] || changes['filterStorageKey']) {
       this.updateSortedProfiles();
     }
     this.updateAttachedMods();
@@ -162,6 +173,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
 
   onBodyTypeChange(selected: any) {
     this.selectedBodyType = selected;
+    this.persistBodyFilterSelection();
     this.updateSortedProfiles();
   }
 
@@ -391,6 +403,44 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       this.sortedProfiles = this.sortProfiles(allProfiles);
     } else {
       this.sortedProfiles = allProfiles;
+    }
+  }
+
+  private restoreBodyFilterSelection(): void {
+    if (!this.enableBodyFilter || !this.filterStorageKey) {
+      return;
+    }
+
+    const savedFilter = localStorage.getItem(this.filterStorageKey);
+    this.selectedBodyType = savedFilter || null;
+    this.bodyFilterRestored = true;
+
+    if (this.selectedBodyType && this.availableBodyTypes.length > 0 && !this.availableBodyTypes.includes(this.selectedBodyType)) {
+      this.selectedBodyType = null;
+      localStorage.removeItem(this.filterStorageKey);
+    }
+  }
+
+  private persistBodyFilterSelection(): void {
+    if (!this.filterStorageKey) {
+      return;
+    }
+
+    if (this.selectedBodyType) {
+      localStorage.setItem(this.filterStorageKey, this.selectedBodyType);
+    } else {
+      localStorage.removeItem(this.filterStorageKey);
+    }
+  }
+
+  private validateBodyFilterSelection(): void {
+    if (!this.selectedBodyType || this.availableBodyTypes.length === 0) {
+      return;
+    }
+
+    if (!this.availableBodyTypes.includes(this.selectedBodyType)) {
+      this.selectedBodyType = null;
+      this.persistBodyFilterSelection();
     }
   }
 

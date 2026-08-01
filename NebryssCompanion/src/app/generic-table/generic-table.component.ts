@@ -169,6 +169,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   
   availableBodyTypes: string[] = [];
   selectedBodyType: string | null = null;
+  private bodyFilterRestored = false;
 
   getShortHeader(header: string): string {
     if (!header) return '';
@@ -227,6 +228,8 @@ export class GenericTableComponent implements OnInit, OnChanges {
     const savedState = localStorage.getItem(this.storageKey);
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
     this.extractBodyTypes();
+    this.restoreBodyFilterSelection();
+    this.validateBodyFilterSelection();
     this.initializeSortedData();
   }
 
@@ -317,6 +320,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['headerKeys'] || changes['characterBody']) {
       this.extractBodyTypes();
+      if (!this.bodyFilterRestored) {
+        this.restoreBodyFilterSelection();
+      }
+      this.validateBodyFilterSelection();
       this.initializeSortedData();
     }
   }
@@ -358,6 +365,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
 
   onBodyTypeChange(selected: any) {
     this.selectedBodyType = selected;
+    this.persistBodyFilterSelection();
     this.applySort();
   }
 
@@ -420,6 +428,57 @@ export class GenericTableComponent implements OnInit, OnChanges {
     }
     
     this.applySort();
+  }
+
+  private getBodyFilterStorageKey(): string | null {
+    if (!this.storageKey) {
+      return null;
+    }
+    return `${this.storageKey}-body-filter`;
+  }
+
+  private restoreBodyFilterSelection(): void {
+    if (!this.enableBodyFilter) {
+      return;
+    }
+
+    const key = this.getBodyFilterStorageKey();
+    if (!key) {
+      return;
+    }
+
+    const savedFilter = localStorage.getItem(key);
+    this.selectedBodyType = savedFilter || null;
+    this.bodyFilterRestored = true;
+
+    if (this.selectedBodyType && this.availableBodyTypes.length > 0 && !this.availableBodyTypes.includes(this.selectedBodyType)) {
+      this.selectedBodyType = null;
+      localStorage.removeItem(key);
+    }
+  }
+
+  private persistBodyFilterSelection(): void {
+    const key = this.getBodyFilterStorageKey();
+    if (!key) {
+      return;
+    }
+
+    if (this.selectedBodyType) {
+      localStorage.setItem(key, this.selectedBodyType);
+    } else {
+      localStorage.removeItem(key);
+    }
+  }
+
+  private validateBodyFilterSelection(): void {
+    if (!this.selectedBodyType || this.availableBodyTypes.length === 0) {
+      return;
+    }
+
+    if (!this.availableBodyTypes.includes(this.selectedBodyType)) {
+      this.selectedBodyType = null;
+      this.persistBodyFilterSelection();
+    }
   }
 
   private applySort() {
