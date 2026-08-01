@@ -1,154 +1,193 @@
 <div class="player-card">
-  <div class="player-header">
-    <h2>{{ character.name }}</h2>
-    <button 
-      *ngIf="isActivePlayer(character)" 
-      class="save-button" 
-      (click)="copyToClipboard()" 
-      title="Copy player data to clipboard">
-      <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 24 24" width="18" fill="#ffffff">
-        <path d="M0 0h24v24H0z" fill="none"/>
-        <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
-      </svg>
-    </button>
-  </div>
-  <div class="player-info">
-    <div *ngIf="isPlayer(character)">
-      <p><strong>Race:</strong> {{ character.race }}
-      <p><strong>Origin:</strong> {{ character.origin }}</p>
-      <p><strong>Talent Points:</strong> {{ character.progression.talentPoints || 0 }}</p>
-      <p class="mistrals-row">
-        <span><strong>Digital Mistrals:</strong> {{ getDigitalMistrals(character) }}</span>
+  <div *ngIf="isPlayer(character)" class="player-top-header">
+    <div class="player-stats-list">
+      <div class="talent-points-row">
+        <div class="talent-points-pill" (click)="navigateToTalents.emit()" title="Go to Talents sheet" style="cursor:pointer;">
+          <span class="pts-label"><strong>Talent Points:&nbsp;</strong>{{ character.progression.talentPoints || 0 }}</span>
+          <span class="talent-points-actions" *ngIf="isActionAllowed(character)">
+            <button class="add-talent-point-btn" (click)="addTalentPoint()" title="Add Talent Point">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                <line x1="12" y1="4" x2="12" y2="20"></line>
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+              </svg>
+            </button>
+            <button class="remove-talent-point-btn" (click)="removeTalentPoint()" [disabled]="(character.progression.talentPoints || 0) <= 0" title="Remove Talent Point">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                <line x1="4" y1="12" x2="20" y2="12"></line>
+              </svg>
+            </button>
+          </span>
+        </div>
+      </div>
+      <div class="mistral-buttons-row">
         <button
-          *ngIf="isActionAllowed(character)"
-          class="mistrals-add-button"
-          (click)="openMistralModal('digital', 'add')">
-          +
+          class="mistral-pill-button digital"
+          (click)="isActionAllowed(character) ? openMistralModal('digital') : null"
+          [disabled]="!isActionAllowed(character)"
+          title="Manage Digital Mistrals">
+          <svg class="mistral-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <span class="pill-label">Digital:&nbsp;</span>
+          <span class="pill-value">{{ getDigitalMistrals(character) }}&nbsp;₥</span>
         </button>
+
         <button
-          *ngIf="isActionAllowed(character)"
-          class="mistrals-remove-button"
-          (click)="openMistralModal('digital', 'subtract')">
-          -
+          class="mistral-pill-button physical"
+          (click)="isActionAllowed(character) ? openMistralModal('physical') : null"
+          [disabled]="!isActionAllowed(character)"
+          title="Manage Physical Mistrals">
+          <svg class="mistral-icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M6 12h.01M18 12h.01"></path>
+          </svg>
+          <span class="pill-label">Physical:&nbsp;</span>
+          <span class="pill-value">{{ getPhysicalMistralsTotal(character) }}&nbsp;₥</span>
         </button>
-      </p>
-      <p class="mistrals-row">
-        <span><strong>Physical Mistrals:</strong> {{ getPhysicalMistralsTotal(character) }}</span>
-        <button
-          *ngIf="isActionAllowed(character)"
-          class="mistrals-add-button"
-          (click)="openMistralModal('physical', 'add')">
-          +
-        </button>
-        <button
-          *ngIf="isActionAllowed(character)"
-          class="mistrals-remove-button"
-          (click)="openMistralModal('physical', 'subtract')">
-          -
-        </button>
-      </p>
-    </div>
-    <div *ngIf="isBeast(character)">
-      <p><strong>Faction</strong> {{ getFaction(character) }} </p>
-      <p><strong>Subgroup:</strong> {{ getSubgroup(character) }}</p>
-      <p><strong>PR:</strong> {{ getPR(character) }}</p>
+      </div>
     </div>
   </div>
-  
-  <div [id]="'attributes-' + character.id" class="attributes">
+
+  <div class="player-info" *ngIf="isBeast(character)">
+    <p><strong>Faction</strong> {{ getFaction(character) }} </p>
+    <p><strong>Subgroup:</strong> {{ getSubgroup(character) }}</p>
+    <p><strong>PR:</strong> {{ getPR(character) }}</p>
+  </div>
+
+  <div [id]="'attributes-' + character.id" class="attributes sticky-attributes">
     <h3>Attributes</h3>
     <table class="attributes-table">
       <tr>
-        <th>Movement</th>
-        <th>Wounds</th>
-        <th>Save</th>
-        <th>APL</th>
-        <th>Weapon Types</th>
+        <th title="Movement">
+          <div class="attr-header-cell">
+            <svg class="attr-icon attr-mov" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"></path>
+            </svg>
+          </div>
+        </th>
+        <th title="Wounds">
+          <div class="attr-header-cell">
+            <svg class="attr-icon attr-wnd" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+        </th>
+        <th title="Save">
+          <div class="attr-header-cell">
+            <svg class="attr-icon attr-sv" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l8 3v6c0 6-8 11-8 11S4 17 4 11V5l8-3z"></path>
+            </svg>
+          </div>
+        </th>
+        <th title="Action Point Limit">
+          <div class="attr-header-cell">
+            <svg class="attr-icon attr-apl" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+        </th>
+        <th title="Weapon Types">
+          <div class="attr-header-cell">
+            <svg class="attr-icon attr-body" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"></path>
+              <path d="M4 22v-3a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v3H4z"></path>
+            </svg>
+          </div>
+        </th>
       </tr>
       <tr>
         <td>{{ calculatedAttributes.Movement }}"</td>
         <td>{{ calculatedAttributes.Wounds }}</td>
         <td>{{ calculatedAttributes.Save }}+</td>
         <td>{{ calculatedAttributes.APL }}</td>
-        <td> {{ bodyString }} </td>
+        <td><span [innerHtml]="formatBodyIcons(bodyString) | sanitizeHtml"></span></td>
       </tr>
     </table>
   </div>
 
-  <div [id]="'weapons-' + character.id" class="weapons">
-    <h3>Weapons</h3>
-      <app-weapon-table 
-        [weaponIds]="visibleWeaponIds"
-        [weaponsData]="weaponsData"
-        [weaponRulesData]="weaponRulesData"
-        [isCharacterDisplayPage]="true"
-        [characterBody]="character.attributes.body"
-        [alteredStates]="alteredStates"
-        [inventoryManagement]="isActionAllowed(character)">
-      </app-weapon-table>
+  <div [id]="'weapons-' + character.id" class="weapons section-block">
+    <app-weapon-table 
+      [title]="'Weapons'"
+      [collapsible]="false"
+      [weaponIds]="visibleWeaponIds"
+      [weaponsData]="weaponsData"
+      [weaponRulesData]="weaponRulesData"
+      [isCharacterDisplayPage]="true"
+      [characterBody]="character.attributes.body"
+      [alteredStates]="alteredStates"
+      [inventoryManagement]="isActionAllowed(character)">
+    </app-weapon-table>
   </div>
 
-  
-  <div [id]="'abilities-' + character.id" class="abilities">
-    <h3>Abilities</h3>
-    <div *ngFor="let ability of processedAbilities" class="ability">
-      <h4>{{ ability.name }}</h4>
-      <p [innerHtml]="ability.effect | sanitizeHtml"></p>
+  <div [id]="'abilities-' + character.id" class="abilities category-block section-block" *ngIf="processedAbilities.length > 0">
+    <div class="table-header" (click)="toggleAbilitiesCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Abilities <span>{{ isAbilitiesCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isAbilitiesCollapsed" class="category-content">
+      <div *ngFor="let ability of processedAbilities" class="ability">
+        <h4>{{ ability.name }}</h4>
+        <p [innerHtml]="ability.effect | sanitizeHtml"></p>
+      </div>
     </div>
   </div>
 
-  
-  <div [id]="'items-' + character.id" class="items" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
-    <h3>Items</h3>
+  <div [id]="'items-' + character.id" class="items section-block" *ngIf="(isPlayer(character) || isBestiary(character)) && itemTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-items-' + character.id"
+      [title]="'Items'"
+      [collapsible]="true"
       [data]="itemTableData"
       [headers]="itemTableHeaders"
       [headerKeys]="itemTableHeaderKeys"
       [renderHtml]="['description']"
       [inventoryManagement]="isActionAllowed(character)"
       [isPlayerDetail]="true"
-      [collapsible]="false"
       [enableEquipping]="isActionAllowed(character)"
       (craft)="onCraft($event)"
       (equip)="onEquip($event)">
     </app-generic-table>
   </div>
 
-  <div [id]="'equipment-' + character.id" class="equipment" *ngIf="equipmentTableData.length > 0">
-    <h3>Equipment</h3>
+  <div [id]="'equipment-' + character.id" class="equipment section-block" *ngIf="equipmentTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-equipment-' + character.id"
+      [title]="'Equipment'"
+      [collapsible]="true"
       [data]="equipmentTableData"
       [headers]="equipmentTableHeaders"
       [headerKeys]="equipmentTableHeaderKeys"
       [renderHtml]="['description']"
       [inventoryManagement]="false"
       [isPlayerDetail]="true"
-      [collapsible]="false"
       [enableUnequipping]="isActionAllowed(character)"
       (unequip)="onUnequip($event)">
     </app-generic-table>
   </div>
   
-  <div [id]="'mods-' + character.id" class="mods" *ngIf="isPlayer(character) && modItems.length">
-    <h3>Mods</h3>
-    <div class="table-container">
-      <table class="items-table">
+  <div [id]="'mods-' + character.id" class="mods category-block section-block" *ngIf="isPlayer(character) && modItems.length">
+    <div class="table-header" (click)="toggleModsCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Mods <span>{{ isModsCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isModsCollapsed" class="table-scroll-wrapper">
+      <table class="items-table mods-table">
         <thead>
           <tr>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Applies to</th>
-            <th>Attached Weapon</th>
+            <th class="col-name">Name</th>
+            <th class="col-description">Description</th>
+            <th class="col-compact">Applies</th>
+            <th class="col-actions">Attached to</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let mod of modItems">
-            <td>{{ mod.item.name }}</td>
-            <td [innerHtml]="processItemDescription(mod.item.description || '') | sanitizeHtml"></td>
-            <td>{{mod.item.part}}</td>
-            <td>
+            <td class="col-name">
+              <div class="name-wrapper">{{ mod.item.name }}</div>
+            </td>
+            <td class="col-description" [innerHtml]="processItemDescription(mod.item.description || '') | sanitizeHtml"></td>
+            <td class="col-compact">{{mod.item.part}}</td>
+            <td class="col-actions">
               <select
                 class="weapon-selector"
                 [(ngModel)]="mod.inventory.attachedTo"
@@ -168,74 +207,152 @@
     </div>
   </div>
   
-  <div [id]="'talents-' + character.id" class="talents" *ngIf="isPlayer(character) && talentTableData.length > 0">
-    <h3>Talents</h3>
+  <div [id]="'talents-' + character.id" class="talents section-block" *ngIf="isPlayer(character) && talentTableData.length > 0">
     <app-generic-table 
       [storageKey]="'player-talents-' + character.id"
+      [title]="'Talents'"
+      [collapsible]="true"
       [data]="talentTableData"
       [headers]="talentTableHeaders"
       [headerKeys]="talentTableHeaderKeys"
       [isPlayerDetail]="true"
-      [collapsible]="false"
+      [nameColumnWidth]="'150px'"
       [renderHtml]="['name', 'effect']">
     </app-generic-table>
   </div>
   
-  <div [id]="'afflictions-' + character.id" class="afflictions" *ngIf="isPlayer(character) && $any(character).progression?.afflictions?.length">
-    <h3>Afflictions</h3>
-    <app-afflictions-display 
-      [player]="$any(character)" 
-      [isEditable]="isActionAllowed(character)">
-    </app-afflictions-display>
+  <div [id]="'afflictions-' + character.id" class="afflictions category-block section-block" *ngIf="isPlayer(character) && $any(character).progression?.afflictions?.length">
+    <div class="table-header" (click)="toggleAfflictionsCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Afflictions <span>{{ isAfflictionsCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isAfflictionsCollapsed" class="category-content">
+      <app-afflictions-display 
+        [player]="$any(character)" 
+        [isEditable]="isActionAllowed(character)">
+      </app-afflictions-display>
+    </div>
   </div>
 
-
-
-  <div [id]="'deployables-' + character.id" class="deployables" *ngIf="character.deployables?.length">
-    <h3>Deployables</h3>
-    <div *ngFor="let deployableEntry of character.deployables">
-      <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
-        <div class="deployable">
-          <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
-          <p>{{ deployable.description }}</p>
-          <app-weapon-table 
-            *ngIf="deployable.weapons?.length"
-            [weaponIds]="deployable.weapons"
-            [weaponsData]="weaponsData"
-            [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates"
-            [inventoryManagement]="false">
-          </app-weapon-table>
-          <ng-container *ngIf="deployable.subType === 'mob'">
-            @let mob = getMobById(deployable.bestiaryId);
-            <app-player-detail
-            [character]="mob"
-            [weaponsData]="weaponsData"
-            [itemsData]="itemsData"
-            [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates"
-            ></app-player-detail>
-          </ng-container>   
-        </div>
-      </ng-container>
+  <div [id]="'deployables-' + character.id" class="deployables category-block section-block" *ngIf="character.deployables?.length">
+    <div class="table-header" (click)="toggleDeployablesCollapse()" style="cursor: pointer;">
+      <h3 style="display: inline-block;">Deployables <span>{{ isDeployablesCollapsed ? '▶' : '▼' }}</span></h3>
+    </div>
+    <div *ngIf="!isDeployablesCollapsed" class="category-content">
+      <div *ngFor="let deployableEntry of character.deployables">
+        <ng-container *ngIf="getItemById(deployableEntry.id) as deployable">
+          <div class="deployable">
+            <h4>{{ deployable.name }} <span *ngIf="deployableEntry.quant">(Quantity: {{ deployableEntry.quant }})</span></h4>
+            <p>{{ deployable.description }}</p>
+            <app-weapon-table 
+              *ngIf="deployable.weapons?.length"
+              [weaponIds]="deployable.weapons"
+              [weaponsData]="weaponsData"
+              [weaponRulesData]="weaponRulesData"
+              [alteredStates]="alteredStates"
+              [inventoryManagement]="false">
+            </app-weapon-table>
+            <ng-container *ngIf="deployable.subType === 'mob'">
+              @let mob = getMobById(deployable.bestiaryId);
+              <app-player-detail
+              [character]="mob"
+              [weaponsData]="weaponsData"
+              [itemsData]="itemsData"
+              [weaponRulesData]="weaponRulesData"
+              [alteredStates]="alteredStates"
+              ></app-player-detail>
+            </ng-container>   
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>
 
-<ng-template #mistralDialog let-type="type" let-mode="mode" let-confirm="confirm" let-cancel="cancel" let-setAmount="setAmount">
-  <div class="mistral-dialog">
-    <h3>{{ mode === 'subtract' ? 'Remove' : 'Add' }} {{ type === 'digital' ? 'Digital' : 'Physical' }} Mistrals</h3>
-    <div class="mistral-dialog-body">
-      <label>
-        Amount
-        <input
-          type="number"
-          (input)="setAmount(($any($event.target).valueAsNumber) ?? 0)" />
-      </label>
+<ng-template #mistralDialog let-cancel="cancel">
+  <div
+    class="wallet-modal"
+    [class.wallet-modal-digital]="mistralModalType === 'digital'"
+    [class.wallet-modal-physical]="mistralModalType === 'physical'"
+    *ngIf="mistralModalType as type">
+    <div class="wallet-header">
+      <div class="wallet-title">
+        <span class="wallet-icon">
+          <svg *ngIf="type === 'digital'" class="mistral-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+          <svg *ngIf="type === 'physical'" class="mistral-icon-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M6 12h.01M18 12h.01"></path>
+          </svg>
+        </span>
+        <h3>{{ type === 'digital' ? 'Digital' : 'Physical' }} Mistrals</h3>
+      </div>
     </div>
-    <div class="dialog-buttons">
-      <button class="btn-cancel" (click)="cancel()">Cancel</button>
-      <button class="btn-confirm" (click)="confirm()">{{ mode === 'subtract' ? 'Remove' : 'Add' }}</button>
+
+    <div class="wallet-total-row">
+      <span class="wallet-total-label">Total</span>
+      <span class="wallet-total-value">{{ getMistralTotal(type) }}</span>
+    </div>
+
+    <div class="wallet-amount">
+      <label class="wallet-amount-label">Amount</label>
+      <input
+        class="wallet-amount-input"
+        [value]="mistralModalInput || '0'"
+        disabled />
+    </div>
+
+    <div class="wallet-actions">
+      <button
+        class="wallet-action-button wallet-action-add"
+        type="button"
+        (click)="applyMistralChange('add')">
+        +
+      </button>
+      <button
+        class="wallet-action-button wallet-action-subtract"
+        type="button"
+        (click)="applyMistralChange('subtract')">
+        -
+      </button>
+    </div>
+
+    <div class="wallet-numpad">
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('1')">1</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('2')">2</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('3')">3</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('4')">4</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('5')">5</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('6')">6</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('7')">7</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('8')">8</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('9')">9</button>
+      <button class="wallet-key wallet-key-secondary" type="button" (click)="clearMistralInput()">C</button>
+      <button class="wallet-key" type="button" (click)="appendMistralDigit('0')">0</button>
+      <button class="wallet-key wallet-key-secondary" type="button" (click)="backspaceMistralInput()">⌫</button>
+    </div>
+
+    <div class="wallet-footer">
+      <button
+        class="wallet-switch-inline-button"
+        type="button"
+        (click)="toggleMistralType()">
+        Switch to {{ type === 'digital' ? 'Physical' : 'Digital' }}
+        <span class="wallet-switch-emoji">
+          <svg *ngIf="type === 'digital'" class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M6 12h.01M18 12h.01"></path>
+          </svg>
+          <svg *ngIf="type === 'physical'" class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+          </svg>
+        </span>
+      </button>
+      <button class="wallet-cancel-button" type="button" (click)="cancel()">Cancel</button>
     </div>
   </div>
 </ng-template>

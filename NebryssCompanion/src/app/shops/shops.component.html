@@ -1,5 +1,5 @@
 <div class="shops-container">
-  <h2 style="margin-left:50px; margin-top:20px;">Shops</h2>
+  <h2 style="margin-top:10px;">Shops</h2>
   <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
     <div class="shop-header">
       <h3>{{ shop.name }}</h3>
@@ -16,8 +16,21 @@
     
     <div class="payment-methods-info">
       <span class="payment-label">Accepts:</span>
-      <span *ngIf="shop.paymentMethod.digital" class="payment-badge digital" title="Accepts Digital Mistrals">💳 Digital</span>
-      <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">💵 Physical</span>
+      <span *ngIf="shop.paymentMethod.digital" class="payment-badge digital" title="Accepts Digital Mistrals">
+        <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+          <line x1="2" y1="10" x2="22" y2="10"></line>
+        </svg>
+        Digital
+      </span>
+      <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">
+        <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M6 12h.01M18 12h.01"></path>
+        </svg>
+        Physical
+      </span>
     </div>
 
     <div *ngFor="let catData of shop.categoriesData; trackBy: trackByCategory">
@@ -89,7 +102,11 @@
                         <span class="item-price">{{ item.price }}₥ x {{ item.quantity }}</span>
                     </div>
                     <div class="cart-item-actions">
-                        <button class="btn-remove-cart" (click)="removeFromCart(item, shopId)">-</button>
+                        <button class="btn-remove-cart" (click)="removeFromCart(item, shopId)">
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                            <line x1="4" y1="12" x2="20" y2="12"></line>
+                          </svg>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -104,7 +121,10 @@
                         [class.denied]="!digitalStatus.allowed"
                         [matTooltip]="!digitalStatus.allowed ? digitalStatus.reason : ''"
                         (click)="processPayment(shopId, 'digital')">
-                        💳
+                        <svg class="mistral-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+                          <line x1="2" y1="10" x2="22" y2="10"></line>
+                        </svg>
                     </button>
                    
                     <!-- Physical (Money Bill) -->
@@ -116,7 +136,11 @@
                         [class.denied]="!physicalStatus.allowed"
                         [matTooltip]="!physicalStatus.allowed ? physicalStatus.reason : ''"
                         (click)="processPayment(shopId, 'physical')">
-                        💵
+                        <svg class="mistral-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                          <circle cx="12" cy="12" r="3"></circle>
+                          <path d="M6 12h.01M18 12h.01"></path>
+                        </svg>
                     </button>
                 </div>
                 <strong>Total: {{ getShopTotal(shopId) }}₥</strong>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
@@ -22,6 +22,7 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
 })
 export class PlayerListComponent implements OnInit, OnDestroy {
   @ViewChild('playerDetailContainer') playerDetailContainer!: ElementRef;
+  @Output() navigateToTalents = new EventEmitter<void>();
   players: Player[] = [];
   selectedPlayer: Player | null = null;
   weaponsData: Weapon[] = [];

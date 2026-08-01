@@ -212,7 +212,7 @@
         "description": "Characters grow in strength",
         "talents": [{
             "id": "att1",
-            "name": "+1 Movement",
+            "name": "Wraithstep",
             "cost": 2,
             "effect": "+1 inch to <strong>Movement</strong> characteristic",
             "maxStacks": 3,
@@ -222,7 +222,7 @@
             ]
         }, {
             "id": "att2",
-            "name": "+2 Wounds",
+            "name": "Warborn",
             "cost": 3,
             "effect": "+2 <strong>Wounds</strong>",
             "maxStacks": 2,
@@ -232,7 +232,7 @@
             ]
         }, {
             "id": "att3",
-            "name": "Better Save",
+            "name": "Runic Plating",
             "cost": 4,
             "effect": "Improve <strong>Save</strong> characteristic by <strong>1</strong>",
             "maxStacks": 1,
@@ -242,7 +242,7 @@
             ]
         }, {
             "id": "att4",
-            "name": "+1 APL",
+            "name": "Killing Tempo",
             "cost": 5,
             "effect": "Permanent <strong>+1 Action Point Limit</strong>",
             "maxStacks": 1,
@@ -266,7 +266,7 @@
             },
             {
                 "id": "su2",
-                "name": "Master of the Craft",
+                "name": "Unbound Reflex",
                 "cost": 7,
                 "effect": "Allows you to use one of your Reactions one additional time.",
                 "maxStacks": 1,
@@ -274,7 +274,7 @@
             },
             {
                 "id": "su3",
-                "name": "Mist Synergy",
+                "name": "Mist Surge",
                 "cost": 2,
                 "effect": "Once per battle: Gain <strong>+1 APL</strong> while in <strong>dense</strong> mist. Lasts one Turning Point.",
                 "maxStacks": 1,
@@ -282,7 +282,7 @@
             },
             {
                 "id": "su4",
-                "name": "Sneaky Scoundrel",
+                "name": "Phantom Step",
                 "cost": 1,
                 "effect": "(Only if you didn't fight or shoot during this activation) the Dash action costs <strong>0AP</strong>.",
                 "maxStacks": 1,
@@ -290,7 +290,7 @@
             },
             {
                 "id": "su5",
-                "name": "Voracious Hunger",
+                "name": "Scavenger's Greed",
                 "cost": 3,
                 "effect": "Consuming a food item doesn't cost AP.",
                 "maxStacks": 1,

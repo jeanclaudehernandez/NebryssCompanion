@@ -18,7 +18,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
   isOpen = false;
   isAdmin = false;
 
@@ -55,9 +55,11 @@ export class SidebarComponent {
   }
 
   private isClickInside(event: MouseEvent): boolean {
-    const clickedInsideSidebar = this.sidebarElement?.nativeElement.contains(event.target as Node);
-    const clickedInsideBurger = this.burgerElement?.nativeElement.contains(event.target as Node);
-    return clickedInsideSidebar || clickedInsideBurger;
+    const target = event.target as Node;
+    const clickedInsideSidebar = this.sidebarElement?.nativeElement.contains(target);
+    const clickedInsideBurger = this.burgerElement?.nativeElement.contains(target);
+    const clickedHeaderBtn = (target as Element)?.closest?.('.header-action-btn');
+    return !!(clickedInsideSidebar || clickedInsideBurger || clickedHeaderBtn);
   }
 
   private isModalClick(event: MouseEvent): boolean {
@@ -70,7 +72,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }

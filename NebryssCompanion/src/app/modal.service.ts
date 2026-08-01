@@ -1,5 +1,5 @@
 // modal.service.ts
-import { Injectable, ComponentRef, createComponent, EnvironmentInjector, TemplateRef } from '@angular/core';
+import { ApplicationRef, Injectable, ComponentRef, createComponent, EnvironmentInjector, TemplateRef } from '@angular/core';
 import { ModalComponent } from './modal/modal.component';
 
 @Injectable({
@@ -8,7 +8,7 @@ import { ModalComponent } from './modal/modal.component';
 export class ModalService {
   private modalComponentRef: ComponentRef<ModalComponent> | null = null;
 
-  constructor(private injector: EnvironmentInjector) {}
+  constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {}
 
   openFromTemplate(template: TemplateRef<any>, context?: any, options: { width?: string, height?: string } = {}) {
     this.close();
@@ -18,6 +18,7 @@ export class ModalService {
     });
   
     // Append to DOM and detect changes first
+    this.appRef.attachView(this.modalComponentRef.hostView);
     document.body.appendChild(this.modalComponentRef.location.nativeElement);
     this.modalComponentRef.changeDetectorRef.detectChanges();
   
@@ -38,6 +39,7 @@ export class ModalService {
         element.parentNode.removeChild(element);
       }
       
+      this.appRef.detachView(this.modalComponentRef.hostView);
       this.modalComponentRef.destroy();
       this.modalComponentRef = null;
     }

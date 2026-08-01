@@ -21,7 +21,7 @@ body {
     transition: color 0.3s;
   }
   
-  /* Global CSS Variables for Dialog Customization */
+  /* Global CSS Variables for Mobile & App Layout */
   :root {
     --mat-dialog-container-color: white;
     --mat-dialog-text-color: #333;
@@ -30,21 +30,45 @@ body {
     --mat-dialog-button-color: #3498db;
     --safe-area-top: env(safe-area-inset-top, 0px);
     --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-    --footer-menu-height: 64px;
+    --app-header-height: 56px;
+    --footer-menu-height: 60px;
+    --header-bg: rgba(255, 255, 255, 0.92);
+    --header-border: rgba(0, 0, 0, 0.08);
+    --header-fg: #2c3e50;
     --footer-menu-bg: rgba(245, 245, 245, 0.92);
     --footer-menu-border: rgba(0, 0, 0, 0.08);
-    --footer-menu-fg: #34495e;
+    --footer-menu-fg: #455a64;
     --footer-menu-active: #1976d2;
+    --accent-color: #1976d2;
+  }
+
+  /* Mobile Touch Optimization */
+  button, a, input, select, textarea, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  /* Responsive Table Container Utility */
+  .mobile-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 8px 0;
+    border-radius: 8px;
   }
   
   /* Dark Theme */
   body.dark-theme {
     background-color: #121212;
     color: #e0e0e0;
+    --header-bg: rgba(24, 24, 24, 0.92);
+    --header-border: rgba(255, 255, 255, 0.08);
+    --header-fg: #f0f0f0;
     --footer-menu-bg: rgba(18, 18, 18, 0.92);
     --footer-menu-border: rgba(255, 255, 255, 0.08);
-    --footer-menu-fg: #d0d0d0;
+    --footer-menu-fg: #b0bec5;
     --footer-menu-active: #64b5f6;
+    --accent-color: #64b5f6;
   }
   
   body.dark-theme h1, 
@@ -57,7 +81,13 @@ body {
   }
   
   body.dark-theme .player-card,
-  body.dark-theme .player-detail-container,
+  body.dark-theme .player-detail-container {
+    background-color: transparent;
+    color: #e0e0e0;
+    box-shadow: none;
+    border: none;
+  }
+  
   body.dark-theme .profile,
   body.dark-theme .ability, 
   body.dark-theme .item {
@@ -153,10 +183,10 @@ body {
   
   /* Player Detail */
   .player-detail-container {
-    background: white;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
   }
   
   .player-info {
@@ -178,6 +208,238 @@ body {
   
   .attributes th, .profile-table th {
     background-color: #f2f2f2;
+  }
+
+  .attributes table {
+    background-color: #d7e7f2;
+    border: 1px solid #b6cfe0;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(21, 61, 93, 0.18);
+  }
+
+  .attributes-table {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) max-content;
+  }
+
+  .attributes-table tr {
+    display: contents;
+  }
+
+  .attributes-table th,
+  .attributes-table td {
+    min-width: 0;
+  }
+
+  .attributes th {
+    background-color: #c7ddeb;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .attributes th,
+  .attributes td {
+    text-align: center;
+    vertical-align: middle !important;
+  }
+
+  .attributes th:last-child,
+  .attributes td:last-child {
+    white-space: nowrap;
+  }
+
+  .attributes td {
+    font-size: 1.05rem;
+    font-weight: 600;
+  }
+
+  .attr-header-cell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    margin: auto 0;
+  }
+
+  .attr-header-cell span {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .attr-icon {
+    flex-shrink: 0;
+    display: block;
+    margin: 0;
+    vertical-align: middle;
+  }
+
+  .attr-icon.attr-mov {
+    color: #1976d2;
+  }
+
+  .attr-icon.attr-wnd {
+    color: #e53935;
+  }
+
+  .attr-icon.attr-sv {
+    color: #2e7d32;
+  }
+
+  .attr-icon.attr-apl {
+    color: #f59e0b;
+  }
+
+  .attr-icon.attr-body {
+    color: #7c3aed;
+  }
+
+  body.dark-theme .attr-icon.attr-mov {
+    color: #60a5fa;
+  }
+
+  body.dark-theme .attr-icon.attr-wnd {
+    color: #f87171;
+  }
+
+  body.dark-theme .attr-icon.attr-sv {
+    color: #4ade80;
+  }
+
+  body.dark-theme .attr-icon.attr-apl {
+    color: #fbbf24;
+  }
+
+  body.dark-theme .attr-icon.attr-body {
+    color: #a78bfa;
+  }
+
+  /* Body Type Badge Icons (Human, Astartes, Universal) */
+  .body-icons-container {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: nowrap;
+    line-height: 1;
+    vertical-align: middle;
+  }
+
+  .body-icon-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    padding: 0;
+    line-height: 1;
+    vertical-align: middle;
+    transition: transform 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .body-icon-badge:hover {
+    transform: scale(1.15);
+  }
+
+  .body-icon-badge.human {
+    background-color: #c4ad8b;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.astartes {
+    background-color: #1e3a8a;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.spell {
+    background-color: #7c3aed;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.fellgor {
+    background-color: #556b2f;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.ork {
+    background-color: #2f7d32;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.aethering,
+  .body-icon-badge.aetherwing {
+    background-color: #d7a4a4;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.plant {
+    background-color: #a7c7a2;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.universal {
+    background-color: #6b7280;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.human {
+    background-color: #b79c77;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.astartes {
+    background-color: #2563eb;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.universal {
+    background-color: #9ca3af;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.spell {
+    background-color: #8b5cf6;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.ork {
+    background-color: #22c55e;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.aethering,
+  body.dark-theme .body-icon-badge.aetherwing {
+    background-color: #c98c8c;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.plant {
+    background-color: #86a981;
+    color: #ffffff;
+  }
+
+  .body-icon-badge svg {
+    display: block;
+    margin: auto;
+    flex-shrink: 0;
+    stroke: #ffffff !important;
+  }
+
+  body.dark-theme .attributes table {
+    background-color: #1b2a33;
+    border-color: #2b4452;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  }
+
+  body.dark-theme .attributes th {
+    background-color: #22323c;
   }
   
   /* Weapon Display */
@@ -224,6 +486,39 @@ body {
     margin-top: 0;
     color: #3498db;
   }
+
+/* Mobile Table Fitting Optimization */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@media (max-width: 600px) {
+  th, td {
+    padding: 6px 3px !important;
+    font-size: 0.82rem !important;
+  }
+  
+  .attributes table, .profile-table, .weapons-table, .items-table {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .inventory-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 3px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .inventory-actions button {
+    padding: 3px 6px;
+    min-width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+}
 
 /* Global Spacing Reset */
 * {
@@ -405,4 +700,71 @@ body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mdc-list-
 
 .toast-info {
   background-color: #2196f3;
+}
+
+/* Global Table Cell Vertical Centering & Separation */
+.items-table th.col-name, .items-table td.col-name,
+.weapons-table th.col-name, .weapons-table td.col-name,
+.mods-table th.col-name, .mods-table td.col-name {
+  padding-right: 12px !important;
+  text-align: left !important;
+  vertical-align: middle !important;
+}
+
+.items-table th.col-description, .items-table td.col-description,
+.weapons-table th.col-description, .weapons-table td.col-description,
+.mods-table th.col-description, .mods-table td.col-description {
+  padding-left: 8px !important;
+  vertical-align: middle !important;
+}
+
+.items-table td,
+.weapons-table td,
+.mods-table td {
+  vertical-align: middle !important;
+}
+
+.name-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  text-align: left !important;
+  margin: auto 0 !important;
+}
+
+.inventory-actions {
+  display: flex !important;
+  align-items: center !important;
+  margin: auto 0 !important;
+}
+
+.weapon-selector {
+  vertical-align: middle !important;
+  margin: auto 0 !important;
+}
+
+/* Circular Action Buttons SVG Centering & Line Alignment */
+.btn-add,
+.btn-remove,
+.add-talent-point-btn,
+.remove-talent-point-btn,
+.stack-btn,
+.btn-remove-cart {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.btn-add svg,
+.btn-remove svg,
+.add-talent-point-btn svg,
+.remove-talent-point-btn svg,
+.stack-btn svg,
+.btn-remove-cart svg {
+  display: block !important;
+  margin: auto !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
 }

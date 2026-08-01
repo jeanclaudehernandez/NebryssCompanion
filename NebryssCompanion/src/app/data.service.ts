@@ -238,9 +238,26 @@ export class DataService {
     return this.locationsCache$;
   }
 
+  private readonly talentNameOverrides: Record<string, string> = {
+    'att1': 'Agility',
+    'att2': 'Vitality',
+    'att3': 'Defense',
+    'att4': 'Combat Experience',
+    'su2': 'Unbound Reflex',
+    'su4': 'Phantom Step',
+    'su5': "Scavenger's Greed",
+  };
+
   getTalents(): Observable<TalentCategory[]> {
     if (!this.talentsCache$) {
       this.talentsCache$ = this.http.get<TalentCategory[]>(`${this.apiUrl}/talent`).pipe(
+        map(categories => categories.map(category => ({
+          ...category,
+          talents: category.talents.map(t => ({
+            ...t,
+            name: this.talentNameOverrides[t.id] ?? t.name
+          }))
+        }))),
         tap(talents => {
           this.talents = talents;
         }),
@@ -249,6 +266,7 @@ export class DataService {
     }
     return this.talentsCache$;
   }
+
 
   getAlteredStates(): Observable<AlteredState[]> {
     if (!this.alteredStatesCache$) {

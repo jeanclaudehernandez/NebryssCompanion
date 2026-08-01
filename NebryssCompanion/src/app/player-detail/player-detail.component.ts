@@ -33,6 +33,7 @@ export class PlayerDetailComponent implements OnChanges {
   @Input() itemsData!: Items;
   @Input() hideScrollNav = false;
   @Output() scrollSectionsChange = new EventEmitter<ScrollSection[]>();
+  @Output() navigateToTalents = new EventEmitter<void>();
   
   bodyString = "";
   activeTooltip: string | null = null;
@@ -61,6 +62,112 @@ export class PlayerDetailComponent implements OnChanges {
   // Process abilities for display
   processedAbilities: {name: string, effect: string}[] = [];
   
+  // Section collapse states
+  isAbilitiesCollapsed = false;
+  isModsCollapsed = false;
+  isAfflictionsCollapsed = false;
+  isDeployablesCollapsed = false;
+
+  toggleAbilitiesCollapse() {
+    this.isAbilitiesCollapsed = !this.isAbilitiesCollapsed;
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('spell')) {
+      html += `<span class="body-icon-badge spell" title="Spell">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
+          <path d="M8 2v20"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('fellgor')) {
+      html += `<span class="body-icon-badge fellgor" title="Fellgor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
+          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
+          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
+          <path d="M10 14h.01M14 14h.01"></path>
+          <path d="M11 17c.6.5 1.4.5 2 0"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('ork')) {
+      html += `<span class="body-icon-badge ork" title="Ork">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
+          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
+          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
+          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
+          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
+          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('aetherwing') || str.includes('aethering')) {
+      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="12" r="5"></circle>
+          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
+          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('plant')) {
+      html += `<span class="body-icon-badge plant" title="Plant">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20v-8"></path>
+          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
+          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
+  }
+
+  toggleModsCollapse() {
+    this.isModsCollapsed = !this.isModsCollapsed;
+  }
+
+  toggleAfflictionsCollapse() {
+    this.isAfflictionsCollapsed = !this.isAfflictionsCollapsed;
+  }
+
+  toggleDeployablesCollapse() {
+    this.isDeployablesCollapsed = !this.isDeployablesCollapsed;
+  }
+
   // Scroll nav
   scrollSections: ScrollSection[] = [];
 
@@ -68,8 +175,7 @@ export class PlayerDetailComponent implements OnChanges {
   @ViewChild('craftConfirmModal', { read: TemplateRef }) craftConfirmModal!: TemplateRef<any>;
   selectedBlueprint: any = null;
   mistralModalType: 'digital' | 'physical' | null = null;
-  mistralModalMode: 'add' | 'subtract' = 'add';
-  mistralModalAmount = 0;
+  mistralModalInput = '';
 
   constructor(
     private dataService: DataService,
@@ -477,6 +583,40 @@ export class PlayerDetailComponent implements OnChanges {
     }
   }
 
+  addTalentPoint(): void {
+    if (!this.isPlayer(this.character) || !this.isActionAllowed(this.character)) return;
+    const player = this.character as Player;
+    if (!player.progression) {
+      player.progression = {
+        talentPoints: 0,
+        mistrals: { digital: 0, physical: 0 },
+        talents: [],
+        afflictions: [],
+        equipment: []
+      };
+    }
+    if (player.progression.talentPoints === undefined || player.progression.talentPoints === null) {
+      player.progression.talentPoints = 0;
+    }
+    player.progression.talentPoints += 1;
+    this.activePlayerService.updateActivePlayer({ ...player });
+    this.character = { ...player };
+  }
+
+  removeTalentPoint(): void {
+    if (!this.isPlayer(this.character) || !this.isActionAllowed(this.character)) return;
+    const player = this.character as Player;
+    if (!player.progression) return;
+    if (player.progression.talentPoints === undefined || player.progression.talentPoints === null) {
+      player.progression.talentPoints = 0;
+    }
+    if (player.progression.talentPoints > 0) {
+      player.progression.talentPoints -= 1;
+      this.activePlayerService.updateActivePlayer({ ...player });
+      this.character = { ...player };
+    }
+  }
+
   onCraft(item: any) {
     this.selectedBlueprint = item;
     if (this.craftConfirmModal) {
@@ -611,25 +751,6 @@ export class PlayerDetailComponent implements OnChanges {
     return item?.name || `Unknown Material (${id})`;
   }
 
-  copyToClipboard(): void {
-    if (!this.isActivePlayer(this.character)) {
-      return;
-    }
-
-    const player = this.activePlayerService.activePlayer;
-    if (player) {
-      const playerJson = JSON.stringify(player, null, 2);
-      navigator.clipboard.writeText(playerJson)
-        .then(() => {
-          this.toastService.show('Active player changes copied to clipboard', 'success');
-        })
-        .catch(err => {
-          console.error('Failed to copy to clipboard:', err);
-          this.toastService.show('Failed to copy to clipboard', 'error');
-        });
-    }
-  }
-
   getDigitalMistrals(character: Character): number {
     if (!this.isPlayer(character)) {
       return 0;
@@ -652,7 +773,7 @@ export class PlayerDetailComponent implements OnChanges {
     return progression.mistrals.physical || 0;
   }
 
-  openMistralModal(type: 'digital' | 'physical', mode: 'add' | 'subtract' = 'add'): void {
+  openMistralModal(type: 'digital' | 'physical'): void {
     if (!this.isActionAllowed(this.character)) {
       return;
     }
@@ -660,34 +781,65 @@ export class PlayerDetailComponent implements OnChanges {
       return;
     }
     this.mistralModalType = type;
-    this.mistralModalMode = mode;
-    this.mistralModalAmount = 0;
+    this.mistralModalInput = '';
     const context = {
-      type,
-      mode,
-      confirm: () => this.confirmMistralAddition(),
-      cancel: () => this.modalService.close(),
-      setAmount: (value: number) => {
-        if (!Number.isFinite(value)) {
-          this.mistralModalAmount = 0;
-        } else {
-          this.mistralModalAmount = Math.floor(value);
-        }
-      }
+      cancel: () => this.closeMistralModal()
     };
-    this.modalService.openFromTemplate(this.mistralDialogTemplate, context);
+    this.modalService.openFromTemplate(this.mistralDialogTemplate, context, { width: '380px' });
   }
 
-  private confirmMistralAddition(): void {
+  closeMistralModal(): void {
+    this.modalService.close();
+    this.mistralModalType = null;
+    this.mistralModalInput = '';
+  }
+
+  getMistralTotal(type: 'digital' | 'physical'): number {
+    if (type === 'digital') {
+      return this.getDigitalMistrals(this.character);
+    }
+    return this.getPhysicalMistralsTotal(this.character);
+  }
+
+  toggleMistralType(): void {
     if (!this.mistralModalType) {
-      this.modalService.close();
       return;
     }
-    let amount = this.mistralModalAmount;
-    if (this.mistralModalMode === 'subtract') {
-        amount = -amount;
+    this.mistralModalType = this.mistralModalType === 'digital' ? 'physical' : 'digital';
+  }
+
+  appendMistralDigit(digit: string): void {
+    if (!/^\d$/.test(digit)) {
+      return;
     }
-    
+    if (this.mistralModalInput.length >= 9) {
+      return;
+    }
+    const next = `${this.mistralModalInput}${digit}`.replace(/^0+(?=\d)/, '');
+    this.mistralModalInput = next;
+  }
+
+  backspaceMistralInput(): void {
+    this.mistralModalInput = this.mistralModalInput.slice(0, -1);
+  }
+
+  clearMistralInput(): void {
+    this.mistralModalInput = '';
+  }
+
+  applyMistralChange(mode: 'add' | 'subtract'): void {
+    if (!this.mistralModalType) {
+      this.closeMistralModal();
+      return;
+    }
+
+    const parsed = Number(this.mistralModalInput || '0');
+    const amount = Number.isFinite(parsed) ? Math.floor(parsed) : 0;
+    if (amount <= 0) {
+      this.toastService.show('Enter an amount', 'error');
+      return;
+    }
+
     const activePlayer = this.activePlayerService.activePlayer;
     if (
       !activePlayer ||
@@ -695,30 +847,44 @@ export class PlayerDetailComponent implements OnChanges {
       !this.isPlayer(this.character) ||
       activePlayer.id !== this.character.id
     ) {
-      this.modalService.close();
+      this.closeMistralModal();
       return;
     }
     if (!activePlayer.progression || !activePlayer.progression.mistrals) {
-      this.modalService.close();
+      this.closeMistralModal();
       return;
     }
-    if (this.mistralModalType === 'digital') {
-      activePlayer.progression.mistrals.digital =
-        (activePlayer.progression.mistrals.digital || 0) + amount;
-    } else {
-      activePlayer.progression.mistrals.physical =
-        (activePlayer.progression.mistrals.physical || 0) + amount;
+
+    const isDigital = this.mistralModalType === 'digital';
+    const current = isDigital
+      ? (activePlayer.progression.mistrals.digital || 0)
+      : (activePlayer.progression.mistrals.physical || 0);
+
+    const requestedDelta = mode === 'add' ? amount : -amount;
+    const next = Math.max(0, current + requestedDelta);
+    const appliedDelta = next - current;
+
+    if (appliedDelta === 0) {
+      this.toastService.show('Nothing to update', 'error');
+      return;
     }
+
+    if (isDigital) {
+      activePlayer.progression.mistrals.digital = next;
+    } else {
+      activePlayer.progression.mistrals.physical = next;
+    }
+
     this.activePlayerService.updateActivePlayer({ ...activePlayer });
     if (this.isPlayer(this.character) && activePlayer.id === this.character.id) {
       this.character = { ...activePlayer };
     }
-    const label = this.mistralModalType === 'digital' ? 'digital' : 'physical';
-    const action = this.mistralModalMode === 'add' ? 'Added' : 'Removed';
-    const absAmount = Math.abs(amount);
+
+    const label = isDigital ? 'digital' : 'physical';
+    const action = appliedDelta > 0 ? 'Added' : 'Removed';
+    const absAmount = Math.abs(appliedDelta);
     this.toastService.show(`${action} ${absAmount} ${label} mistrals`, 'success');
-    this.modalService.close();
-    this.mistralModalType = null;
-    this.mistralModalAmount = 0;
+
+    this.closeMistralModal();
   }
 }

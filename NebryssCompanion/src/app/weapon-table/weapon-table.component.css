@@ -1,29 +1,165 @@
-.table-container {
+.category-block {
+  margin: 4px 0;
   position: relative;
+}
+
+.table-header {
+  position: sticky;
+  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+  z-index: 20;
+  background: #e2e8f0;
+  color: #1e293b;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  margin-bottom: 4px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.table-header:hover {
+  background: #cbd5e1;
+}
+
+.table-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+body.dark-theme .table-header {
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .table-header:hover {
+  background: #334155;
+}
+
+body.dark-theme .table-header h3 {
+  color: #f8fafc;
+}
+
+.table-body-content {
+  margin-top: 4px;
+}
+
+.filter-container {
+  margin: 8px 4px 16px 4px;
+  max-width: 280px;
+  position: relative;
+  z-index: 10;
+}
+
+.table-scroll-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  margin: 1rem 0;
   border-radius: 4px;
-  transition: border-color 0.3s;
+}
+
+body.dark-theme .table-header {
+  background: #1e293b;
+  color: #f8fafc;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .table-header:hover {
+  background: #334155;
+}
+
+body.dark-theme .table-header h3 {
+  color: #f8fafc;
 }
 
 .weapons-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 320px; /* Reduced min-width to prevent early scrolling */
-  font-size: 0.85rem; /* Slightly smaller font to fit more */
+  font-size: 0.85rem;
+  table-layout: fixed;
+}
+
+.weapons-table th.col-compact,
+.weapons-table td.col-compact {
+  text-align: center;
+  vertical-align: middle;
+  padding: 6px 3px;
+}
+
+.weapons-table th.col-actions,
+.weapons-table td.col-actions {
+  width: 65px;
+  min-width: 65px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px 2px;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+.weapons-table th.col-name,
+.weapons-table td.col-name {
+  width: 95px;
+  vertical-align: middle;
+  text-align: left;
+  padding-right: 12px;
+}
+
+.name-wrapper {
+  max-width: 85px;
+  width: 85px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.25;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  margin: auto 0;
 }
   
 .weapons-table th {
   background-color: #f5f5f5;
   position: sticky;
   top: 0;
-  padding: 0.25rem 0.5rem; /* Reduced padding */
-  text-align: left;
+  padding: 0.35rem 0.25rem;
+  text-align: center;
   border-bottom: 2px solid #ddd;
   z-index: 2;
   transition: background-color 0.3s, border-color 0.3s, color 0.3s;
-  white-space: nowrap; /* Keep headers on one line */
+  white-space: nowrap;
+}
+
+.weapons-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.weapons-table th.sortable:hover {
+  background-color: #eef2f7;
+}
+
+body.dark-theme .weapons-table th.sortable:hover {
+  background-color: #374151;
+}
+
+.weapons-table th.sorted {
+  border-bottom-color: #3b82f6;
+}
+
+.sort-indicator {
+  font-size: 0.7rem;
+  margin-left: 4px;
+  opacity: 0.85;
 }
 
 /* Grouping by tbody */
@@ -33,10 +169,15 @@
 }
   
 .weapons-table td {
-  padding: 0.25rem 0.5rem; /* Reduced padding */
-  text-align: left;
-  border-bottom: none; /* Removed cell borders */
+  padding: 0.35rem 0.25rem;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: none;
   transition: border-color 0.3s;
+}
+
+.weapons-table td.col-name {
+  text-align: left;
 }
   
 /* Inventory Highlight */

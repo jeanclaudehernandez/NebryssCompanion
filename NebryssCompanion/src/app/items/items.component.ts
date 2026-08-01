@@ -18,13 +18,53 @@ import { AdminEditorSession } from '../admin-editor.models';
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
-      <div class="weapons-section" [id]="'weapon'">
-        <h2 (click)="toggleWeaponsCollapsed()" style="cursor: pointer; margin-left: 50px;">
-          Weapons {{ weaponsCollapsed ? '▶' : '▼' }}
-        </h2>
-        <div *ngIf="!weaponsCollapsed">
+      <!-- Search Bar -->
+      <div class="items-search-container">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            (ngModelChange)="onSearchChange()"
+            placeholder="Search items, descriptions..." 
+            class="items-search-input">
+          <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">✕</button>
+        </div>
+        <span *ngIf="searchQuery" class="search-results-count">
+          Found {{ totalSearchResultsCount }} item(s)
+        </span>
+      </div>
+
+      <!-- Category Tab Bar -->
+      <div class="items-tab-bar" *ngIf="!searchQuery">
+        <button
+          class="items-tab"
+          [class.active]="activeTab === 'weapon'"
+          (click)="setTab('weapon')"
+          id="tab-weapon">
+          Weapons
+        </button>
+        <button
+          *ngFor="let category of itemCategories"
+          class="items-tab"
+          [class.active]="activeTab === category.key"
+          (click)="setTab(category.key)"
+          [id]="'tab-' + category.key">
+          {{ category.name }}
+        </button>
+      </div>
+
+      <div *ngIf="searchQuery">
+        <div *ngIf="totalSearchResultsCount === 0" class="search-empty-state">
+          No results found
+        </div>
+
+        <div *ngIf="filteredWeaponIds.length > 0">
+          <h2>Weapons</h2>
           <app-weapon-table 
-            [weaponIds]="allWeaponIds" 
+            [title]="''"
+            [collapsible]="false"
+            [weaponIds]="filteredWeaponIds" 
             [weaponsData]="weaponsData" 
             [weaponRulesData]="weaponRules"
             [alteredStates]="alteredStates"
@@ -38,32 +78,82 @@ import { AdminEditorSession } from '../admin-editor.models';
             [enableEditing]="isAdmin"
             (clone)="onCloneWeapon($event)"
             (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)"></app-weapon-table>
+            (edit)="onEditWeapon($event)">
+          </app-weapon-table>
         </div>
+
+        <ng-container *ngFor="let category of matchedItemCategories">
+          <h2>{{ category.name }}</h2>
+          <app-generic-table 
+            [storageKey]="'items-category-' + category.key"
+            [title]="''"
+            [collapsible]="false"
+            [data]="filteredCategoryDataMap[category.key] || []"
+            [headers]="category.headers"
+            [headerKeys]="category.keys"
+            [renderHtml]="['description']"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            [enableBodyFilter]="category.key === 'armor'"
+            [characterBody]="activePlayerBodyTypes"
+            (craft)="onCraftItem($event)"
+            (clone)="onCloneItem($event)"
+            (delete)="onDeleteItem($event)"
+            (edit)="onEditItem($event)">
+          </app-generic-table>
+        </ng-container>
       </div>
 
-      <div *ngFor="let category of itemCategories" [id]='category.key'>
-        <app-generic-table 
-          [storageKey]="'items-category-' + category.key"
-          [title]="category.name"
-          [data]="categoryDataMap[category.key] || []"
-          [headers]="category.headers"
-          [headerKeys]="category.keys"
-          [renderHtml]="['description']"
-          [inventoryManagement]="hasActivePlayer()"
-          [enableCloning]="isAdmin"
-          [enableDeleting]="isAdmin"
-          [enableEditing]="isAdmin"
-          [enableBodyFilter]="category.key === 'armor'"
-          [characterBody]="activePlayerBodyTypes"
-          (craft)="onCraftItem($event)"
-          (clone)="onCloneItem($event)"
-          (delete)="onDeleteItem($event)"
-          (edit)="onEditItem($event)">
-        </app-generic-table>
+      <div *ngIf="!searchQuery">
+        <div *ngIf="activeTab === 'weapon'">
+          <app-weapon-table 
+            [title]="''"
+            [collapsible]="false"
+            [weaponIds]="filteredWeaponIds" 
+            [weaponsData]="weaponsData" 
+            [weaponRulesData]="weaponRules"
+            [alteredStates]="alteredStates"
+            [displayPrice]="true"
+            [displayBody]="true"
+            [enableBodyFilter]="true"
+            [characterBody]="activePlayerBodyTypes"
+            [inventoryManagement]="hasActivePlayer()"
+            [enableCloning]="isAdmin"
+            [enableDeleting]="isAdmin"
+            [enableEditing]="isAdmin"
+            (clone)="onCloneWeapon($event)"
+            (delete)="onDeleteWeapon($event)"
+            (edit)="onEditWeapon($event)">
+          </app-weapon-table>
+        </div>
+
+        <ng-container *ngFor="let category of itemCategories">
+          <div *ngIf="activeTab === category.key">
+            <app-generic-table 
+              [storageKey]="'items-category-' + category.key"
+              [title]="''"
+              [collapsible]="false"
+              [data]="filteredCategoryDataMap[category.key] || []"
+              [headers]="category.headers"
+              [headerKeys]="category.keys"
+              [renderHtml]="['description']"
+              [inventoryManagement]="hasActivePlayer()"
+              [enableCloning]="isAdmin"
+              [enableDeleting]="isAdmin"
+              [enableEditing]="isAdmin"
+              [enableBodyFilter]="category.key === 'armor'"
+              [characterBody]="activePlayerBodyTypes"
+              (craft)="onCraftItem($event)"
+              (clone)="onCloneItem($event)"
+              (delete)="onDeleteItem($event)"
+              (edit)="onEditItem($event)">
+            </app-generic-table>
+          </div>
+        </ng-container>
       </div>
     </div>
-    <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
 
     <ng-template #craftConfirmModal>
       <div class="craft-modal">
@@ -118,12 +208,16 @@ export class ItemsComponent implements OnInit {
   weaponRules: WeaponRule[] = [];
   itemCategories: ItemCategory[] = [];
   categoryDataMap: Record<string, any[]> = {};
+  filteredCategoryDataMap: Record<string, any[]> = {};
   alteredStates: AlteredState[] = [];
   bestiary: BestiaryEntry[] = [];
   allWeaponIds: number[] = [];
+  filteredWeaponIds: number[] = [];
+  searchQuery: string = '';
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   activePlayerBodyTypes: string[] = [];
+  activeTab: string = 'weapon';
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
@@ -198,6 +292,67 @@ export class ItemsComponent implements OnInit {
   toggleWeaponsCollapsed() {
     this.weaponsCollapsed = !this.weaponsCollapsed;
     localStorage.setItem('items-weapons-collapsed', JSON.stringify(this.weaponsCollapsed));
+  }
+
+  setTab(key: string): void {
+    this.activeTab = key;
+    // Re-apply existing search to the new tab (don't clear it)
+    if (this.searchQuery) {
+      this.onSearchChange();
+    }
+  }
+
+  onSearchChange(): void {
+    const query = (this.searchQuery || '').toLowerCase().trim();
+    if (!query) {
+      this.filteredWeaponIds = [...this.allWeaponIds];
+      this.filteredCategoryDataMap = { ...this.categoryDataMap };
+      return;
+    }
+
+    const matchingWeapons = this.weaponsData.filter(w => {
+      const nameMatch = w.name?.toLowerCase().includes(query);
+      const profileMatch = w.profiles?.some((p: any) =>
+        p.profileName?.toLowerCase().includes(query) ||
+        p.body?.toLowerCase().includes(query) ||
+        p.specialRules?.some((r: any) => {
+          const ruleStr = typeof r === 'string' ? r : (r?.name || r?.ruleName || '');
+          return ruleStr.toLowerCase().includes(query);
+        })
+      );
+      return nameMatch || profileMatch;
+    });
+    this.filteredWeaponIds = matchingWeapons.map(w => w.id);
+
+    this.filteredCategoryDataMap = Object.keys(this.categoryDataMap).reduce((acc, key) => {
+      const items = this.categoryDataMap[key] || [];
+      acc[key] = items.filter(item => {
+        const nameMatch = item.name?.toLowerCase().includes(query);
+        const descMatch = item.description?.toLowerCase().includes(query);
+        const typeMatch = item.type?.toLowerCase().includes(query);
+        const subTypeMatch = item.subType?.toLowerCase().includes(query);
+        const bodyMatch = item.raceReq?.toLowerCase().includes(query);
+        const partMatch = item.part?.toLowerCase().includes(query);
+        return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
+      });
+      return acc;
+    }, {} as Record<string, any[]>);
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.onSearchChange();
+  }
+
+  get totalSearchResultsCount(): number {
+    if (!this.searchQuery) return 0;
+    const categoryCount = Object.values(this.filteredCategoryDataMap).reduce((sum, items) => sum + (items?.length || 0), 0);
+    return this.filteredWeaponIds.length + categoryCount;
+  }
+
+  get matchedItemCategories(): ItemCategory[] {
+    if (!this.searchQuery) return [];
+    return this.itemCategories.filter(c => (this.filteredCategoryDataMap[c.key] || []).length > 0);
   }
 
   // Weapon Management Methods
@@ -389,6 +544,7 @@ export class ItemsComponent implements OnInit {
   private refreshCategoryData(): void {
     if (!this.itemsData?.items || !this.itemCategories.length) {
       this.categoryDataMap = {};
+      this.onSearchChange();
       return;
     }
 
@@ -396,6 +552,8 @@ export class ItemsComponent implements OnInit {
       acc[category.key] = this.buildCategoryData(category.key);
       return acc;
     }, {} as Record<string, any[]>);
+
+    this.onSearchChange();
   }
 
   private buildCategoryData(key: string): any[] {

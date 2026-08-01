@@ -13,10 +13,14 @@ import { DataService } from '../data.service';
 import { Subscription } from 'rxjs';
 import { getEffectiveTalentApplications } from '../talent-stacks';
 
+import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+
 interface ruleDisplay {
   name: string,
   description: string
 }
+
+type WeaponSortKey = 'name' | 'rng' | 'atk' | 'hit' | 'dmg' | 'price';
 
 @Component({
   selector: 'app-weapon-table',
@@ -26,7 +30,8 @@ interface ruleDisplay {
     FormsModule,
     MatTooltipModule,
     WeaponRangePipe,
-    CustomDropdownComponent
+    CustomDropdownComponent,
+    SanitizeHtmlPipe
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css'],
@@ -47,12 +52,23 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() enableDeleting: boolean = false;
   @Input() enableEditing: boolean = false;
   @Input() shoppingMode: boolean = false;
+  @Input() title: string = '';
+  @Input() collapsible: boolean = false;
+  @Input() isCollapsed: boolean = false;
   @Input() enableBodyFilter: boolean = false;
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
   @Output() edit = new EventEmitter<any>();
   @Output() addToCart = new EventEmitter<any>();
+  @Output() toggleCollapse = new EventEmitter<void>();
+
+  onToggleCollapse(): void {
+    if (this.collapsible) {
+      this.isCollapsed = !this.isCollapsed;
+      this.toggleCollapse.emit();
+    }
+  }
 
   talentsData: TalentCategory[] = [];
   afflictionsData: Affliction[] = [];
@@ -68,10 +84,23 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     return cols;
   }
 
+  hasRules(entry: { weapon: Weapon, profile: WeaponProfile }): boolean {
+    return !!(entry.profile.specialRules?.length || this.attachedModDescriptions[entry.weapon.id]?.length);
+  }
+
+  getEntryRowCount(entry: { weapon: Weapon, profile: WeaponProfile }): number {
+    let rows = 1;
+    if (this.hasRules(entry)) rows++;
+    if (this.displayBody) rows++;
+    return rows;
+  }
+
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   availableBodyTypes: string[] = [];
   selectedBodyType: string = '';
+  sortKey: WeaponSortKey | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
   private playerSubscription: Subscription | null = null;
 
   constructor(
@@ -134,6 +163,90 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   onBodyTypeChange(selected: any) {
     this.selectedBodyType = selected;
     this.updateSortedProfiles();
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('spell')) {
+      html += `<span class="body-icon-badge spell" title="Spell">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
+          <path d="M8 2v20"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('fellgor')) {
+      html += `<span class="body-icon-badge fellgor" title="Fellgor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
+          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
+          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
+          <path d="M10 14h.01M14 14h.01"></path>
+          <path d="M11 17c.6.5 1.4.5 2 0"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('ork')) {
+      html += `<span class="body-icon-badge ork" title="Ork">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
+          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
+          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
+          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
+          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
+          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('aetherwing') || str.includes('aethering')) {
+      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="12" r="5"></circle>
+          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
+          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('plant')) {
+      html += `<span class="body-icon-badge plant" title="Plant">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20v-8"></path>
+          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
+          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   isInInventory(weaponId: number): boolean {
@@ -210,6 +323,19 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     this.edit.emit(weapon);
   }
 
+  toggleSort(key: WeaponSortKey): void {
+    if (this.sortKey !== key) {
+      this.sortKey = key;
+      this.sortDir = 'asc';
+    } else if (this.sortDir === 'asc') {
+      this.sortDir = 'desc';
+    } else {
+      this.sortKey = null;
+      this.sortDir = 'asc';
+    }
+    this.updateSortedProfiles();
+  }
+
   private updateSortedProfiles(): void {
     const allProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
     
@@ -259,9 +385,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     });
 
     // Sort if enabled
-    this.sortedProfiles = this.sortByRange 
-      ? this.sortProfiles(allProfiles)
-      : allProfiles;
+    if (this.sortKey) {
+      this.sortedProfiles = this.sortProfilesByKey(allProfiles, this.sortKey, this.sortDir);
+    } else if (this.sortByRange) {
+      this.sortedProfiles = this.sortProfiles(allProfiles);
+    } else {
+      this.sortedProfiles = allProfiles;
+    }
   }
 
   private applyStatModifications(profile: WeaponProfile, activeModifiers: { statModifications?: StatModification[] }[]): WeaponProfile {
@@ -347,6 +477,79 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       const aName = a.weapon.name || '';
       const bName = b.weapon.name || '';
       return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
+    });
+  }
+
+  private sortProfilesByKey(
+    profiles: { weapon: Weapon, profile: WeaponProfile }[],
+    key: WeaponSortKey,
+    dir: 'asc' | 'desc'
+  ): { weapon: Weapon, profile: WeaponProfile }[] {
+    const factor = dir === 'asc' ? 1 : -1;
+    const cmpNullableNumber = (a: number | null, b: number | null): number => {
+      if (a === null && b === null) return 0;
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return a - b;
+    };
+
+    const cmpString = (a: string, b: string): number => a.localeCompare(b, undefined, { sensitivity: 'base' });
+
+    const getRng = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.rng;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getPrice = (w: Weapon): number | null => {
+      const v = (w as any)?.price;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getDmgMax = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.damage?.max;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getDmgMin = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.damage?.min;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    return [...profiles].sort((a, b) => {
+      let result = 0;
+
+      if (key === 'name') {
+        result = cmpString(a.weapon.name || '', b.weapon.name || '');
+      } else if (key === 'rng') {
+        result = cmpNullableNumber(getRng(a.profile), getRng(b.profile));
+      } else if (key === 'atk') {
+        result = (a.profile.attacks - b.profile.attacks);
+      } else if (key === 'hit') {
+        result = (a.profile.ws - b.profile.ws);
+      } else if (key === 'dmg') {
+        const maxCmp = cmpNullableNumber(getDmgMax(a.profile), getDmgMax(b.profile));
+        result = maxCmp !== 0 ? maxCmp : cmpNullableNumber(getDmgMin(a.profile), getDmgMin(b.profile));
+      } else if (key === 'price') {
+        result = cmpNullableNumber(getPrice(a.weapon), getPrice(b.weapon));
+      }
+
+      if (result !== 0) return result * factor;
+
+      const nameTie = cmpString(a.weapon.name || '', b.weapon.name || '');
+      if (nameTie !== 0) return nameTie;
+
+      const rngTie = cmpNullableNumber(getRng(a.profile), getRng(b.profile));
+      if (rngTie !== 0) return rngTie;
+
+      return (a.profile.attacks - b.profile.attacks);
     });
   }
   

@@ -12,13 +12,13 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
   standalone: true,
   imports: [CommonModule, SanitizeHtmlPipe, FormsModule, CustomDropdownComponent],
   template: `
-    <div class="table-container">
+    <div class="category-block">
       <div class="table-header" *ngIf="collapsible || title" (click)="collapsible ? toggleCollapse() : null" [style.cursor]="collapsible ? 'pointer' : 'default'">
          <h3 style="display: inline-block;">{{ title }} <span *ngIf="collapsible">{{ isCollapsed ? '▶' : '▼' }}</span></h3>
       </div>
-      <div *ngIf="!isCollapsed || !collapsible">
-        <div *ngIf="enableBodyFilter" class="filter-container" style="margin: 10px; max-width: 300px;">
-          <label style="margin-bottom: 5px; font-size: 0.9em; display: block;">Filter by Body:</label>
+      <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
+        <div *ngIf="enableBodyFilter" class="filter-container">
+          <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
           <app-custom-dropdown
               [options]="availableBodyTypes"
               [selectedOption]="selectedBodyType"
@@ -28,66 +28,96 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
               (selectionChange)="onBodyTypeChange($event)">
           </app-custom-dropdown>
         </div>
-        <table class="items-table">
-          <thead>
-            <tr>
-              <th 
-                *ngFor="let header of headers; let i = index"
-                (click)="onSort(headerKeys[i])"
-                class="sortable-header">
-                {{ header }}
-                <span *ngIf="sortKey === headerKeys[i]">
-                  {{ sortDirection === 'asc' ? '▲' : '▼' }}
-                </span>
-              </th>
-              <th *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
-              <td *ngFor="let header of headerKeys">
-                <span *ngIf="!renderHtml?.includes(header) && header !== 'price'">{{ item[header] }}</span>
-                <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
-                <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
-              </td>
-              <td *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">
-                <div class="inventory-actions">
-                  <button *ngIf="enableEquipping && item.isEquippable" (click)="onEquip(item)" class="btn-equip" title="Equip Item">
-                    <span class="icon">👕</span>
-                  </button>
-                  <button *ngIf="enableUnequipping" (click)="onUnequip(item)" class="btn-unequip" title="Unequip Item">
-                    <div class="icon-container">
-                      <span class="icon-layer-base">👕</span>
-                      <span class="icon-layer-overlay">❌</span>
+        <div class="table-scroll-wrapper">
+          <table class="items-table">
+            <thead>
+              <tr>
+                <th 
+                  *ngFor="let header of headers; let i = index"
+                  (click)="onSort(headerKeys[i])"
+                  class="sortable-header"
+                  [class.col-compact]="isCompactColumn(headerKeys[i])"
+                  [class.col-description]="isDescriptionColumn(headerKeys[i])"
+                  [class.col-name]="headerKeys[i] === 'name'"
+                  [style.width]="headerKeys[i] === 'name' ? nameColumnWidth : null"
+                  [title]="getHeaderTooltip(header)">
+                  {{ getShortHeader(header) }}
+                  <span *ngIf="sortKey === headerKeys[i]">
+                    {{ sortDirection === 'asc' ? '▲' : '▼' }}
+                  </span>
+                </th>
+                <th class="col-actions" title="Actions" *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">Act</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
+                <td 
+                  *ngFor="let header of headerKeys"
+                  [class.col-compact]="isCompactColumn(header)"
+                  [class.col-description]="isDescriptionColumn(header)"
+                  [class.col-name]="header === 'name'"
+                  [style.width]="header === 'name' ? nameColumnWidth : null">
+                  <ng-container *ngIf="header === 'name'">
+                    <div class="name-wrapper" [style.max-width]="nameColumnWidth" [style.width]="nameColumnWidth">
+                      <span *ngIf="!renderHtml?.includes('name')">{{ item[header] }}</span>
+                      <span *ngIf="renderHtml?.includes('name')" [innerHtml]="item[header] | sanitizeHtml"></span>
                     </div>
-                  </button>
-                  <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
-                    <span class="icon">+</span>
-                  </button>
-                  <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
-                    <span class="icon">✏️</span>
-                  </button>
-                  <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
-                    <span class="icon">❐</span>
-                  </button>
-                  <button *ngIf="enableDeleting" (click)="onDelete(item)" class="btn-delete" title="Delete Item">
-                    <span class="icon">🗑️</span>
-                  </button>
-                  <ng-container *ngIf="inventoryManagement">
-                    <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
-                      <i class="icon-wrench">🔧</i>
-                    </button>
-                    <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
-                      <span class="icon">🛒</span>
-                    </button>
-                    <button *ngIf="!isPlayerDetail && !shoppingMode" (click)="addToInventory(item)" class="btn-add">+</button>
-                    <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">-</button>
                   </ng-container>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                  <ng-container *ngIf="header !== 'name'">
+                    <span *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [innerHtml]="formatBodyIcons(item[header]) | sanitizeHtml"></span>
+                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq'">{{ item[header] }}</span>
+                    <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
+                    <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
+                  </ng-container>
+                </td>
+                <td class="col-actions" *ngIf="inventoryManagement || enableCloning || enableDeleting || enableEditing || enableCustomAdd || enableEquipping || enableUnequipping">
+                  <div class="inventory-actions">
+                    <button *ngIf="enableEquipping && item.isEquippable" (click)="onEquip(item)" class="btn-equip" title="Equip Item">
+                      <span class="icon">👕</span>
+                    </button>
+                    <button *ngIf="enableUnequipping" (click)="onUnequip(item)" class="btn-unequip" title="Unequip Item">
+                      <div class="icon-container">
+                        <span class="icon-layer-base">👕</span>
+                        <span class="icon-layer-overlay">❌</span>
+                      </div>
+                    </button>
+                    <button *ngIf="enableCustomAdd" (click)="onCustomAdd(item)" class="btn-add" title="Add to Player">
+                      <span class="icon">+</span>
+                    </button>
+                    <button *ngIf="enableEditing" (click)="onEdit(item)" class="btn-edit" title="Edit Item">
+                      <span class="icon">✏️</span>
+                    </button>
+                    <button *ngIf="enableCloning" (click)="onClone(item)" class="btn-clone" title="Clone Item">
+                      <span class="icon">❐</span>
+                    </button>
+                    <button *ngIf="enableDeleting" (click)="onDelete(item)" class="btn-delete" title="Delete Item">
+                      <span class="icon">🗑️</span>
+                    </button>
+                    <ng-container *ngIf="inventoryManagement">
+                      <button *ngIf="item.canCraft" (click)="onCraft(item)" class="btn-craft" title="Craft Item">
+                        <i class="icon-wrench">🔧</i>
+                      </button>
+                      <button *ngIf="shoppingMode" (click)="onAddToCart(item)" class="btn-cart" title="Add to Cart">
+                        <span class="icon">🛒</span>
+                      </button>
+                      <button *ngIf="!shoppingMode" (click)="addToInventory(item)" class="btn-add">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                          <line x1="12" y1="4" x2="12" y2="20"></line>
+                          <line x1="4" y1="12" x2="20" y2="12"></line>
+                        </svg>
+                      </button>
+                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
+                          <line x1="4" y1="12" x2="20" y2="12"></line>
+                        </svg>
+                      </button>
+                    </ng-container>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   `,
@@ -114,6 +144,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() enableUnequipping: boolean = false;
   @Input() characterBody: string[] = [];
   @Input() enableBodyFilter: boolean = false;
+  @Input() nameColumnWidth: string = '95px';
 
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();
@@ -132,6 +163,42 @@ export class GenericTableComponent implements OnInit, OnChanges {
   availableBodyTypes: string[] = [];
   selectedBodyType: string | null = null;
 
+  getShortHeader(header: string): string {
+    if (!header) return '';
+    const h = header.toLowerCase().trim();
+    switch (h) {
+      case 'price': return 'Price';
+      case 'quantity': return 'Qty';
+      case 'weight': return 'Wt';
+      case 'optimal conditions': return 'Opt. Cond.';
+      case 'max speed': return 'Spd';
+      case 'max weight': return 'Max Wt';
+      case 'ship wounds': return 'WND';
+      case 'defense': return 'DEF';
+      case 'max cargo': return 'Cargo';
+      case 'ammo type': return 'Ammo';
+      case 'damage': return 'Dmg';
+      case 'dropped from': return 'Drop';
+      case 'density level': return 'Lvl';
+      case 'treatment': return 'Treat';
+      case 'to heal': return 'Heal';
+      case 'subtype': return 'Subtype';
+      default: return header;
+    }
+  }
+
+  getHeaderTooltip(header: string): string {
+    return header;
+  }
+
+  isCompactColumn(key: string): boolean {
+    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subType', 'bestiaryId', 'type', 'densityLevel'].includes(key);
+  }
+
+  isDescriptionColumn(key: string): boolean {
+    return ['description', 'effect', 'optimalConditions', 'treatment'].includes(key);
+  }
+
   constructor(
     private activePlayerService: ActivePlayerService,
     private toastService: ToastService
@@ -142,6 +209,90 @@ export class GenericTableComponent implements OnInit, OnChanges {
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
     this.extractBodyTypes();
     this.initializeSortedData();
+  }
+
+  formatBodyIcons(val: any): string {
+    if (!val) return '-';
+    const str = String(val).toLowerCase();
+    let html = '';
+    
+    if (str.includes('universal')) {
+      html += `<span class="body-icon-badge universal" title="Universal">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('human')) {
+      html += `<span class="body-icon-badge human" title="Human">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('astartes')) {
+      html += `<span class="body-icon-badge astartes" title="Astartes">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <path d="M12 8v8M8 12h8"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('spell')) {
+      html += `<span class="body-icon-badge spell" title="Spell">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
+          <path d="M8 2v20"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('fellgor')) {
+      html += `<span class="body-icon-badge fellgor" title="Fellgor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
+          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
+          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
+          <path d="M10 14h.01M14 14h.01"></path>
+          <path d="M11 17c.6.5 1.4.5 2 0"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('ork')) {
+      html += `<span class="body-icon-badge ork" title="Ork">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
+          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
+          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
+          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
+          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
+          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('aetherwing') || str.includes('aethering')) {
+      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="12" r="5"></circle>
+          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
+          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('plant')) {
+      html += `<span class="body-icon-badge plant" title="Plant">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20v-8"></path>
+          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
+          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
+        </svg>
+      </span>`;
+    }
+
+    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -389,42 +540,33 @@ export class GenericTableComponent implements OnInit, OnChanges {
     
     if (existingItemIndex >= 0) {
       const existingItem = player.items[existingItemIndex];
-      let remainingQuant = existingItem.quant - 1;
       
-      if (existingItem.quant > 1) {
-        // Decrement quantity if more than 1
+      if (existingItem.quant > 0) {
+        // Decrement quantity by 1 (reaches 0 if it was 1, item is kept in inventory)
         existingItem.quant -= 1;
+        this.toastService.show(
+          `Updated ${item.name || 'Item'} (${existingItem.quant} remaining)`, 
+          'info'
+        );
       } else {
-        // Remove item if quantity is 1
+        // Quantity is ALREADY 0: pressing subtract (-) again removes the item completely
         player.items.splice(existingItemIndex, 1);
-        remainingQuant = 0;
-      }
-      
-      // Handle deployables removal
-      if (item.type === 'deployable' && player.deployables) {
-        console.log('This is a deployable, checking deployables array:', player.deployables);
-        const existingDeployableIndex = player.deployables.findIndex((deployable) => deployable.id === item.id);
         
-        if (existingDeployableIndex >= 0) {
-          const existingDeployable = player.deployables[existingDeployableIndex];
-          
-          if (existingDeployable.quant > 1) {
-            // Decrement quantity if more than 1
-            existingDeployable.quant -= 1;
-          } else {
-            // Remove deployable if quantity is 1
+        // Handle deployables removal
+        if (item.type === 'deployable' && player.deployables) {
+          const existingDeployableIndex = player.deployables.findIndex((deployable) => deployable.id === item.id);
+          if (existingDeployableIndex >= 0) {
             player.deployables.splice(existingDeployableIndex, 1);
           }
         }
+
+        this.toastService.show(
+          `Removed ${item.name || 'Item'} from inventory`, 
+          'error'
+        );
       }
       
       this.activePlayerService.updateActivePlayer({ ...player });
-      
-      // Show error toast
-      this.toastService.show(
-        `Removed ${item.name || 'Item'} from inventory (${remainingQuant} remaining)`, 
-        'error'
-      );
     }
   }
 }
