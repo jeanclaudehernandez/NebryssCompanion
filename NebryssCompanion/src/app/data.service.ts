@@ -491,7 +491,18 @@ export class DataService {
       headers: new HttpHeaders({
         [SKIP_LOADING_HEADER]: 'true'
       })
-    });
+    }).pipe(
+      tap(savedPlayer => {
+        const index = this.players.findIndex(existingPlayer => existingPlayer.id === savedPlayer.id);
+        if (index !== -1) {
+          this.players[index] = savedPlayer;
+        } else {
+          this.players.push(savedPlayer);
+        }
+        this.playersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
   }
 
   createItem(item: any): Observable<any> {

@@ -18,7 +18,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator'>();
+  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator' | 'adminPlayerEditor'>();
   isOpen = false;
   isAdmin = false;
 
@@ -72,7 +72,7 @@ export class SidebarComponent {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator') {
+  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator' | 'adminPlayerEditor') {
     this.viewChange.emit(view);
     this.toggleMenu();
   }
@@ -96,6 +96,17 @@ export class SidebarComponent {
 
     this.openAdminDialog(this.adminDialogTemplate, () => {
       this.changeView('adminLocationCreator');
+    });
+  }
+
+  openAdminPlayerEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminPlayerEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminPlayerEditor');
     });
   }
 

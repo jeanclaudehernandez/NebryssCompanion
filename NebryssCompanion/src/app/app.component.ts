@@ -171,6 +171,7 @@ export class AppComponent {
       case 'shipNavigation': return 'Ship Navigation';
       case 'adminItemCreator': return 'Item Creator';
       case 'adminLocationCreator': return 'Location Creator';
+      case 'adminPlayerEditor': return 'Player Editor';
       default: return 'Nebryss Companion';
     }
   }

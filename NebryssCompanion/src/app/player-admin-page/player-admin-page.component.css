@@ -1,0 +1,275 @@
+.admin-page {
+  padding: 72px 16px 96px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.admin-header,
+.admin-locked {
+  margin-bottom: 20px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.admin-section {
+  margin-bottom: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.field span {
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.hint {
+  margin: 4px 0 0;
+  color: inherit;
+  opacity: 0.8;
+}
+
+.abilities-list {
+  display: grid;
+  gap: 16px;
+}
+
+.ability-card {
+  padding: 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.ability-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.ability-card-header h4 {
+  margin: 0;
+}
+
+.empty-state {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px dashed #94a3b8;
+  border-radius: 10px;
+  background: rgba(215, 231, 242, 0.45);
+}
+
+.inline-btn,
+.remove-btn {
+  padding: 8px 12px;
+  border: 1px solid #94a3b8;
+  border-radius: 6px;
+  background: #ffffff;
+  color: inherit;
+  cursor: pointer;
+}
+
+.remove-btn {
+  color: #b91c1c;
+}
+
+.attributes.sticky-attributes {
+  padding: 4px 0 8px 0;
+  margin-bottom: 8px;
+  background-color: #f5f5f5;
+}
+
+.attributes-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.attributes-table th,
+.attributes-table td {
+  padding: 10px 8px;
+  text-align: center;
+  border: 1px solid #dbe4ec;
+  background: #ffffff;
+}
+
+.attributes-table th {
+  background: #eef4f8;
+}
+
+.attr-header-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.editable-stat {
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.editable-stat:hover {
+  background: #e3f2fd;
+}
+
+.stat-input {
+  width: 100%;
+  min-width: 0;
+  padding: 6px;
+  border: 1px solid #64b5f6;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.btn-confirm {
+  padding: 8px 16px;
+  border: none;
+  background: #2196f3;
+  color: #ffffff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.summary-list {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-preview-json {
+  margin: 0;
+  padding: 16px;
+  border-radius: 4px;
+  background: #0f172a;
+  color: #dbeafe;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+:host-context(body.dark-theme) .field input,
+:host-context(body.dark-theme) .field textarea,
+:host-context(body.dark-theme) .field select,
+:host-context(body.dark-theme) .stat-input {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+:host-context(body.dark-theme) .ability-card {
+  background: #16202a;
+  border-color: #334155;
+}
+
+:host-context(body.dark-theme) .empty-state {
+  background: rgba(27, 42, 51, 0.7);
+  border-color: #475569;
+}
+
+:host-context(body.dark-theme) .inline-btn,
+:host-context(body.dark-theme) .remove-btn {
+  background: #1f2937;
+  border-color: #475569;
+  color: #e5e7eb;
+}
+
+:host-context(body.dark-theme) .remove-btn {
+  color: #fca5a5;
+}
+
+:host-context(body.dark-theme) .attributes.sticky-attributes {
+  background-color: #121212;
+}
+
+:host-context(body.dark-theme) .attributes-table th,
+:host-context(body.dark-theme) .attributes-table td {
+  background: #1f2937;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+:host-context(body.dark-theme) .attributes-table th {
+  background: #0f172a;
+}
+
+:host-context(body.dark-theme) .editable-stat:hover {
+  background: #1e3a5f;
+}
+
+:host-context(body.dark-theme) .btn-confirm {
+  background: #64b5f6;
+  color: #121212;
+}
+
+:host-context(body.dark-theme) .admin-preview-json {
+  background: #111827;
+  color: #dbeafe;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-page {
+    padding: 72px 12px 96px;
+  }
+
+  .section-header,
+  .ability-card-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

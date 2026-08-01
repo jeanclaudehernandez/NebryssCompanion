@@ -64,7 +64,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     afflictions: () => import('./afflictions-list/afflictions-list.component').then(m => m.AfflictionsListComponent),
     shipNavigation: () => import('./ship-navigation/ship-navigation.component').then(m => m.ShipNavigationComponent),
     adminItemCreator: () => import('./item-admin-page/item-admin-page.component').then(m => m.ItemAdminPageComponent),
-    adminLocationCreator: () => import('./location-admin-page/location-admin-page.component').then(m => m.LocationAdminPageComponent)
+    adminLocationCreator: () => import('./location-admin-page/location-admin-page.component').then(m => m.LocationAdminPageComponent),
+    adminPlayerEditor: () => import('./player-admin-page/player-admin-page.component').then(m => m.PlayerAdminPageComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {

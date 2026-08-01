@@ -1,0 +1,319 @@
+<div class="admin-page">
+  <div class="player-detail-container admin-header">
+    <div>
+      <h2>Player Editor</h2>
+      <p>Edit player stats and abilities while reviewing the same loadout order used on the player sheet.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+    <p>This page is only available after logging in with the admin password from the sidebar.</p>
+  </div>
+
+  <div *ngIf="isAdmin" class="layout">
+    <form class="player-detail-container" (ngSubmit)="save()">
+      <section class="item admin-section">
+        <h3>Player Selection</h3>
+
+        <label class="field">
+          <span>Player</span>
+          <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId" (ngModelChange)="onPlayerSelect($event)">
+            <option [ngValue]="null">Select a player</option>
+            <option *ngFor="let player of players" [ngValue]="player.id">{{ player.name }}</option>
+          </select>
+        </label>
+      </section>
+
+      <ng-container *ngIf="editablePlayer as player">
+        <section class="item admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Stats</h3>
+              <p class="hint">Click a numeric cell to edit it inline. Body stays read-only here.</p>
+            </div>
+          </div>
+
+          <div class="attributes sticky-attributes">
+            <table class="attributes-table">
+              <tr>
+                <th title="Movement">
+                  <div class="attr-header-cell">
+                    <svg class="attr-icon attr-mov" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"></path>
+                    </svg>
+                  </div>
+                </th>
+                <th title="Wounds">
+                  <div class="attr-header-cell">
+                    <svg class="attr-icon attr-wnd" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                    </svg>
+                  </div>
+                </th>
+                <th title="Save">
+                  <div class="attr-header-cell">
+                    <svg class="attr-icon attr-sv" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2l8 3v6c0 6-8 11-8 11S4 17 4 11V5l8-3z"></path>
+                    </svg>
+                  </div>
+                </th>
+                <th title="Action Point Limit">
+                  <div class="attr-header-cell">
+                    <svg class="attr-icon attr-apl" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                  </div>
+                </th>
+                <th title="Weapon Types">
+                  <div class="attr-header-cell">
+                    <svg class="attr-icon attr-body" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2a4 4 0 0 1 4 4v2a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"></path>
+                      <path d="M4 22v-3a5 5 0 0 1 5-5h6a5 5 0 0 1 5 5v3H4z"></path>
+                    </svg>
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <td class="editable-stat" (click)="startStatEdit('Movement')">
+                  <ng-container *ngIf="editingStat === 'Movement'; else movementDisplay">
+                    <input
+                      [(ngModel)]="statEditValue"
+                      name="movementStat"
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="stat-input"
+                      (click)="$event.stopPropagation()"
+                      (blur)="commitStatEdit()"
+                      (keydown.enter)="commitStatEdit()"
+                      (keydown.escape)="cancelStatEdit()"
+                    />
+                  </ng-container>
+                  <ng-template #movementDisplay>{{ player.attributes.Movement }}"</ng-template>
+                </td>
+                <td class="editable-stat" (click)="startStatEdit('Wounds')">
+                  <ng-container *ngIf="editingStat === 'Wounds'; else woundsDisplay">
+                    <input
+                      [(ngModel)]="statEditValue"
+                      name="woundsStat"
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="stat-input"
+                      (click)="$event.stopPropagation()"
+                      (blur)="commitStatEdit()"
+                      (keydown.enter)="commitStatEdit()"
+                      (keydown.escape)="cancelStatEdit()"
+                    />
+                  </ng-container>
+                  <ng-template #woundsDisplay>{{ player.attributes.Wounds }}</ng-template>
+                </td>
+                <td class="editable-stat" (click)="startStatEdit('Save')">
+                  <ng-container *ngIf="editingStat === 'Save'; else saveDisplay">
+                    <input
+                      [(ngModel)]="statEditValue"
+                      name="saveStat"
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="stat-input"
+                      (click)="$event.stopPropagation()"
+                      (blur)="commitStatEdit()"
+                      (keydown.enter)="commitStatEdit()"
+                      (keydown.escape)="cancelStatEdit()"
+                    />
+                  </ng-container>
+                  <ng-template #saveDisplay>{{ player.attributes.Save }}+</ng-template>
+                </td>
+                <td class="editable-stat" (click)="startStatEdit('APL')">
+                  <ng-container *ngIf="editingStat === 'APL'; else aplDisplay">
+                    <input
+                      [(ngModel)]="statEditValue"
+                      name="aplStat"
+                      type="number"
+                      min="0"
+                      step="1"
+                      class="stat-input"
+                      (click)="$event.stopPropagation()"
+                      (blur)="commitStatEdit()"
+                      (keydown.enter)="commitStatEdit()"
+                      (keydown.escape)="cancelStatEdit()"
+                    />
+                  </ng-container>
+                  <ng-template #aplDisplay>{{ player.attributes.APL }}</ng-template>
+                </td>
+                <td>
+                  <app-body-type-icons [value]="player.attributes.body"></app-body-type-icons>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </section>
+
+        <section class="item admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Weapons</h3>
+              <p class="hint">Read-only view of the player loadout for admin decisions.</p>
+            </div>
+          </div>
+
+          <app-weapon-table
+            *ngIf="player.weapons?.length; else emptyWeapons"
+            [weaponIds]="player.weapons"
+            [weaponsData]="weapons"
+            [weaponRulesData]="weaponRules"
+            [alteredStates]="alteredStates"
+            [title]="'Weapons'"
+            [collapsible]="false"
+          ></app-weapon-table>
+
+          <ng-template #emptyWeapons>
+            <div class="empty-state">
+              <p>No weapons assigned to this player.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="item admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Abilities</h3>
+              <p class="hint">Each ability uses a name field and a text area for the effect.</p>
+            </div>
+            <button class="inline-btn" type="button" (click)="addAbility()">+ Ability</button>
+          </div>
+
+          <div *ngIf="player.abilities.length; else emptyAbilities" class="abilities-list">
+            <div class="ability-card" *ngFor="let ability of player.abilities; let i = index">
+              <div class="ability-card-header">
+                <h4>Ability {{ i + 1 }}</h4>
+                <button class="remove-btn" type="button" (click)="removeAbility(i)">Remove</button>
+              </div>
+
+              <label class="field">
+                <span>Name</span>
+                <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text" placeholder="Ability name" />
+              </label>
+
+              <label class="field">
+                <span>Effect</span>
+                <textarea
+                  [(ngModel)]="ability.effect"
+                  [name]="'ability-effect-' + i"
+                  rows="4"
+                  placeholder="Ability description"
+                ></textarea>
+              </label>
+            </div>
+          </div>
+
+          <ng-template #emptyAbilities>
+            <div class="empty-state">
+              <p>No abilities yet.</p>
+              <button class="inline-btn" type="button" (click)="addAbility()">Add the first ability</button>
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="item admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Equipment</h3>
+              <p class="hint">Read-only list of equipped gear and its effects.</p>
+            </div>
+          </div>
+
+          <app-generic-table
+            *ngIf="equipmentTableData.length; else emptyEquipment"
+            [storageKey]="'player-admin-equipment-' + player.id"
+            [title]="''"
+            [collapsible]="false"
+            [data]="equipmentTableData"
+            [headers]="equipmentTableHeaders"
+            [headerKeys]="equipmentTableHeaderKeys"
+            [renderHtml]="['description']"
+            [highlightInventory]="false"
+            [isPlayerDetail]="true"
+          ></app-generic-table>
+
+          <ng-template #emptyEquipment>
+            <div class="empty-state">
+              <p>No equipment equipped.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <section class="item admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Talents</h3>
+              <p class="hint">Read-only list of active talents, including equipment-granted ones.</p>
+            </div>
+          </div>
+
+          <app-generic-table
+            *ngIf="talentTableData.length; else emptyTalents"
+            [storageKey]="'player-admin-talents-' + player.id"
+            [title]="''"
+            [collapsible]="false"
+            [data]="talentTableData"
+            [headers]="talentTableHeaders"
+            [headerKeys]="talentTableHeaderKeys"
+            [renderHtml]="['name', 'effect']"
+            [highlightInventory]="false"
+            [isPlayerDetail]="true"
+            [nameColumnWidth]="'150px'"
+          ></app-generic-table>
+
+          <ng-template #emptyTalents>
+            <div class="empty-state">
+              <p>No active talents.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <div class="actions dialog-buttons">
+          <button class="btn-confirm" type="submit" [disabled]="!canSave">
+            {{ isSaving ? 'Saving...' : 'Save Player' }}
+          </button>
+        </div>
+      </ng-container>
+    </form>
+
+    <aside class="player-detail-container">
+      <section class="item admin-section">
+        <h3>Selection Summary</h3>
+        <div *ngIf="editablePlayer as player; else noPlayerSelected" class="summary-list">
+          <div><strong>Name:</strong> {{ player.name }}</div>
+          <div><strong>Race:</strong> {{ player.race }}</div>
+          <div><strong>Weapons:</strong> {{ player.weapons?.length || 0 }}</div>
+          <div><strong>Abilities:</strong> {{ (buildAbilityPayload(false) ?? []).length }}</div>
+          <div><strong>Equipment:</strong> {{ equipmentTableData.length }}</div>
+          <div><strong>Talents:</strong> {{ talentTableData.length }}</div>
+        </div>
+        <ng-template #noPlayerSelected>
+          <p>Select a player to start editing.</p>
+        </ng-template>
+      </section>
+
+      <section class="item admin-section">
+        <h3>Player JSON Preview</h3>
+        <pre class="admin-preview-json">{{ previewJson }}</pre>
+      </section>
+
+      <section class="item admin-section" *ngIf="lastSavedPlayer">
+        <h3>Last Saved Player</h3>
+        <div class="summary-list">
+          <div><strong>ID:</strong> {{ lastSavedPlayer.id }}</div>
+          <div><strong>Name:</strong> {{ lastSavedPlayer.name }}</div>
+          <div><strong>Weapons:</strong> {{ lastSavedPlayer.weapons.length }}</div>
+          <div><strong>Abilities:</strong> {{ lastSavedPlayer.abilities.length }}</div>
+          <div><strong>Equipment:</strong> {{ lastSavedPlayer.progression?.equipment?.length || 0 }}</div>
+          <div><strong>Talents:</strong> {{ lastSavedPlayer.progression?.talents?.length || 0 }}</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
