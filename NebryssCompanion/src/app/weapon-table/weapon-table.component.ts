@@ -20,6 +20,8 @@ interface ruleDisplay {
   description: string
 }
 
+type WeaponSortKey = 'name' | 'rng' | 'atk' | 'hit' | 'dmg' | 'price';
+
 @Component({
   selector: 'app-weapon-table',
   standalone: true,
@@ -97,6 +99,8 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   availableBodyTypes: string[] = [];
   selectedBodyType: string = '';
+  sortKey: WeaponSortKey | null = null;
+  sortDir: 'asc' | 'desc' = 'asc';
   private playerSubscription: Subscription | null = null;
 
   constructor(
@@ -269,6 +273,19 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     this.edit.emit(weapon);
   }
 
+  toggleSort(key: WeaponSortKey): void {
+    if (this.sortKey !== key) {
+      this.sortKey = key;
+      this.sortDir = 'asc';
+    } else if (this.sortDir === 'asc') {
+      this.sortDir = 'desc';
+    } else {
+      this.sortKey = null;
+      this.sortDir = 'asc';
+    }
+    this.updateSortedProfiles();
+  }
+
   private updateSortedProfiles(): void {
     const allProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
     
@@ -318,9 +335,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     });
 
     // Sort if enabled
-    this.sortedProfiles = this.sortByRange 
-      ? this.sortProfiles(allProfiles)
-      : allProfiles;
+    if (this.sortKey) {
+      this.sortedProfiles = this.sortProfilesByKey(allProfiles, this.sortKey, this.sortDir);
+    } else if (this.sortByRange) {
+      this.sortedProfiles = this.sortProfiles(allProfiles);
+    } else {
+      this.sortedProfiles = allProfiles;
+    }
   }
 
   private applyStatModifications(profile: WeaponProfile, activeModifiers: { statModifications?: StatModification[] }[]): WeaponProfile {
@@ -406,6 +427,79 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       const aName = a.weapon.name || '';
       const bName = b.weapon.name || '';
       return aName.localeCompare(bName, undefined, { sensitivity: 'base' });
+    });
+  }
+
+  private sortProfilesByKey(
+    profiles: { weapon: Weapon, profile: WeaponProfile }[],
+    key: WeaponSortKey,
+    dir: 'asc' | 'desc'
+  ): { weapon: Weapon, profile: WeaponProfile }[] {
+    const factor = dir === 'asc' ? 1 : -1;
+    const cmpNullableNumber = (a: number | null, b: number | null): number => {
+      if (a === null && b === null) return 0;
+      if (a === null) return 1;
+      if (b === null) return -1;
+      return a - b;
+    };
+
+    const cmpString = (a: string, b: string): number => a.localeCompare(b, undefined, { sensitivity: 'base' });
+
+    const getRng = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.rng;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getPrice = (w: Weapon): number | null => {
+      const v = (w as any)?.price;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getDmgMax = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.damage?.max;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    const getDmgMin = (p: WeaponProfile): number | null => {
+      const v = (p as any)?.damage?.min;
+      if (v === null || v === undefined) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    };
+
+    return [...profiles].sort((a, b) => {
+      let result = 0;
+
+      if (key === 'name') {
+        result = cmpString(a.weapon.name || '', b.weapon.name || '');
+      } else if (key === 'rng') {
+        result = cmpNullableNumber(getRng(a.profile), getRng(b.profile));
+      } else if (key === 'atk') {
+        result = (a.profile.attacks - b.profile.attacks);
+      } else if (key === 'hit') {
+        result = (a.profile.ws - b.profile.ws);
+      } else if (key === 'dmg') {
+        const maxCmp = cmpNullableNumber(getDmgMax(a.profile), getDmgMax(b.profile));
+        result = maxCmp !== 0 ? maxCmp : cmpNullableNumber(getDmgMin(a.profile), getDmgMin(b.profile));
+      } else if (key === 'price') {
+        result = cmpNullableNumber(getPrice(a.weapon), getPrice(b.weapon));
+      }
+
+      if (result !== 0) return result * factor;
+
+      const nameTie = cmpString(a.weapon.name || '', b.weapon.name || '');
+      if (nameTie !== 0) return nameTie;
+
+      const rngTie = cmpNullableNumber(getRng(a.profile), getRng(b.profile));
+      if (rngTie !== 0) return rngTie;
+
+      return (a.profile.attacks - b.profile.attacks);
     });
   }
   

@@ -139,6 +139,29 @@ body.dark-theme .table-header h3 {
   white-space: nowrap;
 }
 
+.weapons-table th.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.weapons-table th.sortable:hover {
+  background-color: #eef2f7;
+}
+
+body.dark-theme .weapons-table th.sortable:hover {
+  background-color: #374151;
+}
+
+.weapons-table th.sorted {
+  border-bottom-color: #3b82f6;
+}
+
+.sort-indicator {
+  font-size: 0.7rem;
+  margin-left: 4px;
+  opacity: 0.85;
+}
+
 /* Grouping by tbody */
 .weapons-table tbody {
   border-bottom: 1px solid #eee;

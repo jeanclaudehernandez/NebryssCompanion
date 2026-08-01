@@ -18,12 +18,24 @@
           <table class="weapons-table">
       <thead>
         <tr>
-          <th class="col-name">Name</th>
-          <th class="col-compact" title="Range">Rng</th>
-          <th class="col-compact" title="Attacks">Atk</th>
-          <th class="col-compact" title="Hit Chance">Hit</th>
-          <th class="col-compact" title="Damage">Dmg</th>
-          <th class="col-compact" *ngIf="displayPrice" title="Price">Price</th>
+          <th class="col-name sortable" (click)="toggleSort('name')" [class.sorted]="sortKey === 'name'">
+            Name <span *ngIf="sortKey === 'name'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th class="col-compact sortable" title="Range" (click)="toggleSort('rng')" [class.sorted]="sortKey === 'rng'">
+            Rng <span *ngIf="sortKey === 'rng'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th class="col-compact sortable" title="Attacks" (click)="toggleSort('atk')" [class.sorted]="sortKey === 'atk'">
+            Atk <span *ngIf="sortKey === 'atk'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th class="col-compact sortable" title="Hit Chance" (click)="toggleSort('hit')" [class.sorted]="sortKey === 'hit'">
+            Hit <span *ngIf="sortKey === 'hit'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th class="col-compact sortable" title="Damage" (click)="toggleSort('dmg')" [class.sorted]="sortKey === 'dmg'">
+            Dmg <span *ngIf="sortKey === 'dmg'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
+          <th class="col-compact sortable" *ngIf="displayPrice" title="Price" (click)="toggleSort('price')" [class.sorted]="sortKey === 'price'">
+            Price <span *ngIf="sortKey === 'price'" class="sort-indicator">{{ sortDir === 'asc' ? '▲' : '▼' }}</span>
+          </th>
           <th class="col-actions" *ngIf="showActions" title="Actions">Act</th>
         </tr>
       </thead>
