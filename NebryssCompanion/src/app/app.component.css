@@ -112,6 +112,11 @@ body.dark-theme .header-action-btn:active {
   box-sizing: border-box;
 }
 
+.content-area-no-footer {
+  --footer-menu-height: 0px;
+  padding-bottom: calc(var(--safe-area-bottom, 0px) + 16px);
+}
+
 .loading-overlay {
   position: fixed;
   top: 0;

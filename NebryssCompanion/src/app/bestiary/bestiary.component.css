@@ -1,9 +1,8 @@
 .bestiary-select-container {
-    margin: 20px;
-    padding: 20px;
-    background: #f5f5f5;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    padding: 5px;
     border-radius: 8px;
-    transition: background-color 0.3s, color 0.3s;
 }
 
 select {
@@ -46,9 +45,8 @@ select {
 }
 
 .creature-detail-container {
-    margin: 20px;
-    border: 1px solid #ddd;
     border-radius: 8px;
+    border: 1px solid #ddd;
     overflow: hidden;
     background: white;
     margin-bottom: 30px;
@@ -108,7 +106,7 @@ body.dark-theme select {
 }
 
 body.dark-theme .creature-detail-container {
-    background: #2d2d2d;
+    background: #121212;
     border-color: #444;
 }
 

@@ -84,6 +84,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
         this.selectedCreatures = ids.map(id => 
           this.bestiary.find(c => c.id === id)
         ).filter(c => c !== undefined) as BestiaryEntry[];
+        this.syncCreatureScrollSections();
         
         if (this.selectedCreatures.length > 0) {
           this.scrollToMob();
@@ -144,6 +145,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
         
         if (!alreadySelected) {
           this.selectedCreatures.push(creature);
+          this.syncCreatureScrollSections();
           // Save to local storage
           const creatureIds = this.selectedCreatures.map(c => c.id);
           localStorage.setItem('bestiaryCreatureIds', JSON.stringify(creatureIds));
@@ -160,6 +162,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
 
   removeCreature(creature: BestiaryEntry) {
     this.selectedCreatures = this.selectedCreatures.filter(c => c.id !== creature.id);
+    this.syncCreatureScrollSections();
     
     // Update local storage
     if (this.selectedCreatures.length) {
@@ -168,11 +171,6 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('bestiaryCreatureIds');
     }
-
-    // Remove any scroll sections for this creature
-    this.combinedScrollSections = this.combinedScrollSections.filter(
-      section => !section.id.includes(`-${creature.id}`)
-    );
 
     this.updateDroppedMaterials();
   }
@@ -188,14 +186,11 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     }, 0);
   }
 
-  addCreatureScrollSections(sections: ScrollSection[], creature: BestiaryEntry): void {
-    // Remove any existing sections for this creature
-    this.combinedScrollSections = this.combinedScrollSections.filter(
-      section => !section.id.includes(`-${creature.id}`)
-    );
-    
-    // Add the new sections
-    this.combinedScrollSections = [...this.combinedScrollSections, ...sections];
+  private syncCreatureScrollSections(): void {
+    this.combinedScrollSections = this.selectedCreatures.map(creature => ({
+      title: creature.name,
+      id: `creature-${creature.id}`
+    }));
   }
 
   updateDroppedMaterials() {

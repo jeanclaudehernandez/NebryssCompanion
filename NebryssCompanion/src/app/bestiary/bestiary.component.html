@@ -1,6 +1,5 @@
 <!-- bestiary.component.html -->
 <div class="bestiary-select-container">
-    <h2>Select Bestiary Creature</h2>
 
     <div class="filter-group">
         <label>Faction:</label>
@@ -37,7 +36,7 @@
 </div>
 
 <div #mobDetailContainer>
-    <div *ngFor="let creature of selectedCreatures" class="creature-detail-container">
+    <div *ngFor="let creature of selectedCreatures" class="creature-detail-container" [id]="'creature-' + creature.id">
         <div class="creature-header">
             <h3>{{ creature.name }}</h3>
             <button class="remove-creature-btn" (click)="removeCreature(creature)">✕</button>
@@ -48,8 +47,7 @@
             [itemsData]="itemsData"
             [weaponRulesData]="weaponRulesData"
             [alteredStates]="alteredStates"
-            [hideScrollNav]="true"
-            (scrollSectionsChange)="addCreatureScrollSections($event, creature)">
+            [hideScrollNav]="true">
         </app-player-detail>
     </div>
 </div>

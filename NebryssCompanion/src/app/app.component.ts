@@ -69,10 +69,12 @@ import { ActivePlayerService } from './active-player.service';
       <h1 class="header-title">{{ currentViewTitle }}</h1>
 
       <div class="header-actions">
-        <div class="active-player-chip" *ngIf="activePlayer$ | async as player" (click)="onViewChange('players')" title="Active Player">
-          <span class="material-icons chip-icon">person</span>
-          <span class="chip-name">{{ player.name }}</span>
-        </div>
+        @if (showHeaderPlayerTitle) {
+          <div class="active-player-chip" *ngIf="activePlayer$ | async as player" (click)="onViewChange('players')" title="Active Player">
+            <span class="material-icons chip-icon">person</span>
+            <span class="chip-name">{{ player.name }}</span>
+          </div>
+        }
 
         <button type="button" class="header-action-btn" (click)="themeService.toggleTheme()" [attr.aria-label]="(themeService.darkMode$ | async) ? 'Light mode' : 'Dark mode'">
           <span class="material-icons">{{ (themeService.darkMode$ | async) ? 'light_mode' : 'dark_mode' }}</span>
@@ -95,7 +97,7 @@ import { ActivePlayerService } from './active-player.service';
     }
     <app-sidebar #sidebarComp (viewChange)="onViewChange($event)"></app-sidebar>
     
-    <div class="content-area" #contentArea [style.transform]="contentTransform">
+    <div class="content-area" #contentArea [style.transform]="contentTransform" [class.content-area-no-footer]="!showFooterMenu">
       @if (currentView === 'players') {
         <app-player-list (navigateToTalents)="onViewChange('talents')"></app-player-list>
       }
@@ -159,52 +161,54 @@ import { ActivePlayerService } from './active-player.service';
       }
     </div>
 
-    <nav class="footer-menu" aria-label="Footer navigation">
-      <button
-        type="button"
-        class="footer-btn"
-        [class.active]="currentView === 'players'"
-        (click)="onViewChange('players')"
-        aria-label="Open Player"
-      >
-        <span class="material-icons" aria-hidden="true">person</span>
-        <span class="footer-label">Player</span>
-      </button>
+    @if (showFooterMenu) {
+      <nav class="footer-menu" aria-label="Footer navigation">
+        <button
+          type="button"
+          class="footer-btn"
+          [class.active]="currentView === 'players'"
+          (click)="onViewChange('players')"
+          aria-label="Open Player"
+        >
+          <span class="material-icons" aria-hidden="true">person</span>
+          <span class="footer-label">Player</span>
+        </button>
 
-      <button
-        type="button"
-        class="footer-btn"
-        [class.active]="currentView === 'talents'"
-        (click)="onViewChange('talents')"
-        aria-label="Open Talents"
-      >
-        <span class="material-icons" aria-hidden="true">fitness_center</span>
-        <span class="footer-label">Talents</span>
-      </button>
+        <button
+          type="button"
+          class="footer-btn"
+          [class.active]="currentView === 'talents'"
+          (click)="onViewChange('talents')"
+          aria-label="Open Talents"
+        >
+          <span class="material-icons" aria-hidden="true">fitness_center</span>
+          <span class="footer-label">Talents</span>
+        </button>
 
-      <button
-        type="button"
-        class="footer-btn"
-        [class.active]="currentView === 'letters'"
-        (click)="onViewChange('letters')"
-        aria-label="Open Letters"
-      >
-        <span class="footer-badge" *ngIf="letterUnreadCount > 0">{{ letterUnreadCount }}</span>
-        <span class="material-icons" aria-hidden="true">mail</span>
-        <span class="footer-label">Letters</span>
-      </button>
+        <button
+          type="button"
+          class="footer-btn"
+          [class.active]="currentView === 'letters'"
+          (click)="onViewChange('letters')"
+          aria-label="Open Letters"
+        >
+          <span class="footer-badge" *ngIf="letterUnreadCount > 0">{{ letterUnreadCount }}</span>
+          <span class="material-icons" aria-hidden="true">mail</span>
+          <span class="footer-label">Letters</span>
+        </button>
 
-      <button
-        type="button"
-        class="footer-btn"
-        [class.active]="currentView === 'shops'"
-        (click)="onViewChange('shops')"
-        aria-label="Open Shops"
-      >
-        <span class="material-icons" aria-hidden="true">storefront</span>
-        <span class="footer-label">Shops</span>
-      </button>
-    </nav>
+        <button
+          type="button"
+          class="footer-btn"
+          [class.active]="currentView === 'shops'"
+          (click)="onViewChange('shops')"
+          aria-label="Open Shops"
+        >
+          <span class="material-icons" aria-hidden="true">storefront</span>
+          <span class="footer-label">Shops</span>
+        </button>
+      </nav>
+    }
   `,
   styleUrls: ['./app.component.css']
 })
@@ -221,6 +225,14 @@ export class AppComponent {
   adminLocationDraft: { mapX: number | null; mapY: number | null } | null = null;
   letterUnreadCount = 0;
   activePlayer$ = this.activePlayerService.activePlayer$;
+
+  get showFooterMenu(): boolean {
+    return this.currentView !== 'bestiary';
+  }
+
+  get showHeaderPlayerTitle(): boolean {
+    return this.currentView !== 'bestiary';
+  }
 
   get currentViewTitle(): string {
     switch (this.currentView) {
