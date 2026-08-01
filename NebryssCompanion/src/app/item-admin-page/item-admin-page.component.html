@@ -2,18 +2,16 @@
   <div class="player-detail-container admin-header">
     <div>
       <h2>{{ headerTitle }}</h2>
-      <p>{{ headerDescription }}</p>
     </div>
   </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
     <h3>Admin Access Required</h3>
-    <p>This page is only available after logging in with the admin password from the sidebar.</p>
   </div>
 
   <div *ngIf="isAdmin" class="layout">
     <div class="player-detail-container admin-mode-panel">
-      <div class="item admin-section">
+      <div class="admin-section">
         <h3>Creator Type</h3>
         <div class="creator-mode-buttons">
           <button
@@ -30,7 +28,7 @@
     </div>
 
     <form class="player-detail-container" (ngSubmit)="submit()">
-      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+      <section class="admin-section" *ngIf="creatorMode === 'item'">
         <h3>Basic Details</h3>
 
         <label class="field">
@@ -78,7 +76,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'armor'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'armor'">
         <h3>Armor Options</h3>
         <label class="field">
           <span>Body Type</span>
@@ -88,7 +86,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'ammunition'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'ammunition'">
         <h3>Ammunition Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -106,7 +104,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'mistEngine'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'mistEngine'">
         <h3>Mist Engine Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -126,7 +124,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'shipHull'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'shipHull'">
         <h3>Ship Hull Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -151,7 +149,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannon'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannon'">
         <h3>Cannon Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -166,7 +164,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannonball'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannonball'">
         <h3>Cannonball Options</h3>
         <label class="field">
           <span>Damage</span>
@@ -174,7 +172,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'modification'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'modification'">
         <h3>Modification Options</h3>
         <label class="field">
           <span>Part</span>
@@ -184,7 +182,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'material'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'material'">
         <h3>Material Options</h3>
         <label class="field">
           <span>Dropped By</span>
@@ -195,7 +193,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'blueprint'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'blueprint'">
         <h3>Blueprint Options</h3>
 
         <label class="field">
@@ -231,7 +229,7 @@
         </ul>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'deployable'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'deployable'">
         <h3>Deployable Options</h3>
 
         <label class="field">
@@ -272,13 +270,11 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+      <section class="admin-section" *ngIf="creatorMode === 'item'">
         <div class="section-header">
           <h3>Stat Modifications</h3>
           <button class="inline-btn" type="button" (click)="addStatModification()">Add Modification</button>
         </div>
-
-        <p class="hint">Use this for direct stat changes such as wounds, save, hit, damage, attacks, or crit effects.</p>
 
         <div class="profile admin-subsection" *ngFor="let modification of statModifications; let i = index">
           <div class="field-grid">
@@ -312,11 +308,10 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+      <section class="admin-section" *ngIf="creatorMode === 'letter'">
         <div class="section-header">
           <div>
             <h3>Letter Details</h3>
-            <p class="hint">Create letters, dossiers, and picked-up documents for selected players.</p>
           </div>
           <button class="remove-btn" type="button" *ngIf="editingLetterId !== null" (click)="deleteSelectedLetter()">
             Delete Selected Letter
@@ -409,7 +404,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+      <section class="admin-section" *ngIf="creatorMode === 'letter'">
         <div class="section-header">
           <h3>Existing Letters</h3>
           <button class="inline-btn" type="button" [disabled]="editingLetterId === null" (click)="clearLetterSelection()">
@@ -417,7 +412,6 @@
           </button>
         </div>
 
-        <p class="hint">Select a letter to edit it. Select it again or use the button above to clear the form.</p>
 
         <div class="admin-selection-list" *ngIf="letterSummaryOptions.length; else noLettersState">
           <button
@@ -442,7 +436,7 @@
         </ng-template>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon'">
         <h3>Weapon Details</h3>
 
         <div class="field-grid">
@@ -458,7 +452,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon'">
         <div class="section-header">
           <h3>Profiles</h3>
           <button class="inline-btn" type="button" (click)="addWeaponProfile()">Add Profile</button>
@@ -554,12 +548,12 @@
     </form>
 
     <aside class="player-detail-container">
-      <section class="item admin-section">
+      <section class="admin-section">
         <h3>{{ creatorMode === 'item' ? 'Item' : creatorMode === 'weapon' ? 'Weapon' : 'Letter' }} JSON Preview</h3>
         <pre class="admin-preview-json">{{ previewJson }}</pre>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
         <h3>{{ editingItemId !== null ? 'Last Saved Item' : 'Last Created Item' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedItem.name }}</div>
@@ -571,7 +565,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
         <h3>{{ editingWeaponId !== null ? 'Last Saved Weapon' : 'Last Created Weapon' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedWeapon.name }}</div>
@@ -581,7 +575,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter' && lastCreatedLetter">
+      <section class="admin-section" *ngIf="creatorMode === 'letter' && lastCreatedLetter">
         <h3>{{ editingLetterId !== null ? 'Last Saved Letter' : 'Last Created Letter' }}</h3>
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastCreatedLetter.id }}</div>

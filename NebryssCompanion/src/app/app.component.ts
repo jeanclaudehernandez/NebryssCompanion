@@ -230,6 +230,12 @@ export class AppComponent {
     return isStandalone || isIOSStandalone;
   }
 
+  private get isIOSDevice(): boolean {
+    const { userAgent, platform, maxTouchPoints } = window.navigator;
+    return /iPad|iPhone|iPod/i.test(userAgent)
+      || (platform === 'MacIntel' && (maxTouchPoints ?? 0) > 1);
+  }
+
   private resetPullState(resetProgress = true) {
     this.isPulling = false;
     if (resetProgress) {
@@ -260,7 +266,9 @@ export class AppComponent {
   }
 
   private canStartPullRefresh(event: TouchEvent): boolean {
-    if (!this.isStandalone || this.isRefreshing || event.touches.length !== 1) {
+    // iOS Safari/PWA is prone to canceling taps when a root-level pull gesture
+    // starts tracking touches, so keep the custom gesture disabled there.
+    if (!this.isStandalone || this.isIOSDevice || this.isRefreshing || event.touches.length !== 1) {
       return false;
     }
 

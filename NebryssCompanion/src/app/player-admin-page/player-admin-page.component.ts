@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, ElementRef, HostListener, ViewChild, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
@@ -34,6 +34,8 @@ type TalentTableRow = {
 export class PlayerAdminPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
+  @ViewChild('bodyEditor') bodyEditorRef?: ElementRef<HTMLElement>;
+
   isAdmin = false;
   isSaving = false;
   players: Player[] = [];
@@ -54,6 +56,18 @@ export class PlayerAdminPageComponent implements OnInit {
 
   editingStat: EditableStatKey | null = null;
   statEditValue: number | null = null;
+
+  isBodySelectorOpen = false;
+  readonly bodyTypeOptions = [
+    'universal',
+    'human',
+    'astartes',
+    'fellgor',
+    'spell',
+    'ork',
+    'aetherwing',
+    'plant'
+  ] as const;
 
   constructor(
     private readonly adminService: AdminService,
@@ -186,6 +200,59 @@ export class PlayerAdminPageComponent implements OnInit {
   cancelStatEdit(): void {
     this.editingStat = null;
     this.statEditValue = null;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isBodySelectorOpen) {
+      return;
+    }
+
+    const editor = this.bodyEditorRef?.nativeElement;
+    if (!editor) {
+      this.isBodySelectorOpen = false;
+      return;
+    }
+
+    if (event.target instanceof Node && !editor.contains(event.target)) {
+      this.isBodySelectorOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isBodySelectorOpen = false;
+  }
+
+  toggleBodySelector(event?: Event): void {
+    event?.stopPropagation();
+    this.isBodySelectorOpen = !this.isBodySelectorOpen;
+  }
+
+  onBodyTypeToggle(bodyType: string, checked: boolean): void {
+    if (!this.editablePlayer) {
+      return;
+    }
+
+    const current = [...(this.editablePlayer.attributes.body ?? [])];
+
+    if (checked) {
+      if (!current.includes(bodyType)) {
+        current.push(bodyType);
+      }
+    } else {
+      const index = current.indexOf(bodyType);
+      if (index >= 0) {
+        current.splice(index, 1);
+      }
+    }
+
+    const order = new Map<string, number>(
+      this.bodyTypeOptions.map((key, index) => [key, index])
+    );
+
+    current.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+    this.editablePlayer.attributes.body = current;
   }
 
   save(): void {

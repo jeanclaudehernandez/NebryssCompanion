@@ -1,5 +1,4 @@
 .admin-page {
-  padding: 72px 16px 96px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -17,6 +16,16 @@
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   gap: 20px;
   align-items: start;
+  min-width: 0;
+}
+
+.layout > * {
+  min-width: 0;
+}
+
+.player-detail-container {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .admin-section {
@@ -116,12 +125,19 @@
   padding: 4px 0 8px 0;
   margin-bottom: 8px;
   background-color: #f5f5f5;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .attributes-table {
   width: 100%;
   border-collapse: collapse;
   table-layout: fixed;
+  display: table;
+}
+
+.attributes-table tr {
+  display: table-row;
 }
 
 .attributes-table th,
@@ -130,6 +146,8 @@
   text-align: center;
   border: 1px solid #dbe4ec;
   background: #ffffff;
+  display: table-cell;
+  min-width: 0;
 }
 
 .attributes-table th {
@@ -161,6 +179,75 @@
   text-align: center;
   font-size: 14px;
   box-sizing: border-box;
+}
+
+.body-editor {
+  position: relative;
+  margin-top: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.body-editor-label {
+  font-weight: 600;
+}
+
+.body-editor-trigger {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: inherit;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.body-editor-trigger-caret {
+  opacity: 0.85;
+}
+
+.body-selector-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 60;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.body-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+}
+
+.body-option input {
+  width: 16px;
+  height: 16px;
+}
+
+.body-option-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.body-option-label {
+  text-transform: capitalize;
 }
 
 .actions {
@@ -195,15 +282,25 @@
   overflow: auto;
   font-size: 13px;
   line-height: 1.5;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 :host-context(body.dark-theme) .field input,
 :host-context(body.dark-theme) .field textarea,
 :host-context(body.dark-theme) .field select,
-:host-context(body.dark-theme) .stat-input {
+:host-context(body.dark-theme) .stat-input,
+:host-context(body.dark-theme) .body-editor-trigger {
   background: #2d2d2d;
   color: #e0e0e0;
   border-color: #555;
+}
+
+:host-context(body.dark-theme) .body-selector-panel {
+  background: #1f2937;
+  border-color: #334155;
+  color: #f8fafc;
 }
 
 :host-context(body.dark-theme) .ability-card {
@@ -263,13 +360,78 @@
 }
 
 @media (max-width: 720px) {
-  .admin-page {
-    padding: 72px 12px 96px;
-  }
 
   .section-header,
   .ability-card-header {
     flex-direction: column;
     align-items: stretch;
+  }
+
+
+  .attributes.sticky-attributes {
+    padding: 2px 0 6px 0;
+  }
+
+  .attributes-table {
+    min-width: 0;
+  }
+
+  .attributes-table th,
+  .attributes-table td {
+    padding: 6px 3px;
+    font-size: 12px;
+  }
+
+  .attributes-table th:last-child,
+  .attributes-table td:last-child {
+    width: 44px;
+  }
+
+  .attr-header-cell svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .stat-input {
+    padding: 4px 2px;
+    font-size: 12px;
+  }
+
+  .body-editor-trigger {
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+
+  .body-selector-panel {
+    padding: 8px;
+    max-height: 220px;
+  }
+
+  .admin-preview-json {
+    padding: 12px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-page {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .attributes-table th,
+  .attributes-table td {
+    padding: 5px 2px;
+    font-size: 11px;
+  }
+
+  .attributes-table th:last-child,
+  .attributes-table td:last-child {
+    width: 40px;
+  }
+
+  .attr-header-cell svg {
+    width: 12px;
+    height: 12px;
   }
 }
