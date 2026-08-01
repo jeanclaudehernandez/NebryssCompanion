@@ -102,6 +102,56 @@ export class PlayerDetailComponent implements OnChanges {
         </svg>
       </span>`;
     }
+    if (str.includes('spell')) {
+      html += `<span class="body-icon-badge spell" title="Spell">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
+          <path d="M8 2v20"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('fellgor')) {
+      html += `<span class="body-icon-badge fellgor" title="Fellgor">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
+          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
+          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
+          <path d="M10 14h.01M14 14h.01"></path>
+          <path d="M11 17c.6.5 1.4.5 2 0"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('ork')) {
+      html += `<span class="body-icon-badge ork" title="Ork">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
+          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
+          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
+          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
+          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
+          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('aetherwing') || str.includes('aethering')) {
+      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="12" r="5"></circle>
+          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
+          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
+        </svg>
+      </span>`;
+    }
+    if (str.includes('plant')) {
+      html += `<span class="body-icon-badge plant" title="Plant">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20v-8"></path>
+          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
+          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
+        </svg>
+      </span>`;
+    }
 
     return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }

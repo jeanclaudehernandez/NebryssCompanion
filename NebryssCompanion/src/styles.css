@@ -218,6 +218,21 @@ body {
     box-shadow: 0 8px 24px rgba(21, 61, 93, 0.18);
   }
 
+  .attributes-table {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) max-content;
+  }
+
+  .attributes-table tr {
+    display: contents;
+  }
+
+  .attributes-table th,
+  .attributes-table td {
+    min-width: 0;
+  }
+
   .attributes th {
     background-color: #c7ddeb;
     font-weight: 700;
@@ -228,6 +243,11 @@ body {
   .attributes td {
     text-align: center;
     vertical-align: middle !important;
+  }
+
+  .attributes th:last-child,
+  .attributes td:last-child {
+    white-space: nowrap;
   }
 
   .attributes td {
@@ -305,6 +325,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 4px;
+    flex-wrap: nowrap;
     line-height: 1;
     vertical-align: middle;
   }
@@ -328,32 +349,79 @@ body {
   }
 
   .body-icon-badge.human {
-    background-color: #1976d2;
+    background-color: #c4ad8b;
     color: #ffffff;
   }
 
   .body-icon-badge.astartes {
-    background-color: #d32f2f;
+    background-color: #1e3a8a;
     color: #ffffff;
   }
 
-  .body-icon-badge.universal {
+  .body-icon-badge.spell {
     background-color: #7c3aed;
     color: #ffffff;
   }
 
+  .body-icon-badge.fellgor {
+    background-color: #556b2f;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.ork {
+    background-color: #2f7d32;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.aethering,
+  .body-icon-badge.aetherwing {
+    background-color: #d7a4a4;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.plant {
+    background-color: #a7c7a2;
+    color: #ffffff;
+  }
+
+  .body-icon-badge.universal {
+    background-color: #6b7280;
+    color: #ffffff;
+  }
+
   body.dark-theme .body-icon-badge.human {
-    background-color: #2563eb;
+    background-color: #b79c77;
     color: #ffffff;
   }
 
   body.dark-theme .body-icon-badge.astartes {
-    background-color: #dc2626;
+    background-color: #2563eb;
     color: #ffffff;
   }
 
   body.dark-theme .body-icon-badge.universal {
+    background-color: #9ca3af;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.spell {
     background-color: #8b5cf6;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.ork {
+    background-color: #22c55e;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.aethering,
+  body.dark-theme .body-icon-badge.aetherwing {
+    background-color: #c98c8c;
+    color: #ffffff;
+  }
+
+  body.dark-theme .body-icon-badge.plant {
+    background-color: #86a981;
     color: #ffffff;
   }
 
