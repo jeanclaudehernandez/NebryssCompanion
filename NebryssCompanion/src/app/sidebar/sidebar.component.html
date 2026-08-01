@@ -93,6 +93,10 @@
       <span class="material-icons">admin_panel_settings</span>
       <span>Item Creator</span>
     </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminLocationCreator()">
+      <span class="material-icons">add_location_alt</span>
+      <span>Location Creator</span>
+    </div>
 
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">

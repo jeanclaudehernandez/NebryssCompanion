@@ -356,6 +356,46 @@
   background-color: #90caf9;
 }
 
+.map-create-dialog {
+  min-width: 280px;
+  color: inherit;
+}
+
+.map-create-dialog h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.map-create-dialog p {
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.map-create-dialog .dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.map-create-dialog .btn-confirm,
+.map-create-dialog .btn-cancel {
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.map-create-dialog .btn-confirm {
+  background: #64b5f6;
+  color: #10202e;
+  font-weight: 700;
+}
+
+.map-create-dialog .btn-cancel {
+  background: rgba(255, 255, 255, 0.12);
+  color: #e0e0e0;
+}
+
 @media (min-width: 640px) {
   .map-popup {
     left: auto;

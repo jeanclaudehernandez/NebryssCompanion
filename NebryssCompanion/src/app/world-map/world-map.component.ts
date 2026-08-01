@@ -1,7 +1,10 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { Location } from '../model';
+import { ModalService } from '../modal.service';
 import { WORLD_MAP_PIN_COORDINATES } from './world-map-pin-coordinates';
 import { WorldMapStateService } from './world-map-state.service';
 import { FACTION_COLORS, DEFAULT_FACTION_COLOR } from './world-map-faction-colors';
@@ -26,10 +29,16 @@ export interface MapPin {
 export class WorldMapComponent implements OnInit, OnDestroy {
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
+  @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number; mapY: number }>();
+  @ViewChild('mapSurface') mapSurfaceRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('createLocationConfirmDialog') createLocationConfirmDialog?: TemplateRef<any>;
+
+  private readonly destroyRef = inject(DestroyRef);
 
   worldMapLocation: Location | null = null;
   pins: MapPin[] = [];
   selectedPin: Location | null = null;
+  isAdmin = false;
   private locationsData: Location[] = [];
   private factionIcons = new Map<string, string>();
 
@@ -44,11 +53,20 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   private readonly activePointers = new Map<number, { x: number; y: number }>();
   private pinchStartDistance = 0;
   private pinchStartScale = 1;
+  private pendingCreateCoords: { x: number; y: number } | null = null;
+  private longPressTimer: number | null = null;
+  private longPressPointerId: number | null = null;
+  private longPressStartPoint: { x: number; y: number } | null = null;
+  private longPressTriggered = false;
+  private readonly longPressDuration = 650;
+  private readonly longPressMoveTolerance = 12;
 
   constructor(
     private dataService: DataService,
     private cdr: ChangeDetectorRef,
-    private mapState: WorldMapStateService
+    private mapState: WorldMapStateService,
+    private adminService: AdminService,
+    private modalService: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -56,6 +74,12 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     this.scale = this.mapState.scale;
     this.translateX = this.mapState.translateX;
     this.translateY = this.mapState.translateY;
+
+    this.adminService.isAdmin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+      });
 
     this.dataService.getLocations().subscribe(data => {
       const locations = data.locations || [];
@@ -156,16 +180,22 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   }
 
   onPointerDown(event: PointerEvent): void {
+    if (event.pointerType === 'mouse' && event.button !== 0) {
+      return;
+    }
+
     (event.target as Element).setPointerCapture?.(event.pointerId);
     this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
 
     if (this.activePointers.size === 1) {
       this.isPanning = true;
       this.lastPointer = { x: event.clientX, y: event.clientY };
+      this.startLongPress(event);
     } else if (this.activePointers.size === 2) {
       this.isPanning = false;
       this.pinchStartDistance = this.getPointersDistance();
       this.pinchStartScale = this.scale;
+      this.cancelLongPress();
     }
   }
 
@@ -174,6 +204,16 @@ export class WorldMapComponent implements OnInit, OnDestroy {
       return;
     }
     this.activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+
+    if (this.longPressPointerId === event.pointerId && this.longPressStartPoint) {
+      const movedDistance = Math.hypot(
+        event.clientX - this.longPressStartPoint.x,
+        event.clientY - this.longPressStartPoint.y
+      );
+      if (movedDistance > this.longPressMoveTolerance) {
+        this.cancelLongPress();
+      }
+    }
 
     if (this.activePointers.size === 2) {
       const distance = this.getPointersDistance();
@@ -193,6 +233,9 @@ export class WorldMapComponent implements OnInit, OnDestroy {
   onPointerUp(event: PointerEvent): void {
     this.activePointers.delete(event.pointerId);
     this.pinchStartDistance = 0;
+    if (this.longPressPointerId === event.pointerId || this.longPressTriggered) {
+      this.cancelLongPress();
+    }
 
     const remaining = this.activePointers.values().next();
     if (!remaining.done) {
@@ -215,7 +258,90 @@ export class WorldMapComponent implements OnInit, OnDestroy {
     this.scale = Math.min(this.maxScale, Math.max(this.minScale, next));
   }
 
+  private startLongPress(event: PointerEvent): void {
+    this.cancelLongPress();
+
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const target = event.target as Element | null;
+    if (!target?.closest('.map-surface') || target.closest('.map-pin')) {
+      return;
+    }
+
+    this.longPressPointerId = event.pointerId;
+    this.longPressStartPoint = { x: event.clientX, y: event.clientY };
+    this.longPressTriggered = false;
+    this.longPressTimer = window.setTimeout(() => {
+      const coords = this.getCoordinatesFromPointer(event.clientX, event.clientY);
+      if (!coords || !this.createLocationConfirmDialog) {
+        return;
+      }
+
+      this.longPressTriggered = true;
+      this.isPanning = false;
+      this.pendingCreateCoords = coords;
+      this.modalService.openFromTemplate(this.createLocationConfirmDialog, {
+        coords,
+        confirm: () => this.confirmCreateLocation(),
+        cancel: () => this.cancelCreateLocationPrompt()
+      });
+    }, this.longPressDuration);
+  }
+
+  private cancelLongPress(): void {
+    if (this.longPressTimer !== null) {
+      window.clearTimeout(this.longPressTimer);
+      this.longPressTimer = null;
+    }
+    this.longPressPointerId = null;
+    this.longPressStartPoint = null;
+    this.longPressTriggered = false;
+  }
+
+  private getCoordinatesFromPointer(clientX: number, clientY: number): { x: number; y: number } | null {
+    const surface = this.mapSurfaceRef?.nativeElement;
+    if (!surface) {
+      return null;
+    }
+
+    const rect = surface.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return null;
+    }
+
+    const relativeX = ((clientX - rect.left) / rect.width) * 100;
+    const relativeY = ((clientY - rect.top) / rect.height) * 100;
+
+    return {
+      x: Number(Math.min(100, Math.max(0, relativeX)).toFixed(2)),
+      y: Number(Math.min(100, Math.max(0, relativeY)).toFixed(2))
+    };
+  }
+
+  private confirmCreateLocation(): void {
+    if (!this.pendingCreateCoords) {
+      this.cancelCreateLocationPrompt();
+      return;
+    }
+
+    this.navigateToAdminLocationCreator.emit({
+      mapX: this.pendingCreateCoords.x,
+      mapY: this.pendingCreateCoords.y
+    });
+    this.cancelCreateLocationPrompt();
+  }
+
+  private cancelCreateLocationPrompt(): void {
+    this.pendingCreateCoords = null;
+    this.modalService.close();
+    this.cdr.markForCheck();
+  }
+
   ngOnDestroy(): void {
+    this.cancelLongPress();
+    this.modalService.close();
     this.mapState.scale = this.scale;
     this.mapState.translateX = this.translateX;
     this.mapState.translateY = this.translateY;

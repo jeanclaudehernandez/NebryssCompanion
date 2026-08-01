@@ -1,0 +1,197 @@
+.admin-page {
+  padding: 72px 16px 96px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.admin-header,
+.admin-locked {
+  margin-bottom: 20px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.admin-section {
+  margin-bottom: 16px;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.field span {
+  font-weight: 600;
+}
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.autocomplete-field {
+  position: relative;
+}
+
+.autocomplete-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  display: grid;
+  gap: 4px;
+  max-height: 220px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.16);
+  overflow-y: auto;
+  z-index: 5;
+}
+
+.autocomplete-option {
+  width: 100%;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 10px;
+  text-align: left;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.autocomplete-option:hover {
+  background: rgba(33, 150, 243, 0.12);
+}
+
+.hint {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.checkbox-field {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  padding-top: 32px;
+}
+
+.checkbox-field input {
+  width: auto;
+  margin: 0;
+}
+
+.toggles-grid {
+  align-items: start;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.btn-confirm {
+  padding: 8px 16px;
+  border: none;
+  background: #2196f3;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-confirm:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-preview-json {
+  margin: 0;
+  padding: 16px;
+  border-radius: 4px;
+  background: #0f172a;
+  color: #dbeafe;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.summary-list {
+  display: grid;
+  gap: 8px;
+}
+
+:host-context(body.dark-theme) .field input,
+:host-context(body.dark-theme) .field textarea,
+:host-context(body.dark-theme) .field select {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+:host-context(body.dark-theme) .autocomplete-panel {
+  background: #2d2d2d;
+  border-color: #555;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+:host-context(body.dark-theme) .autocomplete-option:hover {
+  background: rgba(100, 181, 246, 0.18);
+}
+
+:host-context(body.dark-theme) .btn-confirm {
+  background: #64b5f6;
+  color: #121212;
+}
+
+:host-context(body.dark-theme) .admin-preview-json {
+  background: #111827;
+  color: #dbeafe;
+}
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-page {
+    padding: 72px 12px 96px;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox-field {
+    padding-top: 0;
+  }
+}

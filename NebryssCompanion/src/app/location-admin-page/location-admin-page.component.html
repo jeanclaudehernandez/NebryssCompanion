@@ -1,0 +1,130 @@
+<div class="admin-page">
+  <div class="player-detail-container admin-header">
+    <div>
+      <h2>Location Creator</h2>
+      <p>Create a new location entry with optional world-map coordinates. When opened from the map, the pressed coordinates are prefilled here.</p>
+    </div>
+  </div>
+
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+    <p>This page is only available after logging in with the admin password from the sidebar.</p>
+  </div>
+
+  <div *ngIf="isAdmin" class="layout">
+    <form class="player-detail-container" (ngSubmit)="submit()">
+      <section class="item admin-section">
+        <h3>Basic Details</h3>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>ID</span>
+            <input [(ngModel)]="locationId" name="locationId" type="number" min="1" placeholder="Optional, auto-assigned if blank" />
+          </label>
+
+          <div class="field">
+            <span>Faction</span>
+            <div class="autocomplete-field" (focusout)="onFactionFieldFocusOut($event)">
+              <input
+                [(ngModel)]="faction"
+                name="faction"
+                type="text"
+                placeholder="Faction or world owner"
+                (focus)="showFactionOptions = true"
+                autocomplete="off"
+              />
+              <div class="autocomplete-panel" *ngIf="showFactionOptions && filteredFactionOptions.length">
+                <button
+                  *ngFor="let option of filteredFactionOptions"
+                  type="button"
+                  class="autocomplete-option"
+                  (mousedown)="onFactionSelect(option)"
+                >
+                  {{ option }}
+                </button>
+              </div>
+            </div>
+            <small class="hint">Focus the field to pick an existing faction, or type a custom one.</small>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Name</span>
+          <input [(ngModel)]="name" name="name" type="text" placeholder="Location name" />
+        </label>
+
+        <label class="field">
+          <span>Description</span>
+          <textarea [(ngModel)]="description" name="description" rows="5" placeholder="Short summary for the location page and map popup"></textarea>
+        </label>
+      </section>
+
+      <section class="item admin-section">
+        <h3>World Map Placement</h3>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Map X (%)</span>
+            <input [(ngModel)]="mapX" name="mapX" type="number" min="0" max="100" step="0.01" placeholder="Optional" />
+          </label>
+
+          <label class="field">
+            <span>Map Y (%)</span>
+            <input [(ngModel)]="mapY" name="mapY" type="number" min="0" max="100" step="0.01" placeholder="Optional" />
+          </label>
+        </div>
+
+        <p class="hint">Leave both blank for a location with no map pin yet. If you set one, set both.</p>
+
+        <div class="field-grid toggles-grid">
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isCapital" name="isCapital" type="checkbox" />
+            <span>Capital location</span>
+          </label>
+
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isWorldMap" name="isWorldMap" type="checkbox" />
+            <span>Use as world map background</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="item admin-section">
+        <h3>Images</h3>
+
+        <label class="field">
+          <span>Main Image URL</span>
+          <input [(ngModel)]="imgUrl" name="imgUrl" type="url" placeholder="https://..." />
+        </label>
+
+        <label class="field">
+          <span>Thumbnail URL</span>
+          <input [(ngModel)]="thumbnail" name="thumbnail" type="url" placeholder="https://..." />
+        </label>
+      </section>
+
+      <div class="actions dialog-buttons">
+        <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
+          {{ isSaving ? 'Creating...' : 'Create Location' }}
+        </button>
+      </div>
+    </form>
+
+    <aside class="player-detail-container">
+      <section class="item admin-section">
+        <h3>Location JSON Preview</h3>
+        <pre class="admin-preview-json">{{ previewJson }}</pre>
+      </section>
+
+      <section class="item admin-section" *ngIf="lastCreatedLocation">
+        <h3>Last Created Location</h3>
+        <div class="summary-list">
+          <div><strong>ID:</strong> {{ lastCreatedLocation.id }}</div>
+          <div><strong>Name:</strong> {{ lastCreatedLocation.name }}</div>
+          <div><strong>Faction:</strong> {{ lastCreatedLocation.faction }}</div>
+          <div><strong>Map:</strong> {{ lastCreatedLocation.mapX ?? 'n/a' }}, {{ lastCreatedLocation.mapY ?? 'n/a' }}</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

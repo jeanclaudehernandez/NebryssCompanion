@@ -24,7 +24,7 @@
     (pointerup)="onPointerUp($event)"
     (pointercancel)="onPointerUp($event)"
   >
-    <div class="map-surface" *ngIf="worldMapLocation" [style.transform]="mapTransform">
+    <div #mapSurface class="map-surface" *ngIf="worldMapLocation" [style.transform]="mapTransform">
       <img class="map-image" [src]="worldMapLocation.imgUrl" [alt]="worldMapLocation.name" draggable="false">
 
       <button
@@ -82,3 +82,14 @@
     </button>
   </div>
 </div>
+
+<ng-template #createLocationConfirmDialog let-coords="coords" let-confirm="confirm" let-cancel="cancel">
+  <div class="confirmation-dialog map-create-dialog">
+    <h3>Create Location</h3>
+    <p>Create a new location at <strong>{{ coords.x }}%</strong>, <strong>{{ coords.y }}%</strong> on the world map?</p>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn-confirm" type="button" (click)="confirm()">Create</button>
+    </div>
+  </div>
+</ng-template>

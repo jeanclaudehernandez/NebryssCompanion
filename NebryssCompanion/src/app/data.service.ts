@@ -238,6 +238,19 @@ export class DataService {
     return this.locationsCache$;
   }
 
+  refreshLocations(): Observable<Locations> {
+    this.locationsCache$ = this.http.get<Location[]>(`${this.apiUrl}/locations`).pipe(
+      map(locationsArray => {
+        const wrapped: Locations = { locations: locationsArray };
+        this.locations = wrapped;
+        return wrapped;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.locationsCache$;
+  }
+
   private readonly talentNameOverrides: Record<string, string> = {
     'att1': 'Agility',
     'att2': 'Vitality',
@@ -543,6 +556,41 @@ export class DataService {
       tap(() => {
         this.weapons = this.weapons.filter(w => w.id !== id);
         this.weaponsCache$ = null;
+      })
+    );
+  }
+
+  createLocation(location: Partial<Location>): Observable<Location> {
+    return this.http.post<Location>(`${this.apiUrl}/locations`, location).pipe(
+      tap(newLocation => {
+        this.locations.locations.push(newLocation);
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateLocation(location: Location): Observable<Location> {
+    return this.http.put<Location>(`${this.apiUrl}/locations`, location).pipe(
+      tap(updatedLocation => {
+        const index = this.locations.locations.findIndex(existingLocation => existingLocation.id === updatedLocation.id);
+        if (index !== -1) {
+          this.locations.locations[index] = updatedLocation;
+        } else {
+          this.locations.locations.push(updatedLocation);
+        }
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteLocation(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/locations/${id}`).pipe(
+      tap(() => {
+        this.locations.locations = this.locations.locations.filter(location => location.id !== id);
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
       })
     );
   }

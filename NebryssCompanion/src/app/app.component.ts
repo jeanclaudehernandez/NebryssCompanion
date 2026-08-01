@@ -27,6 +27,7 @@ import { WeaponRule } from './model';
 import { AfflictionsListComponent } from './afflictions-list/afflictions-list.component';
 import { ShipNavigationComponent } from './ship-navigation/ship-navigation.component';
 import { ItemAdminPageComponent } from './item-admin-page/item-admin-page.component';
+import { LocationAdminPageComponent } from './location-admin-page/location-admin-page.component';
 import { AdminEditorSession } from './admin-editor.models';
 import { LettersPageComponent } from './letters-page/letters-page.component';
 import { ActivePlayerService } from './active-player.service';
@@ -55,6 +56,7 @@ import { ActivePlayerService } from './active-player.service';
     AfflictionsListComponent,
     ShipNavigationComponent,
     ItemAdminPageComponent,
+    LocationAdminPageComponent,
     LettersPageComponent
   ],
   template: `
@@ -116,7 +118,11 @@ import { ActivePlayerService } from './active-player.service';
         <app-locations (navigateTo)="onViewChange($event)" (navigateToLore)="onNavigateToLore($event)" [initialLocationName]="selectedLocationName" [backTarget]="selectedLocationBackTarget"></app-locations>
       }
       @if (currentView === 'worldMap') {
-        <app-world-map (navigateToLocation)="onNavigateToLocation($event, 'worldMap')" (navigateToLore)="onNavigateToLore($event)"></app-world-map>
+        <app-world-map
+          (navigateToLocation)="onNavigateToLocation($event, 'worldMap')"
+          (navigateToLore)="onNavigateToLore($event)"
+          (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
+        ></app-world-map>
       }
       @if (currentView === 'talents') {
         <app-talents></app-talents>
@@ -144,6 +150,12 @@ import { ActivePlayerService } from './active-player.service';
       }
       @if (currentView === 'adminItemCreator') {
         <app-item-admin-page [editSession]="adminEditSession"></app-item-admin-page>
+      }
+      @if (currentView === 'adminLocationCreator') {
+        <app-location-admin-page
+          [initialMapX]="adminLocationDraft?.mapX ?? null"
+          [initialMapY]="adminLocationDraft?.mapY ?? null"
+        ></app-location-admin-page>
       }
     </div>
 
@@ -199,13 +211,14 @@ import { ActivePlayerService } from './active-player.service';
 export class AppComponent {
   private readonly destroyRef = inject(DestroyRef);
 
-  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' = 'players';
+  currentView: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator' = 'players';
   selectedLocationName: string | null = null;
   selectedLocationBackTarget: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
+  adminLocationDraft: { mapX: number | null; mapY: number | null } | null = null;
   letterUnreadCount = 0;
   activePlayer$ = this.activePlayerService.activePlayer$;
 
@@ -228,6 +241,7 @@ export class AppComponent {
       case 'afflictions': return 'Afflictions';
       case 'shipNavigation': return 'Ship Navigation';
       case 'adminItemCreator': return 'Item Creator';
+      case 'adminLocationCreator': return 'Location Creator';
       default: return 'Nebryss Companion';
     }
   }
@@ -393,13 +407,16 @@ export class AppComponent {
 
   private isValidView(view: string | null): view is AppComponent['currentView'] {
     return view !== null && 
-      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'worldMap', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator'].includes(view);
+      ['players', 'bestiary', 'letters', 'items', 'shops', 'lore', 'locations', 'worldMap', 'talents', 'mistEffects', 'terrains', 'mistEngineBattles', 'weaponRules', 'alteredStates', 'afflictions', 'shipNavigation', 'adminItemCreator', 'adminLocationCreator'].includes(view);
   }
 
-  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  onViewChange(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'worldMap' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator' | 'adminLocationCreator') {
     this.currentView = view;
     if (view === 'adminItemCreator') {
       this.adminEditSession = null;
+    }
+    if (view === 'adminLocationCreator') {
+      this.adminLocationDraft = null;
     }
     // Reset selectedLocationName when manually changing views, unless we are navigating specifically
     // Ideally this logic should be more granular, but for now this is fine.
@@ -411,6 +428,9 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
+    if (view !== 'adminLocationCreator') {
+      this.adminLocationDraft = null;
+    }
     
     // Save current view
     localStorage.setItem('lastView', view);
@@ -420,6 +440,7 @@ export class AppComponent {
   onOpenAdminEditor(session: AdminEditorSession) {
     this.adminEditSession = session;
     this.currentView = 'adminItemCreator';
+    this.adminLocationDraft = null;
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
     this.selectedFactionName = null;
@@ -429,10 +450,26 @@ export class AppComponent {
     window.scrollTo({ top: 0 });
   }
 
+  onNavigateToAdminLocationCreator(coords: { mapX: number; mapY: number }) {
+    this.adminLocationDraft = {
+      mapX: coords.mapX,
+      mapY: coords.mapY
+    };
+    this.currentView = 'adminLocationCreator';
+    this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
+    this.selectedFactionName = null;
+    this.selectedRuleName = null;
+    this.selectedStateName = null;
+    localStorage.setItem('lastView', 'adminLocationCreator');
+    window.scrollTo({ top: 0 });
+  }
+
   onNavigateToLocation(locationName: string, backTarget: string | null = null) {
     this.selectedLocationName = locationName;
     this.selectedLocationBackTarget = backTarget;
     this.currentView = 'locations';
+    this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'locations');
     window.scrollTo({ top: 0 });
   }
@@ -440,6 +477,7 @@ export class AppComponent {
   onNavigateToLore(factionName: string) {
     this.selectedFactionName = factionName;
     this.currentView = 'lore';
+    this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
     window.scrollTo({ top: 0 });
   }
