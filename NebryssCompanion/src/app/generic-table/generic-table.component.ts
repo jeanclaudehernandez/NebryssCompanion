@@ -37,9 +37,11 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                   (click)="onSort(headerKeys[i])"
                   class="sortable-header"
                   [class.col-compact]="isCompactColumn(headerKeys[i])"
+                  [class.col-density-level]="headerKeys[i] === 'densityLevel'"
                   [class.col-description]="isDescriptionColumn(headerKeys[i])"
-                  [class.col-name]="headerKeys[i] === 'name'"
-                  [style.width]="headerKeys[i] === 'name' ? nameColumnWidth : null"
+                  [class.col-part]="headerKeys[i] === 'part'"
+                  [class.col-name]="isNameColumn(headerKeys[i])"
+                  [style.width]="isNameColumn(headerKeys[i]) ? nameColumnWidth : null"
                   [title]="getHeaderTooltip(header)">
                   {{ getShortHeader(header) }}
                   <span *ngIf="sortKey === headerKeys[i]">
@@ -54,16 +56,18 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                 <td 
                   *ngFor="let header of headerKeys"
                   [class.col-compact]="isCompactColumn(header)"
+                  [class.col-density-level]="header === 'densityLevel'"
                   [class.col-description]="isDescriptionColumn(header)"
-                  [class.col-name]="header === 'name'"
-                  [style.width]="header === 'name' ? nameColumnWidth : null">
-                  <ng-container *ngIf="header === 'name'">
+                  [class.col-part]="header === 'part'"
+                  [class.col-name]="isNameColumn(header)"
+                  [style.width]="isNameColumn(header) ? nameColumnWidth : null">
+                  <ng-container *ngIf="isNameColumn(header)">
                     <div class="name-wrapper" [style.max-width]="nameColumnWidth" [style.width]="nameColumnWidth">
                       <span *ngIf="!renderHtml?.includes('name')">{{ item[header] }}</span>
                       <span *ngIf="renderHtml?.includes('name')" [innerHtml]="item[header] | sanitizeHtml"></span>
                     </div>
                   </ng-container>
-                  <ng-container *ngIf="header !== 'name'">
+                  <ng-container *ngIf="!isNameColumn(header)">
                     <span *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [innerHtml]="formatBodyIcons(item[header]) | sanitizeHtml"></span>
                     <div *ngIf="!renderHtml?.includes(header) && header === 'subtype'" class="multiline-cell">
                       <div *ngFor="let line of splitLines(item[header])" class="cell-line">{{ line }}</div>
@@ -194,8 +198,12 @@ export class GenericTableComponent implements OnInit, OnChanges {
     return header;
   }
 
+  isNameColumn(key: string): boolean {
+    return ['name', 'effectName'].includes(key);
+  }
+
   isCompactColumn(key: string): boolean {
-    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subtype', 'bestiaryId', 'type', 'densityLevel', 'toHeal'].includes(key);
+    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'raceReq', 'subtype', 'bestiaryId', 'type', 'toHeal'].includes(key);
   }
 
   // ammo subtype values like "Pistol/Rifle" are stacked one-per-line instead of squeezed onto a single line

@@ -148,6 +148,28 @@ body.dark-theme .table-header h3 {
     padding-left: 6px;
 }
 
+.items-table th.col-part,
+.items-table td.col-part {
+    width: 72px;
+    min-width: 72px;
+    max-width: 84px;
+    text-align: left;
+    vertical-align: middle;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+
+.items-table th.col-density-level,
+.items-table td.col-density-level {
+    width: 56px;
+    min-width: 56px;
+    max-width: 64px;
+    text-align: center;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
 .items-table th {
     background-color: #f5f5f5;
     padding: 0.5rem 0.25rem;
