@@ -29,10 +29,19 @@
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
   gap: 20px;
   align-items: start;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.layout > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .admin-section {
   margin-bottom: 16px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .gm-vault-section {
@@ -41,6 +50,9 @@
   background: rgba(13, 148, 136, 0.08);
   border: 1px dashed rgba(13, 148, 136, 0.35);
   margin-bottom: 20px;
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
 }
 
 :host-context(body.dark-theme) .gm-vault-section {
@@ -54,6 +66,7 @@
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
 .gm-vault-section h3 {
@@ -89,6 +102,7 @@
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .btn-add-secret:hover {
@@ -100,6 +114,8 @@
   flex-direction: column;
   gap: 14px;
   margin-bottom: 16px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .secret-block-item {
@@ -108,6 +124,10 @@
   border-radius: 6px;
   padding: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 :host-context(body.dark-theme) .secret-block-item {
@@ -121,6 +141,8 @@
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 10px;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .secret-title-field {
@@ -128,10 +150,12 @@
   align-items: center;
   gap: 8px;
   flex: 1;
+  min-width: 0;
 }
 
 .secret-icon {
   color: #0d9488;
+  flex-shrink: 0;
 }
 
 :host-context(body.dark-theme) .secret-icon {
@@ -140,17 +164,21 @@
 
 .secret-title-input {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   padding: 6px 10px;
   font-weight: 600;
   font-size: 0.95rem;
+  box-sizing: border-box;
 }
 
 .secret-actions {
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .secret-reveal-checkbox {
@@ -191,6 +219,8 @@
 
 .secret-content-textarea {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid #cbd5e1;
   border-radius: 4px;
   padding: 8px;
@@ -546,5 +576,46 @@
 
   .checkbox-field {
     padding-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-page {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .gm-vault-section {
+    padding: 12px;
+  }
+
+  .gm-vault-title-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .btn-add-secret {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .secret-block-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .secret-title-field {
+    width: 100%;
+  }
+
+  .secret-actions {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .secret-reveal-checkbox {
+    font-size: 0.8rem;
   }
 }
