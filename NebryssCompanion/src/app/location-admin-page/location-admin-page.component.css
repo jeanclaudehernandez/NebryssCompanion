@@ -1,5 +1,4 @@
 .admin-page {
-  padding: 72px 16px 96px;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -183,9 +182,6 @@
 }
 
 @media (max-width: 720px) {
-  .admin-page {
-    padding: 72px 12px 96px;
-  }
 
   .field-grid {
     grid-template-columns: 1fr;

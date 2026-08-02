@@ -1,9 +1,4 @@
 <div class="admin-page">
-  <div class="player-detail-container admin-header">
-    <div>
-      <h2>Location Creator</h2>
-    </div>
-  </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
     <h3>Admin Access Required</h3>
@@ -43,6 +38,28 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Category</span>
+            <select [(ngModel)]="category" name="category">
+              <option value="">Select an icon family</option>
+              <option *ngFor="let option of categoryOptions" [value]="option">
+                {{ formatOptionLabel(option) }}
+              </option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Size</span>
+            <select [(ngModel)]="categorySize" name="categorySize">
+              <option value="">Select icon size</option>
+              <option *ngFor="let option of categorySizeOptions" [value]="option">
+                {{ formatOptionLabel(option) }}
+              </option>
+            </select>
+          </label>
         </div>
 
         <label class="field">
@@ -118,6 +135,8 @@
           <div><strong>ID:</strong> {{ lastCreatedLocation.id }}</div>
           <div><strong>Name:</strong> {{ lastCreatedLocation.name }}</div>
           <div><strong>Faction:</strong> {{ lastCreatedLocation.faction }}</div>
+          <div><strong>Category:</strong> {{ lastCreatedLocation.category || 'n/a' }}</div>
+          <div><strong>Size:</strong> {{ lastCreatedLocation.categorySize || 'n/a' }}</div>
           <div><strong>Map:</strong> {{ lastCreatedLocation.mapX ?? 'n/a' }}, {{ lastCreatedLocation.mapY ?? 'n/a' }}</div>
         </div>
       </section>

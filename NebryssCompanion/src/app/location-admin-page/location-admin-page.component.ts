@@ -18,6 +18,23 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   @Input() initialMapX: number | null = null;
   @Input() initialMapY: number | null = null;
 
+  readonly categoryOptions = [
+    'city',
+    'forest',
+    'fortress',
+    'harbor',
+    'industrial-zone',
+    'mountain',
+    'mystical-site',
+    'ruins',
+    'shrine',
+    'swamp',
+    'village',
+    'volcanic-area',
+    'wasteland'
+  ];
+  readonly categorySizeOptions = ['small', 'medium', 'big', 'immense'];
+
   private readonly destroyRef = inject(DestroyRef);
 
   isAdmin = false;
@@ -30,6 +47,8 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   name = '';
   description = '';
   faction = '';
+  category = '';
+  categorySize = '';
   imgUrl = '';
   thumbnail = '';
   mapX: number | null = null;
@@ -107,6 +126,13 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     return this.factionOptions.filter(option => option.toLowerCase().includes(query));
   }
 
+  formatOptionLabel(value: string): string {
+    return value
+      .split('-')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ');
+  }
+
   submit(): void {
     if (!this.canSubmit) {
       return;
@@ -154,6 +180,8 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     const name = this.name.trim();
     const description = this.description.trim();
     const faction = this.faction.trim();
+    const category = this.category.trim();
+    const categorySize = this.categorySize.trim();
 
     if (validate && !name) {
       this.toastService.show('Location name is required', 'error');
@@ -194,6 +222,14 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
 
     if (this.thumbnail.trim()) {
       payload.thumbnail = this.thumbnail.trim();
+    }
+
+    if (category) {
+      payload.category = category;
+    }
+
+    if (categorySize) {
+      payload.categorySize = categorySize;
     }
 
     if (this.mapX !== null && this.mapY !== null) {
