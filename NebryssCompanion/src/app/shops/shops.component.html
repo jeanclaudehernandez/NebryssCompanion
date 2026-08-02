@@ -1,5 +1,4 @@
 <div class="shops-container">
-  <h2 style="margin-top:10px;">Shops</h2>
   <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
     <div class="shop-header">
       <div class="shop-media">
