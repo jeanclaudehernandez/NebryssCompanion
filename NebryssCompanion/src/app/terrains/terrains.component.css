@@ -1,6 +1,5 @@
 /* Terrains Component Styles */
 .terrains-container {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
   transition: background-color 0.3s, color 0.3s;
@@ -24,7 +23,6 @@
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem;
   transition: background-color 0.3s, box-shadow 0.3s;
   scroll-margin-top: 20px;
 }
@@ -40,20 +38,25 @@
 
 .terrain-content {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 1.5rem;
 }
 
 .terrain-image {
-  flex: 0 0 150px;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
+.terrain-image app-image-viewer {
+  display: block;
+  width: 100%;
+}
+
 .terrain-description {
-  flex: 1;
-  min-width: 300px;
+  width: 100%;
+  min-width: 0;
   color: #333;
   transition: color 0.3s;
 }
@@ -79,9 +82,8 @@ body.dark-theme .terrain-description {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
-  .terrain-content {
-    flex-direction: column;
-    align-items: center;
+  .terrain-image {
+    justify-content: stretch;
   }
   
   .terrain-description {

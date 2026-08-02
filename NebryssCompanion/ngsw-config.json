@@ -19,21 +19,12 @@
       }
     },
     {
-      "name": "known-images",
-      "installMode": "prefetch",
+      "name": "local-images",
+      "installMode": "lazy",
       "updateMode": "prefetch",
       "resources": {
-        "urls": [
-          "https://iili.io/3R2Be6u.png",
-          "https://iili.io/3R2BjZ7.jpg",
-          "https://iili.io/3R2BhjS.jpg",
-          "https://iili.io/3R2BOGe.jpg",
-          "https://iili.io/3R2BXu2.jpg",
-          "https://iili.io/3R2Be6u.th.png",
-          "https://iili.io/3R2BjZ7.th.jpg",
-          "https://iili.io/3R2BhjS.th.jpg",
-          "https://iili.io/3R2BOGe.th.jpg",
-          "https://iili.io/3R2BXu2.th.jpg"
+        "files": [
+          "/assets/**"
         ]
       }
     }
