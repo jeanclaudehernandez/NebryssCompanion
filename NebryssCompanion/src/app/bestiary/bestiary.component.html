@@ -1,6 +1,5 @@
 <!-- bestiary.component.html -->
 <div class="bestiary-select-container">
-
     <div class="filter-group">
         <label>Faction:</label>
         <select [(ngModel)]="selectedFaction" (change)="onFactionSelected()">
@@ -52,16 +51,6 @@
 </div>
 
 <app-scroll-nav *ngIf="combinedScrollSections.length > 0" [sections]="combinedScrollSections"></app-scroll-nav>
-
-<!-- Materials Sidebar Toggle Button -->
-<button 
-    class="materials-toggle-btn" 
-    *ngIf="droppedMaterials.length > 0" 
-    (click)="toggleMaterialsSidebar()"
-    [class.open]="showMaterialsSidebar">
-    <span class="icon">📦</span>
-    <span class="text">Materials ({{droppedMaterials.length}})</span>
-</button>
 
 <!-- Materials Sidebar -->
 <div class="materials-sidebar" [class.open]="showMaterialsSidebar">

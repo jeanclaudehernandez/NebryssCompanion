@@ -8,6 +8,7 @@ import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection }
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
+import { BestiaryMaterialsService } from './bestiary-materials.service';
 
 @Component({
   selector: 'app-bestiary',
@@ -47,13 +48,20 @@ export class BestiaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private bestiaryMaterialsService: BestiaryMaterialsService
   ) {}
 
   ngOnInit() {
     this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
     });
+
+    this.themeSubscription.add(
+      this.bestiaryMaterialsService.open$.subscribe(isOpen => {
+        this.showMaterialsSidebar = isOpen;
+      })
+    );
     
     this.dataService.getAllData().subscribe(response => {
       this.bestiary = response.bestiary;
@@ -99,6 +107,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
+    this.bestiaryMaterialsService.reset();
   }
 
   private getUniqueValues(array: any[], property: string): string[] {
@@ -197,6 +206,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     if (!this.selectedCreatures || !this.itemsData || !this.itemsData.items) {
       this.droppedMaterials = [];
       this.showMaterialsSidebar = false;
+      this.bestiaryMaterialsService.setCount(0);
       return;
     }
 
@@ -208,6 +218,8 @@ export class BestiaryComponent implements OnInit, OnDestroy {
       creatureIds.includes(item.bestiaryId)
     );
 
+    this.bestiaryMaterialsService.setCount(this.droppedMaterials.length);
+
     // If no materials, hide sidebar
     if (this.droppedMaterials.length === 0) {
       this.showMaterialsSidebar = false;
@@ -215,7 +227,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
   }
 
   toggleMaterialsSidebar() {
-    this.showMaterialsSidebar = !this.showMaterialsSidebar;
+    this.bestiaryMaterialsService.toggle();
   }
   
   getCreatureName(bestiaryId: number): string {

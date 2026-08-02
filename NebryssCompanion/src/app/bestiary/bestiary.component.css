@@ -119,32 +119,6 @@ body.dark-theme .selected-creatures-info {
     color: #aaa;
 }
 
-/* Materials Sidebar */
-.materials-toggle-btn {
-    position: fixed;
-    right: 20px;
-    bottom: calc(var(--footer-menu-height, 60px) + var(--safe-area-bottom, 0px) + 16px);
-    z-index: 1000;
-    padding: 12px 20px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: transform 0.2s, background-color 0.2s;
-}
-
-.materials-toggle-btn:hover {
-    background-color: #1976D2;
-    transform: translateY(-2px);
-}
-
 /* Sidebar Container */
 .materials-sidebar {
     position: fixed;

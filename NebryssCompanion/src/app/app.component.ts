@@ -13,6 +13,7 @@ import { ActivePlayerService } from './active-player.service';
 import { AppViewHostComponent } from './app-view-host.component';
 import { APP_VIEWS, AppView } from './app-view.types';
 import { Location } from './model';
+import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service';
 
   @Component({
   selector: 'app-root',
@@ -33,6 +34,18 @@ import { Location } from './model';
       <h1 class="header-title">{{ currentViewTitle }}</h1>
 
       <div class="header-actions">
+        <button
+          *ngIf="showBestiaryLootButton"
+          type="button"
+          class="bestiary-loot-btn"
+          [class.open]="bestiaryMaterialsSidebarOpen"
+          (click)="toggleBestiaryMaterialsSidebar()"
+          [attr.aria-label]="'Open loot drops (' + bestiaryMaterialsCount + ')'"
+        >
+          <span class="material-icons" aria-hidden="true">inventory_2</span>
+          <span class="bestiary-loot-btn-text">Loot ({{ bestiaryMaterialsCount }})</span>
+        </button>
+
         @if (showHeaderPlayerTitle) {
           <div class="active-player-chip" *ngIf="activePlayer$ | async as player" (click)="onViewChange('players')" title="Active Player">
             <span class="material-icons chip-icon">person</span>
@@ -145,6 +158,8 @@ export class AppComponent {
   adminEditSession: AdminEditorSession | null = null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
+  bestiaryMaterialsCount = 0;
+  bestiaryMaterialsSidebarOpen = false;
   activePlayer$ = this.activePlayerService.activePlayer$;
 
   get showFooterMenu(): boolean {
@@ -153,6 +168,10 @@ export class AppComponent {
 
   get showHeaderPlayerTitle(): boolean {
     return this.currentView !== 'bestiary';
+  }
+
+  get showBestiaryLootButton(): boolean {
+    return this.currentView === 'bestiary' && this.bestiaryMaterialsCount > 0;
   }
 
   get currentViewTitle(): string {
@@ -204,7 +223,8 @@ export class AppComponent {
     public loadingService: LoadingService,
     private dataService: DataService,
     private dialog: MatDialog,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    private bestiaryMaterialsService: BestiaryMaterialsService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -224,6 +244,18 @@ export class AppComponent {
         this.letterUnreadCount = letters.filter(
           letter => letter.recipientIds.includes(player.id) && !letter.readBy.includes(player.id)
         ).length;
+      });
+
+    this.bestiaryMaterialsService.count$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(count => {
+        this.bestiaryMaterialsCount = count;
+      });
+
+    this.bestiaryMaterialsService.open$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isOpen => {
+        this.bestiaryMaterialsSidebarOpen = isOpen;
       });
 
     this.initPullToRefreshListeners();
@@ -461,6 +493,10 @@ export class AppComponent {
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
     window.scrollTo({ top: 0 });
+  }
+
+  toggleBestiaryMaterialsSidebar(): void {
+    this.bestiaryMaterialsService.toggle();
   }
 
   @HostListener('click', ['$event'])

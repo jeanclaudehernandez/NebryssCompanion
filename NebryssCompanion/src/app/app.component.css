@@ -35,6 +35,40 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+}
+
+.bestiary-loot-btn {
+  appearance: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 150px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(25, 118, 210, 0.14);
+  color: var(--accent-color, #1976d2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.bestiary-loot-btn.open,
+.bestiary-loot-btn:active {
+  background: rgba(25, 118, 210, 0.24);
+}
+
+.bestiary-loot-btn .material-icons {
+  font-size: 18px;
+}
+
+.bestiary-loot-btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .header-action-btn {
@@ -96,6 +130,16 @@ body.dark-theme .header-action-btn:active {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+body.dark-theme .bestiary-loot-btn {
+  background: rgba(100, 181, 246, 0.18);
+  color: #90caf9;
+}
+
+body.dark-theme .bestiary-loot-btn.open,
+body.dark-theme .bestiary-loot-btn:active {
+  background: rgba(100, 181, 246, 0.3);
 }
 
 /* Main Content Area */
