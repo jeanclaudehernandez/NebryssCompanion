@@ -37,6 +37,7 @@ export class LocationsComponent implements OnInit {
   shopNames: string[] = [];
   isAdmin = false;
   collapsedFactions = new Set<string>();
+  factionColors: { [factionName: string]: string } = {};
 
   constructor(
     private dataService: DataService,
@@ -64,6 +65,131 @@ export class LocationsComponent implements OnInit {
   onFactionEmblemClick(event: Event, factionName: string): void {
     event.stopPropagation();
     this.onFactionClick(factionName);
+  }
+
+  getFactionSectionStyles(factionName: string): { [key: string]: string } {
+    return {
+      '--faction-color-rgb': this.factionColors[factionName] || '27, 42, 51'
+    };
+  }
+
+  onFactionEmblemLoad(event: Event, factionName: string): void {
+    if (this.factionColors[factionName]) return;
+    const img = event.target as HTMLImageElement;
+    if (!img || !img.naturalWidth) return;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const targetWidth = 32;
+      const targetHeight = 32;
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      const { data } = ctx.getImageData(0, 0, targetWidth, targetHeight);
+      const buckets = new Map<string, { score: number; r: number; g: number; b: number }>();
+
+      for (let y = 0; y < targetHeight; y++) {
+        for (let x = 0; x < targetWidth; x++) {
+          const pixelIndex = (y * targetWidth + x) * 4;
+          const alpha = data[pixelIndex + 3];
+          if (alpha < 150) continue;
+
+          const r = data[pixelIndex];
+          const g = data[pixelIndex + 1];
+          const b = data[pixelIndex + 2];
+          const { saturation, lightness } = this.getRgbStats(r, g, b);
+
+          if (lightness < 0.08 || lightness > 0.92) continue;
+
+          const bucketR = Math.round(r / 24) * 24;
+          const bucketG = Math.round(g / 24) * 24;
+          const bucketB = Math.round(b / 24) * 24;
+          const key = `${bucketR},${bucketG},${bucketB}`;
+          const current = buckets.get(key) || { score: 0, r: 0, g: 0, b: 0 };
+
+          const centerBiasX = 1 - Math.abs((x / Math.max(targetWidth - 1, 1)) - 0.5) * 0.4;
+          const centerBiasY = 1 - Math.abs((y / Math.max(targetHeight - 1, 1)) - 0.5) * 0.4;
+          const vividnessWeight = 0.5 + (saturation * 1.5);
+          const lightnessWeight = 1 - Math.min(Math.abs(lightness - 0.5), 0.5);
+          const weight = centerBiasX * centerBiasY * vividnessWeight * lightnessWeight;
+
+          current.score += weight;
+          current.r += r * weight;
+          current.g += g * weight;
+          current.b += b * weight;
+          buckets.set(key, current);
+        }
+      }
+
+      const topBuckets = Array.from(buckets.values())
+        .filter(bucket => bucket.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      if (!topBuckets.length) return;
+
+      let totalScore = 0;
+      let totalR = 0;
+      let totalG = 0;
+      let totalB = 0;
+
+      topBuckets.forEach(bucket => {
+        const avgR = bucket.r / bucket.score;
+        const avgG = bucket.g / bucket.score;
+        const avgB = bucket.b / bucket.score;
+
+        totalScore += bucket.score;
+        totalR += avgR * bucket.score;
+        totalG += avgG * bucket.score;
+        totalB += avgB * bucket.score;
+      });
+
+      if (!totalScore) return;
+
+      const softened = this.softenFactionColor(
+        Math.round(totalR / totalScore),
+        Math.round(totalG / totalScore),
+        Math.round(totalB / totalScore)
+      );
+
+      this.factionColors[factionName] = `${softened.r}, ${softened.g}, ${softened.b}`;
+      this.cdr.markForCheck();
+    } catch {
+      // Keep default fallback color
+    }
+  }
+
+  private getRgbStats(r: number, g: number, b: number): { saturation: number; lightness: number } {
+    const red = r / 255;
+    const green = g / 255;
+    const blue = b / 255;
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+    const lightness = (max + min) / 2;
+
+    if (max === min) {
+      return { saturation: 0, lightness };
+    }
+
+    const delta = max - min;
+    const saturation = lightness > 0.5
+      ? delta / (2 - max - min)
+      : delta / (max + min);
+
+    return { saturation, lightness };
+  }
+
+  private softenFactionColor(r: number, g: number, b: number): { r: number; g: number; b: number } {
+    const mix = 0.15;
+    return {
+      r: Math.round(r * (1 - mix) + 27 * mix),
+      g: Math.round(g * (1 - mix) + 42 * mix),
+      b: Math.round(b * (1 - mix) + 51 * mix)
+    };
   }
 
   ngOnInit(): void {

@@ -4,12 +4,12 @@
   <!-- Sidebar with location cards -->
   <div class="locations-sidebar">
     <!-- Group locations by faction -->
-    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section" [class.is-collapsed]="isFactionCollapsed(faction)">
+    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section" [class.is-collapsed]="isFactionCollapsed(faction)" [ngStyle]="getFactionSectionStyles(faction)">
       <div class="faction-header" (click)="toggleFactionCollapse(faction)">
         <div class="faction-header-main">
           <div class="faction-emblem sidebar-emblem" *ngIf="hasFactionName(faction) && getFactionThumbnail(faction)"
             (click)="onFactionEmblemClick($event, faction)" title="Click to view {{faction}} in Lore">
-            <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy">
+            <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy" (load)="onFactionEmblemLoad($event, faction)" crossorigin="anonymous">
           </div>
           <div class="faction-emblem sidebar-emblem text-emblem"
             *ngIf="hasFactionName(faction) && !getFactionThumbnail(faction)"
