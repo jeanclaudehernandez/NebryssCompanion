@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap, catchError, of } from 'rxjs';
 import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
 
@@ -49,6 +49,7 @@ export class DataService {
   getAfflictions(): Observable<Affliction[]> {
     if (!this.afflictionsCache$) {
       this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+        catchError(() => this.http.get<Affliction[]>('assets/afflictions.json')),
         tap(afflictions => {
           this.afflictions = afflictions;
         }),
@@ -60,6 +61,7 @@ export class DataService {
 
   refreshAfflictions(): Observable<Affliction[]> {
     this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+      catchError(() => this.http.get<Affliction[]>('assets/afflictions.json')),
       tap(afflictions => {
         this.afflictions = afflictions;
       }),
@@ -92,6 +94,7 @@ export class DataService {
   getPlayers(): Observable<Player[]> {
     if (!this.playersCache$) {
       this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+        catchError(() => this.http.get<Player[]>('assets/players.json')),
         tap(players => {
           this.players = players;
         }),
@@ -103,6 +106,7 @@ export class DataService {
 
   refreshPlayers(): Observable<Player[]> {
     this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+      catchError(() => this.http.get<Player[]>('assets/players.json')),
       tap(players => {
         this.players = players;
       }),
@@ -115,6 +119,7 @@ export class DataService {
   getNpcs(): Observable<NPC[]> {
     if (!this.npcsCache$) {
       this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
+        catchError(() => this.http.get<NPC[]>('assets/npcs.json')),
         tap(npcs => {
           this.npcs = npcs;
         }),
@@ -127,6 +132,7 @@ export class DataService {
   getitemCategories(): Observable<ItemCategory[]> {
     if (!this.itemCategories.length) {
       return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
+        catchError(() => this.http.get<ItemCategory[]>('assets/itemCategories.json')),
         tap(categories => {
           this.itemCategories = categories;
         }),
@@ -134,6 +140,7 @@ export class DataService {
       );
     }
     return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
+      catchError(() => this.http.get<ItemCategory[]>('assets/itemCategories.json')),
       shareReplay(1)
     );
   }
@@ -141,6 +148,7 @@ export class DataService {
   getBestiary(): Observable<BestiaryEntry[]> {
     if (!this.bestiaryCache$) {
       this.bestiaryCache$ = this.http.get<BestiaryEntry[]>(`${this.apiUrl}/bestiary`).pipe(
+        catchError(() => this.http.get<BestiaryEntry[]>('assets/bestiary.json')),
         tap(bestiary => {
           this.bestiary = bestiary;
         }),
@@ -158,6 +166,7 @@ export class DataService {
   getWeapons(): Observable<Weapon[]> {
     if (!this.weaponsCache$) {
       this.weaponsCache$ = this.http.get<Weapon[]>(`${this.apiUrl}/weapon`).pipe(
+        catchError(() => this.http.get<Weapon[]>('assets/weapons.json')),
         tap(weapons => {
           this.weapons = weapons;
         }),
@@ -174,8 +183,10 @@ export class DataService {
 
   getItems(): Observable<Items> {
     if (!this.itemsCache$) {
-      this.itemsCache$ = this.http.get<any[]>(`${this.apiUrl}/item`).pipe(
-        map(itemsArray => {
+      this.itemsCache$ = this.http.get<any>(`${this.apiUrl}/item`).pipe(
+        catchError(() => this.http.get<any>('assets/items.json')),
+        map(itemsResponse => {
+          const itemsArray = Array.isArray(itemsResponse) ? itemsResponse : (itemsResponse?.items || []);
           const wrapped: Items = { items: itemsArray };
           this.items = wrapped;
           return wrapped;
@@ -189,6 +200,7 @@ export class DataService {
   getWeaponRules(): Observable<WeaponRule[]> {
     if (!this.weaponRulesCache$) {
       this.weaponRulesCache$ = this.http.get<WeaponRule[]>(`${this.apiUrl}/weaponRule`).pipe(
+        catchError(() => this.http.get<WeaponRule[]>('assets/weaponRules.json')),
         tap(rules => {
           this.weaponsRules = rules;
         }),
@@ -201,6 +213,7 @@ export class DataService {
   getShops(): Observable<Shop[]> {
     if (!this.shopsCache$) {
       this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
+        catchError(() => this.http.get<Shop[]>('assets/shops.json')),
         tap(shops => {
           this.shops = shops;
         }),
@@ -213,6 +226,7 @@ export class DataService {
   getLore(): Observable<Lore> {
     if (!this.loreCache$) {
       this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
+        catchError(() => this.http.get<any>('assets/lore.json')),
         map(response => {
           const lore = Array.isArray(response) ? response[0] : response;
           this.lore = lore as Lore;
@@ -224,11 +238,61 @@ export class DataService {
     return this.loreCache$ as Observable<Lore>;
   }
 
+  refreshLore(): Observable<Lore> {
+    this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
+      catchError(() => this.http.get<any>('assets/lore.json')),
+      map(response => {
+        const lore = Array.isArray(response) ? response[0] : response;
+        this.lore = lore as Lore;
+        return this.lore;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.loreCache$;
+  }
+
+  updateLore(lore: Lore): Observable<Lore> {
+    return this.http.put<Lore>(`${this.apiUrl}/lore`, lore).pipe(
+      catchError(() => {
+        this.lore = lore;
+        return of(lore);
+      }),
+      tap(saved => {
+        this.lore = saved;
+      })
+    );
+  }
+
   getLocations(): Observable<Locations> {
     if (!this.locationsCache$) {
-      this.locationsCache$ = this.http.get<Location[]>(`${this.apiUrl}/locations`).pipe(
-        map(locationsArray => {
-          const wrapped: Locations = { locations: locationsArray };
+      this.locationsCache$ = forkJoin({
+        remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+          catchError(() => this.http.get<any>('assets/locations.json'))
+        ),
+        localAssets: this.http.get<any>('assets/locations.json').pipe(
+          catchError(() => of([]))
+        )
+      }).pipe(
+        map(({ remote, localAssets }) => {
+          const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
+          const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
+
+          const mergedLocations = rawRemote.map((loc: any) => {
+            const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
+            const secrets = (loc.secrets && loc.secrets.length > 0)
+              ? loc.secrets
+              : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
+
+            return {
+              ...loc,
+              secrets,
+              rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
+              privateNotes: loc.privateNotes || matchLocal?.privateNotes
+            };
+          });
+
+          const wrapped: Locations = { locations: mergedLocations };
           this.locations = wrapped;
           return wrapped;
         }),
@@ -239,9 +303,33 @@ export class DataService {
   }
 
   refreshLocations(): Observable<Locations> {
-    this.locationsCache$ = this.http.get<Location[]>(`${this.apiUrl}/locations`).pipe(
-      map(locationsArray => {
-        const wrapped: Locations = { locations: locationsArray };
+    this.locationsCache$ = forkJoin({
+      remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+        catchError(() => this.http.get<any>('assets/locations.json'))
+      ),
+      localAssets: this.http.get<any>('assets/locations.json').pipe(
+        catchError(() => of([]))
+      )
+    }).pipe(
+      map(({ remote, localAssets }) => {
+        const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
+        const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
+
+        const mergedLocations = rawRemote.map((loc: any) => {
+          const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
+          const secrets = (loc.secrets && loc.secrets.length > 0)
+            ? loc.secrets
+            : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
+
+          return {
+            ...loc,
+            secrets,
+            rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
+            privateNotes: loc.privateNotes || matchLocal?.privateNotes
+          };
+        });
+
+        const wrapped: Locations = { locations: mergedLocations };
         this.locations = wrapped;
         return wrapped;
       }),
@@ -264,6 +352,7 @@ export class DataService {
   getTalents(): Observable<TalentCategory[]> {
     if (!this.talentsCache$) {
       this.talentsCache$ = this.http.get<TalentCategory[]>(`${this.apiUrl}/talent`).pipe(
+        catchError(() => this.http.get<TalentCategory[]>('assets/talents.json')),
         map(categories => categories.map(category => ({
           ...category,
           talents: category.talents.map(t => ({
@@ -280,10 +369,10 @@ export class DataService {
     return this.talentsCache$;
   }
 
-
   getAlteredStates(): Observable<AlteredState[]> {
     if (!this.alteredStatesCache$) {
       this.alteredStatesCache$ = this.http.get<AlteredState[]>(`${this.apiUrl}/status`).pipe(
+        catchError(() => this.http.get<AlteredState[]>('assets/alteredStates.json')),
         tap(states => {
           this.alteredStates = states;
         }),
@@ -296,6 +385,7 @@ export class DataService {
   getMistEffects(): Observable<MistEffect[]> {
     if (!this.mistEffectsCache$) {
       this.mistEffectsCache$ = this.http.get<MistEffect[]>(`${this.apiUrl}/mistEffect`).pipe(
+        catchError(() => this.http.get<MistEffect[]>('assets/mistEffects.json')),
         tap(effects => {
           this.mistEffects = effects;
         }),
@@ -308,6 +398,7 @@ export class DataService {
   getTerrains(): Observable<Terrain[]> {
     if (!this.terrainsCache$) {
       this.terrainsCache$ = this.http.get<Terrain[]>(`${this.apiUrl}/terrainRule`).pipe(
+        catchError(() => this.http.get<Terrain[]>('assets/terrainRules.json')),
         tap(terrains => {
           this.terrains = terrains;
         }),
@@ -320,6 +411,7 @@ export class DataService {
   getLetters(): Observable<Letter[]> {
     if (!this.lettersCache$) {
       this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+        catchError(() => this.http.get<Letter[]>('assets/letters.json')),
         tap(letters => {
           this.letters = letters.map(letter => this.normalizeLetter(letter));
           this.lettersSubject.next([...this.letters]);
@@ -332,6 +424,7 @@ export class DataService {
 
   refreshLetters(): Observable<Letter[]> {
     this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+      catchError(() => this.http.get<Letter[]>('assets/letters.json')),
       tap(letters => {
         this.letters = letters.map(letter => this.normalizeLetter(letter));
         this.lettersSubject.next([...this.letters]);

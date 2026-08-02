@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
-import { Location } from '../model';
+import { Location, SecretBlock } from '../model';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
 
@@ -20,6 +20,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   @Input() initialMapY: number | null = null;
   @Input() initialLocation: Location | null = null;
   @ViewChild('deleteLocationConfirmDialog') deleteLocationConfirmDialog?: TemplateRef<any>;
+  @ViewChild('mapPickerContainer') mapPickerContainerRef?: ElementRef<HTMLDivElement>;
 
   readonly categoryOptions = [
     'city',
@@ -51,11 +52,17 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   lastCreatedLocation: Location | null = null;
   factionOptions: string[] = [];
   showFactionOptions = false;
+  worldMapImageUrl = 'https://iili.io/3R2Be6u.png';
   private locationDeleted = false;
 
   locationId: number | null = null;
   name = '';
   description = '';
+  rpgMapLayout = '';
+  privateNotes = '';
+  secrets: SecretBlock[] = [];
+  isSecret = false;
+  isSecretRevealed = false;
   faction = '';
   category = '';
   categorySize: number | null = null;
@@ -86,6 +93,13 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     return this.isAdmin && this.isEditing && !this.isSaving && !this.isDeleting && typeof this.locationId === 'number';
   }
 
+  get previewPinIconSrc(): string {
+    const family = this.category.trim() || 'city';
+    const sizeMap: Record<number, string> = { 1: 'small', 2: 'medium', 3: 'big', 4: 'immense' };
+    const size = sizeMap[this.categorySize ?? 2] ?? 'medium';
+    return `assets/icons/extracted/${family}/${family}-${size}.png`;
+  }
+
   constructor(
     private readonly adminService: AdminService,
     private readonly dataService: DataService,
@@ -105,6 +119,16 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       .subscribe(lore => {
         this.factionOptions = [...new Set((lore.factions ?? []).map(faction => faction.name).filter(Boolean))]
           .sort((left, right) => left.localeCompare(right));
+      });
+
+    this.dataService.getLocations()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        const locations = data.locations || [];
+        const worldMap = locations.find(l => l.isWorldMap || (l as any).isworldMap);
+        if (worldMap?.imgUrl) {
+          this.worldMapImageUrl = worldMap.imgUrl;
+        }
       });
 
     this.applyInitialValues();
@@ -167,6 +191,45 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   getCategorySizeLabel(value: number | string | null | undefined): string {
     const numericValue = Number(value);
     return this.categorySizeOptions.find(option => option.value === numericValue)?.label ?? 'n/a';
+  }
+
+  onMapPickerClick(event: MouseEvent): void {
+    const container = this.mapPickerContainerRef?.nativeElement;
+    if (!container) {
+      return;
+    }
+
+    const rect = container.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return;
+    }
+
+    const relativeX = ((event.clientX - rect.left) / rect.width) * 100;
+    const relativeY = ((event.clientY - rect.top) / rect.height) * 100;
+
+    this.mapX = Number(Math.min(100, Math.max(0, relativeX)).toFixed(2));
+    this.mapY = Number(Math.min(100, Math.max(0, relativeY)).toFixed(2));
+  }
+
+  addSecretBlock(): void {
+    this.secrets.push({
+      id: `sec-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      title: '',
+      content: '',
+      isRevealed: false
+    });
+  }
+
+  removeSecretBlock(index: number): void {
+    if (index >= 0 && index < this.secrets.length) {
+      this.secrets.splice(index, 1);
+    }
+  }
+
+  toggleSecretBlockReveal(index: number): void {
+    if (index >= 0 && index < this.secrets.length) {
+      this.secrets[index].isRevealed = !this.secrets[index].isRevealed;
+    }
   }
 
   submit(): void {
@@ -255,6 +318,26 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       this.locationId = this.initialLocation.id;
       this.name = this.initialLocation.name ?? '';
       this.description = this.initialLocation.description ?? '';
+      this.rpgMapLayout = this.initialLocation.rpgMapLayout ?? '';
+      this.privateNotes = this.initialLocation.privateNotes ?? '';
+      
+      if (this.initialLocation.secrets && this.initialLocation.secrets.length > 0) {
+        this.secrets = this.initialLocation.secrets.map(s => ({ ...s }));
+      } else if (this.privateNotes.trim()) {
+        this.secrets = [
+          {
+            id: `sec-${Date.now()}`,
+            title: 'GM Secret Notes',
+            content: this.privateNotes.trim(),
+            isRevealed: !!this.initialLocation.isSecretRevealed
+          }
+        ];
+      } else {
+        this.secrets = [];
+      }
+
+      this.isSecret = !!this.initialLocation.isSecret;
+      this.isSecretRevealed = !!this.initialLocation.isSecretRevealed;
       this.faction = this.initialLocation.faction ?? '';
       this.category = this.initialLocation.category ?? '';
       this.categorySize = this.normalizeCategorySize(this.initialLocation.categorySize);
@@ -274,6 +357,11 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     this.locationId = null;
     this.name = '';
     this.description = '';
+    this.rpgMapLayout = '';
+    this.privateNotes = '';
+    this.secrets = [];
+    this.isSecret = false;
+    this.isSecretRevealed = false;
     this.faction = '';
     this.category = '';
     this.categorySize = null;
@@ -303,6 +391,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   private buildPayload(validate: boolean): Partial<Location> | null {
     const name = this.name.trim();
     const description = this.description.trim();
+    const rpgMapLayout = this.rpgMapLayout.trim();
     const faction = this.faction.trim();
     const category = this.category.trim();
     const categorySize = this.categorySize;
@@ -317,7 +406,6 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       return null;
     }
 
-
     if (!this.hasValidCoordinatePair()) {
       if (validate) {
         this.toastService.show('Map X and Map Y must be filled together', 'error');
@@ -325,16 +413,31 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       }
     }
 
+    const cleanSecrets = this.secrets
+      .filter(s => s.content.trim())
+      .map(s => ({
+        id: s.id || `sec-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        title: s.title?.trim() || '',
+        content: s.content.trim(),
+        isRevealed: !!s.isRevealed
+      }));
+
     const payload: Partial<Location> = {
       name,
       description,
       faction: faction || "",
       isCapital: !!this.isCapital,
-      isWorldMap: !!this.isWorldMap
+      isWorldMap: !!this.isWorldMap,
+      isSecret: !!this.isSecret,
+      secrets: cleanSecrets
     };
 
     if (typeof this.locationId === 'number' && !Number.isNaN(this.locationId)) {
       payload.id = this.locationId;
+    }
+
+    if (rpgMapLayout) {
+      payload.rpgMapLayout = rpgMapLayout;
     }
 
     if (this.imgUrl.trim()) {

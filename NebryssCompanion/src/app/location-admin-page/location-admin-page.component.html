@@ -72,7 +72,7 @@
             <span>Size</span>
             <select [(ngModel)]="categorySize" name="categorySize">
               <option [ngValue]="null">Select icon size</option>
-              <option *ngFor="let option of categorySizeOptions" [ngValue]="option.value">
+              <option *ngFor="let option of categorySizeOptions" [value]="option.value">
                 {{ option.label }} ({{ option.value }})
               </option>
             </select>
@@ -85,13 +85,107 @@
         </label>
 
         <label class="field">
-          <span>Description</span>
-          <textarea [(ngModel)]="description" name="description" rows="5" placeholder="Short summary for the location page and map popup"></textarea>
+          <span>Public Description (Known to Players)</span>
+          <textarea [(ngModel)]="description" name="description" rows="4" placeholder="Public summary for the location page and map popup"></textarea>
         </label>
+      </section>
+
+      <!-- Modular Secret Blocks Section -->
+      <section class="admin-section gm-vault-section">
+        <div class="gm-vault-title-row">
+          <div>
+            <h3>GM Campaign Secret Vaults (`SecretBlock[]`)</h3>
+            <p class="section-hint">Add individual secret blocks. Each block has its own reveal toggle to publish secrets to players as the campaign advances.</p>
+          </div>
+          <button type="button" class="btn-add-secret" (click)="addSecretBlock()">
+            <span class="material-icons">add</span>
+            Add Secret Block
+          </button>
+        </div>
+
+        <div class="secrets-list">
+          <div *ngFor="let secret of secrets; let i = index" class="secret-block-item">
+            <div class="secret-block-header">
+              <div class="secret-title-field">
+                <span class="material-icons secret-icon">security</span>
+                <input
+                  [(ngModel)]="secret.title"
+                  [name]="'secretTitle_' + i"
+                  type="text"
+                  placeholder="Secret Title (e.g. Subterranean Relic Vault)"
+                  class="secret-title-input"
+                />
+              </div>
+
+              <div class="secret-actions">
+                <label class="secret-reveal-checkbox" title="Reveal this secret block to players">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="secret.isRevealed"
+                    [name]="'secretRevealed_' + i"
+                  />
+                  <span class="material-icons">{{ secret.isRevealed ? 'visibility' : 'visibility_off' }}</span>
+                  <span>{{ secret.isRevealed ? 'Revealed' : 'Private (GM)' }}</span>
+                </label>
+
+                <button
+                  type="button"
+                  class="btn-delete-secret"
+                  (click)="removeSecretBlock(i)"
+                  title="Remove secret block"
+                >
+                  <span class="material-icons">delete_outline</span>
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              [(ngModel)]="secret.content"
+              [name]="'secretContent_' + i"
+              rows="3"
+              placeholder="Secret campaign details, DM plot hooks, hidden treasure, or Voss connections..."
+              class="secret-content-textarea"
+            ></textarea>
+          </div>
+
+          <div *ngIf="secrets.length === 0" class="empty-secrets-hint">
+            No secret campaign blocks added yet. Click "+ Add Secret Block" to create one.
+          </div>
+        </div>
+
+        <label class="field margin-top-field">
+          <span>Internal RPG Map Layout (Private GM Guide)</span>
+          <textarea [(ngModel)]="rpgMapLayout" name="rpgMapLayout" rows="5" placeholder="Detailed internal map description (sectors, paths, plazas, harbors, choke points, and visual cues for AI image generation)"></textarea>
+        </label>
+
+        <div class="field-grid toggles-grid">
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isSecret" name="isSecret" type="checkbox" />
+            <span>Undiscovered / Secret Location (Hidden from Player World Map)</span>
+          </label>
+        </div>
       </section>
 
       <section class="admin-section">
         <h3>World Map Placement</h3>
+
+        <div class="map-picker-wrapper">
+          <p class="map-picker-instruction">Click anywhere on the map to set pin coordinates visually:</p>
+          <div #mapPickerContainer class="map-picker-canvas" (click)="onMapPickerClick($event)">
+            <img [src]="worldMapImageUrl" alt="World Map Picker" class="map-picker-image" draggable="false">
+            <div
+              *ngIf="mapX !== null && mapY !== null"
+              class="map-picker-pin"
+              [style.left.%]="mapX"
+              [style.top.%]="mapY"
+            >
+              <span class="map-picker-pin-badge">
+                <img [src]="previewPinIconSrc" alt="Pin Icon" class="map-picker-pin-icon">
+              </span>
+              <span class="map-picker-pin-label">{{ name || 'New Location' }}</span>
+            </div>
+          </div>
+        </div>
 
         <div class="field-grid">
           <label class="field">
@@ -104,7 +198,6 @@
             <input [(ngModel)]="mapY" name="mapY" type="number" min="0" max="100" step="0.01" placeholder="Optional" />
           </label>
         </div>
-
 
         <div class="field-grid toggles-grid">
           <label class="field checkbox-field">
@@ -152,8 +245,7 @@
           <div><strong>ID:</strong> {{ lastCreatedLocation.id }}</div>
           <div><strong>Name:</strong> {{ lastCreatedLocation.name }}</div>
           <div><strong>Faction:</strong> {{ lastCreatedLocation.faction }}</div>
-          <div><strong>Category:</strong> {{ lastCreatedLocation.category || 'n/a' }}</div>
-          <div><strong>Size:</strong> {{ getCategorySizeLabel(lastCreatedLocation.categorySize) }}</div>
+          <div><strong>Secrets Count:</strong> {{ (lastCreatedLocation.secrets || []).length }}</div>
           <div><strong>Map:</strong> {{ lastCreatedLocation.mapX ?? 'n/a' }}, {{ lastCreatedLocation.mapY ?? 'n/a' }}</div>
         </div>
       </section>

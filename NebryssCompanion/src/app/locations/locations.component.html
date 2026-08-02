@@ -18,10 +18,13 @@
         <div *ngFor="let location of getLocationsByFaction(faction); trackBy: trackByLocation" 
              class="location-card" 
              [class.selected]="selectedLocation === location"
+             [class.is-secret-card]="location.isSecret"
              (click)="selectLocation(location)">
           <div class="location-card-header">
             <h4>{{ location.name }}</h4>
             <span *ngIf="location.isCapital" class="capital-badge">Capital</span>
+            <span *ngIf="isAdmin && location.isSecret && !location.isSecretRevealed" class="secret-badge">Secret</span>
+            <span *ngIf="isAdmin && location.isSecret && location.isSecretRevealed" class="revealed-badge">Revealed</span>
           </div>
           <div class="location-thumb" *ngIf="location.thumbnail">
             <img [src]="location.thumbnail" [alt]="location.name" loading="lazy">
@@ -68,7 +71,7 @@
         <h3>Description</h3>
         <p>{{ selectedLocation.description }}</p>
       </div>
-      
+
       <div class="notable-features" *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
         <h3>Notable Features</h3>
         <div class="features-list">
@@ -80,6 +83,58 @@
             <div *ngIf="feature.owner" class="feature-owner">
               <em>Owner: {{ feature.owner }}</em>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Public Revealed Campaign Discovery Blocks (Visible to Players when revealed) -->
+      <div class="revealed-secrets-section" *ngIf="!isAdmin && getRevealedSecrets(selectedLocation).length > 0">
+        <h3>Unlocked Campaign Secrets</h3>
+        <div class="revealed-lore-banner" *ngFor="let secret of getRevealedSecrets(selectedLocation)">
+          <div class="revealed-lore-header">
+            <span class="material-icons">auto_awesome</span>
+            <h4>Campaign Discovery Unlocked: {{ secret.title || 'Secret Lore' }}</h4>
+          </div>
+          <div class="revealed-lore-body">
+            <p>{{ secret.content }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- GM Private Campaign Vault Blocks (Visible exclusively to Admin/GM, placed at the bottom below all features) -->
+      <div class="gm-vault-section-wrapper" *ngIf="isAdmin && (getLocationSecrets(selectedLocation).length > 0 || selectedLocation.rpgMapLayout)">
+        <h3>GM Campaign Secret Vaults</h3>
+        <div class="gm-vault-card" *ngFor="let secret of getLocationSecrets(selectedLocation); let i = index">
+          <div class="gm-vault-header">
+            <div class="gm-vault-title">
+              <span class="material-icons">security</span>
+              <h4>{{ secret.title || 'GM Private Campaign Vault' }}</h4>
+            </div>
+            <button
+              type="button"
+              class="gm-reveal-btn"
+              [class.active]="secret.isRevealed"
+              (click)="toggleSecretBlock(selectedLocation, i)"
+            >
+              <span class="material-icons">{{ secret.isRevealed ? 'visibility' : 'visibility_off' }}</span>
+              {{ secret.isRevealed ? 'Revealed' : 'Reveal Secret to Players' }}
+            </button>
+          </div>
+
+          <div class="gm-vault-content">
+            <p>{{ secret.content }}</p>
+          </div>
+        </div>
+
+        <div class="gm-vault-card rpg-layout-card" *ngIf="selectedLocation.rpgMapLayout">
+          <div class="gm-vault-header">
+            <div class="gm-vault-title">
+              <span class="material-icons">map</span>
+              <h4>Internal RPG Map Layout & Visual Prompts</h4>
+            </div>
+          </div>
+          <div class="gm-vault-content">
+            <pre class="rpg-layout-text">{{ selectedLocation.rpgMapLayout }}</pre>
           </div>
         </div>
       </div>

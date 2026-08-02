@@ -1,8 +1,11 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
+import { ToastService } from '../toast.service';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { Location, Locations, Lore } from '../model';
+import { Location, Lore, SecretBlock } from '../model';
 
 @Component({
   selector: 'app-locations',
@@ -22,6 +25,9 @@ export class LocationsComponent implements OnInit {
   @Output() navigateTo = new EventEmitter<any>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToWorldMap = new EventEmitter<string>();
+
+  private readonly destroyRef = inject(DestroyRef);
+
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   deepLinkMode = false;
@@ -29,13 +35,24 @@ export class LocationsComponent implements OnInit {
   loreData: Lore | null = null;
   uniqueFactions: string[] = [];
   shopNames: string[] = [];
-  
+  isAdmin = false;
+
   constructor(
     private dataService: DataService,
+    private adminService: AdminService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.adminService.isAdmin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+        this.uniqueFactions = this.getUniqueFactions();
+        this.cdr.markForCheck();
+      });
+
     this.dataService.getLocations().subscribe(data => {
       this.locations = data.locations;
       this.uniqueFactions = this.getUniqueFactions();
@@ -54,7 +71,7 @@ export class LocationsComponent implements OnInit {
 
       this.cdr.markForCheck();
     });
-    
+
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
       this.cdr.markForCheck();
@@ -67,7 +84,6 @@ export class LocationsComponent implements OnInit {
   }
 
   selectLocation(location: Location): void {
-    // If clicking the already selected location, deselect it
     if (this.selectedLocation === location) {
       this.clearSelectedLocation();
     } else {
@@ -100,23 +116,94 @@ export class LocationsComponent implements OnInit {
     const savedLocationName = localStorage.getItem(this.STORAGE_KEY);
     if (savedLocationName && this.locations.length > 0) {
       const foundLocation = this.locations.find(location => location.name === savedLocationName);
-      if (foundLocation) {
+      if (foundLocation && (this.isAdmin || !foundLocation.isSecret || foundLocation.isSecretRevealed)) {
         this.selectedLocation = foundLocation;
       }
     }
   }
 
   getLocationsByFaction(factionName: string): Location[] {
-    return this.locations.filter(location => location.faction === factionName);
+    return this.locations.filter(location =>
+      location.faction === factionName &&
+      (this.isAdmin || !location.isSecret || location.isSecretRevealed)
+    );
+  }
+
+  getLocationSecrets(location: Location | null): SecretBlock[] {
+    if (!location) {
+      return [];
+    }
+
+    if (location.secrets && location.secrets.length > 0) {
+      return location.secrets;
+    }
+
+    if (location.privateNotes && location.privateNotes.trim()) {
+      return [
+        {
+          id: 'sec-legacy',
+          title: 'GM Secret Notes',
+          content: location.privateNotes.trim(),
+          isRevealed: !!location.isSecretRevealed
+        }
+      ];
+    }
+
+    return [];
+  }
+
+  getRevealedSecrets(location: Location | null): SecretBlock[] {
+    return this.getLocationSecrets(location).filter(s => !!s.isRevealed);
+  }
+
+  toggleSecretBlock(location: Location, secretIndex: number): void {
+    if (!this.isAdmin || !location) {
+      return;
+    }
+
+    const secrets = [...this.getLocationSecrets(location)];
+    if (secretIndex < 0 || secretIndex >= secrets.length) {
+      return;
+    }
+
+    secrets[secretIndex] = {
+      ...secrets[secretIndex],
+      isRevealed: !secrets[secretIndex].isRevealed
+    };
+
+    const updated: Location = {
+      ...location,
+      secrets
+    };
+
+    this.dataService.updateLocation(updated).subscribe({
+      next: saved => {
+        if (this.selectedLocation?.id === saved.id) {
+          this.selectedLocation = saved;
+        }
+        const block = saved.secrets?.[secretIndex] || secrets[secretIndex];
+        this.toastService.show(
+          block.isRevealed
+            ? `Secret "${block.title || 'Campaign Secret'}" is now REVEALED to players!`
+            : `Secret "${block.title || 'Campaign Secret'}" is now HIDDEN (GM only).`,
+          'info'
+        );
+        this.dataService.refreshLocations().subscribe();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update secret block reveal status: ${err?.message || err}`, 'error');
+      }
+    });
   }
 
   getFactionThumbnail(factionName: string): string {
     if (!this.loreData?.factions) return '';
-    
+
     const faction = this.loreData.factions.find(
       faction => faction.name === factionName
     );
-    
+
     return faction?.thumbnail || '';
   }
 
@@ -133,7 +220,10 @@ export class LocationsComponent implements OnInit {
   }
 
   getUniqueFactions(): string[] {
-    const factions = this.locations.map(location => location.faction);
+    const visibleLocations = this.locations.filter(l =>
+      this.isAdmin || !l.isSecret || l.isSecretRevealed
+    );
+    const factions = visibleLocations.map(location => location.faction);
     return [...new Set(factions)];
   }
 
@@ -147,12 +237,8 @@ export class LocationsComponent implements OnInit {
 
   navigateToShop(shopName: string) {
     this.navigateTo.emit('shops');
-    
-    // Use setTimeout to allow the view to change before scrolling
+
     setTimeout(() => {
-      // Find the shop element by text content since we don't have the ID here directly
-      // Or we can fetch shops to get ID, but that requires more logic.
-      // Better approach: Let's use DataService to find shop ID by name
       this.dataService.getShops().subscribe(shops => {
         const shop = shops.find(s => s.name === shopName);
         if (shop) {
@@ -160,7 +246,6 @@ export class LocationsComponent implements OnInit {
           const element = document.getElementById(elementId);
           if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            // Add a highlight effect
             element.classList.add('highlight-shop');
             setTimeout(() => element.classList.remove('highlight-shop'), 2000);
           }
@@ -170,13 +255,8 @@ export class LocationsComponent implements OnInit {
   }
 
   isShop(featureName: string): boolean {
-    // This is a simple check. A more robust way would be to check against the list of shops
-    // But since we can't easily access the shops list synchronously here without pre-fetching,
-    // we'll rely on a known list or fetch it on init.
-    // Let's fetch shops on init and store their names.
     return this.shopNames.includes(featureName);
   }
-
 
   trackByFaction(index: number, item: string): string {
     return item;
@@ -189,4 +269,4 @@ export class LocationsComponent implements OnInit {
   trackByFeature(index: number, feature: any): string {
     return feature.name;
   }
-} 
+}

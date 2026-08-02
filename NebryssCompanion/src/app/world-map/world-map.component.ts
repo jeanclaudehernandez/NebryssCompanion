@@ -1,10 +1,12 @@
 import { Component, OnInit, OnChanges, AfterViewInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, Input, SimpleChanges, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { Location } from '../model';
 import { ModalService } from '../modal.service';
+import { ToastService } from '../toast.service';
 import { WORLD_MAP_PIN_COORDINATES } from './world-map-pin-coordinates';
 import { WorldMapStateService } from './world-map-state.service';
 import { FACTION_COLORS, DEFAULT_FACTION_COLOR } from './world-map-faction-colors';
@@ -22,7 +24,7 @@ export interface MapPin {
 @Component({
   selector: 'app-world-map',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './world-map.component.html',
   styleUrls: ['./world-map.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -35,6 +37,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   @ViewChild('mapViewport') mapViewportRef?: ElementRef<HTMLDivElement>;
   @ViewChild('mapSurface') mapSurfaceRef?: ElementRef<HTMLDivElement>;
   @ViewChild('createLocationConfirmDialog') createLocationConfirmDialog?: TemplateRef<any>;
+  @ViewChild('mapCalibrationDialog') mapCalibrationDialog?: TemplateRef<any>;
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -42,7 +45,17 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   pins: MapPin[] = [];
   selectedPin: Location | null = null;
   isAdmin = false;
-  private locationsData: Location[] = [];
+  isDragMode = false;
+  draggingPin: MapPin | null = null;
+  locationsData: Location[] = [];
+
+  // Calibration tool properties
+  calibMapImgUrl = '';
+  calibScaleX = 100;
+  calibScaleY = 100;
+  calibOffsetX = 0;
+  calibOffsetY = 0;
+  isCalibrating = false;
 
   // Pan & zoom state
   scale = 1;
@@ -69,11 +82,11 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     private cdr: ChangeDetectorRef,
     private mapState: WorldMapStateService,
     private adminService: AdminService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit(): void {
-    // restore whatever focus (pan/zoom) was active last time this view was open
     this.scale = this.mapState.scale;
     this.translateX = this.mapState.translateX;
     this.translateY = this.mapState.translateY;
@@ -82,11 +95,12 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {
         this.isAdmin = isAdmin;
+        this.rebuildPins();
+        this.cdr.markForCheck();
       });
 
     this.dataService.getLocations().subscribe(data => {
       const locations = data.locations || [];
-      // tolerate the "isworldMap" casing some DB docs were saved with
       this.worldMapLocation =
         locations.find(l => l.isWorldMap || (l as any).isworldMap) ??
         locations.find(l => l.faction === 'Planet') ??
@@ -123,10 +137,54 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     this.clampPan();
   }
 
+  toggleDragMode(): void {
+    this.isDragMode = !this.isDragMode;
+    if (this.isDragMode) {
+      this.toastService.show('Pin Dragging Mode ON. Click and drag pins to reposition.', 'info');
+    } else {
+      this.toastService.show('Pin Dragging Mode OFF.', 'info');
+    }
+    this.cdr.markForCheck();
+  }
+
+  toggleSecretReveal(location: Location, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const updated = {
+      ...location,
+      isSecretRevealed: !location.isSecretRevealed
+    };
+
+    this.dataService.updateLocation(updated).subscribe({
+      next: saved => {
+        if (this.selectedPin?.id === saved.id) {
+          this.selectedPin = saved;
+        }
+        this.toastService.show(
+          saved.isSecretRevealed
+            ? `Secret lore for ${saved.name} is now REVEALED to players!`
+            : `Secret lore for ${saved.name} is now HIDDEN from players (GM only).`,
+          'info'
+        );
+        this.dataService.refreshLocations().subscribe();
+        this.rebuildPins();
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update secret status: ${err?.message || err}`, 'error');
+      }
+    });
+  }
+
   private rebuildPins(): void {
-    // New location without a spot yet? Just add it to WORLD_MAP_PIN_COORDINATES.
     this.pins = this.locationsData
       .filter(l => l !== this.worldMapLocation)
+      .filter(l => this.isAdmin || !l.isSecret || l.isSecretRevealed)
       .map((l, i) => this.toPin(l, i))
       .filter((pin): pin is MapPin => pin !== null);
   }
@@ -259,6 +317,9 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   }
 
   selectPin(pin: Location): void {
+    if (this.draggingPin) {
+      return;
+    }
     this.selectedPin = pin;
     this.cdr.markForCheck();
   }
@@ -309,6 +370,19 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     this.setScale(this.scale + (event.deltaY > 0 ? -0.15 : 0.15));
   }
 
+  onPinPointerDown(event: PointerEvent, pin: MapPin): void {
+    if (this.isAdmin && (this.isDragMode || event.altKey)) {
+      event.stopPropagation();
+      (event.target as Element).setPointerCapture?.(event.pointerId);
+      this.draggingPin = pin;
+      this.isPanning = false;
+      this.cancelLongPress();
+      return;
+    }
+
+    event.stopPropagation();
+  }
+
   onPointerDown(event: PointerEvent): void {
     if (event.pointerType === 'mouse' && event.button !== 0) {
       return;
@@ -330,6 +404,16 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   }
 
   onPointerMove(event: PointerEvent): void {
+    if (this.draggingPin) {
+      const coords = this.getCoordinatesFromPointer(event.clientX, event.clientY);
+      if (coords) {
+        this.draggingPin.x = coords.x;
+        this.draggingPin.y = coords.y;
+        this.cdr.markForCheck();
+      }
+      return;
+    }
+
     if (!this.activePointers.has(event.pointerId)) {
       return;
     }
@@ -362,6 +446,31 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   }
 
   onPointerUp(event: PointerEvent): void {
+    if (this.draggingPin) {
+      const targetPin = this.draggingPin;
+      this.draggingPin = null;
+
+      const updatedLocation: Location = {
+        ...targetPin.location,
+        mapX: targetPin.x,
+        mapY: targetPin.y
+      };
+
+      this.dataService.updateLocation(updatedLocation).subscribe({
+        next: () => {
+          this.toastService.show(
+            `Repositioned ${targetPin.location.name} to (${targetPin.x}%, ${targetPin.y}%)`,
+            'success'
+          );
+          this.dataService.refreshLocations().subscribe();
+        },
+        error: err => {
+          this.toastService.show(`Failed to save position: ${err?.message || err}`, 'error');
+        }
+      });
+      return;
+    }
+
     this.activePointers.delete(event.pointerId);
     this.pinchStartDistance = 0;
     if (this.longPressPointerId === event.pointerId || this.longPressTriggered) {
@@ -431,7 +540,6 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     this.cdr.markForCheck();
   }
 
-  // keeps the map image from being panned/zoomed past its own edges, leaving empty space in the viewport
   private clampPan(): void {
     const surface = this.mapSurfaceRef?.nativeElement;
     const viewport = this.mapViewportRef?.nativeElement;
@@ -450,7 +558,6 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
 
   private clampAxis(translate: number, base: number, viewportSize: number, scaledSize: number): number {
     if (scaledSize <= viewportSize) {
-      // smaller than the viewport: always centered, no free panning range that could park it in a corner
       return (viewportSize - scaledSize) / 2 - base;
     }
     const clampedEdge = Math.min(0, Math.max(viewportSize - scaledSize, base + translate));
@@ -537,6 +644,84 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     this.pendingCreateCoords = null;
     this.modalService.close();
     this.cdr.markForCheck();
+  }
+
+  // --- Map Calibration & Tools Modal ---
+  openMapCalibrationModal(): void {
+    if (!this.isAdmin || !this.mapCalibrationDialog) {
+      return;
+    }
+
+    this.calibMapImgUrl = this.worldMapLocation?.imgUrl ?? '';
+    this.calibScaleX = 100;
+    this.calibScaleY = 100;
+    this.calibOffsetX = 0;
+    this.calibOffsetY = 0;
+
+    this.modalService.openFromTemplate(this.mapCalibrationDialog, {
+      cancel: () => this.modalService.close()
+    });
+  }
+
+  applyMapCalibration(): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    this.isCalibrating = true;
+    const scaleFactorX = this.calibScaleX / 100;
+    const scaleFactorY = this.calibScaleY / 100;
+    const offsetX = this.calibOffsetX;
+    const offsetY = this.calibOffsetY;
+
+    // Recalculate coordinates for all locations
+    const updatePromises = this.locationsData
+      .filter(loc => loc.mapX != null && loc.mapY != null && !loc.isWorldMap)
+      .map(loc => {
+        const newMapX = Number(Math.min(100, Math.max(0, (loc.mapX! * scaleFactorX) + offsetX)).toFixed(2));
+        const newMapY = Number(Math.min(100, Math.max(0, (loc.mapY! * scaleFactorY) + offsetY)).toFixed(2));
+
+        return this.dataService.updateLocation({
+          ...loc,
+          mapX: newMapX,
+          mapY: newMapY
+        }).toPromise();
+      });
+
+    // Also update background world map URL if changed
+    if (this.worldMapLocation && this.calibMapImgUrl.trim() && this.calibMapImgUrl !== this.worldMapLocation.imgUrl) {
+      updatePromises.push(
+        this.dataService.updateLocation({
+          ...this.worldMapLocation,
+          imgUrl: this.calibMapImgUrl.trim()
+        }).toPromise()
+      );
+    }
+
+    Promise.all(updatePromises)
+      .then(() => {
+        this.toastService.show('Map calibration applied successfully to all locations!', 'success');
+        this.dataService.refreshLocations().subscribe();
+        this.modalService.close();
+      })
+      .catch(err => {
+        this.toastService.show(`Failed to apply calibration: ${err?.message || err}`, 'error');
+      })
+      .finally(() => {
+        this.isCalibrating = false;
+        this.cdr.markForCheck();
+      });
+  }
+
+  copyLocationsJson(): void {
+    const formattedJson = JSON.stringify(this.locationsData, null, 2);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(formattedJson).then(() => {
+        this.toastService.show('locations.json copied to clipboard!', 'success');
+      });
+    } else {
+      this.toastService.show('Clipboard API not available.', 'error');
+    }
   }
 
   ngOnDestroy(): void {

@@ -24,11 +24,23 @@ export interface AlteredState {
     type: string;
   }
 
+  export interface SecretBlock {
+    id?: string;
+    title?: string;
+    content: string;
+    isRevealed?: boolean;
+  }
+
   // locations.ts
   export interface Location {
     id: number;
     name: string;
     description: string;
+    rpgMapLayout?: string;
+    privateNotes?: string;
+    secrets?: SecretBlock[];
+    isSecret?: boolean;
+    isSecretRevealed?: boolean;
     imgUrl?: string;
     thumbnail?: string;
     faction: string;
@@ -214,13 +226,24 @@ export interface AlteredState {
       naming?: string;
       image?: string;
       thumbnail?: string;
+      privateNotes?: string;
+      isSecretRevealed?: boolean;
       notableIslands?: Array<{
         name: string;
         description?: string;
         imgUrl?: string;
         thumbnail?: string;
       }>;
-      // ... other faction-specific properties
+      notableOrganizations?: Array<{
+        name: string;
+        description: string;
+      }>;
+    }>;
+    chroniclesOfNebryss?: Array<{
+      era: string;
+      summary: string;
+      privateNotes?: string;
+      isSecretRevealed?: boolean;
     }>;
     struggleForNebryss: string[];
     storyHooks: Array<{
@@ -228,6 +251,8 @@ export interface AlteredState {
       premise: string;
       keyElements: string;
       potentialImpact: string;
+      privateNotes?: string;
+      isSecretRevealed?: boolean;
     }>;
     mistBasedGameplayMechanics: Array<{
       name: string;
@@ -236,6 +261,8 @@ export interface AlteredState {
     potentialEndgameScenarios: Array<{
       name: string;
       description: string;
+      privateNotes?: string;
+      isSecretRevealed?: boolean;
     }>;
   }
   
