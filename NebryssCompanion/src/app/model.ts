@@ -150,7 +150,7 @@ export interface AlteredState {
   
   // lore.ts
   export interface Lore {
-    planet: {
+    world: {
       name: string;
       imgUrl: string;
       thumbnail: string;

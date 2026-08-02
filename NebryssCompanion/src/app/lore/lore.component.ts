@@ -169,17 +169,18 @@ export class LoreComponent implements OnInit {
   }
 
   prepareLoreSections() {
-    if (!this.loreData?.planet) {
+    const worldData = this.loreData?.world || (this.loreData as any)?.planet;
+    if (!worldData) {
       return;
     }
     
     this.loreSections = [
       {
-        title: 'Planet',
-        content: this.loreData.planet,
-        key: 'planet',
-        imgUrl: this.loreData.planet.imgUrl,
-        thumbnail: this.loreData.planet.thumbnail
+        title: 'World',
+        content: worldData,
+        key: 'world',
+        imgUrl: worldData.imgUrl,
+        thumbnail: worldData.thumbnail
       },
       {
         title: 'Chronicles of Nebryss',
@@ -229,7 +230,7 @@ export class LoreComponent implements OnInit {
     ];
 
     this.scrollSections = [
-      { title: 'Planet', id: 'planet' },
+      { title: 'World', id: 'world' },
       { title: 'Chronicles of Nebryss', id: 'chroniclesOfNebryss' },
       { title: 'Currency', id: 'currency' },
       { title: 'Mist Effects', id: 'mistEffects' },

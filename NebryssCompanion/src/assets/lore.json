@@ -3,7 +3,7 @@
     "_id": {
       "$oid": "6999dd1df7703abfb2c08890"
     },
-    "planet": {
+    "world": {
       "name": "Nebryss",
       "imgUrl": "https://iili.io/3R2Be6u.png",
       "thumbnail": "https://iili.io/3R2Be6u.th.png",
