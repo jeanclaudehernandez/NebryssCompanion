@@ -93,7 +93,7 @@
             <tr class="weapon-row rules-row" *ngIf="hasRules(entry)">
                 <td [attr.colspan]="showActions ? totalColumns - 2 : totalColumns - 1" class="rules-cell">
                     <div class="rules-container">
-                        <span class="rules-label">WR: </span>
+                        <span class="rules-label-spacer" aria-hidden="true">WR:</span>
                         <span *ngFor="let rule of entry.profile.specialRules; let last = last" class="rule-item">
                             <span 
                               class="rule-text weapon-rule-link"

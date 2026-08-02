@@ -219,6 +219,12 @@ body.dark-theme .weapons-table th.sortable:hover {
     margin-right: 0.25rem;
 }
 
+.rules-label-spacer {
+    visibility: hidden;
+    font-weight: 500;
+    margin-right: 0.25rem;
+}
+
 .rule-text {
   cursor: help;
   border-bottom: 1px dotted #666;
