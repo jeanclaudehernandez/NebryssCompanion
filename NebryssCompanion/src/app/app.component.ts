@@ -221,6 +221,8 @@ export class AppComponent {
           letter => letter.recipientIds.includes(player.id) && !letter.readBy.includes(player.id)
         ).length;
       });
+
+    this.initPullToRefreshListeners();
   }
 
   // Detect if we are in standalone PWA mode (iOS or Android)
@@ -284,7 +286,6 @@ export class AppComponent {
     return !this.isInteractiveElement(event.target);
   }
 
-  @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent) {
     if (!this.canStartPullRefresh(event)) {
       this.resetPullState();
@@ -296,7 +297,6 @@ export class AppComponent {
     this.pullProgress = 0;
   }
 
-  @HostListener('touchmove', ['$event'])
   onTouchMove(event: TouchEvent) {
     if (!this.isPulling || this.isRefreshing || event.touches.length !== 1) return;
     
@@ -318,7 +318,6 @@ export class AppComponent {
     this.pullProgress = Math.min(activePullDistance / this.PULL_THRESHOLD, 1.5);
   }
 
-  @HostListener('touchend')
   onTouchEnd() {
     if (this.isPulling && this.pullProgress >= 0.8 && !this.isRefreshing) {
        this.triggerRefresh();
@@ -327,9 +326,31 @@ export class AppComponent {
     }
   }
 
-  @HostListener('touchcancel')
   onTouchCancel() {
     this.resetPullState();
+  }
+
+  private initPullToRefreshListeners(): void {
+    if (!this.isStandalone || this.isIOSDevice) {
+      return;
+    }
+
+    const handleTouchStart = (event: TouchEvent) => this.onTouchStart(event);
+    const handleTouchMove = (event: TouchEvent) => this.onTouchMove(event);
+    const handleTouchEnd = () => this.onTouchEnd();
+    const handleTouchCancel = () => this.onTouchCancel();
+
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
+    window.addEventListener('touchcancel', handleTouchCancel, { passive: true });
+
+    this.destroyRef.onDestroy(() => {
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener('touchcancel', handleTouchCancel);
+    });
   }
 
   private triggerRefresh() {

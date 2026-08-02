@@ -43,9 +43,13 @@ body {
   }
 
   /* Mobile Touch Optimization */
-  button, a, input, select, textarea, [role="button"] {
+  button, a, [role="button"] {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+  }
+
+  input, select, textarea {
+    -webkit-tap-highlight-color: transparent;
   }
 
   /* Responsive Table Container Utility */
