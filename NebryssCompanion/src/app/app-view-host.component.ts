@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { AdminEditorSession } from './admin-editor.models';
 import { AppView } from './app-view.types';
+import { Location } from './model';
 
 @Component({
   selector: 'app-view-host',
@@ -31,13 +32,13 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() selectedRuleName: string | null = null;
   @Input() selectedStateName: string | null = null;
   @Input() adminEditSession: AdminEditorSession | null = null;
-  @Input() adminLocationDraft: { mapX: number | null; mapY: number | null } | null = null;
+  @Input() adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
 
   @Output() viewChange = new EventEmitter<AppView>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   @Output() navigateToLocation = new EventEmitter<{ locationName: string; backTarget: string | null }>();
   @Output() navigateToLore = new EventEmitter<string>();
-  @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number; mapY: number }>();
+  @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
 
   @ViewChild('viewHost', { read: ViewContainerRef, static: true })
   private viewHost!: ViewContainerRef;
@@ -176,6 +177,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'adminLocationCreator':
         this.componentRef.setInput('initialMapX', this.adminLocationDraft?.mapX ?? null);
         this.componentRef.setInput('initialMapY', this.adminLocationDraft?.mapY ?? null);
+        this.componentRef.setInput('initialLocation', this.adminLocationDraft?.location ?? null);
         break;
     }
   }

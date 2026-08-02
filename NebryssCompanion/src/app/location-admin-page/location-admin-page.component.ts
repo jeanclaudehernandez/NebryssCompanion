@@ -17,6 +17,7 @@ import { ToastService } from '../toast.service';
 export class LocationAdminPageComponent implements OnInit, OnChanges {
   @Input() initialMapX: number | null = null;
   @Input() initialMapY: number | null = null;
+  @Input() initialLocation: Location | null = null;
 
   readonly categoryOptions = [
     'city',
@@ -33,7 +34,12 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     'volcanic-area',
     'wasteland'
   ];
-  readonly categorySizeOptions = ['small', 'medium', 'big', 'immense'];
+  readonly categorySizeOptions = [
+    { value: 1, label: 'Small' },
+    { value: 2, label: 'Medium' },
+    { value: 3, label: 'Big' },
+    { value: 4, label: 'Immense' }
+  ];
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -48,13 +54,29 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   description = '';
   faction = '';
   category = '';
-  categorySize = '';
+  categorySize: number | null = null;
   imgUrl = '';
   thumbnail = '';
   mapX: number | null = null;
   mapY: number | null = null;
   isCapital = false;
   isWorldMap = false;
+
+  get isEditing(): boolean {
+    return !!this.initialLocation;
+  }
+
+  get pageTitle(): string {
+    return this.isEditing ? 'Location Editor' : 'Location Creator';
+  }
+
+  get submitLabel(): string {
+    if (this.isSaving) {
+      return this.isEditing ? 'Saving...' : 'Creating...';
+    }
+
+    return this.isEditing ? 'Save Changes' : 'Create Location';
+  }
 
   constructor(
     private readonly adminService: AdminService,
@@ -76,7 +98,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
           .sort((left, right) => left.localeCompare(right));
       });
 
-    this.applyInitialCoordinates();
+    this.applyInitialValues();
   }
 
   onFactionSelect(value: string): void {
@@ -100,8 +122,8 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialMapX'] || changes['initialMapY']) {
-      this.applyInitialCoordinates();
+    if (changes['initialMapX'] || changes['initialMapY'] || changes['initialLocation']) {
+      this.applyInitialValues();
     }
   }
 
@@ -133,6 +155,11 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       .join(' ');
   }
 
+  getCategorySizeLabel(value: number | string | null | undefined): string {
+    const numericValue = Number(value);
+    return this.categorySizeOptions.find(option => option.value === numericValue)?.label ?? 'n/a';
+  }
+
   submit(): void {
     if (!this.canSubmit) {
       return;
@@ -144,23 +171,62 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     }
 
     this.isSaving = true;
-    this.dataService.createLocation(payload).subscribe({
+    const request$ = this.isEditing
+      ? this.dataService.updateLocation(payload as Location)
+      : this.dataService.createLocation(payload);
+
+    request$.subscribe({
       next: savedLocation => {
         this.lastCreatedLocation = savedLocation;
         this.locationId = savedLocation.id;
-        this.toastService.show(`Created ${savedLocation.name} successfully`, 'success');
+        this.toastService.show(
+          `${this.isEditing ? 'Updated' : 'Created'} ${savedLocation.name} successfully`,
+          'success'
+        );
         this.dataService.refreshLocations().subscribe();
         this.isSaving = false;
       },
       error: err => {
         const message = err?.error?.error || err?.message || 'Unknown error';
-        this.toastService.show(`Failed to create location: ${message}`, 'error');
+        this.toastService.show(
+          `Failed to ${this.isEditing ? 'update' : 'create'} location: ${message}`,
+          'error'
+        );
         this.isSaving = false;
       }
     });
   }
 
-  private applyInitialCoordinates(): void {
+  private applyInitialValues(): void {
+    if (this.initialLocation) {
+      this.locationId = this.initialLocation.id;
+      this.name = this.initialLocation.name ?? '';
+      this.description = this.initialLocation.description ?? '';
+      this.faction = this.initialLocation.faction ?? '';
+      this.category = this.initialLocation.category ?? '';
+      this.categorySize = this.normalizeCategorySize(this.initialLocation.categorySize);
+      this.imgUrl = this.initialLocation.imgUrl ?? '';
+      this.thumbnail = this.initialLocation.thumbnail ?? '';
+      this.mapX = typeof this.initialLocation.mapX === 'number' ? Number(this.initialLocation.mapX.toFixed(2)) : null;
+      this.mapY = typeof this.initialLocation.mapY === 'number' ? Number(this.initialLocation.mapY.toFixed(2)) : null;
+      this.isCapital = !!this.initialLocation.isCapital;
+      this.isWorldMap = !!this.initialLocation.isWorldMap;
+      return;
+    }
+
+    this.locationId = null;
+    this.name = '';
+    this.description = '';
+    this.faction = '';
+    this.category = '';
+    this.categorySize = null;
+    this.imgUrl = '';
+    this.thumbnail = '';
+    this.mapX = null;
+    this.mapY = null;
+    this.isCapital = false;
+    this.isWorldMap = false;
+
     if (typeof this.initialMapX === 'number') {
       this.mapX = Number(this.initialMapX.toFixed(2));
     }
@@ -181,7 +247,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     const description = this.description.trim();
     const faction = this.faction.trim();
     const category = this.category.trim();
-    const categorySize = this.categorySize.trim();
+    const categorySize = this.categorySize;
 
     if (validate && !name) {
       this.toastService.show('Location name is required', 'error');
@@ -209,7 +275,8 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       name,
       description,
       faction,
-      isCapital: this.isCapital
+      isCapital: this.isCapital,
+      isWorldMap: this.isWorldMap
     };
 
     if (typeof this.locationId === 'number' && !Number.isNaN(this.locationId)) {
@@ -237,10 +304,35 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       payload.mapY = Number(this.mapY);
     }
 
-    if (this.isWorldMap) {
-      payload.isWorldMap = true;
+    return payload;
+  }
+
+  private normalizeCategorySize(value: string | number | null | undefined): number | null {
+    if (typeof value === 'number' && !Number.isNaN(value)) {
+      return value;
     }
 
-    return payload;
+    const normalized = String(value ?? '').trim().toLowerCase();
+    if (!normalized) {
+      return null;
+    }
+
+    const numericValue = Number(normalized);
+    if (!Number.isNaN(numericValue)) {
+      return numericValue;
+    }
+
+    switch (normalized) {
+      case 'small':
+        return 1;
+      case 'medium':
+        return 2;
+      case 'big':
+        return 3;
+      case 'immense':
+        return 4;
+      default:
+        return null;
+    }
   }
 }

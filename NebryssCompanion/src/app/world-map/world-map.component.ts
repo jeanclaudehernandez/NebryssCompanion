@@ -29,7 +29,7 @@ export interface MapPin {
 export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
-  @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number; mapY: number }>();
+  @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
   @ViewChild('mapViewport') mapViewportRef?: ElementRef<HTMLDivElement>;
   @ViewChild('mapSurface') mapSurfaceRef?: ElementRef<HTMLDivElement>;
   @ViewChild('createLocationConfirmDialog') createLocationConfirmDialog?: TemplateRef<any>;
@@ -258,6 +258,19 @@ export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
     this.navigateToLocation.emit(pin.name);
   }
 
+  editLocation(pin: Location): void {
+    if (!this.isAdmin) {
+      return;
+    }
+
+    this.navigateToAdminLocationCreator.emit({
+      mapX: pin.mapX ?? null,
+      mapY: pin.mapY ?? null,
+      location: pin
+    });
+    this.closePopup();
+  }
+
   onFactionClick(faction: string): void {
     this.navigateToLore.emit(faction);
   }
@@ -459,7 +472,8 @@ export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.navigateToAdminLocationCreator.emit({
       mapX: this.pendingCreateCoords.x,
-      mapY: this.pendingCreateCoords.y
+      mapY: this.pendingCreateCoords.y,
+      location: null
     });
     this.cancelCreateLocationPrompt();
   }

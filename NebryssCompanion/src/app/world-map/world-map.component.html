@@ -72,6 +72,9 @@
     <div class="map-popup-header">
       <h3>{{ selectedPin.name }}</h3>
       <span *ngIf="selectedPin.isCapital" class="capital-badge">Capital</span>
+      <button *ngIf="isAdmin" type="button" class="map-popup-edit-btn" (click)="editLocation(selectedPin)">
+        Edit Location
+      </button>
     </div>
 
     <div class="map-popup-thumb" *ngIf="selectedPin.thumbnail || selectedPin.imgUrl">

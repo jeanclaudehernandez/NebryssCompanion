@@ -1,4 +1,9 @@
 <div class="admin-page">
+  <div *ngIf="isAdmin" class="player-detail-container admin-header">
+    <div>
+      <h2>{{ pageTitle }}</h2>
+    </div>
+  </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
     <h3>Admin Access Required</h3>
@@ -54,9 +59,9 @@
           <label class="field">
             <span>Size</span>
             <select [(ngModel)]="categorySize" name="categorySize">
-              <option value="">Select icon size</option>
-              <option *ngFor="let option of categorySizeOptions" [value]="option">
-                {{ formatOptionLabel(option) }}
+              <option [ngValue]="null">Select icon size</option>
+              <option *ngFor="let option of categorySizeOptions" [ngValue]="option.value">
+                {{ option.label }} ({{ option.value }})
               </option>
             </select>
           </label>
@@ -118,7 +123,7 @@
 
       <div class="actions dialog-buttons">
         <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
-          {{ isSaving ? 'Creating...' : 'Create Location' }}
+          {{ submitLabel }}
         </button>
       </div>
     </form>
@@ -130,13 +135,13 @@
       </section>
 
       <section class="admin-section" *ngIf="lastCreatedLocation">
-        <h3>Last Created Location</h3>
+        <h3>Last Saved Location</h3>
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastCreatedLocation.id }}</div>
           <div><strong>Name:</strong> {{ lastCreatedLocation.name }}</div>
           <div><strong>Faction:</strong> {{ lastCreatedLocation.faction }}</div>
           <div><strong>Category:</strong> {{ lastCreatedLocation.category || 'n/a' }}</div>
-          <div><strong>Size:</strong> {{ lastCreatedLocation.categorySize || 'n/a' }}</div>
+          <div><strong>Size:</strong> {{ getCategorySizeLabel(lastCreatedLocation.categorySize) }}</div>
           <div><strong>Map:</strong> {{ lastCreatedLocation.mapX ?? 'n/a' }}, {{ lastCreatedLocation.mapY ?? 'n/a' }}</div>
         </div>
       </section>

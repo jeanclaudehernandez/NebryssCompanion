@@ -12,6 +12,7 @@ import { AdminEditorSession } from './admin-editor.models';
 import { ActivePlayerService } from './active-player.service';
 import { AppViewHostComponent } from './app-view-host.component';
 import { APP_VIEWS, AppView } from './app-view.types';
+import { Location } from './model';
 
   @Component({
   selector: 'app-root',
@@ -139,7 +140,7 @@ export class AppComponent {
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
-  adminLocationDraft: { mapX: number | null; mapY: number | null } | null = null;
+  adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
   activePlayer$ = this.activePlayerService.activePlayer$;
 
@@ -408,10 +409,11 @@ export class AppComponent {
     window.scrollTo({ top: 0 });
   }
 
-  onNavigateToAdminLocationCreator(coords: { mapX: number; mapY: number }) {
+  onNavigateToAdminLocationCreator(coords: { mapX: number | null; mapY: number | null; location: Location | null }) {
     this.adminLocationDraft = {
       mapX: coords.mapX,
-      mapY: coords.mapY
+      mapY: coords.mapY,
+      location: coords.location
     };
     this.currentView = 'adminLocationCreator';
     this.selectedLocationName = null;
