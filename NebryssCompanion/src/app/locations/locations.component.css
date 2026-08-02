@@ -9,20 +9,42 @@
   overflow: hidden;
 }
 
-/* Deep-linked from elsewhere (e.g. World Map "View Full Details"): fill the screen, skip the list */
-.locations-page.full-screen {
-  max-width: 100%;
-  width: 100%;
-  height: calc(100vh - 60px);
+/* Full screen view when a location is selected */
+.locations-page.has-selected-location .locations-sidebar {
+  display: none !important;
 }
 
-.locations-page.full-screen .locations-sidebar {
-  display: none;
+.locations-page.has-selected-location .location-details-container {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
 }
 
-.locations-page.full-screen .location-details {
-  max-width: 100%;
+.locations-page.has-selected-location .location-details {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 0px;
   width: 100%;
+  box-sizing: border-box;
+}
+
+/* When no location is selected, sidebar/directory fills the view cleanly */
+.locations-page.no-location-selected .locations-sidebar {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-width: 0;
+  border-right: none;
+  padding: 20px 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.locations-page.no-location-selected .location-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
 }
 
 /* Sidebar Styles */
@@ -30,7 +52,6 @@
   width: 320px;
   min-width: 320px;
   overflow-y: auto;
-  padding: 20px;
   background-color: rgba(18, 18, 20, 0.85);
   backdrop-filter: blur(8px);
   border-right: 1px solid rgba(255, 255, 255, 0.08);
@@ -45,33 +66,65 @@
 }
 
 .faction-section {
-  margin-bottom: 25px;
+  margin-bottom: 24px;
 }
 
 .faction-header {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
   cursor: pointer;
-  padding: 6px 8px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
 }
 
 .faction-header:hover {
   background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(100, 181, 246, 0.3);
+}
+
+.faction-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .faction-header h3 {
-  color: #e2e8f0;
+  color: #90caf9;
   margin: 0;
   font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.faction-collapse-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.faction-header:hover .faction-collapse-btn {
+  color: #f8fafc;
+  background-color: rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-emblem {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  margin-right: 0;
+  flex-shrink: 0;
 }
 
 .location-cards {
@@ -157,7 +210,7 @@
 }
 
 .location-details {
-  padding: 20px 32px;
+  padding: 20px 0px;
   max-width: 100%;
   width: 100%;
   box-sizing: border-box;
@@ -368,7 +421,7 @@
     flex-direction: column;
     height: auto;
   }
-  
+
   .locations-sidebar {
     width: 100%;
     max-height: 300px;
@@ -376,13 +429,13 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
   }
-  
+
   /* When no location is selected, make sidebar take full height */
   .no-location-selected .locations-sidebar {
     max-height: none;
     border-bottom: none;
   }
-  
+
 
   .location-title-row {
     gap: 10px;
@@ -400,7 +453,7 @@
   .location-empty-state {
     display: none;
   }
-  
+
   /* Hide the location details container when no location is selected */
   .location-details-container:not(.has-selected-location) {
     display: none;
@@ -568,4 +621,3 @@ pre.rpg-layout-text,
   font-family: 'Consolas', 'Courier New', monospace;
   font-size: 13px;
 }
-

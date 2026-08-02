@@ -36,6 +36,7 @@ export class LocationsComponent implements OnInit {
   uniqueFactions: string[] = [];
   shopNames: string[] = [];
   isAdmin = false;
+  collapsedFactions = new Set<string>();
 
   constructor(
     private dataService: DataService,
@@ -43,6 +44,27 @@ export class LocationsComponent implements OnInit {
     private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
+
+  toggleFactionCollapse(factionName: string, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (this.collapsedFactions.has(factionName)) {
+      this.collapsedFactions.delete(factionName);
+    } else {
+      this.collapsedFactions.add(factionName);
+    }
+    this.cdr.markForCheck();
+  }
+
+  isFactionCollapsed(factionName: string): boolean {
+    return this.collapsedFactions.has(factionName);
+  }
+
+  onFactionEmblemClick(event: Event, factionName: string): void {
+    event.stopPropagation();
+    this.onFactionClick(factionName);
+  }
 
   ngOnInit(): void {
     this.adminService.isAdmin$

@@ -1,228 +1,235 @@
 .shops-container {
-  --shop-location-floating-space: clamp(132px, 20vw + 2px, 196px);
+    --shop-location-floating-space: clamp(150px, 24vw, 240px);
 }
 
 .shop-location-group {
-  --shop-group-color-rgb: 27, 42, 51;
-  margin-bottom: 32px;
-  padding: 10px;
-  border-radius: 18px;
-  background: linear-gradient(
-    180deg,
-    rgba(var(--shop-group-color-rgb), 0.24) 0%,
-    rgba(var(--shop-group-color-rgb), 0.14) 100%
-  );
+    --shop-group-color-rgb: 27, 42, 51;
+    margin-bottom: 32px;
+    padding: 10px;
+    border-radius: 18px;
+    background: linear-gradient(180deg,
+            rgba(var(--shop-group-color-rgb), 0.24) 0%,
+            rgba(var(--shop-group-color-rgb), 0.14) 100%);
 }
 
 .shop-location-header {
-  position: relative;
-  display: block;
-  width: 100%;
-  padding: 0;
-  border: none;
-  border-radius: 14px;
-  overflow: hidden;
-  cursor: pointer;
-  background: rgb(var(--shop-group-color-rgb));
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-  text-align: left;
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background: rgb(var(--shop-group-color-rgb));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+    text-align: left;
 }
 
 .shop-location-header.floating-open {
-  position: sticky;
-  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 8px);
-  z-index: 30;
+    position: sticky;
+    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+    z-index: 30;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 .shops-container .table-header {
-  top: calc(
-    var(--app-header-height, 56px) +
-    var(--safe-area-top, 0px) +
-    var(--shop-location-floating-space)
-  );
+    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + var(--shop-location-floating-space));
+    border-radius: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 9px 14px;
+    background: rgba(var(--shop-group-color-rgb, 27, 42, 51), 0.96);
+    color: #f0f5f8;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 
 .shop-location-header.no-image {
-  min-height: 160px;
+    min-height: 160px;
 }
 
 .shop-location-photo {
-  display: block;
-  width: 100%;
-  height: clamp(150px, 24vw, 240px);
-  object-fit: cover;
+    display: block;
+    width: 100%;
+    height: clamp(150px, 24vw, 240px);
+    object-fit: cover;
 }
 
 .shop-location-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 18px 20px;
-  background: linear-gradient(to top, rgba(10, 18, 24, 0.9), rgba(10, 18, 24, 0.18));
-  color: #f4f8fb;
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    background: linear-gradient(to top, rgba(10, 18, 24, 0.9), rgba(10, 18, 24, 0.18));
+    color: #f4f8fb;
 }
 
 .shop-location-header.no-image .shop-location-overlay {
-  position: relative;
-  min-height: 160px;
+    position: relative;
+    min-height: 160px;
 }
 
 .shop-location-meta {
-  min-width: 0;
+    min-width: 0;
 }
 
 .shop-location-title {
-  margin: 0 0 6px;
-  font-size: 1.5rem;
-  line-height: 1.1;
+    margin: 0 0 6px;
+    font-size: 1.5rem;
+    line-height: 1.1;
 }
 
 .shop-location-description {
-  margin: 0;
-  max-width: 860px;
-  font-size: 0.95rem;
-  color: rgba(244, 248, 251, 0.9);
+    margin: 0;
+    max-width: 860px;
+    font-size: 0.95rem;
+    color: rgba(244, 248, 251, 0.9);
 }
 
 .shop-location-count {
-  display: inline-block;
-  margin-top: 10px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(215, 231, 242, 0.18);
-  color: #f4f8fb;
-  font-size: 0.85rem;
-  font-weight: 600;
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(215, 231, 242, 0.18);
+    color: #f4f8fb;
+    font-size: 0.85rem;
+    font-weight: 600;
 }
 
 .shop-location-chevron {
-  flex: 0 0 auto;
-  align-self: center;
-  font-size: 1.25rem;
-  color: #f4f8fb;
+    flex: 0 0 auto;
+    align-self: center;
+    font-size: 1.25rem;
+    color: #f4f8fb;
 }
 
 .shop-location-body {
-  margin-top: 12px;
-  padding: 18px 14px 4px;
-  border-radius: 14px;
+    margin-top: 0;
+    padding: 18px 14px 4px;
+    border-radius: 14px;
 }
 
 .shop-card {
-  background: transparent;
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
-  transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    background: transparent;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
 }
 
 .shop-card:last-child {
-  margin-bottom: 0;
-  padding-bottom: 0;
-  border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
 }
 
 .shop-card.highlight-shop {
-  animation: highlight-pulse 2s ease-out;
+    animation: highlight-pulse 2s ease-out;
 }
 
 @keyframes highlight-pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
-    transform: scale(1);
-  }
-  15% {
-    transform: scale(1.02);
-  }
-  30% {
-    box-shadow: 0 0 20px 10px rgba(46, 204, 113, 0);
-    transform: scale(1);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
-  }
+    0% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7);
+        transform: scale(1);
+    }
+
+    15% {
+        transform: scale(1.02);
+    }
+
+    30% {
+        box-shadow: 0 0 20px 10px rgba(46, 204, 113, 0);
+        transform: scale(1);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(46, 204, 113, 0);
+    }
 }
 
 .shop-header {
-  display: block;
-  margin-bottom: 10px;
+    display: block;
+    margin-bottom: 10px;
 }
 
 .shop-media {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .shop-photo {
-  width: 100%;
-  max-width: 100%;
-  height: auto;
-  aspect-ratio: 21 / 9;
-  object-fit: cover;
-  object-position: center;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  image-rendering: auto;
-  cursor: zoom-in;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    image-rendering: auto;
+    cursor: zoom-in;
 }
 
 .shop-title {
-  color: #2c3e50;
-  margin: 0;
-  transition: color 0.3s;
-  font-size: 1.15rem;
+    color: #2c3e50;
+    margin: 0;
+    transition: color 0.3s;
+    font-size: 1.15rem;
 }
 
 .location {
-  color: #7f8c8d;
-  font-style: italic;
-  margin-bottom: 15px;
-  transition: color 0.3s;
+    color: #7f8c8d;
+    font-style: italic;
+    margin-bottom: 15px;
+    transition: color 0.3s;
 }
 
 .location:hover {
-  color: #3498db;
-  text-decoration: underline;
+    color: #3498db;
+    text-decoration: underline;
 }
 
 .owner {
-  font-size: 0.9em;
-  color: #95a5a6;
-  transition: color 0.3s;
+    font-size: 0.9em;
+    color: #95a5a6;
+    transition: color 0.3s;
 }
 
 .weapons-section {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .weapons-section.category-block {
-  margin-top: 12px;
+    margin-top: 12px;
 }
 
 /* Dark Theme Styles */
 body.dark-theme .shop-card {
-  background: transparent;
-  border-bottom-color: rgba(255, 255, 255, 0.16);
+    background: transparent;
+    border-bottom-color: rgba(255, 255, 255, 0.16);
 }
 
 body.dark-theme .shop-location-header {
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
 }
 
 body.dark-theme .shop-title {
-  color: #e0e0e0;
+    color: #e0e0e0;
 }
 
 body.dark-theme .location {
-  color: #bdc3c7;
+    color: #bdc3c7;
 }
 
 body.dark-theme .owner {
-  color: #95a5a6;
+    color: #95a5a6;
 }
 
 /* Shopping Cart Styles */
@@ -236,7 +243,7 @@ body.dark-theme .owner {
     color: white;
     border: none;
     border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -258,7 +265,7 @@ body.dark-theme .owner {
     width: 320px;
     height: 100vh;
     background-color: white;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.1);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
     z-index: 1001;
     transition: right 0.3s ease-in-out;
     display: flex;
@@ -405,7 +412,8 @@ body.dark-theme .owner {
 }
 
 .btn-payment.allowed {
-    background-color: #4CAF50; /* Green */
+    background-color: #4CAF50;
+    /* Green */
     color: white;
 }
 
@@ -418,15 +426,17 @@ body.dark-theme .owner {
 }
 
 .btn-payment.denied {
-    background-color: #9E9E9E; /* Grey */
+    background-color: #9E9E9E;
+    /* Grey */
     color: #f0f0f0;
-    cursor: help; /* Indicates tooltip available */
+    cursor: help;
+    /* Indicates tooltip available */
 }
 
 /* Dark Theme Support */
 body.dark-theme .cart-sidebar {
     background-color: #1f1f1f;
-    box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.3);
 }
 
 body.dark-theme .sidebar-header {
@@ -773,12 +783,16 @@ body.dark-theme .btn-flip-orientation:hover {
 
 @media (max-width: 640px) {
     .shops-container {
-        --shop-location-floating-space: 142px;
+        --shop-location-floating-space: 150px;
     }
 
     .shop-location-header.floating-open {
-        top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 6px);
+        top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
     }
+
+
 
     .shop-location-group {
         padding: 8px;
@@ -822,4 +836,12 @@ body.dark-theme .btn-flip-orientation:hover {
     .shop-image-modal:not(.landscape-mode) {
         gap: 8px;
     }
+}
+
+.shops-container .table-header:hover {
+    background: rgba(var(--shop-group-color-rgb, 27, 42, 51), 1);
+}
+
+.shops-container .table-header h3 {
+    color: #f0f5f8;
 }

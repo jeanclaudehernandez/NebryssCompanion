@@ -1,30 +1,37 @@
-<div class="locations-page" [class.no-location-selected]="!selectedLocation" [class.full-screen]="deepLinkMode && selectedLocation">
+<div class="locations-page" [class.no-location-selected]="!selectedLocation"
+  [class.has-selected-location]="selectedLocation"
+  [class.full-screen]="!!selectedLocation">
   <!-- Sidebar with location cards -->
   <div class="locations-sidebar">
-    <h2>Locations of Nebryss</h2>
-    
     <!-- Group locations by faction -->
-    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section">
-      <div class="faction-header" (click)="onFactionClick(faction)" title="Click to view in Lore">
-        <div class="faction-emblem sidebar-emblem" *ngIf="hasFactionName(faction) && getFactionThumbnail(faction)">
-          <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy">
+    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section" [class.is-collapsed]="isFactionCollapsed(faction)">
+      <div class="faction-header" (click)="toggleFactionCollapse(faction)">
+        <div class="faction-header-main">
+          <div class="faction-emblem sidebar-emblem" *ngIf="hasFactionName(faction) && getFactionThumbnail(faction)"
+            (click)="onFactionEmblemClick($event, faction)" title="Click to view {{faction}} in Lore">
+            <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy">
+          </div>
+          <div class="faction-emblem sidebar-emblem text-emblem"
+            *ngIf="hasFactionName(faction) && !getFactionThumbnail(faction)"
+            (click)="onFactionEmblemClick($event, faction)" title="Click to view {{faction}} in Lore">
+            {{ getFactionInitial(faction) }}
+          </div>
+          <h3>{{ faction }}</h3>
         </div>
-        <div class="faction-emblem sidebar-emblem text-emblem" *ngIf="hasFactionName(faction) && !getFactionThumbnail(faction)">
-          {{ getFactionInitial(faction) }}
-        </div>
-        <h3>{{ faction }}</h3>
+        <button type="button" class="faction-collapse-btn" (click)="toggleFactionCollapse(faction, $event)" aria-label="Toggle section">
+          <span class="material-icons">{{ isFactionCollapsed(faction) ? 'expand_more' : 'expand_less' }}</span>
+        </button>
       </div>
-      <div class="location-cards">
-        <div *ngFor="let location of getLocationsByFaction(faction); trackBy: trackByLocation" 
-             class="location-card" 
-             [class.selected]="selectedLocation === location"
-             [class.is-secret-card]="location.isSecret"
-             (click)="selectLocation(location)">
+      <div class="location-cards" *ngIf="!isFactionCollapsed(faction)">
+        <div *ngFor="let location of getLocationsByFaction(faction); trackBy: trackByLocation" class="location-card"
+          [class.selected]="selectedLocation === location" [class.is-secret-card]="location.isSecret"
+          (click)="selectLocation(location)">
           <div class="location-card-header">
             <h4>{{ location.name }}</h4>
             <span *ngIf="location.isCapital" class="capital-badge">Capital</span>
             <span *ngIf="isAdmin && location.isSecret && !location.isSecretRevealed" class="secret-badge">Secret</span>
-            <span *ngIf="isAdmin && location.isSecret && location.isSecretRevealed" class="revealed-badge">Revealed</span>
+            <span *ngIf="isAdmin && location.isSecret && location.isSecretRevealed"
+              class="revealed-badge">Revealed</span>
           </div>
           <div class="location-thumb" *ngIf="location.thumbnail">
             <img [src]="location.thumbnail" [alt]="location.name" loading="lazy">
@@ -33,7 +40,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Container for location details that will be hidden in mobile when no location selected -->
   <div class="location-details-container" [class.has-selected-location]="selectedLocation">
     <!-- Main content area showing selected location details -->
@@ -41,10 +48,17 @@
       <div class="location-header">
         <div class="location-title">
           <div class="location-title-row">
-            <div class="faction-emblem clickable-emblem" *ngIf="hasFactionName(selectedLocation.faction) && getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
-              <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction" loading="lazy">
+            <div class="faction-emblem clickable-emblem"
+              *ngIf="hasFactionName(selectedLocation.faction) && getFactionThumbnail(selectedLocation.faction)"
+              (click)="onFactionClick(selectedLocation.faction)"
+              title="Click to view {{selectedLocation.faction}} in Lore">
+              <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction"
+                loading="lazy">
             </div>
-            <div class="faction-emblem text-emblem clickable-emblem" *ngIf="hasFactionName(selectedLocation.faction) && !getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
+            <div class="faction-emblem text-emblem clickable-emblem"
+              *ngIf="hasFactionName(selectedLocation.faction) && !getFactionThumbnail(selectedLocation.faction)"
+              (click)="onFactionClick(selectedLocation.faction)"
+              title="Click to view {{selectedLocation.faction}} in Lore">
               {{ getFactionInitial(selectedLocation.faction) }}
             </div>
             <h2>{{ selectedLocation.name }}</h2>
@@ -52,32 +66,31 @@
           </div>
         </div>
         <div class="location-header-actions">
-          <button type="button" class="world-map-btn" (click)="openSelectedLocationOnWorldMap()" aria-label="Open on world map">
+          <button type="button" class="world-map-btn" (click)="openSelectedLocationOnWorldMap()"
+            aria-label="Open on world map">
             <span class="material-icons" aria-hidden="true">public</span>
           </button>
           <button class="close-btn" (click)="clearSelectedLocation()" aria-label="Close location">×</button>
         </div>
       </div>
-      
+
       <div class="location-image" *ngIf="selectedLocation.imgUrl">
-        <app-image-viewer 
-          [imageUrl]="selectedLocation.imgUrl"
-          previewMode="full"
-          [altText]="selectedLocation.name">
+        <app-image-viewer [imageUrl]="selectedLocation.imgUrl" previewMode="full" [altText]="selectedLocation.name">
         </app-image-viewer>
       </div>
-      
+
       <div class="location-description">
         <h3>Description</h3>
         <p>{{ selectedLocation.description }}</p>
       </div>
 
-      <div class="notable-features" *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
+      <div class="notable-features"
+        *ngIf="selectedLocation.notableFeatures && selectedLocation.notableFeatures.length > 0">
         <h3>Notable Features</h3>
         <div class="features-list">
-          <div *ngFor="let feature of selectedLocation.notableFeatures; trackBy: trackByFeature" class="feature-item" 
-               [class.clickable]="isShop(feature.name)" 
-               (click)="isShop(feature.name) ? navigateToShop(feature.name) : null">
+          <div *ngFor="let feature of selectedLocation.notableFeatures; trackBy: trackByFeature" class="feature-item"
+            [class.clickable]="isShop(feature.name)"
+            (click)="isShop(feature.name) ? navigateToShop(feature.name) : null">
             <h4>{{ feature.name }}</h4>
             <p>{{ feature.description }}</p>
             <div *ngIf="feature.owner" class="feature-owner">
@@ -102,7 +115,8 @@
       </div>
 
       <!-- GM Private Campaign Vault Blocks (Visible exclusively to Admin/GM, placed at the bottom below all features) -->
-      <div class="gm-vault-section-wrapper" *ngIf="isAdmin && (getLocationSecrets(selectedLocation).length > 0 || selectedLocation.rpgMapLayout)">
+      <div class="gm-vault-section-wrapper"
+        *ngIf="isAdmin && (getLocationSecrets(selectedLocation).length > 0 || selectedLocation.rpgMapLayout)">
         <h3>GM Campaign Secret Vaults</h3>
         <div class="gm-vault-card" *ngFor="let secret of getLocationSecrets(selectedLocation); let i = index">
           <div class="gm-vault-header">
@@ -110,12 +124,8 @@
               <span class="material-icons">security</span>
               <h4>{{ secret.title || 'GM Private Campaign Vault' }}</h4>
             </div>
-            <button
-              type="button"
-              class="gm-reveal-btn"
-              [class.active]="secret.isRevealed"
-              (click)="toggleSecretBlock(selectedLocation, i)"
-            >
+            <button type="button" class="gm-reveal-btn" [class.active]="secret.isRevealed"
+              (click)="toggleSecretBlock(selectedLocation, i)">
               <span class="material-icons">{{ secret.isRevealed ? 'visibility' : 'visibility_off' }}</span>
               {{ secret.isRevealed ? 'Revealed' : 'Reveal Secret to Players' }}
             </button>
@@ -139,10 +149,10 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Empty state when no location is selected -->
     <div class="location-empty-state" *ngIf="!selectedLocation">
       <p>Select a location from the sidebar to view details</p>
     </div>
   </div>
-</div> 
+</div>
