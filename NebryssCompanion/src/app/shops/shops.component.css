@@ -1,3 +1,7 @@
+.shops-container {
+  --shop-location-floating-space: clamp(132px, 20vw + 2px, 196px);
+}
+
 .shop-location-group {
   --shop-group-color-rgb: 27, 42, 51;
   margin-bottom: 32px;
@@ -8,7 +12,6 @@
     rgba(var(--shop-group-color-rgb), 0.24) 0%,
     rgba(var(--shop-group-color-rgb), 0.14) 100%
   );
-  box-shadow: inset 0 0 0 1px rgba(var(--shop-group-color-rgb), 0.18);
 }
 
 .shop-location-header {
@@ -23,6 +26,20 @@
   background: rgb(var(--shop-group-color-rgb));
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
   text-align: left;
+}
+
+.shop-location-header.floating-open {
+  position: sticky;
+  top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 8px);
+  z-index: 30;
+}
+
+.shops-container .table-header {
+  top: calc(
+    var(--app-header-height, 56px) +
+    var(--safe-area-top, 0px) +
+    var(--shop-location-floating-space)
+  );
 }
 
 .shop-location-header.no-image {
@@ -92,15 +109,20 @@
   margin-top: 12px;
   padding: 18px 14px 4px;
   border-radius: 14px;
-  background: rgba(var(--shop-group-color-rgb), 0.16);
 }
 
 .shop-card {
-  background: rgba(255, 255, 255, 0.88);
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background: transparent;
   margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
   transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.shop-card:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .shop-card.highlight-shop {
@@ -177,10 +199,14 @@
   margin-top: 20px;
 }
 
+.weapons-section.category-block {
+  margin-top: 12px;
+}
+
 /* Dark Theme Styles */
 body.dark-theme .shop-card {
-  background: rgba(20, 26, 32, 0.84);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  background: transparent;
+  border-bottom-color: rgba(255, 255, 255, 0.16);
 }
 
 body.dark-theme .shop-location-header {
@@ -746,6 +772,14 @@ body.dark-theme .btn-flip-orientation:hover {
 }
 
 @media (max-width: 640px) {
+    .shops-container {
+        --shop-location-floating-space: 142px;
+    }
+
+    .shop-location-header.floating-open {
+        top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 6px);
+    }
+
     .shop-location-group {
         padding: 8px;
     }

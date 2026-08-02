@@ -1,6 +1,6 @@
 <div class="shops-container">
   <div *ngFor="let group of processedShopGroups; trackBy: trackByLocationGroup" class="shop-location-group" [id]="getLocationGroupElementId(group)" [ngStyle]="getLocationGroupStyles(group)">
-    <button class="shop-location-header" [class.no-image]="!group.locationImageUrl" type="button" (click)="toggleLocationGroup(group)">
+    <button class="shop-location-header" [class.no-image]="!group.locationImageUrl" [class.floating-open]="!isLocationGroupCollapsed(group)" type="button" (click)="toggleLocationGroup(group)">
       <img *ngIf="group.locationImageUrl" [src]="group.locationThumbnail || group.locationImageUrl" [alt]="group.locationName" class="shop-location-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onLocationGroupImageLoad($event, group)">
       <div class="shop-location-overlay">
         <div class="shop-location-meta">
@@ -58,11 +58,11 @@
           </app-generic-table>
         </div>
 
-        <div *ngIf="shop.hasWeapons" class="weapons-section">
-            <h4 (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
-              Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}
-            </h4>
-            <div *ngIf="!isWeaponCollapsed(shop.id)">
+        <div *ngIf="shop.hasWeapons" class="weapons-section category-block">
+            <div class="table-header" (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
+              <h3>Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}</h3>
+            </div>
+            <div *ngIf="!isWeaponCollapsed(shop.id)" class="table-body-content">
               <app-weapon-table
                   [weaponIds]="shop.weaponIds"
                   [weaponsData]="shop.weaponsData"
