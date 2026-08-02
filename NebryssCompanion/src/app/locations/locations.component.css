@@ -152,7 +152,7 @@
 }
 
 .location-details {
-  padding: 30px;
+  padding-top: 20px;
   max-width: 900px;
   margin: 0 auto;
   width: 100%;
@@ -364,9 +364,6 @@
     border-bottom: none;
   }
   
-  .location-details {
-    padding: 20px;
-  }
 
   .location-title-row {
     gap: 10px;
