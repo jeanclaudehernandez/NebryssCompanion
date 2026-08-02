@@ -3,8 +3,19 @@
     <div>
       <h2>{{ pageTitle }}</h2>
     </div>
-    <div class="admin-header-actions" *ngIf="isEditing">
+    <div class="admin-header-actions">
       <button
+        *ngIf="name.trim()"
+        type="button"
+        class="icon-btn view-map-btn"
+        (click)="openLocationOnWorldMap()"
+        aria-label="View location on World Map"
+        title="View location focused on World Map"
+      >
+        <span class="material-icons" aria-hidden="true">public</span>
+      </button>
+      <button
+        *ngIf="isEditing"
         type="button"
         class="icon-btn delete-location-btn"
         (click)="promptDeleteLocation()"
@@ -77,6 +88,16 @@
               </option>
             </select>
           </label>
+        </div>
+
+        <div class="category-icon-badge-row">
+          <div class="category-icon-badge">
+            <img [src]="previewPinIconSrc" [alt]="category || 'Location Icon'" class="category-icon-img">
+          </div>
+          <div class="category-icon-info">
+            <span class="category-icon-title">Icon Family: <strong>{{ category ? formatOptionLabel(category) : 'City (Default)' }}</strong></span>
+            <span class="category-icon-subtitle">Size: {{ getCategorySizeLabel(categorySize) }}</span>
+          </div>
         </div>
 
         <label class="field">
@@ -167,22 +188,61 @@
       </section>
 
       <section class="admin-section">
-        <h3>World Map Placement</h3>
+        <div class="map-picker-header">
+          <h3>World Map Placement</h3>
+          <div class="map-picker-controls">
+            <button
+              *ngIf="name.trim()"
+              type="button"
+              class="map-picker-btn map-picker-view-world-btn"
+              (click)="openLocationOnWorldMap()"
+              aria-label="Open on World Map"
+              title="Open full World Map view focused on this location"
+            >
+              <span class="material-icons">public</span>
+            </button>
+            <button type="button" class="map-picker-btn" (click)="zoomOutPicker()" aria-label="Zoom out" title="Zoom out">
+              <span class="material-icons">remove</span>
+            </button>
+            <span class="map-picker-zoom-level">{{ pickerZoomPercent }}%</span>
+            <button type="button" class="map-picker-btn" (click)="zoomInPicker()" aria-label="Zoom in" title="Zoom in">
+              <span class="material-icons">add</span>
+            </button>
+            <button type="button" class="map-picker-btn" (click)="resetPickerView()" aria-label="Reset map view" title="Reset view">
+              <span class="material-icons">center_focus_strong</span>
+            </button>
+          </div>
+        </div>
 
         <div class="map-picker-wrapper">
-          <p class="map-picker-instruction">Click anywhere on the map to set pin coordinates visually:</p>
-          <div #mapPickerContainer class="map-picker-canvas" (click)="onMapPickerClick($event)">
-            <img [src]="worldMapImageUrl" alt="World Map Picker" class="map-picker-image" draggable="false">
+          <p class="map-picker-instruction">Click anywhere on the map to set pin coordinates. Drag to pan, scroll to zoom.</p>
+          <div
+            #mapPickerViewport
+            class="map-picker-viewport"
+            [class.is-panning]="isPickerPanning"
+            (wheel)="onPickerWheel($event)"
+            (pointerdown)="onPickerPointerDown($event)"
+            (pointermove)="onPickerPointerMove($event)"
+            (pointerup)="onPickerPointerUp($event)"
+            (pointercancel)="onPickerPointerUp($event)"
+          >
             <div
-              *ngIf="mapX !== null && mapY !== null"
-              class="map-picker-pin"
-              [style.left.%]="mapX"
-              [style.top.%]="mapY"
+              #mapPickerSurface
+              class="map-picker-surface"
+              [style.transform]="pickerTransform"
             >
-              <span class="map-picker-pin-badge">
-                <img [src]="previewPinIconSrc" alt="Pin Icon" class="map-picker-pin-icon">
-              </span>
-              <span class="map-picker-pin-label">{{ name || 'New Location' }}</span>
+              <img [src]="worldMapImageUrl" alt="World Map Picker" class="map-picker-image" draggable="false">
+              <div
+                *ngIf="mapX !== null && mapY !== null"
+                class="map-picker-pin"
+                [style.left.%]="mapX"
+                [style.top.%]="mapY"
+              >
+                <span class="map-picker-pin-badge">
+                  <img [src]="previewPinIconSrc" alt="Pin Icon" class="map-picker-pin-icon">
+                </span>
+                <span class="map-picker-pin-label">{{ name || 'New Location' }}</span>
+              </div>
             </div>
           </div>
         </div>

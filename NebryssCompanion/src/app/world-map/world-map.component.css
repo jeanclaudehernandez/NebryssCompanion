@@ -233,7 +233,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 16px 16px 0 0;
-  padding: 20px;
+  padding: 10px;
   max-width: 420px;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
 
@@ -281,19 +281,28 @@
 }
 
 .map-popup-edit-btn {
-  font-size: 11px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   background-color: rgba(33, 150, 243, 0.2);
   color: #64b5f6;
   border: 1px solid rgba(33, 150, 243, 0.4);
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 0;
+  border-radius: 6px;
   cursor: pointer;
   margin-left: auto;
+  transition: all 0.15s ease;
+}
+
+.map-popup-edit-btn .material-icons {
+  font-size: 16px;
 }
 
 .map-popup-edit-btn:hover {
   background-color: rgba(33, 150, 243, 0.35);
+  color: #ffffff;
 }
 
 .map-popup-thumb {

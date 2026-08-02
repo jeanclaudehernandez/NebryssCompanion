@@ -101,8 +101,8 @@
       <span *ngIf="isAdmin && selectedPin.isSecret && !selectedPin.isSecretRevealed" class="secret-badge">Secret</span>
       <span *ngIf="isAdmin && selectedPin.isSecret && selectedPin.isSecretRevealed" class="revealed-badge">Revealed</span>
       
-      <button *ngIf="isAdmin" type="button" class="map-popup-edit-btn" (click)="editLocation(selectedPin)">
-        Edit Location
+      <button *ngIf="isAdmin" type="button" class="map-popup-edit-btn" (click)="editLocation(selectedPin)" title="Edit Location" aria-label="Edit Location">
+        <span class="material-icons">edit</span>
       </button>
     </div>
 

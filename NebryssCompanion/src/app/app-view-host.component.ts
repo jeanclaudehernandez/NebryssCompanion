@@ -152,6 +152,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
           this.navigateToAdminLocationCreator.emit(coords)
         );
         break;
+      case 'adminLocationCreator':
+        subscribeToOutput('navigateToWorldMap', locationName => this.navigateToWorldMap.emit(locationName));
+        break;
     }
   }
 

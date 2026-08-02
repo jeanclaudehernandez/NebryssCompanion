@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, ElementRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
@@ -7,6 +7,7 @@ import { DataService } from '../data.service';
 import { Location, SecretBlock } from '../model';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
+import { getLocationIconSrc } from '../location-icon-utils';
 
 @Component({
   selector: 'app-location-admin-page',
@@ -19,8 +20,22 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   @Input() initialMapX: number | null = null;
   @Input() initialMapY: number | null = null;
   @Input() initialLocation: Location | null = null;
+  @Output() navigateToWorldMap = new EventEmitter<string>();
   @ViewChild('deleteLocationConfirmDialog') deleteLocationConfirmDialog?: TemplateRef<any>;
-  @ViewChild('mapPickerContainer') mapPickerContainerRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('mapPickerViewport') mapPickerViewportRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('mapPickerSurface') mapPickerSurfaceRef?: ElementRef<HTMLDivElement>;
+
+  pickerScale = 1;
+  pickerTranslateX = 0;
+  pickerTranslateY = 0;
+  isPickerPanning = false;
+
+  private readonly minPickerScale = 0.6;
+  private readonly maxPickerScale = 4;
+  private pickerPointerStart = { x: 0, y: 0 };
+  private pickerLastTranslate = { x: 0, y: 0 };
+  private pickerDragDistance = 0;
+  private activePickerPointerId: number | null = null;
 
   readonly categoryOptions = [
     'city',
@@ -94,10 +109,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   }
 
   get previewPinIconSrc(): string {
-    const family = this.category.trim() || 'city';
-    const sizeMap: Record<number, string> = { 1: 'small', 2: 'medium', 3: 'big', 4: 'immense' };
-    const size = sizeMap[this.categorySize ?? 2] ?? 'medium';
-    return `assets/icons/extracted/${family}/${family}-${size}.png`;
+    return getLocationIconSrc(this.category, this.categorySize);
   }
 
   constructor(
@@ -193,19 +205,115 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     return this.categorySizeOptions.find(option => option.value === numericValue)?.label ?? 'n/a';
   }
 
-  onMapPickerClick(event: MouseEvent): void {
-    const container = this.mapPickerContainerRef?.nativeElement;
-    if (!container) {
+  get pickerZoomPercent(): number {
+    return Math.round(this.pickerScale * 100);
+  }
+
+  get pickerTransform(): string {
+    return `translate(${this.pickerTranslateX}px, ${this.pickerTranslateY}px) scale(${this.pickerScale})`;
+  }
+
+  openLocationOnWorldMap(): void {
+    const locationName = this.name.trim();
+    if (!locationName) {
+      this.toastService.show('Please enter a location name to view it on the map', 'info');
       return;
     }
 
-    const rect = container.getBoundingClientRect();
+    this.navigateToWorldMap.emit(locationName);
+  }
+
+  zoomInPicker(): void {
+    this.setPickerScale(this.pickerScale * 1.25);
+  }
+
+  zoomOutPicker(): void {
+    this.setPickerScale(this.pickerScale / 1.25);
+  }
+
+  resetPickerView(): void {
+    this.pickerScale = 1;
+    this.pickerTranslateX = 0;
+    this.pickerTranslateY = 0;
+  }
+
+  private setPickerScale(targetScale: number): void {
+    this.pickerScale = Number(Math.min(this.maxPickerScale, Math.max(this.minPickerScale, targetScale)).toFixed(2));
+    if (this.pickerScale === 1) {
+      this.pickerTranslateX = 0;
+      this.pickerTranslateY = 0;
+    }
+  }
+
+  onPickerWheel(event: WheelEvent): void {
+    event.preventDefault();
+    const zoomFactor = event.deltaY < 0 ? 1.15 : 0.85;
+    this.setPickerScale(this.pickerScale * zoomFactor);
+  }
+
+  onPickerPointerDown(event: PointerEvent): void {
+    if (event.button !== 0) {
+      return;
+    }
+
+    const viewport = this.mapPickerViewportRef?.nativeElement;
+    if (viewport) {
+      viewport.setPointerCapture(event.pointerId);
+    }
+
+    this.activePickerPointerId = event.pointerId;
+    this.isPickerPanning = true;
+    this.pickerPointerStart = { x: event.clientX, y: event.clientY };
+    this.pickerLastTranslate = { x: this.pickerTranslateX, y: this.pickerTranslateY };
+    this.pickerDragDistance = 0;
+  }
+
+  onPickerPointerMove(event: PointerEvent): void {
+    if (!this.isPickerPanning || this.activePickerPointerId !== event.pointerId) {
+      return;
+    }
+
+    const deltaX = event.clientX - this.pickerPointerStart.x;
+    const deltaY = event.clientY - this.pickerPointerStart.y;
+    this.pickerDragDistance = Math.hypot(deltaX, deltaY);
+
+    if (this.pickerScale > 1 || this.pickerDragDistance > 5) {
+      this.pickerTranslateX = this.pickerLastTranslate.x + deltaX;
+      this.pickerTranslateY = this.pickerLastTranslate.y + deltaY;
+    }
+  }
+
+  onPickerPointerUp(event: PointerEvent): void {
+    if (this.activePickerPointerId !== event.pointerId) {
+      return;
+    }
+
+    const viewport = this.mapPickerViewportRef?.nativeElement;
+    if (viewport && viewport.hasPointerCapture(event.pointerId)) {
+      viewport.releasePointerCapture(event.pointerId);
+    }
+
+    this.isPickerPanning = false;
+    this.activePickerPointerId = null;
+
+    if (this.pickerDragDistance <= 5) {
+      this.setPinCoordinatesFromPointer(event.clientX, event.clientY);
+    }
+  }
+
+  private setPinCoordinatesFromPointer(clientX: number, clientY: number): void {
+    const surface = this.mapPickerSurfaceRef?.nativeElement;
+    if (!surface) {
+      return;
+    }
+
+    const rect = surface.getBoundingClientRect();
     if (!rect.width || !rect.height) {
       return;
     }
 
-    const relativeX = ((event.clientX - rect.left) / rect.width) * 100;
-    const relativeY = ((event.clientY - rect.top) / rect.height) * 100;
+    const relativeX = ((clientX - rect.left) / rect.width) * 100;
+    const relativeY = ((clientY - rect.top) / rect.height) * 100;
 
     this.mapX = Number(Math.min(100, Math.max(0, relativeX)).toFixed(2));
     this.mapY = Number(Math.min(100, Math.max(0, relativeY)).toFixed(2));
@@ -313,6 +421,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
 
   private applyInitialValues(): void {
     this.locationDeleted = false;
+    this.resetPickerView();
 
     if (this.initialLocation) {
       this.locationId = this.initialLocation.id;
@@ -372,6 +481,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     this.isCapital = false;
     this.isWorldMap = false;
     this.showFactionOptions = false;
+    this.resetPickerView();
 
     if (typeof mapX === 'number') {
       this.mapX = Number(mapX.toFixed(2));
