@@ -2,11 +2,10 @@ import { Component, Input, OnChanges, Output, EventEmitter, TemplateRef, ViewChi
 import { CommonModule } from '@angular/common';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
-import { AlteredState, BestiaryEntry, Character, Inventory, Items, Player, ScrollSection, Talent, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Character, Inventory, Items, Player, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ActivePlayerService } from '../active-player.service';
-import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +21,7 @@ type TalentTableRow = {
 @Component({
   selector: 'app-player-detail',
   standalone: true,
-  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, ScrollNavComponent, FormsModule, AfflictionsDisplayComponent, BodyTypeIconsComponent],
+  imports: [CommonModule, WeaponTableComponent, SanitizeHtmlPipe, GenericTableComponent, FormsModule, AfflictionsDisplayComponent, BodyTypeIconsComponent],
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
@@ -32,8 +31,6 @@ export class PlayerDetailComponent implements OnChanges {
   @Input() weaponRulesData: WeaponRule[] = [];
   @Input() alteredStates: AlteredState[] = [];
   @Input() itemsData!: Items;
-  @Input() hideScrollNav = false;
-  @Output() scrollSectionsChange = new EventEmitter<ScrollSection[]>();
   @Output() navigateToTalents = new EventEmitter<void>();
   
   bodyString = "";
@@ -84,9 +81,6 @@ export class PlayerDetailComponent implements OnChanges {
   toggleDeployablesCollapse() {
     this.isDeployablesCollapsed = !this.isDeployablesCollapsed;
   }
-
-  // Scroll nav
-  scrollSections: ScrollSection[] = [];
 
   @ViewChild('mistralDialog', { read: TemplateRef }) mistralDialogTemplate!: TemplateRef<any>;
   @ViewChild('craftConfirmModal', { read: TemplateRef }) craftConfirmModal!: TemplateRef<any>;
@@ -309,31 +303,6 @@ export class PlayerDetailComponent implements OnChanges {
     } else {
       this.processedAbilities = [];
     }
-    
-    this.scrollSections = [
-      { title: `${(this.isBeast(this.character) ? this.character.name : '')} Attributes`, id: `attributes-${this.character.id}`},
-      { title: `${(this.isBeast(this.character) ? this.character.name : '')} Weapons`, id: `weapons-${this.character.id}`},
-    ];
-    if (this.isPlayer(this.character) && this.modItems.length > 0) {
-      this.scrollSections.push({ title: 'Mods', id: `mods-${this.character.id}` });
-    }
-    if (this.isPlayer(this.character) && this.talentTableData.length > 0) {
-      this.scrollSections.push({ title: 'Talents', id: `talents-${this.character.id}` });
-    }
-    if (this.isPlayer(this.character) && this.character.progression?.afflictions?.length) {
-      this.scrollSections.push({ title: 'Afflictions', id: `afflictions-${this.character.id}` });
-    }
-    if (this.character.abilities && this.character.abilities.length > 0) {
-      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Abilities`, id: `abilities-${this.character.id}`});
-    }
-    if ((this.isPlayer(this.character) || this.isBestiary(this.character)) && this.itemTableData.length > 0) {
-      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Items`, id: `items-${this.character.id}` });
-    }
-    if (this.character.deployables?.length) {
-      this.scrollSections.push({ title: `${(this.isBeast(this.character) ? this.character.name : '')} Deployables`, id: `deployables-${this.character.id}`});
-    }
-    
-    this.scrollSectionsChange.emit(this.scrollSections);
   }
 
   processAbilityEffect(effect: string): string {
