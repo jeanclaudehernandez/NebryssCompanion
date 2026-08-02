@@ -6,10 +6,10 @@
     <!-- Group locations by faction -->
     <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section">
       <div class="faction-header" (click)="onFactionClick(faction)" title="Click to view in Lore">
-        <div class="faction-emblem sidebar-emblem" *ngIf="getFactionThumbnail(faction)">
+        <div class="faction-emblem sidebar-emblem" *ngIf="hasFactionName(faction) && getFactionThumbnail(faction)">
           <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy">
         </div>
-        <div class="faction-emblem sidebar-emblem text-emblem" *ngIf="!getFactionThumbnail(faction)">
+        <div class="faction-emblem sidebar-emblem text-emblem" *ngIf="hasFactionName(faction) && !getFactionThumbnail(faction)">
           {{ getFactionInitial(faction) }}
         </div>
         <h3>{{ faction }}</h3>
@@ -38,10 +38,10 @@
       <div class="location-header">
         <div class="location-title">
           <div class="location-title-row">
-            <div class="faction-emblem clickable-emblem" *ngIf="getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
+            <div class="faction-emblem clickable-emblem" *ngIf="hasFactionName(selectedLocation.faction) && getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
               <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction" loading="lazy">
             </div>
-            <div class="faction-emblem text-emblem clickable-emblem" *ngIf="!getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
+            <div class="faction-emblem text-emblem clickable-emblem" *ngIf="hasFactionName(selectedLocation.faction) && !getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
               {{ getFactionInitial(selectedLocation.faction) }}
             </div>
             <h2>{{ selectedLocation.name }}</h2>

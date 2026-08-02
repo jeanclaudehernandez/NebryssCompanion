@@ -3,6 +3,18 @@
     <div>
       <h2>{{ pageTitle }}</h2>
     </div>
+    <div class="admin-header-actions" *ngIf="isEditing">
+      <button
+        type="button"
+        class="icon-btn delete-location-btn"
+        (click)="promptDeleteLocation()"
+        [disabled]="!canDelete"
+        aria-label="Delete location"
+        title="Delete location"
+      >
+        <span class="material-icons" aria-hidden="true">delete</span>
+      </button>
+    </div>
   </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
@@ -148,3 +160,14 @@
     </aside>
   </div>
 </div>
+
+<ng-template #deleteLocationConfirmDialog let-locationName="locationName" let-confirm="confirm" let-cancel="cancel">
+  <div class="confirmation-dialog delete-location-dialog">
+    <h3>Delete Location</h3>
+    <p>Are you sure you want to delete <strong>{{ locationName }}</strong>? This action cannot be undone.</p>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn-danger" type="button" (click)="confirm()">Delete</button>
+    </div>
+  </div>
+</ng-template>

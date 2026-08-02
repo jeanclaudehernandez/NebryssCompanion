@@ -15,6 +15,7 @@ export interface MapPin {
   y: number;
   animationDelay: string;
   locationIconSrc: string;
+  hasFaction: boolean;
   factionColor: string;
 }
 
@@ -145,6 +146,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       y: coords.y,
       animationDelay: `${index * 70}ms`,
       locationIconSrc: this.getLocationIconSrc(location.category, location.categorySize),
+      hasFaction: !!location.faction?.trim(),
       factionColor: FACTION_COLORS[location.faction] ?? DEFAULT_FACTION_COLOR
     };
   }

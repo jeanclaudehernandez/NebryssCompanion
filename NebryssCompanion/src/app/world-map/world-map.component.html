@@ -1,9 +1,4 @@
 <div class="world-map-page">
-  <div class="map-title-chip" *ngIf="worldMapLocation">
-    <span class="material-icons">explore</span>
-    <span>{{ worldMapLocation.name }}</span>
-  </div>
-
   <div class="map-toolbar">
     <button type="button" class="map-tool-btn" (click)="zoomOut()" aria-label="Zoom out">
       <span class="material-icons">remove</span>
@@ -36,6 +31,7 @@
         class="map-pin"
         [class.active]="selectedPin === pin.location"
         [class.is-capital]="pin.location.isCapital"
+        [class.no-faction]="!pin.hasFaction"
         [style.left.%]="pin.x"
         [style.top.%]="pin.y"
         [style.animation-delay]="pin.animationDelay"
@@ -81,7 +77,7 @@
       <img [src]="selectedPin.thumbnail || selectedPin.imgUrl" [alt]="selectedPin.name" loading="lazy">
     </div>
 
-    <p class="map-popup-faction" (click)="onFactionClick(selectedPin.faction)" title="Click to view in Lore">
+    <p *ngIf="selectedPin.faction?.trim()" class="map-popup-faction" (click)="onFactionClick(selectedPin.faction)" title="Click to view in Lore">
       {{ selectedPin.faction }}
     </p>
     <p class="map-popup-description">{{ selectedPin.description }}</p>

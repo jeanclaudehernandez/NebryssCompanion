@@ -128,6 +128,10 @@ export class LocationsComponent implements OnInit {
     return faction ? faction.charAt(0).toUpperCase() : '';
   }
 
+  hasFactionName(faction: string | null | undefined): boolean {
+    return !!faction?.trim();
+  }
+
   getUniqueFactions(): string[] {
     const factions = this.locations.map(location => location.faction);
     return [...new Set(factions)];

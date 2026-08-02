@@ -11,6 +11,19 @@
   margin-bottom: 20px;
 }
 
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 2fr) minmax(320px, 1fr);
@@ -117,6 +130,32 @@
   margin-top: 20px;
 }
 
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.icon-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delete-location-btn {
+  background: rgba(211, 47, 47, 0.12);
+  color: #c62828;
+}
+
+.delete-location-btn:not(:disabled):hover {
+  background: rgba(211, 47, 47, 0.2);
+}
+
 .btn-confirm {
   padding: 8px 16px;
   border: none;
@@ -124,6 +163,24 @@
   color: white;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.btn-cancel,
+.btn-danger {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-danger {
+  background: #c62828;
+  color: white;
 }
 
 .btn-confirm:disabled {
@@ -147,6 +204,25 @@
   gap: 8px;
 }
 
+.confirmation-dialog {
+  min-width: 280px;
+}
+
+.confirmation-dialog h3 {
+  margin-top: 0;
+}
+
+.confirmation-dialog p {
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+.dialog-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
 :host-context(body.dark-theme) .field input,
 :host-context(body.dark-theme) .field textarea,
 :host-context(body.dark-theme) .field select {
@@ -167,6 +243,25 @@
 
 :host-context(body.dark-theme) .btn-confirm {
   background: #64b5f6;
+  color: #121212;
+}
+
+:host-context(body.dark-theme) .delete-location-btn {
+  background: rgba(239, 83, 80, 0.16);
+  color: #ef9a9a;
+}
+
+:host-context(body.dark-theme) .delete-location-btn:not(:disabled):hover {
+  background: rgba(239, 83, 80, 0.26);
+}
+
+:host-context(body.dark-theme) .btn-cancel {
+  background: #374151;
+  color: #e5e7eb;
+}
+
+:host-context(body.dark-theme) .btn-danger {
+  background: #ef5350;
   color: #121212;
 }
 

@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, inject } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { Location } from '../model';
+import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   @Input() initialMapX: number | null = null;
   @Input() initialMapY: number | null = null;
   @Input() initialLocation: Location | null = null;
+  @ViewChild('deleteLocationConfirmDialog') deleteLocationConfirmDialog?: TemplateRef<any>;
 
   readonly categoryOptions = [
     'city',
@@ -45,9 +47,11 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
 
   isAdmin = false;
   isSaving = false;
+  isDeleting = false;
   lastCreatedLocation: Location | null = null;
   factionOptions: string[] = [];
   showFactionOptions = false;
+  private locationDeleted = false;
 
   locationId: number | null = null;
   name = '';
@@ -63,7 +67,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   isWorldMap = false;
 
   get isEditing(): boolean {
-    return !!this.initialLocation;
+    return !!this.initialLocation && !this.locationDeleted;
   }
 
   get pageTitle(): string {
@@ -78,9 +82,14 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     return this.isEditing ? 'Save Changes' : 'Create Location';
   }
 
+  get canDelete(): boolean {
+    return this.isAdmin && this.isEditing && !this.isSaving && !this.isDeleting && typeof this.locationId === 'number';
+  }
+
   constructor(
     private readonly adminService: AdminService,
     private readonly dataService: DataService,
+    private readonly modalService: ModalService,
     private readonly toastService: ToastService
   ) {}
 
@@ -128,11 +137,11 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   }
 
   get canSubmit(): boolean {
-    if (!this.isAdmin || this.isSaving) {
+    if (!this.isAdmin || this.isSaving || this.isDeleting) {
       return false;
     }
 
-    return !!this.name.trim() && !!this.description.trim() && !!this.faction.trim() && this.hasValidCoordinatePair();
+    return !!this.name.trim() && !!this.description.trim() && this.hasValidCoordinatePair();
   }
 
   get previewJson(): string {
@@ -197,7 +206,51 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     });
   }
 
+  promptDeleteLocation(): void {
+    if (!this.canDelete || !this.deleteLocationConfirmDialog) {
+      return;
+    }
+
+    this.modalService.openFromTemplate(this.deleteLocationConfirmDialog, {
+      locationName: this.name.trim() || 'this location',
+      confirm: () => this.confirmDeleteLocation(),
+      cancel: () => this.modalService.close()
+    });
+  }
+
+  private confirmDeleteLocation(): void {
+    if (!this.canDelete || typeof this.locationId !== 'number') {
+      this.modalService.close();
+      return;
+    }
+
+    const deletedLocationName = this.name.trim() || 'Location';
+    const deletedMapX = this.mapX;
+    const deletedMapY = this.mapY;
+
+    this.isDeleting = true;
+    this.modalService.close();
+
+    this.dataService.deleteLocation(this.locationId).subscribe({
+      next: () => {
+        this.locationDeleted = true;
+        this.lastCreatedLocation = null;
+        this.resetForm(deletedMapX, deletedMapY);
+        this.toastService.show(`Deleted ${deletedLocationName} successfully`, 'success');
+        this.dataService.refreshLocations().subscribe();
+        this.isDeleting = false;
+      },
+      error: err => {
+        const message = err?.error?.error || err?.message || 'Unknown error';
+        this.toastService.show(`Failed to delete location: ${message}`, 'error');
+        this.isDeleting = false;
+      }
+    });
+  }
+
   private applyInitialValues(): void {
+    this.locationDeleted = false;
+
     if (this.initialLocation) {
       this.locationId = this.initialLocation.id;
       this.name = this.initialLocation.name ?? '';
@@ -214,6 +267,10 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       return;
     }
 
+    this.resetForm(this.initialMapX, this.initialMapY);
+  }
+
+  private resetForm(mapX: number | null = null, mapY: number | null = null): void {
     this.locationId = null;
     this.name = '';
     this.description = '';
@@ -226,13 +283,14 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     this.mapY = null;
     this.isCapital = false;
     this.isWorldMap = false;
+    this.showFactionOptions = false;
 
-    if (typeof this.initialMapX === 'number') {
-      this.mapX = Number(this.initialMapX.toFixed(2));
+    if (typeof mapX === 'number') {
+      this.mapX = Number(mapX.toFixed(2));
     }
 
-    if (typeof this.initialMapY === 'number') {
-      this.mapY = Number(this.initialMapY.toFixed(2));
+    if (typeof mapY === 'number') {
+      this.mapY = Number(mapY.toFixed(2));
     }
   }
 
@@ -259,10 +317,6 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       return null;
     }
 
-    if (validate && !faction) {
-      this.toastService.show('Faction is required', 'error');
-      return null;
-    }
 
     if (!this.hasValidCoordinatePair()) {
       if (validate) {
@@ -274,9 +328,9 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     const payload: Partial<Location> = {
       name,
       description,
-      faction,
-      isCapital: this.isCapital,
-      isWorldMap: this.isWorldMap
+      faction: faction || "",
+      isCapital: !!this.isCapital,
+      isWorldMap: !!this.isWorldMap
     };
 
     if (typeof this.locationId === 'number' && !Number.isNaN(this.locationId)) {
