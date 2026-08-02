@@ -1,301 +1,373 @@
-[
+[{
+  "_id": {
+    "$oid": "69ad0eb70dbe73ea58b5811e"
+  },
+  "id": "magic",
+  "name": "Warp Talents",
+  "description": "Warp and mist manipulation talents",
+  "talents": [
     {
-        "id": "combat",
-        "name": "Combat Talents",
-        "description": "Offensive enhancements",
-        "talents": [{
-            "id": "c1",
-            "name": "Brutal Strikes",
-            "cost": 1,
-            "effect": "Critical hits in melee deal <strong>+1 damage</strong>",
-            "prModifier": 1,
-            "requirements": [],
-            "maxStacks": 1,
-            "statModifications": [
-                {
-                    "stat": "crit",
-                    "mod": 1,
-                    "applyToType": "range",
-                    "applyToValue": "0"
-                }
-            ]
-        }, {
-            "id": "c2",
-            "name": "Overwatch Tactics",
-            "cost": 3,
-            "effect": "After killing an enemy with a shoot action, reposition costs <strong>0 AP</strong> during this activation, limit movement to <strong>4 inches</strong>",
-            "prModifier": null,
-            "requirements": [],
-            "maxStacks": 1
-        }, {
-            "id": "c3",
-            "name": "Chain Killer",
-            "cost": 5,
-            "effect": "Gain <strong>1 AP</strong> for the rest of the battle, after eliminating <strong>3+ enemies</strong> in a turning point",
-            "prModifier": 2,
-            "requirements": [],
-            "maxStacks": 1
-        }, {
-            "id": "c4",
-            "name": "Trained shooter",
-            "cost": 2,
-            "effect": "Improve by <strong>1</strong> the <strong>Hit</strong> of rifle ranged weapons (non bolter, non plasma, non sniper)",
-            "prModifier": 2,
-            "requirements": [],
-            "maxStacks": 1,
-            "statModifications": [
-                {
-                    "stat": "hit",
-                    "mod": 1,
-                    "applyToValue": "rifle",
-                    "applyToType": "type"
-                }
-            ]
-        }, {
-            "id": "c5",
-            "name": "Obliterator",
-            "cost": 2,
-            "effect": "Weapons with <strong>torrent</strong> or <strong>blast</strong> rules gain lethal <strong>5+</strong>",
-            "prModifier": 2,
-            "requirements": [],
-            "maxStacks": 1
-        }, {
-            "id": "c6",
-            "name": "Counter Strike",
-            "cost": 2,
-            "effect": "Once per Turning point: When retaliating, After parrying an attack, inmidiately resolve a successful hit as damaging.",
-            "prModifier": 3,
-            "requirements": ["c1"],
-            "maxStacks": 1
-        },
+      "id": "m1",
+      "name": "Mist-Sight",
+      "cost": 1,
+      "effect": "Ignore Obscured penalties in light mist zones",
+      "prModifier": null,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "m2",
+      "name": "Addept Magician",
+      "cost": 2,
+      "effect": "Improve <strong>the Hit of PSYCHIC</strong> weapons by <strong>1</strong>",
+      "prModifier": 2,
+      "requirements": [
+        "m1"
+      ],
+      "maxStacks": 1,
+      "statModifications": [
         {
-            "id": "c7",
-            "name": "Mist Duelist",
-            "cost": 2,
-            "effect": "In mist zones, improve the  <strong>Hit by 1</strong> and <strong>rending</strong> of melee weapons.",
-            "prModifier": 4,
-            "requirements": ["c1"],
-            "maxStacks": 1
-        },
-        {
-            "id": "c8",
-            "name": "Bulletstorm",
-            "cost": 4,
-            "effect": "When using a weapon with <strong>Torrent</strong> or <strong>Blast</strong>, reroll one failed attack die per target.",
-            "prModifier": 2,
-            "requirements": ["c5"],
-            "maxStacks": 1
-        }]
-    },{
-        "id": "magic",
-        "name": "Warp Talents",
-        "description": "Warp and mist manipulation talents",
-        "talents": [{
-            "id": "m1",
-            "name": "Mist-Sight",
-            "cost": 1,
-            "effect": "Ignore Obscured penalties in light mist zones",
-            "prModifier": null,
-            "requirements": [],
-            "maxStacks": 1
-        },{
-            "id": "m2",
-            "name": "Addept Magician",
-            "cost": 2,
-            "effect": "Improve <strong>the Hit of PSYCHIC</strong> weapons by <strong>1</strong>",
-            "prModifier": 2,
-            "requirements": ["m1"],
-            "maxStacks": 1,
-            "statModifications": [
-                {
-                    "stat": "hit",
-                    "mod": 1,
-                    "applyToValue": "spell",
-                    "applyToType": "body"
-                }
-            ]
-        },{
-            "id": "m3",
-            "name": "Ethreal Support",
-            "cost": 1,
-            "effect": "Once per battle: Add <strong>+1d3</strong> to <strong>healing PSYCHIC</strong> abilities.",
-            "prModifier": 2,
-            "requirements": ["m1"],
-            "maxStacks": 1
-        }, {
-            "id": "m4",
-            "name": "Mist Cloak",
-            "cost": 3,
-            "effect": "1AP: When in a mist zone, improve the <strong>save stat by 2</strong> until the end of this operative's next activation.",
-            "prModifier": 4,
-            "requirements": ["m2"],
-            "maxStacks": 1
-        },
-        {
-            "id": "m5",
-            "name": "Reality Tear",
-            "cost": 5,
-            "effect": "Once per battle: Create a <strong>3 inch</strong> hazardous mist anomaly within <strong>12 inches</strong>. Enemies in the harzardous zone or entering the hazardous zone suffer <strong>1D3 wounds</strong>.",
-            "prModifier": 7,
-            "requirements": ["m2"],
-            "maxStacks": 1
-        },
-        {
-            "id": "m6",
-            "name": "Echoing Scream",
-            "cost": 5,
-            "effect": "Once per battle: Psychic attacks inflict <strong>Disoriented</strong> on targets (even if no damage was dealt). Lasts until end of Turning Point.",
-            "prModifier": 3,
-            "requirements": ["m2", "m5"],
-            "maxStacks": 1
+          "stat": "hit",
+          "mod": 1,
+          "applyToValue": "spell",
+          "applyToType": "body"
         }
-    ]
-    },{
-        "id": "support",
-        "name": "Support Talents",
-        "description": "Healing and team coordination",
-        "talents": [{
-            "id": "s1",
-            "name": "Field Medic",
-            "cost": 1,
-            "effect": "Add +1 to all healing actions (except psychic)",
-            "prModifier": null,
-            "requirements": [],
-            "maxStacks": 1
-        }, {
-            "id": "s2",
-            "name": "Shared Resolve",
-            "cost": 2,
-            "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within <strong>3 inches</strong> may re-roll <strong>1 defense die</strong> per Turning Point",
-            "prModifier": 1,
-            "requirements": [],
-            "maxStacks": 1
-        }, {
-            "id": "s3",
-            "name": "Rallying Cry",
-            "cost": 3,
-            "effect": "Once Per Battle: Remove <strong>1 altered state</strong> from all allies within <strong>3 inches</strong> (must remove the same state from all allies)",
-            "prModifier": 2,
-            "requirements": ["s2"],
-            "maxStacks": 1
-        }, {
-            "id": "s4",
-            "name": "Guardian Aura",
-            "cost": 3,
-            "effect": "Allies within <strong>3 inches</strong> reduce incoming damage by <strong>1</strong> (min <strong>3</strong>). Does not stack with other damage reduction.",
-            "prModifier": 4,
-            "requirements": ["s2"],
-            "maxStacks": 1
-        },
-        {
-            "id": "s5",
-            "name": "Brass Collector",
-            "cost": 2,
-            "effect": "Once per day: Restore <strong>1D3 ammunition</strong> of one specific type for all allies within <strong>3 inches</strong>.",
-            "prModifier": 2,
-            "requirements": ["s1"],
-            "maxStacks": 1
-        },
-        {
-            "id": "s6",
-            "name": "Mist Navigator",
-            "cost": 1,
-            "effect": "You and allies within <strong>3 inches</strong> at the start of the activation ignore mist movement penalties.",
-            "prModifier": 3,
-            "requirements": [],
-            "maxStacks": 1
-        }
-    ]
-    },{
-        "id": "attributeUpgrades",
-        "name": "Attribute Upgrades",
-        "description": "Characters grow in strength",
-        "talents": [{
-            "id": "att1",
-            "name": "Wraithstep",
-            "cost": 2,
-            "effect": "+1 inch to <strong>Movement</strong> characteristic",
-            "maxStacks": 3,
-            "prModifier": null,
-            "statModifications": [
-                { "stat": "Movement", "mod": 1 }
-            ]
-        }, {
-            "id": "att2",
-            "name": "Warborn",
-            "cost": 3,
-            "effect": "+2 <strong>Wounds</strong>",
-            "maxStacks": 2,
-            "prModifier": null,
-            "statModifications": [
-                { "stat": "Wounds", "mod": 2 }
-            ]
-        }, {
-            "id": "att3",
-            "name": "Runic Plating",
-            "cost": 4,
-            "effect": "Improve <strong>Save</strong> characteristic by <strong>1</strong>",
-            "maxStacks": 1,
-            "prModifier": 2,
-            "statModifications": [
-                { "stat": "Save", "mod": 1 }
-            ]
-        }, {
-            "id": "att4",
-            "name": "Killing Tempo",
-            "cost": 5,
-            "effect": "Permanent <strong>+1 Action Point Limit</strong>",
-            "maxStacks": 1,
-            "prModifier": 7,
-            "statModifications": [
-                { "stat": "APL", "mod": 1 }
-            ]
-        }]
-    }, {
-        "id": "situationalUpgrades",
-        "name": "Situational",
-        "description": "Stat improvements that only apply undercertain circumstances",
-        "talents": [
-            {
-                "id": "su1",
-                "name": "Mist Resilience",
-                "cost": 1,
-                "effect": "Gain <strong>+2 Wounds</strong> while in mist zones. Stacks with other Wound bonuses.",
-                "maxStacks": 1,
-                "prModifier": 4
-            },
-            {
-                "id": "su2",
-                "name": "Unbound Reflex",
-                "cost": 7,
-                "effect": "Allows you to use one of your Reactions one additional time.",
-                "maxStacks": 1,
-                "prModifier": 13
-            },
-            {
-                "id": "su3",
-                "name": "Mist Surge",
-                "cost": 2,
-                "effect": "Once per battle: Gain <strong>+1 APL</strong> while in <strong>dense</strong> mist. Lasts one Turning Point.",
-                "maxStacks": 1,
-                "prModifier": 3
-            },
-            {
-                "id": "su4",
-                "name": "Phantom Step",
-                "cost": 1,
-                "effect": "(Only if you didn't fight or shoot during this activation) the Dash action costs <strong>0AP</strong>.",
-                "maxStacks": 1,
-                "prModifier": 3
-            },
-            {
-                "id": "su5",
-                "name": "Scavenger's Greed",
-                "cost": 3,
-                "effect": "Consuming a food item doesn't cost AP.",
-                "maxStacks": 1,
-                "prModifier": 3
-            }
-        ]
+      ]
+    },
+    {
+      "id": "m3",
+      "name": "Ethreal Support",
+      "cost": 1,
+      "effect": "Once per battle: Add <strong>+1d3</strong> to <strong>healing PSYCHIC</strong> abilities.",
+      "prModifier": 2,
+      "requirements": [
+        "m1"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "m4",
+      "name": "Mist Cloak",
+      "cost": 3,
+      "effect": "1AP: When in a mist zone, improve the <strong>save stat by 2</strong> until the end of this operative's next activation.",
+      "prModifier": 4,
+      "requirements": [
+        "m2"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "m5",
+      "name": "Reality Tear",
+      "cost": 5,
+      "effect": "Once per battle: Create a <strong>3 inch</strong> hazardous mist anomaly within <strong>12 inches</strong>. Enemies in the harzardous zone or entering the hazardous zone suffer <strong>1D3 wounds</strong>.",
+      "prModifier": 7,
+      "requirements": [
+        "m2"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "m6",
+      "name": "Echoing Scream",
+      "cost": 5,
+      "effect": "Once per battle: Psychic attacks inflict <strong>Disoriented</strong> on targets (even if no damage was dealt). Lasts until end of Turning Point.",
+      "prModifier": 3,
+      "requirements": [
+        "m2",
+        "m5"
+      ],
+      "maxStacks": 1
     }
-]
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ad0eb70dbe73ea58b5811f"
+  },
+  "id": "support",
+  "name": "Support Talents",
+  "description": "Healing and team coordination",
+  "talents": [
+    {
+      "id": "s1",
+      "name": "Field Medic",
+      "cost": 1,
+      "effect": "Add +1 to all healing actions (except psychic)",
+      "prModifier": null,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "s2",
+      "name": "Shared Resolve",
+      "cost": 2,
+      "effect": "Once per Battle, Strategic Gambit: Untill end of the turning point, allies within <strong>3 inches</strong> may re-roll <strong>1 defense die</strong> per Turning Point",
+      "prModifier": 1,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "s3",
+      "name": "Rallying Cry",
+      "cost": 3,
+      "effect": "Once Per Battle: Remove <strong>1 altered state</strong> from all allies within <strong>3 inches</strong> (must remove the same state from all allies)",
+      "prModifier": 2,
+      "requirements": [
+        "s2"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "s4",
+      "name": "Guardian Aura",
+      "cost": 3,
+      "effect": "Allies within <strong>3 inches</strong> reduce incoming damage by <strong>1</strong> (min <strong>3</strong>). Does not stack with other damage reduction.",
+      "prModifier": 4,
+      "requirements": [
+        "s2"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "s5",
+      "name": "Brass Collector",
+      "cost": 2,
+      "effect": "Once per day: Restore <strong>1D3 ammunition</strong> of one specific type for all allies within <strong>3 inches</strong>.",
+      "prModifier": 2,
+      "requirements": [
+        "s1"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "s6",
+      "name": "Mist Navigator",
+      "cost": 1,
+      "effect": "You and allies within <strong>3 inches</strong> at the start of the activation ignore mist movement penalties.",
+      "prModifier": 3,
+      "requirements": [],
+      "maxStacks": 1
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ad0eb70dbe73ea58b58121"
+  },
+  "id": "situationalUpgrades",
+  "name": "Situational",
+  "description": "Stat improvements that only apply undercertain circumstances",
+  "talents": [
+    {
+      "id": "su1",
+      "name": "Mist Resilience",
+      "cost": 1,
+      "effect": "Gain <strong>+2 Wounds</strong> while in mist zones. Stacks with other Wound bonuses.",
+      "maxStacks": 1,
+      "prModifier": 4
+    },
+    {
+      "id": "su2",
+      "name": "Master of the Craft",
+      "cost": 7,
+      "effect": "Allows you to use one of your Reactions one additional time.",
+      "maxStacks": 1,
+      "prModifier": 13
+    },
+    {
+      "id": "su3",
+      "name": "Mist Synergy",
+      "cost": 2,
+      "effect": "Once per battle: Gain <strong>+1 APL</strong> while in <strong>dense</strong> mist. Lasts one Turning Point.",
+      "maxStacks": 1,
+      "prModifier": 3
+    },
+    {
+      "id": "su4",
+      "name": "Sneaky Scoundrel",
+      "cost": 1,
+      "effect": "(Only if you didn't fight or shoot during this activation) the Dash action costs <strong>0AP</strong>.",
+      "maxStacks": 1,
+      "prModifier": 3
+    },
+    {
+      "id": "su5",
+      "name": "Voracious Hunger",
+      "cost": 3,
+      "effect": "Consuming a food item doesn't cost AP.",
+      "maxStacks": 1,
+      "prModifier": 3
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ad0eb70dbe73ea58b5811d"
+  },
+  "id": "combat",
+  "name": "Combat Talents",
+  "description": "Offensive enhancements",
+  "talents": [
+    {
+      "id": "c1",
+      "name": "Brutal Strikes",
+      "cost": 1,
+      "effect": "Critical hits in melee deal <strong>+1 damage</strong>",
+      "prModifier": 1,
+      "requirements": [],
+      "maxStacks": 1,
+      "statModifications": [
+        {
+          "stat": "crit",
+          "mod": 1,
+          "applyToType": "range",
+          "applyToValue": "0"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "name": "Overwatch Tactics",
+      "cost": 3,
+      "effect": "After killing an enemy with a shoot action, reposition costs <strong>0 AP</strong> during this activation, limit movement to <strong>4 inches</strong>",
+      "prModifier": null,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "c3",
+      "name": "Chain Killer",
+      "cost": 5,
+      "effect": "Gain <strong>1 AP</strong> for the rest of the battle, after eliminating <strong>3+ enemies</strong> in a turning point",
+      "prModifier": 2,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "c4",
+      "name": "Trained shooter",
+      "cost": 2,
+      "effect": "Improve by <strong>1</strong> the <strong>Hit</strong> of rifle ranged weapons (non bolter, non plasma, non sniper)",
+      "prModifier": 2,
+      "requirements": [],
+      "maxStacks": 1,
+      "statModifications": [
+        {
+          "stat": "hit",
+          "mod": 1,
+          "applyToValue": "rifle",
+          "applyToType": "type"
+        }
+      ]
+    },
+    {
+      "id": "c5",
+      "name": "Obliterator",
+      "cost": 2,
+      "effect": "Weapons with <strong>torrent</strong> or <strong>blast</strong> rules gain lethal <strong>5+</strong>",
+      "prModifier": 2,
+      "requirements": [],
+      "maxStacks": 1
+    },
+    {
+      "id": "c6",
+      "name": "Counter Strike",
+      "cost": 2,
+      "effect": "Once per Turning point: When retaliating, After parrying an attack, inmidiately resolve a successful hit as damaging.",
+      "prModifier": 3,
+      "requirements": [
+        "c1"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "c7",
+      "name": "Mist Duelist",
+      "cost": 2,
+      "effect": "In mist zones, improve the  <strong>Hit by 1</strong> and <strong>rending</strong> of melee weapons.",
+      "prModifier": 4,
+      "requirements": [
+        "c1"
+      ],
+      "maxStacks": 1
+    },
+    {
+      "id": "c8",
+      "name": "Bulletstorm",
+      "cost": 4,
+      "effect": "When using a weapon with <strong>Torrent</strong> or <strong>Blast</strong>, reroll one failed attack die per target.",
+      "prModifier": 2,
+      "requirements": [
+        "c5"
+      ],
+      "maxStacks": 1
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ad0eb70dbe73ea58b58120"
+  },
+  "id": "attributeUpgrades",
+  "name": "Attribute Upgrades",
+  "description": "Characters grow in strength",
+  "talents": [
+    {
+      "id": "att1",
+      "name": "+1 Movement",
+      "cost": 2,
+      "effect": "+1 inch to <strong>Movement</strong> characteristic",
+      "maxStacks": 3,
+      "prModifier": null,
+      "statModifications": [
+        {
+          "stat": "Movement",
+          "mod": 1
+        }
+      ]
+    },
+    {
+      "id": "att2",
+      "name": "+2 Wounds",
+      "cost": 3,
+      "effect": "+2 <strong>Wounds</strong>",
+      "maxStacks": 2,
+      "prModifier": null,
+      "statModifications": [
+        {
+          "stat": "Wounds",
+          "mod": 2
+        }
+      ]
+    },
+    {
+      "id": "att3",
+      "name": "Better Save",
+      "cost": 4,
+      "effect": "Improve <strong>Save</strong> characteristic by <strong>1</strong>",
+      "maxStacks": 1,
+      "prModifier": 2,
+      "statModifications": [
+        {
+          "stat": "Save",
+          "mod": 1
+        }
+      ]
+    },
+    {
+      "id": "att4",
+      "name": "+1 APL",
+      "cost": 5,
+      "effect": "Permanent <strong>+1 Action Point Limit</strong>",
+      "maxStacks": 1,
+      "prModifier": 7,
+      "statModifications": [
+        {
+          "stat": "APL",
+          "mod": 1
+        }
+      ]
+    }
+  ]
+}]

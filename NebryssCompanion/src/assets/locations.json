@@ -1,228 +1,278 @@
-[
+[{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c08886"
+  },
+  "name": "Fortress Sanctus",
+  "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
+  "imgUrl": "https://iili.io/3R2BjZ7.jpg",
+  "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
+  "faction": "The Imperium of Man",
+  "isCapital": true,
+  "notableFeatures": [
     {
-      "name": "Nebryss",
-      "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
-      "imgUrl": "https://iili.io/3R2Be6u.png",
-      "thumbnail": "https://iili.io/3R2Be6u.th.png",
-      "faction": "Planet",
-      "isCapital": false,
-      "isWorldMap": true,
-      "notableFeatures": [
-        {
-          "name": "Mist Trade Routes",
-          "description": "Formed by stable mist zones, these routes are crucial for travel and commerce. Control over mist trade routes is key to power."
-        }
-      ]
+      "name": "Cathedral of the Emperor's Light",
+      "description": "A towering cathedral that serves as the spiritual center of Imperial control on Nebryss, where devotion to the Emperor is maintained with zealous fervor."
     },
     {
-      "name": "Fortress Sanctus",
-      "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
-      "imgUrl": "https://iili.io/3R2BjZ7.jpg",
-      "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
-      "faction": "The Imperium of Man",
-      "isCapital": true,
-      "mapX": 85,
-      "mapY": 48,
-      "notableFeatures": [
-        {
-          "name": "Cathedral of the Emperor's Light",
-          "description": "A towering cathedral that serves as the spiritual center of Imperial control on Nebryss, where devotion to the Emperor is maintained with zealous fervor."
-        },
-        {
-          "name": "Command Citadel",
-          "description": "The military headquarters of Imperial forces, where campaign plans are drafted and orders are dispatched to forces across the region."
-        }
-      ]
-    },
-    {
-      "name": "Stormwatch",
-      "description": "A storm-wracked island with towering cliffs and constant lightning strikes. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena. The perpetual tempests amplify mist anomalies, allowing the Imperium to study their warp-resistant properties and potential military applications.",
-      "imgUrl": "https://iili.io/3R2BhjS.jpg",
-      "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
-      "faction": "The Imperium of Man",
-      "isCapital": false,
-      "mapX": 22,
-      "mapY": 38,
-      "notableFeatures": [
-        {
-          "name": "The Stormwatch Observatory",
-          "description": "A heavily shielded research complex where Inquisitor Dresdan and Adeptus Mechanicus magi conduct experiments. Lightning rods channel storm energy to power containment fields for captured mist anomalies. The facility is riddled with scorch marks from failed tests."
-        },
-        {
-          "name": "Tempest Proving Grounds",
-          "description": "An open-air testing zone where storm-forged weapons and mist-resistant armor prototypes are trialed. Lightning strikes are deliberately funneled onto test subjects to simulate combat in extreme conditions."
-        }
-      ]
-    },
-    {
-      "name": "Zephyria",
-      "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
-      "imgUrl": "https://iili.io/fvZP8AX.jpg",
-      "thumbnail": "https://iili.io/fvZP8AX.th.jpg",
-      "faction": "The Gilded Accord",
-      "isCapital": true,
-      "mapX": 52,
-      "mapY": 20,
-      "notableFeatures": [
-        {
-          "name": "Sky Bazaar",
-          "description": "A sprawling, multi-tiered marketplace where all factions trade."
-        },
-        {
-          "name": "Mistforge",
-          "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
-        },
-        {
-          "name": "Anchorforge's Drydock",
-          "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it's a hub for sailors, traders, and explorers.",
-          "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
-        },
-        {
-          "name": "The Stoutbarrel Tavern",
-          "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
-          "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
-        }
-      ],
-      "shops": [
-        {
-          "name": "Herbwhisper’s Apothecary",
-          "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-          "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
-        },
-        {
-          "name": "Ironveil’s Ward",
-          "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
-          "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
-        },
-        {
-          "name": "Blackhammer’s Arsenal",
-          "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
-          "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
-        }
-      ]
-    },
-    {
-      "name": "Luminos",
-      "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture. Home to the Nebryssian Reserve—the central bank controlling Mistral coins. The Reserve’s vaults are embedded within crystalline structures that shift color to indicate market stability, visible across the island as an economic barometer.",
-      "imgUrl": "https://iili.io/3YDnziX.jpg",
-      "thumbnail": "https://iili.io/3YDnziX.th.jpg",
-      "faction": "The Gilded Accord",
-      "isCapital": false,
-      "mapX": 46,
-      "mapY": 72,
-      "notableFeatures": [
-        {
-          "name": "The Nebryssian Reserve",
-          "description": "A fortress-like bank complex guarded by mechanized sentinels and light-based security systems. Its vaults use bioluminescent flora as living locks—only Thalos Grenn and his inner circle know the chromatic sequences to access the Mistral reserves. The Reserve’s towering spires project holographic exchange rates visible for miles."
-        },
-        {
-          "name": "Luminos Artisan Quarter",
-          "description": "A district where artists craft glowstone sculptures and mist-reactive tapestries traded across Nebryss. Many works secretly encode market trends or faction messages using light patterns."
-        }
-      ]
-    },
-    {
-      "name": "Maledictum Prime",
-      "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-      "imgUrl": "https://iili.io/3R2BXu2.jpg",
-      "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
-      "faction": "The Abyssal Cabal",
-      "isCapital": true,
-      "mapX": 11,
-      "mapY": 10,
-      "notableFeatures": [
-        {
-          "name": "The Veilrend Spire",
-          "description": "A towering obsidian monolith at Maledictum Prime's heart, where the Cabal conducts warp rituals to harness the mist's power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
-        }
-      ]
-    },
-    {
-      "name": "Misthaven",
-      "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
-      "imgUrl": "https://iili.io/3RFipWB.jpg",
-      "thumbnail": "https://iili.io/3RFipWB.th.jpg",
-      "faction": "The Nebryssian Liberation Republic",
-      "isCapital": true,
-      "mapX": 44,
-      "mapY": 51,
-      "notableFeatures": [
-        {
-          "name": "The Veiled Citadel",
-          "description": "The NLR's central stronghold, camouflaged within the mist and accessible only to those who know the secret paths."
-        },
-        {
-          "name": "The Mistweaver's Grove",
-          "description": "A sacred grove where Mistweavers commune with the mist, drawing power from its enigmatic energies."
-        },
-        {
-          "name": "The Silent Market",
-          "description": "A covert trading post controlled by the Gilded Accord, where NLR operatives and other factions exchange supplies and intelligence."
-        }
-      ]
-    },
-    {
-      "name": "Verdant Veil",
-      "faction": "The Nebryssian Liberation Republic",
-      "isCapital": false,
-      "mapX": 48,
-      "mapY": 59,
-      "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
-      "imgUrl": "https://iili.io/3Ybxd5G.png",
-      "thumbnail": "https://iili.io/3Ybxd5G.th.png",
-      "keyFeatures": [
-        {
-          "name": "The Grove of Echoes",
-          "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. Commander Voss frequently visits to assess new recruits, often participating in rituals to bolster their morale. The grove’s trees hum with faint voices from the past."
-        },
-        {
-          "name": "Veilroot Farms",
-          "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies. Voss ensures surplus harvests are smuggled to Misthaven to support frontline forces."
-        },
-        {
-          "name": "Voss’s Landing",
-          "description": "A hidden cove where Elara Voss docks her stealth skiffs during neophyte transports. The landing is littered with wreckage from ambushed Cabal vessels—a testament to her tactical ingenuity."
-        }
-      ]
-    },
-    {
-      "name": "Aurelia Nexus",
-      "faction": "The Gilded Accord",
-      "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
-      "isCapital": false,
-      "mapX": 72,
-      "mapY": 18,
-      "imgUrl": "https://iili.io/3Ybx2ef.png",
-      "thumbnail": "https://iili.io/3Ybx2ef.th.png",
-      "notableFeatures": [
-        {
-          "name": "The Celestial Exchange",
-          "description": "A stock market for mist-engine components, where prices shift hourly based on route stability reports. Sabotage and insider trading are rampant."
-        },
-        {
-          "name": "The Accord’s Crucible",
-          "description": "A high-security lab where engineers test experimental mist engines. Leaked prototypes often end up in Corsair hands."
-        }
-      ]
-    },
-    {
-      "name": "Emberreach",
-      "faction": "The Abyssal Cabal",
-      "mapX": 18,
-      "mapY": 15,
-      "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
-      "imgUrl": "https://iili.io/3YbxJJs.png",
-      "thumbnail": "https://iili.io/3YbxJJs.th.png",
-      "isCapital": false,
-      "notableFeatures": [
-        {
-          "name": "The Ashen Forge",
-          "description": "A massive foundry where Cabal warlocks forge weapons fused with soul-embers. The screams of bound daemons echo from its furnaces."
-        },
-        {
-          "name": "The Shattered Maw",
-          "description": "A fissure spewing warp energy into the sky. Cabal cultists throw prisoners into it as offerings to the Chaos Gods."
-        }
-      ]
+      "name": "Command Citadel",
+      "description": "The military headquarters of Imperial forces, where campaign plans are drafted and orders are dispatched to forces across the region."
     }
-  ]
+  ],
+  "mapX": 85,
+  "mapY": 49,
+  "id": 3,
+  "category": "fortress",
+  "categorySize": 4
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c0888d"
+  },
+  "name": "Aurelia Nexus",
+  "faction": "The Gilded Accord",
+  "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
+  "isCapital": false,
+  "imgUrl": "https://iili.io/3Ybx2ef.png",
+  "thumbnail": "https://iili.io/3Ybx2ef.th.png",
+  "notableFeatures": [
+    {
+      "name": "The Celestial Exchange",
+      "description": "A stock market for mist-engine components, where prices shift hourly based on route stability reports. Sabotage and insider trading are rampant."
+    },
+    {
+      "name": "The Accord’s Crucible",
+      "description": "A high-security lab where engineers test experimental mist engines. Leaked prototypes often end up in Corsair hands."
+    }
+  ],
+  "mapX": 72,
+  "mapY": 22,
+  "id": 2,
+  "category": "harbor",
+  "categorySize": 3
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c08887"
+  },
+  "name": "Stormwatch",
+  "description": "A storm-wracked island with towering cliffs and constant lightning strikes. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena. The perpetual tempests amplify mist anomalies, allowing the Imperium to study their warp-resistant properties and potential military applications.",
+  "faction": "The Imperium of Man",
+  "isCapital": false,
+  "isWorldMap": false,
+  "id": 4,
+  "imgUrl": "https://iili.io/3R2BhjS.jpg",
+  "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
+  "category": "fortress",
+  "categorySize": 3,
+  "mapX": 22,
+  "mapY": 40
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c08888"
+  },
+  "name": "Zephyria",
+  "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
+  "imgUrl": "https://iili.io/fvZP8AX.jpg",
+  "thumbnail": "https://iili.io/fvZP8AX.th.jpg",
+  "faction": "The Gilded Accord",
+  "isCapital": true,
+  "notableFeatures": [
+    {
+      "name": "Sky Bazaar",
+      "description": "A sprawling, multi-tiered marketplace where all factions trade."
+    },
+    {
+      "name": "Mistforge",
+      "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
+    },
+    {
+      "name": "Anchorforge's Drydock",
+      "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it's a hub for sailors, traders, and explorers.",
+      "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
+    },
+    {
+      "name": "The Stoutbarrel Tavern",
+      "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
+      "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
+    }
+  ],
+  "shops": [
+    {
+      "name": "Herbwhisper’s Apothecary",
+      "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+      "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
+    },
+    {
+      "name": "Ironveil’s Ward",
+      "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+      "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
+    },
+    {
+      "name": "Blackhammer’s Arsenal",
+      "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+      "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
+    }
+  ],
+  "mapX": 52,
+  "mapY": 22,
+  "id": 1,
+  "category": "city",
+  "categorySize": 4
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c0888a"
+  },
+  "name": "Maledictum Prime",
+  "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
+  "imgUrl": "https://iili.io/3R2BXu2.jpg",
+  "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
+  "faction": "The Abyssal Cabal",
+  "isCapital": true,
+  "notableFeatures": [
+    {
+      "name": "The Veilrend Spire",
+      "description": "A towering obsidian monolith at Maledictum Prime's heart, where the Cabal conducts warp rituals to harness the mist's power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
+    }
+  ],
+  "mapX": 15,
+  "mapY": 6,
+  "id": 8,
+  "category": "wasteland",
+  "categorySize": 4
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c0888c"
+  },
+  "name": "Verdant Veil",
+  "faction": "The Nebryssian Liberation Republic",
+  "isCapital": false,
+  "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
+  "imgUrl": "https://iili.io/3Ybxd5G.png",
+  "thumbnail": "https://iili.io/3Ybxd5G.th.png",
+  "keyFeatures": [
+    {
+      "name": "The Grove of Echoes",
+      "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. Commander Voss frequently visits to assess new recruits, often participating in rituals to bolster their morale. The grove’s trees hum with faint voices from the past."
+    },
+    {
+      "name": "Veilroot Farms",
+      "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies. Voss ensures surplus harvests are smuggled to Misthaven to support frontline forces."
+    },
+    {
+      "name": "Voss’s Landing",
+      "description": "A hidden cove where Elara Voss docks her stealth skiffs during neophyte transports. The landing is littered with wreckage from ambushed Cabal vessels—a testament to her tactical ingenuity."
+    }
+  ],
+  "mapX": 48,
+  "mapY": 62,
+  "id": 7,
+  "category": "forest",
+  "categorySize": 3
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c08889"
+  },
+  "name": "Luminos",
+  "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture. Home to the Nebryssian Reserve—the central bank controlling Mistral coins. The Reserve’s vaults are embedded within crystalline structures that shift color to indicate market stability, visible across the island as an economic barometer.",
+  "imgUrl": "https://iili.io/3YDnziX.jpg",
+  "thumbnail": "https://iili.io/3YDnziX.th.jpg",
+  "faction": "The Gilded Accord",
+  "isCapital": false,
+  "notableFeatures": [
+    {
+      "name": "The Nebryssian Reserve",
+      "description": "A fortress-like bank complex guarded by mechanized sentinels and light-based security systems. Its vaults use bioluminescent flora as living locks—only Thalos Grenn and his inner circle know the chromatic sequences to access the Mistral reserves. The Reserve’s towering spires project holographic exchange rates visible for miles."
+    },
+    {
+      "name": "Luminos Artisan Quarter",
+      "description": "A district where artists craft glowstone sculptures and mist-reactive tapestries traded across Nebryss. Many works secretly encode market trends or faction messages using light patterns."
+    }
+  ],
+  "mapX": 48,
+  "mapY": 73,
+  "id": 5,
+  "category": "city",
+  "categorySize": 3
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c0888b"
+  },
+  "name": "Misthaven",
+  "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
+  "faction": "The Nebryssian Liberation Republic",
+  "isCapital": true,
+  "isWorldMap": false,
+  "id": 6,
+  "imgUrl": "https://iili.io/3RFipWB.jpg",
+  "thumbnail": "https://iili.io/3RFipWB.th.jpg",
+  "category": "village",
+  "categorySize": 2,
+  "mapX": 44,
+  "mapY": 51
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c0888e"
+  },
+  "name": "Emberreach",
+  "faction": "The Abyssal Cabal",
+  "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
+  "imgUrl": "https://iili.io/3YbxJJs.png",
+  "thumbnail": "https://iili.io/3YbxJJs.th.png",
+  "isCapital": false,
+  "notableFeatures": [
+    {
+      "name": "The Ashen Forge",
+      "description": "A massive foundry where Cabal warlocks forge weapons fused with soul-embers. The screams of bound daemons echo from its furnaces."
+    },
+    {
+      "name": "The Shattered Maw",
+      "description": "A fissure spewing warp energy into the sky. Cabal cultists throw prisoners into it as offerings to the Chaos Gods."
+    }
+  ],
+  "mapX": 13,
+  "mapY": 18,
+  "id": 9,
+  "category": "city",
+  "categorySize": 1
+},
+{
+  "_id": {
+    "$oid": "6999dcf6f7703abfb2c08885"
+  },
+  "name": "Nebryss",
+  "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
+  "imgUrl": "https://iili.io/3R2Be6u.png",
+  "thumbnail": "https://iili.io/3R2Be6u.th.png",
+  "faction": "Planet",
+  "isCapital": false,
+  "notableFeatures": [
+    {
+      "name": "Mist Trade Routes",
+      "description": "Formed by stable mist zones, these routes are crucial for travel and commerce. Control over mist trade routes is key to power."
+    }
+  ],
+  "isworldMap": true,
+  "id": 0
+},
+{
+  "_id": {
+    "$oid": "6a6ecc087c50046efa3e3727"
+  },
+  "name": "asa",
+  "description": "asa",
+  "faction": "",
+  "isCapital": false,
+  "isWorldMap": false,
+  "category": "shrine",
+  "categorySize": 1,
+  "mapX": 59.54,
+  "mapY": 49.33,
+  "id": 10,
+  "isDeleted": true
+}]
