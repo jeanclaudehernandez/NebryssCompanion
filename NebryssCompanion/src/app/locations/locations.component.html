@@ -59,7 +59,7 @@
       <div class="location-image" *ngIf="selectedLocation.imgUrl">
         <app-image-viewer 
           [imageUrl]="selectedLocation.imgUrl"
-          [thumbnailUrl]="selectedLocation.thumbnail"
+          previewMode="full"
           [altText]="selectedLocation.name">
         </app-image-viewer>
       </div>
