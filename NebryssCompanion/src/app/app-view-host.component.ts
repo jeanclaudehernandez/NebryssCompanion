@@ -28,6 +28,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() view!: AppView;
   @Input() selectedLocationName: string | null = null;
   @Input() selectedLocationBackTarget: string | null = null;
+  @Input() selectedWorldMapLocationName: string | null = null;
   @Input() selectedFactionName: string | null = null;
   @Input() selectedRuleName: string | null = null;
   @Input() selectedStateName: string | null = null;
@@ -37,6 +38,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() viewChange = new EventEmitter<AppView>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   @Output() navigateToLocation = new EventEmitter<{ locationName: string; backTarget: string | null }>();
+  @Output() navigateToWorldMap = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
 
@@ -138,6 +140,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         break;
       case 'locations':
         subscribeToOutput('navigateTo', view => this.viewChange.emit(view));
+        subscribeToOutput('navigateToWorldMap', locationName => this.navigateToWorldMap.emit(locationName));
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
         break;
       case 'worldMap':
@@ -164,6 +167,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'locations':
         this.componentRef.setInput('initialLocationName', this.selectedLocationName);
         this.componentRef.setInput('backTarget', this.selectedLocationBackTarget);
+        break;
+      case 'worldMap':
+        this.componentRef.setInput('focusLocationName', this.selectedWorldMapLocationName);
         break;
       case 'weaponRules':
         this.componentRef.setInput('initialRuleName', this.selectedRuleName);

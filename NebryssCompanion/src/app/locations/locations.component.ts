@@ -21,6 +21,7 @@ export class LocationsComponent implements OnInit {
   @Input() backTarget: string | null = null;
   @Output() navigateTo = new EventEmitter<any>();
   @Output() navigateToLore = new EventEmitter<string>();
+  @Output() navigateToWorldMap = new EventEmitter<string>();
   locations: Location[] = [];
   selectedLocation: Location | null = null;
   deepLinkMode = false;
@@ -130,6 +131,14 @@ export class LocationsComponent implements OnInit {
   getUniqueFactions(): string[] {
     const factions = this.locations.map(location => location.faction);
     return [...new Set(factions)];
+  }
+
+  openSelectedLocationOnWorldMap(): void {
+    if (!this.selectedLocation) {
+      return;
+    }
+
+    this.navigateToWorldMap.emit(this.selectedLocation.name);
   }
 
   navigateToShop(shopName: string) {

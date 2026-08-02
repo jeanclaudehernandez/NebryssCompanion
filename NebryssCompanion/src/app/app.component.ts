@@ -66,6 +66,7 @@ import { Location } from './model';
         [view]="currentView"
         [selectedLocationName]="selectedLocationName"
         [selectedLocationBackTarget]="selectedLocationBackTarget"
+        [selectedWorldMapLocationName]="selectedWorldMapLocationName"
         [selectedFactionName]="selectedFactionName"
         [selectedRuleName]="selectedRuleName"
         [selectedStateName]="selectedStateName"
@@ -74,6 +75,7 @@ import { Location } from './model';
         (viewChange)="onViewChange($event)"
         (openAdminEditor)="onOpenAdminEditor($event)"
         (navigateToLocation)="onNavigateToLocation($event.locationName, $event.backTarget)"
+        (navigateToWorldMap)="onNavigateToWorldMap($event)"
         (navigateToLore)="onNavigateToLore($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
       ></app-view-host>
@@ -136,6 +138,7 @@ export class AppComponent {
   currentView: AppView = 'players';
   selectedLocationName: string | null = null;
   selectedLocationBackTarget: string | null = null;
+  selectedWorldMapLocationName: string | null = null;
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
@@ -384,6 +387,7 @@ export class AppComponent {
     // Let's just set it to null here, and have a separate method for location navigation.
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
+    this.selectedWorldMapLocationName = null;
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
@@ -402,6 +406,7 @@ export class AppComponent {
     this.adminLocationDraft = null;
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
+    this.selectedWorldMapLocationName = null;
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
@@ -418,6 +423,7 @@ export class AppComponent {
     this.currentView = 'adminLocationCreator';
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
+    this.selectedWorldMapLocationName = null;
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
@@ -429,14 +435,29 @@ export class AppComponent {
     this.selectedLocationName = locationName;
     this.selectedLocationBackTarget = backTarget;
     this.currentView = 'locations';
+    this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'locations');
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToWorldMap(locationName: string) {
+    this.selectedWorldMapLocationName = locationName;
+    this.currentView = 'worldMap';
+    this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
+    this.selectedFactionName = null;
+    this.selectedRuleName = null;
+    this.selectedStateName = null;
+    this.adminLocationDraft = null;
+    localStorage.setItem('lastView', 'worldMap');
     window.scrollTo({ top: 0 });
   }
 
   onNavigateToLore(factionName: string) {
     this.selectedFactionName = factionName;
     this.currentView = 'lore';
+    this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
     window.scrollTo({ top: 0 });

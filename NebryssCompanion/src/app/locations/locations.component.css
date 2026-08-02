@@ -163,21 +163,31 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 16px;
   margin-bottom: 25px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 15px;
 }
 
-.location-title h2 {
-  font-size: 2rem;
-  color: #64b5f6;
-  margin: 0 0 10px 0;
+.location-title {
+  flex: 1;
+  min-width: 0;
 }
 
-.location-badges {
+.location-title-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.location-title h2 {
+  flex: 1;
+  min-width: 0;
+  font-size: 2rem;
+  line-height: 1.2;
+  color: #64b5f6;
+  margin: 0;
 }
 
 .faction-emblem {
@@ -213,6 +223,37 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.location-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.world-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(100, 181, 246, 0.35);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background-color: rgba(100, 181, 246, 0.15);
+  color: #afd5fe;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.world-map-btn:hover {
+  background-color: rgba(100, 181, 246, 0.25);
+  border-color: rgba(144, 202, 249, 0.55);
+  color: #d7ebff;
+}
+
+.world-map-btn .material-icons {
+  font-size: 1.1rem;
 }
 
 .close-btn {
@@ -320,6 +361,18 @@
   
   .location-details {
     padding: 20px;
+  }
+
+  .location-title-row {
+    gap: 10px;
+  }
+
+  .location-header-actions {
+    gap: 8px;
+  }
+
+  .world-map-btn {
+    padding: 8px 12px;
   }
 
   /* Hide the empty state text on mobile */

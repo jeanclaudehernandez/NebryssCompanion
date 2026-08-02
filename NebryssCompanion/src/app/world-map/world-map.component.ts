@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
+import { Component, OnInit, OnChanges, AfterViewInit, OnDestroy, ChangeDetectorRef, Output, EventEmitter, Input, SimpleChanges, ViewEncapsulation, DestroyRef, TemplateRef, ViewChild, ElementRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
@@ -26,7 +26,8 @@ export interface MapPin {
   styleUrls: ['./world-map.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
+export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+  @Input() focusLocationName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
@@ -58,6 +59,7 @@ export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
   private longPressPointerId: number | null = null;
   private longPressStartPoint: { x: number; y: number } | null = null;
   private longPressTriggered = false;
+  private mapImageLoaded = false;
   private readonly longPressDuration = 650;
   private readonly longPressMoveTolerance = 12;
 
@@ -92,16 +94,26 @@ export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.locationsData = locations;
       this.rebuildPins();
+      this.applyRequestedFocus();
       this.cdr.markForCheck();
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['focusLocationName']) {
+      this.applyRequestedFocus();
+    }
+  }
+
   ngAfterViewInit(): void {
     this.clampPan();
+    this.applyRequestedFocus();
   }
 
   onMapImageLoad(): void {
+    this.mapImageLoaded = true;
     this.clampPan();
+    this.applyRequestedFocus();
     this.cdr.markForCheck();
   }
 
@@ -374,6 +386,47 @@ export class WorldMapComponent implements OnInit, AfterViewInit, OnDestroy {
   private setScale(next: number): void {
     this.scale = Math.min(this.maxScale, Math.max(this.minScale, next));
     this.clampPan();
+  }
+
+  private applyRequestedFocus(): void {
+    const requestedName = this.focusLocationName?.trim();
+    if (!requestedName || !this.mapImageLoaded) {
+      return;
+    }
+
+    const targetPin = this.pins.find(pin => pin.location.name === requestedName);
+    if (!targetPin) {
+      if (this.worldMapLocation?.name === requestedName) {
+        this.resetView();
+      }
+      return;
+    }
+
+    this.focusPin(targetPin);
+  }
+
+  private focusPin(pin: MapPin): void {
+    const surface = this.mapSurfaceRef?.nativeElement;
+    const viewport = this.mapViewportRef?.nativeElement;
+    if (!surface || !viewport || !surface.offsetWidth || !surface.offsetHeight) {
+      return;
+    }
+
+    const targetScale = Math.max(this.scale, 1.35);
+    this.scale = Math.min(this.maxScale, Math.max(this.minScale, targetScale));
+
+    const viewportWidth = viewport.clientWidth;
+    const viewportHeight = viewport.clientHeight;
+    const baseLeft = (viewportWidth - surface.offsetWidth) / 2;
+    const baseTop = (viewportHeight - surface.offsetHeight) / 2;
+    const targetX = (pin.x / 100) * surface.offsetWidth;
+    const targetY = (pin.y / 100) * surface.offsetHeight;
+
+    this.translateX = viewportWidth / 2 - baseLeft - (targetX * this.scale);
+    this.translateY = viewportHeight / 2 - baseTop - (targetY * this.scale);
+    this.selectedPin = pin.location;
+    this.clampPan();
+    this.cdr.markForCheck();
   }
 
   // keeps the map image from being panned/zoomed past its own edges, leaving empty space in the viewport

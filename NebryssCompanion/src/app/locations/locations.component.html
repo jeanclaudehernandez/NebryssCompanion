@@ -37,18 +37,23 @@
     <div class="location-details" *ngIf="selectedLocation">
       <div class="location-header">
         <div class="location-title">
-          <h2>{{ selectedLocation.name }}</h2>
-          <div class="location-badges">
-            <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital</span>
+          <div class="location-title-row">
             <div class="faction-emblem clickable-emblem" *ngIf="getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
               <img [src]="getFactionThumbnail(selectedLocation.faction)" [alt]="selectedLocation.faction" loading="lazy">
             </div>
             <div class="faction-emblem text-emblem clickable-emblem" *ngIf="!getFactionThumbnail(selectedLocation.faction)" (click)="onFactionClick(selectedLocation.faction)" title="Click to view {{selectedLocation.faction}} in Lore">
               {{ getFactionInitial(selectedLocation.faction) }}
             </div>
+            <h2>{{ selectedLocation.name }}</h2>
+            <span *ngIf="selectedLocation.isCapital" class="capital-badge">Capital</span>
           </div>
         </div>
-        <button class="close-btn" (click)="clearSelectedLocation()" aria-label="Close location">×</button>
+        <div class="location-header-actions">
+          <button type="button" class="world-map-btn" (click)="openSelectedLocationOnWorldMap()" aria-label="Open on world map">
+            <span class="material-icons" aria-hidden="true">public</span>
+          </button>
+          <button class="close-btn" (click)="clearSelectedLocation()" aria-label="Close location">×</button>
+        </div>
       </div>
       
       <div class="location-image" *ngIf="selectedLocation.imgUrl">
