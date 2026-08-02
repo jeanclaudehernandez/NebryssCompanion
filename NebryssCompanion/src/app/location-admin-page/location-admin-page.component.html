@@ -261,6 +261,11 @@
 
         <div class="field-grid toggles-grid">
           <label class="field checkbox-field">
+            <input [(ngModel)]="discovered" name="discovered" type="checkbox" />
+            <span>Discovered (Visible to Players on Map & Locations List)</span>
+          </label>
+
+          <label class="field checkbox-field">
             <input [(ngModel)]="isCapital" name="isCapital" type="checkbox" />
             <span>Capital location</span>
           </label>

@@ -181,10 +181,59 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     });
   }
 
+  toggleLocationDiscovered(location: Location, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.isAdmin) {
+      return;
+    }
+
+    const nextDiscovered = location.discovered === false ? true : false;
+    const updated = {
+      ...location,
+      discovered: nextDiscovered
+    };
+
+    this.dataService.updateLocation(updated).subscribe({
+      next: saved => {
+        const index = this.locationsData.findIndex(l => l.id === saved.id);
+        if (index !== -1) {
+          this.locationsData[index] = { ...saved };
+        } else {
+          this.locationsData.push({ ...saved });
+        }
+        if (this.selectedPin?.id === saved.id) {
+          this.selectedPin = { ...saved };
+        }
+        this.rebuildPins();
+
+        this.toastService.show(
+          saved.discovered !== false
+            ? `${saved.name} is now DISCOVERED (Visible on Player Map)`
+            : `${saved.name} is now UNDISCOVERED (Hidden from Player Map)`,
+          'info'
+        );
+
+        this.dataService.refreshLocations().subscribe(data => {
+          if (data?.locations) {
+            this.locationsData = data.locations;
+            this.rebuildPins();
+            this.cdr.markForCheck();
+          }
+        });
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update discovery status: ${err?.message || err}`, 'error');
+      }
+    });
+  }
+
   private rebuildPins(): void {
     this.pins = this.locationsData
       .filter(l => l !== this.worldMapLocation)
-      .filter(l => this.isAdmin || !l.isSecret || l.isSecretRevealed)
+      .filter(l => this.isAdmin || (l.discovered !== false && (!l.isSecret || l.isSecretRevealed)))
       .map((l, i) => this.toPin(l, i))
       .filter((pin): pin is MapPin => pin !== null);
   }

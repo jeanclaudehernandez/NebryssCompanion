@@ -273,8 +273,57 @@ export class LocationsComponent implements OnInit {
   getLocationsByFaction(factionName: string): Location[] {
     return this.locations.filter(location =>
       location.faction === factionName &&
-      (this.isAdmin || !location.isSecret || location.isSecretRevealed)
+      (this.isAdmin || (location.discovered !== false && (!location.isSecret || location.isSecretRevealed)))
     );
+  }
+
+  toggleLocationDiscovered(location: Location, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.isAdmin || !location) {
+      return;
+    }
+
+    const nextDiscovered = location.discovered === false ? true : false;
+    const updatedLocation: Location = {
+      ...location,
+      discovered: nextDiscovered
+    };
+
+    this.dataService.updateLocation(updatedLocation).subscribe({
+      next: saved => {
+        const index = this.locations.findIndex(l => l.id === saved.id);
+        if (index !== -1) {
+          this.locations[index] = { ...saved };
+        } else {
+          this.locations.push({ ...saved });
+        }
+        if (this.selectedLocation?.id === saved.id) {
+          this.selectedLocation = { ...saved };
+        }
+        this.uniqueFactions = this.getUniqueFactions();
+
+        this.toastService.show(
+          saved.discovered !== false
+            ? `Location "${saved.name}" is now DISCOVERED (Visible to Players).`
+            : `Location "${saved.name}" is now UNDISCOVERED (Hidden from Players).`,
+          'info'
+        );
+
+        this.dataService.refreshLocations().subscribe(data => {
+          if (data?.locations) {
+            this.locations = data.locations;
+            this.uniqueFactions = this.getUniqueFactions();
+            this.cdr.markForCheck();
+          }
+        });
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update discovery status: ${err?.message || err}`, 'error');
+      }
+    });
   }
 
   getLocationSecrets(location: Location | null): SecretBlock[] {
@@ -369,7 +418,7 @@ export class LocationsComponent implements OnInit {
 
   getUniqueFactions(): string[] {
     const visibleLocations = this.locations.filter(l =>
-      this.isAdmin || !l.isSecret || l.isSecretRevealed
+      this.isAdmin || (l.discovered !== false && (!l.isSecret || l.isSecretRevealed))
     );
     const factions = visibleLocations.map(location => location.faction);
     return [...new Set(factions)];

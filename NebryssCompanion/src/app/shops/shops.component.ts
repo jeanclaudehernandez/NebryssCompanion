@@ -13,6 +13,7 @@ import { CartService } from '../cart.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
+import { AdminService } from '../admin.service';
 
 interface ShopCategoryData {
   category: ItemCategory;
@@ -72,9 +73,11 @@ export class ShopsComponent implements OnInit, OnDestroy {
   isLoading = true;
   scrollSections: ScrollSection[] = [];
   isDarkMode: boolean = false;
+  isAdmin: boolean = false;
   activePlayerBodyTypes: string[] = [];
   private themeSubscription: Subscription = new Subscription();
   private cartSubscription: Subscription = new Subscription();
+  private adminSubscription: Subscription = new Subscription();
 
   // Shopping Cart
   cart: { [shopId: number]: CartItem[] } = {};
@@ -96,12 +99,18 @@ export class ShopsComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private modalService: ModalService,
     private cartService: CartService,
+    public adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
+    });
+
+    this.adminSubscription = this.adminService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+      this.processShops();
     });
     
     this.activePlayerService.activePlayer$.subscribe(player => {
@@ -132,12 +141,74 @@ export class ShopsComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
     this.cartSubscription.unsubscribe();
+    this.adminSubscription.unsubscribe();
+  }
+
+  toggleShopDiscovered(shop: Shop, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.isAdmin || !shop) {
+      return;
+    }
+
+    const nextDiscovered = shop.discovered === false ? true : false;
+    const updatedShop: Shop = {
+      ...shop,
+      discovered: nextDiscovered
+    };
+
+    this.dataService.updateShop(updatedShop).subscribe({
+      next: saved => {
+        const index = this.shops.findIndex(s => s.id === saved.id);
+        if (index !== -1) {
+          this.shops[index] = { ...saved };
+        } else {
+          this.shops.push({ ...saved });
+        }
+        this.processShops();
+
+        this.toastService.show(
+          saved.discovered !== false
+            ? `Shop "${saved.name}" is now DISCOVERED (Visible to Players).`
+            : `Shop "${saved.name}" is now UNDISCOVERED (Hidden from Players).`,
+          'info'
+        );
+
+        this.dataService.refreshShops().subscribe({
+          next: refreshedShops => {
+            if (refreshedShops) {
+              this.shops = refreshedShops;
+              this.processShops();
+            }
+          }
+        });
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update shop discovery status: ${err?.message || err}`, 'error');
+      }
+    });
   }
 
   processShops() {
     if (!this.shops || !this.itemsCategories || !this.locations) return;
 
-    const processedShops = this.shops.map(shop => {
+    const visibleShops = this.shops.filter(shop => {
+      if (this.isAdmin) {
+        return true;
+      }
+      if (shop.discovered === false) {
+        return false;
+      }
+      const matchedLocation = this.findShopLocation(shop);
+      if (matchedLocation && matchedLocation.discovered === false) {
+        return false;
+      }
+      return true;
+    });
+
+    const processedShops = visibleShops.map(shop => {
       const categoriesData: ShopCategoryData[] = (shop.categories || []).map(catId => {
         const category = this.findCategory(catId);
         if (!category) return null;

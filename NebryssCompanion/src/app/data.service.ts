@@ -223,6 +223,38 @@ export class DataService {
     return this.shopsCache$;
   }
 
+  refreshShops(): Observable<Shop[]> {
+    this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
+      catchError(() => this.http.get<Shop[]>('assets/shops.json')),
+      tap(shops => {
+        this.shops = shops;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.shopsCache$;
+  }
+
+  updateShop(shop: Shop): Observable<Shop> {
+    return this.http.put<Shop>(`${this.apiUrl}/shop`, shop).pipe(
+      catchError(() => {
+        const index = this.shops.findIndex(s => s.id === shop.id);
+        if (index !== -1) {
+          this.shops[index] = shop;
+        }
+        return of(shop);
+      }),
+      tap(updatedShop => {
+        const index = this.shops.findIndex(s => s.id === updatedShop.id);
+        if (index !== -1) {
+          this.shops[index] = updatedShop;
+        }
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   getLore(): Observable<Lore> {
     if (!this.loreCache$) {
       this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(

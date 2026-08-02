@@ -85,6 +85,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
   thumbnail = '';
   mapX: number | null = null;
   mapY: number | null = null;
+  discovered = true;
   isCapital = false;
   isWorldMap = false;
 
@@ -456,6 +457,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       this.mapY = typeof this.initialLocation.mapY === 'number' ? Number(this.initialLocation.mapY.toFixed(2)) : null;
       this.isCapital = !!this.initialLocation.isCapital;
       this.isWorldMap = !!this.initialLocation.isWorldMap;
+      this.discovered = this.initialLocation.discovered !== false;
       return;
     }
 
@@ -478,6 +480,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     this.thumbnail = '';
     this.mapX = null;
     this.mapY = null;
+    this.discovered = true;
     this.isCapital = false;
     this.isWorldMap = false;
     this.showFactionOptions = false;
@@ -536,6 +539,7 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
       name,
       description,
       faction: faction || "",
+      discovered: !!this.discovered,
       isCapital: !!this.isCapital,
       isWorldMap: !!this.isWorldMap,
       isSecret: !!this.isSecret,

@@ -41,6 +41,7 @@ export interface AlteredState {
     secrets?: SecretBlock[];
     isSecret?: boolean;
     isSecretRevealed?: boolean;
+    discovered?: boolean;
     imgUrl?: string;
     thumbnail?: string;
     faction: string;
@@ -343,6 +344,7 @@ export interface AlteredState {
     location: string;
     locationName: string;
     description?: string;
+    discovered?: boolean;
     categories?: number[];
     items: ShopItem[];
     imgUrl?: string;

@@ -1269,3 +1269,401 @@ body.dark-theme .wallet-cancel-button {
   color: #e0e0e0;
   border-color: rgba(255, 255, 255, 0.12);
 }
+
+/* ==========================================================================
+   MODAL & DIALOG GLOBAL STYLES (NEBRYSS DESIGN SYSTEM)
+   ========================================================================== */
+
+/* Overlay backdrop with glassmorphism blur */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+  padding: 16px;
+  box-sizing: border-box;
+  animation: modalOverlayFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Modal Content Card */
+.modal-content {
+  background: #ffffff;
+  color: #1e293b;
+  padding: 24px;
+  border-radius: 16px;
+  max-width: 480px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
+  animation: modalContentScaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalContentScaleIn {
+  from { opacity: 0; transform: scale(0.94) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Dark theme modal content card */
+body.dark-theme .modal-content {
+  background: #0f172a;
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 20px rgba(13, 148, 136, 0.15);
+}
+
+/* Modal Close Button (top-right X) */
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #64748b;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #0f172a;
+  transform: scale(1.05);
+}
+
+body.dark-theme .modal-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+body.dark-theme .modal-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+/* Confirmation / Admin Dialog Container */
+.confirmation-dialog,
+.admin-dialog-modal {
+  text-align: center;
+  padding: 4px;
+}
+
+.confirmation-dialog h3,
+.admin-dialog-modal h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #0d9488;
+  letter-spacing: -0.3px;
+}
+
+body.dark-theme .confirmation-dialog h3,
+body.dark-theme .admin-dialog-modal h3 {
+  color: #2dd4bf;
+}
+
+.confirmation-dialog p,
+.admin-dialog-modal p {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #475569;
+}
+
+body.dark-theme .confirmation-dialog p,
+body.dark-theme .admin-dialog-modal p {
+  color: #cbd5e1;
+}
+
+/* Password Input inside Admin Modal */
+.admin-password-input,
+.confirmation-dialog input[type="password"],
+.confirmation-dialog input[type="text"] {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  font-size: 1rem;
+  background: #f8fafc;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.admin-password-input:focus,
+.confirmation-dialog input:focus {
+  border-color: #0d9488;
+  background: #ffffff;
+  box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.2);
+}
+
+body.dark-theme .admin-password-input,
+body.dark-theme .confirmation-dialog input[type="password"],
+body.dark-theme .confirmation-dialog input[type="text"] {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+body.dark-theme .admin-password-input:focus,
+body.dark-theme .confirmation-dialog input:focus {
+  border-color: #2dd4bf;
+  background: #0f172a;
+  box-shadow: 0 0 0 3.5px rgba(45, 212, 191, 0.25);
+}
+
+/* Dialog Action Buttons Row / Stack */
+.dialog-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.dialog-buttons.vertical-buttons {
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Common Modal Button Styling */
+.dialog-buttons button,
+.btn-confirm,
+.btn-cancel,
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-gm-toggle,
+.btn-logout {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 20px;
+  min-height: 44px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* Hover & Active Micro-animations */
+.dialog-buttons button:hover,
+.btn-confirm:hover,
+.btn-cancel:hover,
+.btn-primary:hover,
+.btn-gm-toggle:hover,
+.btn-logout:hover {
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.dialog-buttons button:active,
+.btn-confirm:active,
+.btn-cancel:active,
+.btn-primary:active,
+.btn-gm-toggle:active,
+.btn-logout:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Primary / Confirm Buttons */
+.btn-confirm,
+.btn-primary {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff;
+  border-color: rgba(45, 212, 191, 0.3);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+}
+
+.btn-confirm:hover,
+.btn-primary:hover {
+  background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+  box-shadow: 0 6px 16px rgba(45, 212, 191, 0.45);
+}
+
+/* Cancel / Secondary Buttons */
+.btn-cancel,
+.btn-secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.btn-cancel:hover,
+.btn-secondary:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+body.dark-theme .btn-cancel,
+body.dark-theme .btn-secondary {
+  background: #1e293b;
+  color: #cbd5e1;
+  border-color: #334155;
+}
+
+body.dark-theme .btn-cancel:hover,
+body.dark-theme .btn-secondary:hover {
+  background: #334155;
+  color: #ffffff;
+  border-color: #475569;
+}
+
+/* GM Toggle Special Button */
+.btn-gm-toggle {
+  width: 100%;
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border-color: rgba(56, 189, 248, 0.4);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+}
+
+.btn-gm-toggle:hover {
+  background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%);
+  box-shadow: 0 6px 16px rgba(56, 189, 248, 0.45);
+}
+
+.btn-gm-toggle.is-active {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  border-color: rgba(45, 212, 191, 0.4);
+  box-shadow: 0 4px 12px rgba(13, 148, 136, 0.35);
+}
+
+.btn-gm-toggle.is-active:hover {
+  background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+  box-shadow: 0 6px 16px rgba(45, 212, 191, 0.45);
+}
+
+/* Logout GM Access Button */
+.btn-logout {
+  width: 100%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1.5px solid rgba(239, 68, 68, 0.35);
+}
+
+.btn-logout:hover {
+  background: rgba(239, 68, 68, 0.22);
+  color: #dc2626;
+  border-color: #ef4444;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+body.dark-theme .btn-logout {
+  background: rgba(239, 68, 68, 0.16);
+  color: #f87171;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+body.dark-theme .btn-logout:hover {
+  background: rgba(239, 68, 68, 0.3);
+  color: #ffffff;
+  border-color: #f87171;
+}
+
+/* Danger Confirm Buttons (e.g., Delete actions) */
+.btn-danger {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: #ffffff;
+  border-color: rgba(248, 113, 113, 0.4);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.35);
+}
+
+.btn-danger:hover {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.45);
+}
+
+/* Unified GM Discovered / Undiscovered Toggle Buttons */
+.gm-discovered-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.gm-discovered-btn .material-icons {
+  font-size: 16px;
+}
+
+.gm-discovered-btn.is-discovered {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(16, 185, 129, 0.14);
+  color: #059669;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+}
+
+.gm-discovered-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.1);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.gm-discovered-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+body.dark-theme .gm-discovered-btn {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+}
+
+body.dark-theme .gm-discovered-btn.is-discovered {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+}

@@ -17,7 +17,13 @@
         <div class="shop-header">
           <div class="shop-media">
             <img *ngIf="shop.imgUrl" [src]="shopDisplayImages[shop.id] || shop.imgUrl" [alt]="shop.name" class="shop-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onShopImageLoad($event, shop.id)" (click)="openShopImageModal(shop)">
-            <h3 class="shop-title">{{ shop.name }}</h3>
+            <div class="shop-title-row">
+              <h3 class="shop-title">{{ shop.name }}</h3>
+              <button *ngIf="isAdmin" type="button" class="gm-discovered-btn" [class.is-discovered]="shop.discovered !== false" (click)="toggleShopDiscovered(shop, $event)" [title]="shop.discovered !== false ? 'Shop is Discovered by players. Click to mark Undiscovered.' : 'Shop is Undiscovered. Click to mark Discovered.'">
+                <span class="material-icons">{{ shop.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+                <span>{{ shop.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
+              </button>
+            </div>
           </div>
         </div>
         <p class="location" (click)="onLocationClick(shop.locationName || shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>

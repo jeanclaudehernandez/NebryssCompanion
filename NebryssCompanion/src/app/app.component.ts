@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, TemplateRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { combineLatest } from 'rxjs';
@@ -14,6 +14,7 @@ import { AppViewHostComponent } from './app-view-host.component';
 import { APP_VIEWS, AppView } from './app-view.types';
 import { Location } from './model';
 import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service';
+import { ModalService } from './modal.service';
 
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
@@ -37,12 +38,11 @@ import { ToastService } from './toast.service';
       <h1 class="header-title">{{ currentViewTitle }}</h1>
 
       <button
-        *ngIf="hasAdminAccess$ | async"
         type="button"
         class="top-gm-toggle-btn"
         [class.active]="isAdmin$ | async"
-        (click)="toggleAdminMode()"
-        [title]="(isAdmin$ | async) ? 'Modo GM Activado (Ver secretos de campaña). Clic para cambiar a Modo Jugador' : 'Modo Jugador. Clic para activar Modo GM'"
+        (click)="openAdminDialog()"
+        title="GM Access & Settings"
       >
         <span class="material-icons">security</span>
         <span>{{ (isAdmin$ | async) ? 'GM ON' : 'GM OFF' }}</span>
@@ -157,10 +157,39 @@ import { ToastService } from './toast.service';
         </button>
       </nav>
     }
+
+    <ng-template #adminDialog let-check="check" let-toggleGm="toggleGm" let-logout="logout" let-cancel="cancel" let-hasAccess="hasAccess" let-isAdmin="isAdmin">
+      <div class="confirmation-dialog admin-dialog-modal">
+        <h3>GM & Admin Access</h3>
+        <ng-container *ngIf="!hasAccess">
+          <p>Enter admin password to unlock GM features:</p>
+          <input #passwordInput type="password" style="margin-bottom: 12px; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem;" (keyup.enter)="check(passwordInput.value)">
+          <div class="dialog-buttons">
+            <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+            <button class="btn-confirm" type="button" (click)="check(passwordInput.value)">Submit</button>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="hasAccess">
+          <p style="margin-bottom: 16px; line-height: 1.5;">GM Mode is currently <strong>{{ isAdmin ? 'ACTIVE (GM ON)' : 'INACTIVE (Player View)' }}</strong>.</p>
+          <div class="dialog-buttons" style="flex-direction: column; gap: 10px;">
+            <button class="btn-confirm" type="button" (click)="toggleGm()">
+              {{ isAdmin ? 'Switch to Player View (GM OFF)' : 'Activate GM Mode (GM ON)' }}
+            </button>
+            <button class="btn-cancel" type="button" (click)="logout()">
+              Logout GM Access
+            </button>
+            <button class="btn-cancel" type="button" (click)="cancel()">
+              Close
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  @ViewChild('adminDialog') adminDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
 
   currentView: AppView = 'players';
@@ -252,7 +281,8 @@ export class AppComponent {
     private dataService: DataService,
     private dialog: MatDialog,
     private activePlayerService: ActivePlayerService,
-    private bestiaryMaterialsService: BestiaryMaterialsService
+    private bestiaryMaterialsService: BestiaryMaterialsService,
+    private modalService: ModalService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -525,6 +555,42 @@ export class AppComponent {
 
   toggleBestiaryMaterialsSidebar(): void {
     this.bestiaryMaterialsService.toggle();
+  }
+
+  openAdminDialog(): void {
+    if (!this.adminDialogTemplate) {
+      return;
+    }
+
+    const dialogContext = {
+      hasAccess: this.adminService.hasAdminAccess,
+      isAdmin: this.adminService.isAdmin,
+      check: (password: string) => {
+        if (password === '2602') {
+          this.adminService.setAdminAuthenticated(true);
+          this.modalService.close();
+          this.toastService.show('GM Access Granted! GM Mode is ON.', 'success');
+        } else {
+          this.toastService.show('Incorrect admin password', 'error');
+        }
+      },
+      toggleGm: () => {
+        const nextState = !this.adminService.isAdmin;
+        this.adminService.setAdminStatus(nextState);
+        this.modalService.close();
+        this.toastService.show(nextState ? 'GM Mode ON (Secret Vaults & GM Tools visible)' : 'Player View Active (GM OFF)', 'info');
+      },
+      logout: () => {
+        this.adminService.setAdminAuthenticated(false);
+        this.modalService.close();
+        this.toastService.show('Logged out of GM mode', 'info');
+      },
+      cancel: () => {
+        this.modalService.close();
+      }
+    };
+
+    this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext);
   }
 
   @HostListener('click', ['$event'])

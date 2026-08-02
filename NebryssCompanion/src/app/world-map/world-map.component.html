@@ -98,6 +98,7 @@
     <div class="map-popup-header">
       <h3>{{ selectedPin.name }}</h3>
       <span *ngIf="selectedPin.isCapital" class="capital-badge">Capital</span>
+      <span *ngIf="isAdmin && selectedPin.discovered === false" class="undiscovered-badge">Undiscovered</span>
       <span *ngIf="isAdmin && selectedPin.isSecret && !selectedPin.isSecretRevealed" class="secret-badge">Secret</span>
       <span *ngIf="isAdmin && selectedPin.isSecret && selectedPin.isSecretRevealed" class="revealed-badge">Revealed</span>
       
@@ -124,16 +125,17 @@
       </div>
     </div>
 
-    <!-- GM Quick Reveal Button in Map Popup -->
+    <!-- GM Quick Actions in Map Popup -->
     <div class="map-popup-gm-actions" *ngIf="isAdmin">
       <button
         type="button"
-        class="gm-reveal-btn popup-reveal-btn"
-        [class.active]="selectedPin.isSecretRevealed"
-        (click)="toggleSecretReveal(selectedPin, $event)"
+        class="gm-discovered-btn popup-reveal-btn"
+        [class.is-discovered]="selectedPin.discovered !== false"
+        (click)="toggleLocationDiscovered(selectedPin, $event)"
+        [title]="selectedPin.discovered !== false ? 'Location is Discovered on Player Map. Click to hide.' : 'Location is Undiscovered. Click to reveal on Player Map.'"
       >
-        <span class="material-icons">{{ selectedPin.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
-        {{ selectedPin.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+        <span class="material-icons">{{ selectedPin.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+        <span>{{ selectedPin.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
       </button>
     </div>
 

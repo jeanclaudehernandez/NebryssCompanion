@@ -1,12 +1,27 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .world-map-page {
   position: relative;
-  height: calc(100vh - 100px);
-  max-width: 1200px;
+  width: 100%;
+  height: calc(100dvh - var(--app-header-height, 56px) - var(--safe-area-top, 0px) - var(--footer-menu-height, 60px) - var(--safe-area-bottom, 0px) - 24px);
+  max-width: 1400px;
   margin: 0 auto;
   background-color: rgba(20, 20, 20, 0.8);
   color: #e0e0e0;
   border-radius: 8px;
   overflow: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .world-map-page {
+    height: calc(100dvh - var(--app-header-height, 56px) - var(--safe-area-top, 0px) - var(--footer-menu-height, 60px) - var(--safe-area-bottom, 0px) - 16px);
+    border-radius: 0;
+  }
 }
 
 .map-toolbar {
@@ -276,6 +291,18 @@
   background-color: rgba(255, 215, 0, 0.2);
   color: #ffd700;
   border: 1px solid rgba(255, 215, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.undiscovered-badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
   padding: 2px 6px;
   border-radius: 4px;
 }
