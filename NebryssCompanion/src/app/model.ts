@@ -32,6 +32,8 @@ export interface AlteredState {
     imgUrl?: string;
     thumbnail?: string;
     faction: string;
+    category?: string;
+    categorySize?: string | number;
     isCapital: boolean;
     // Marks the location whose image is used as the background of the interactive World Map.
     isWorldMap?: boolean;

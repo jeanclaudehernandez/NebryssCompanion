@@ -157,30 +157,6 @@
   display: block;
 }
 
-.pin-pulse-ring {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  background-color: rgba(255, 202, 40, 0.35);
-  animation: pin-pulse 1.8s ease-out infinite;
-  z-index: -1;
-}
-
-@keyframes pin-pulse {
-  0% {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(1.9);
-    opacity: 0;
-  }
-}
-
 .pin-badge {
   width: 42px;
   height: 42px;
@@ -189,37 +165,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(20, 20, 20, 0.9);
+  background: #313131;
   border: 3px solid var(--faction-color, rgba(255, 255, 255, 0.85));
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.pin-faction-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.pin-icon-fallback {
-  color: #ef5350;
-  font-size: 1.6rem;
+.pin-location-icon {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.55));
+  pointer-events: none;
 }
 
 .map-pin:hover .pin-badge,
 .map-pin.active .pin-badge {
   box-shadow: 0 0 12px 2px var(--faction-color, #64b5f6);
   transform: scale(1.15);
-}
-
-/* capitals get a gold halo on top of their faction-colored border */
-.map-pin.is-capital .pin-badge {
-  outline: 3px solid rgba(255, 202, 40, 0.65);
-  outline-offset: 2px;
-}
-
-.map-pin.is-capital:hover .pin-badge {
-  transform: scale(1.2) translateY(-3px);
 }
 
 .pin-capital-star {

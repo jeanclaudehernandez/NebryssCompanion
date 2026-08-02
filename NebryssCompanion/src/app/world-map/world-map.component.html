@@ -46,10 +46,13 @@
       >
         <span class="pin-marker">
           <span class="pin-label">{{ pin.location.name }}</span>
-          <span class="pin-pulse-ring" *ngIf="pin.location.isCapital"></span>
           <span class="pin-badge">
-            <img *ngIf="pin.factionIcon" [src]="pin.factionIcon" [alt]="pin.location.faction" class="pin-faction-img" loading="lazy">
-            <span *ngIf="!pin.factionIcon" class="material-icons pin-icon-fallback">place</span>
+            <img
+              [src]="pin.locationIconSrc"
+              [alt]="pin.location.category || 'Location'"
+              class="pin-location-icon"
+              loading="lazy"
+            >
           </span>
           <span *ngIf="pin.location.isCapital" class="material-icons pin-capital-star">star</span>
         </span>
