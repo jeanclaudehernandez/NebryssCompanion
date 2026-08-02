@@ -61,8 +61,11 @@ body.dark-theme .table-header h3 {
 
 .table-scroll-wrapper {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   border-radius: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 body.dark-theme .table-header {
@@ -201,6 +204,8 @@ body.dark-theme .weapons-table th.sortable:hover {
     padding-top: 0;
     padding-bottom: 0.5rem;
     border-top: none;
+    overflow: visible;
+    position: relative;
 }
 
 .rules-container, .body-cell {
@@ -211,6 +216,15 @@ body.dark-theme .weapons-table th.sortable:hover {
     flex-wrap: wrap;
     align-items: center;
     gap: 0.25rem;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+}
+
+.body-tooltip-anchor {
+    display: inline-flex;
+    align-items: center;
+    cursor: help;
 }
 
 .rules-label, .body-label {
@@ -222,6 +236,13 @@ body.dark-theme .weapons-table th.sortable:hover {
 .rules-label-spacer {
     visibility: hidden;
     font-weight: 500;
+    margin-right: 0.25rem;
+}
+
+.body-label-spacer {
+    visibility: hidden;
+    font-weight: 500;
+    color: #777;
     margin-right: 0.25rem;
 }
 

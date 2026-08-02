@@ -117,7 +117,13 @@
              <tr class="weapon-row body-row" *ngIf="displayBody">
                  <td [attr.colspan]="showActions ? totalColumns - 2 : totalColumns - 1">
                      <div class="body-cell">
-                        <span class="body-label">Body: </span><app-body-type-icons [value]="entry.profile.body"></app-body-type-icons>
+                        <span class="body-label-spacer" aria-hidden="true">Body:</span>
+                        <span
+                          class="body-tooltip-anchor"
+                          [matTooltip]="getBodyTooltip(entry.profile.body)"
+                          matTooltipPosition="below">
+                          <app-body-type-icons [value]="entry.profile.body"></app-body-type-icons>
+                        </span>
                      </div>
                  </td>
              </tr>

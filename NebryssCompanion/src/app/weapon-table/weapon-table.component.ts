@@ -529,6 +529,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     return !!this.characterBody.filter((body) => body == weaponProfile.body).length;
   }
 
+  getBodyTooltip(body: string | string[] | null | undefined): string {
+    if (Array.isArray(body)) {
+      return body.join(', ');
+    }
+    return String(body ?? '').trim();
+  }
+
   getRuleDisplay(rule: SpecialRule): ruleDisplay {
     const ruleDef = this.weaponRulesData.find(r => r.id === rule.ruleId);
     if (!ruleDef) {
