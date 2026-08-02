@@ -339,6 +339,7 @@ export interface AlteredState {
     id: number;
     name: string;
     owner: number;
+    locationId?: number;
     location: string;
     locationName: string;
     description?: string;

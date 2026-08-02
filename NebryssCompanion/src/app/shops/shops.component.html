@@ -1,69 +1,85 @@
 <div class="shops-container">
-  <div *ngFor="let shop of processedShops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
-    <div class="shop-header">
-      <div class="shop-media">
-        <img *ngIf="shop.imgUrl" [src]="shopDisplayImages[shop.id] || shop.imgUrl" [alt]="shop.name" class="shop-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onShopImageLoad($event, shop.id)">
-        <h3 class="shop-title">{{ shop.name }}</h3>
+  <div *ngFor="let group of processedShopGroups; trackBy: trackByLocationGroup" class="shop-location-group" [id]="getLocationGroupElementId(group)" [ngStyle]="getLocationGroupStyles(group)">
+    <button class="shop-location-header" [class.no-image]="!group.locationImageUrl" type="button" (click)="toggleLocationGroup(group)">
+      <img *ngIf="group.locationImageUrl" [src]="group.locationThumbnail || group.locationImageUrl" [alt]="group.locationName" class="shop-location-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onLocationGroupImageLoad($event, group)">
+      <div class="shop-location-overlay">
+        <div class="shop-location-meta">
+          <h2 class="shop-location-title">{{ group.locationName }}</h2>
+          <p *ngIf="group.locationDescription" class="shop-location-description">{{ group.locationDescription }}</p>
+          <span class="shop-location-count">{{ group.shops.length }} shop{{ group.shops.length === 1 ? '' : 's' }}</span>
+        </div>
+        <span class="shop-location-chevron">{{ isLocationGroupCollapsed(group) ? '▶' : '▼' }}</span>
       </div>
-    </div>
-    <p class="location" (click)="onLocationClick(shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
-    <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
-    <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
-    
-    <div class="payment-methods-info">
-      <span class="payment-label">Accepts:</span>
-      <span *ngIf="shop.paymentMethod.digital" class="payment-badge digital" title="Accepts Digital Mistrals">
-        <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="5" width="20" height="14" rx="3"></rect>
-          <line x1="2" y1="10" x2="22" y2="10"></line>
-        </svg>
-        Digital
-      </span>
-      <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">
-        <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M6 12h.01M18 12h.01"></path>
-        </svg>
-        Physical
-      </span>
-    </div>
+    </button>
 
-    <div *ngFor="let catData of shop.categoriesData; trackBy: trackByCategory">
-      <app-generic-table 
-        [storageKey]="'shop-' + shop.id + '-category-' + catData.category.id"
-        [title]="catData.category.name"
-        [data]="catData.items"
-        [headers]="catData.category.headers"
-        [headerKeys]="catData.category.keys"
-        [inventoryManagement]="hasActivePlayer()"
-        [shoppingMode]="true"
-        [enableBodyFilter]="catData.category.key === 'armor'"
-        [characterBody]="activePlayerBodyTypes"
-        (addToCart)="onAddToCart($event, shop.id, 'item')">
-      </app-generic-table>
-    </div>
-    
-      <div *ngIf="shop.hasWeapons" class="weapons-section">
-          <h4 (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
-            Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}
-          </h4>
-          <div *ngIf="!isWeaponCollapsed(shop.id)">
-            <app-weapon-table 
-                [weaponIds]="shop.weaponIds"
-                [weaponsData]="shop.weaponsData"
-                [weaponRulesData]="weaponRulesData"
-                [alteredStates]="alteredStates"
-                [displayPrice]="true"
-                [displayBody]="true"
-                [enableBodyFilter]="true"
-                [characterBody]="activePlayerBodyTypes"
-                [inventoryManagement]="hasActivePlayer()"
-                [shoppingMode]="true"
-                (addToCart)="onAddToCart($event, shop.id, 'weapon')">
-            </app-weapon-table>
+    <div *ngIf="!isLocationGroupCollapsed(group)" class="shop-location-body">
+      <div *ngFor="let shop of group.shops; trackBy: trackByShop" class="shop-card" [id]="'shop-' + shop.id">
+        <div class="shop-header">
+          <div class="shop-media">
+            <img *ngIf="shop.imgUrl" [src]="shopDisplayImages[shop.id] || shop.imgUrl" [alt]="shop.name" class="shop-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onShopImageLoad($event, shop.id)" (click)="openShopImageModal(shop)">
+            <h3 class="shop-title">{{ shop.name }}</h3>
           </div>
+        </div>
+        <p class="location" (click)="onLocationClick(shop.locationName || shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
+        <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
+        <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
+
+        <div class="payment-methods-info">
+          <span class="payment-label">Accepts:</span>
+          <span *ngIf="shop.paymentMethod.digital" class="payment-badge digital" title="Accepts Digital Mistrals">
+            <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+              <line x1="2" y1="10" x2="22" y2="10"></line>
+            </svg>
+            Digital
+          </span>
+          <span *ngIf="shop.paymentMethod.physical" class="payment-badge physical" title="Accepts Physical Mistrals">
+            <svg class="mistral-icon-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M6 12h.01M18 12h.01"></path>
+            </svg>
+            Physical
+          </span>
+        </div>
+
+        <div *ngFor="let catData of shop.categoriesData; trackBy: trackByCategory">
+          <app-generic-table
+            [storageKey]="'shop-' + shop.id + '-category-' + catData.category.id"
+            [title]="catData.category.name"
+            [data]="catData.items"
+            [headers]="catData.category.headers"
+            [headerKeys]="catData.category.keys"
+            [inventoryManagement]="hasActivePlayer()"
+            [shoppingMode]="true"
+            [enableBodyFilter]="catData.category.key === 'armor'"
+            [characterBody]="activePlayerBodyTypes"
+            (addToCart)="onAddToCart($event, shop.id, 'item')">
+          </app-generic-table>
+        </div>
+
+        <div *ngIf="shop.hasWeapons" class="weapons-section">
+            <h4 (click)="toggleWeaponCollapse(shop.id)" style="cursor: pointer;">
+              Weapons {{ isWeaponCollapsed(shop.id) ? '▶' : '▼' }}
+            </h4>
+            <div *ngIf="!isWeaponCollapsed(shop.id)">
+              <app-weapon-table
+                  [weaponIds]="shop.weaponIds"
+                  [weaponsData]="shop.weaponsData"
+                  [weaponRulesData]="weaponRulesData"
+                  [alteredStates]="alteredStates"
+                  [displayPrice]="true"
+                  [displayBody]="true"
+                  [enableBodyFilter]="true"
+                  [characterBody]="activePlayerBodyTypes"
+                  [inventoryManagement]="hasActivePlayer()"
+                  [shoppingMode]="true"
+                  (addToCart)="onAddToCart($event, shop.id, 'weapon')">
+              </app-weapon-table>
+            </div>
+        </div>
       </div>
+    </div>
   </div>
 </div>
 <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
@@ -177,5 +193,30 @@
             <button class="btn-cancel" (click)="cancelPurchase()">Cancel</button>
             <button class="btn-confirm" (click)="confirmPurchase()">Confirm Purchase</button>
         </div>
+    </div>
+</ng-template>
+
+<ng-template #shopImageModal>
+    <div class="shop-image-modal" [class.landscape-mode]="shopImageLandscapeMode">
+        <div class="shop-image-modal-viewport" [ngStyle]="getShopImageViewportStyles()">
+            <img
+                *ngIf="selectedShopImageUrl"
+                [src]="selectedShopImageUrl"
+                [alt]="selectedShopImageAlt || 'Shop image'"
+                class="shop-image-modal-image"
+                [class.landscape-mode]="shopImageLandscapeMode"
+                [ngStyle]="getShopImageStyles()"
+                (load)="onShopImageModalLoad($event)"
+            >
+        </div>
+
+        <button class="btn-flip-orientation" type="button" aria-label="Flip image orientation" title="Flip image orientation" (click)="toggleShopImageOrientation()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M20 11A8 8 0 0 0 6.34 5.34"></path>
+                <path d="M4 4v6h6"></path>
+                <path d="M4 13a8 8 0 0 0 13.66 5.66"></path>
+                <path d="M20 20v-6h-6"></path>
+            </svg>
+        </button>
     </div>
 </ng-template>
