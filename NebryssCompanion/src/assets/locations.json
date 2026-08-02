@@ -1,278 +1,483 @@
-[{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c08886"
-  },
-  "name": "Fortress Sanctus",
-  "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
-  "imgUrl": "https://iili.io/3R2BjZ7.jpg",
-  "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
-  "faction": "The Imperium of Man",
-  "isCapital": true,
-  "notableFeatures": [
-    {
-      "name": "Cathedral of the Emperor's Light",
-      "description": "A towering cathedral that serves as the spiritual center of Imperial control on Nebryss, where devotion to the Emperor is maintained with zealous fervor."
+[
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c08886"
     },
-    {
-      "name": "Command Citadel",
-      "description": "The military headquarters of Imperial forces, where campaign plans are drafted and orders are dispatched to forces across the region."
-    }
-  ],
-  "mapX": 85,
-  "mapY": 49,
-  "id": 3,
-  "category": "fortress",
-  "categorySize": 4
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c0888d"
+    "name": "Fortress Sanctus",
+    "description": "A heavily fortified island bastion carved directly into high obsidian cliffs, serving as the supreme seat of Imperial power on Nebryss. Enclosed within towering adamantium walls and shielded by Void defense batteries, Fortress Sanctus guards the primary naval approaches against pirate armadas and Chaos incursions.",
+    "rpgMapLayout": "SECTOR 1: THE ADAMANTIUM SEA GATES & COASTAL BATTERIES (SOUTH)\nMassive fortified harbor entrance flanked by twin coastal defense towers housing heavy macro-cannons, naval chain nets, torpedo tubes, and automated kill-zone kill-grid sensors.\n\nSECTOR 2: LOWER PARADE GROUNDS & TROOP BARRACKS (CENTER-SOUTH)\nCobblestone courtyard lined with Imperial eagles, armor assembly bays, Adeptus Arbites guard posts, munitions dumps, and heavy supply depots.\n\nSECTOR 3: THE HIGH COBBLESTONE PROMENADE & ARBITES POSTS (CENTER)\nElevated stone concourse connecting lower barracks to upper citadel keeps, featuring watchtowers, searchlight pylons, and checkpoint gatehouses.\n\nSECTOR 4: COMMAND CITADEL & WAR ROOM KEEPS (NORTH-WEST)\nA heavy gothic keep featuring tactical hololith war-rooms, inquisitorial communication arrays, strategic campaign vaults, astropathic choir chambers, and high-security armories.\n\nSECTOR 5: CATHEDRAL OF THE EMPEROR'S LIGHT (NORTH-EAST)\nTowering gothic basilica with stained-glass vox-windows, incense braziers, devotional shrines, sacred relic vaults, and confessional chapels.\n\nSECTOR 6: INQUISITORIAL INTERROGATION & STASIS CATALAUKS (BELOW LEVEL 1)\nSubterranean dungeon complex behind reinforced blast doors, holding interrogation rooms, psyker warding cells, and stasis caskets.\n\nSECTOR 7: SUBTERRANEAN VOID-SHIELD & PLASMA GENERATOR BUNKER (BELOW LEVEL 2)\nDeep rock vaults housing relic plasma reactors, void shield emitters, cooling conduits, and automated defense sentinels.\n\nSECTOR 8: SECRET SEA-STACK ESCAPE TUNNELS & ESCAPE POD LAUNCHERS (CLIFF BASE)\nHidden sea-cave exit carved into obsidian cliff faces, equipped with stealth sub-surface escape craft and emergency demolition charges.\n\nVISUAL PROMPT NOTES:\nIsometric tactical RPG map of a dark gothic Imperial island fortress with massive sea walls, macro-batteries, cobblestone parade grounds, subterranean dungeons, and a towering gothic cathedral at the pinnacle.",
+    "secrets": [
+      {
+        "id": "sec-sanctus-1",
+        "title": "Subterranean Inquisitorial Vault",
+        "content": "Inquisitor Vontis Mortis maintains a subterranean interrogation chamber beneath the Cathedral. Interrogation logs confirm that rogue trader warrants associated with the Voss lineage were blacklisted here under Ordo Hereticus Decree #42-B.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-sanctus-2",
+        "title": "Corrupted Stasis Relic",
+        "content": "Subterranean vault level 3 contains an ancient stasis casket holding a corrupted mist-weaver relic emitting faint warp frequency signals.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-sanctus-3",
+        "title": "Sabotaged Macro-Cannon Silo #4",
+        "content": "Mechanical sabotages pre-arranged by Corsair informants inside the lower barracks ammunition dump allow Macro-Cannon Silo #4 to be disabled via a hidden vox frequency.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3R2BjZ7.jpg",
+    "thumbnail": "https://iili.io/3R2BjZ7.th.jpg",
+    "faction": "The Imperium of Man",
+    "isCapital": true,
+    "notableFeatures": [
+      {
+        "name": "Cathedral of the Emperor's Light",
+        "description": "A towering cathedral that serves as the spiritual center of Imperial control on Nebryss, where devotion to the Emperor is maintained with zealous fervor."
+      },
+      {
+        "name": "Command Citadel",
+        "description": "The military headquarters of Imperial forces, where campaign plans are drafted and orders are dispatched to forces across the region."
+      }
+    ],
+    "mapX": 85,
+    "mapY": 49,
+    "id": 3,
+    "category": "fortress",
+    "categorySize": 4
   },
-  "name": "Aurelia Nexus",
-  "faction": "The Gilded Accord",
-  "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
-  "isCapital": false,
-  "imgUrl": "https://iili.io/3Ybx2ef.png",
-  "thumbnail": "https://iili.io/3Ybx2ef.th.png",
-  "notableFeatures": [
-    {
-      "name": "The Celestial Exchange",
-      "description": "A stock market for mist-engine components, where prices shift hourly based on route stability reports. Sabotage and insider trading are rampant."
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0888d"
     },
-    {
-      "name": "The Accord’s Crucible",
-      "description": "A high-security lab where engineers test experimental mist engines. Leaked prototypes often end up in Corsair hands."
-    }
-  ],
-  "mapX": 72,
-  "mapY": 22,
-  "id": 2,
-  "category": "harbor",
-  "categorySize": 3
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c08887"
+    "name": "Aurelia Nexus",
+    "faction": "The Gilded Accord",
+    "description": "A glittering artificial island constructed from repurposed voidship hulls, iron gantries, and mist-forged alloy platforms. Aurelia Nexus serves as a crucial neutral trading outpost and experimental mist-engine research facility.",
+    "rpgMapLayout": "SECTOR 1: HULL RING ANCHORAGE & PONTOON MOORINGS (OUTER RING)\nCircular anchorage built from stripped cruisers and barges welded end-to-end. Floating pontoons, heavy cargo winches, airship fuel gantries, vessel repair slips, and boarding walkways.\n\nSECTOR 2: CELESTIAL EXCHANGE GLASS DOME & TRADING FLOOR (CENTER)\nHigh-ceilinged glass dome structure featuring a central stock ticker floor with holographic trade boards, exchange pits, merchant guild booths, currency counting rooms, and luxury lounges.\n\nSECTOR 3: ACCORD'S CRUCIBLE RESEARCH COMPLEX (NORTH-WEST)\nHeavily fortified vault with blast doors, plasma containment fields, prototype test beds, and experimental engine test bays overlooking open mist-pits.\n\nSECTOR 4: REFINERY ROW & MIST-DISTILLATION PLANTS (SOUTH-EAST)\nSmokestacks, chemical vats, vapor condensers, and mist-distillation plants processing raw mist into stable fuel matrixes for trade ships.\n\nSECTOR 5: MERCHANTS' RESIDENTIAL GANTRIES & VIP LOUNGES (NORTH-EAST)\nMulti-tiered modular living pods, private airship docks, high-end gambling dens, and guild administration suites.\n\nSECTOR 6: THE SUB-HULL BLACK-MARKET AUCTION FLOODED CAVE (BELOW GANTRY 12)\nA concealed flooded hatch beneath Gantry 12 leading to an underground auction room trading forbidden Warp grimoires, stolen Imperial codes, and unlicensed mist capacitors.\n\nSECTOR 7: AUTOMATED LIGHT-SENTINEL BATTERY TOWER (SOUTH-WEST)\nCrystalline defense tower equipped with optical warding lasers and automated sentinels guarding the outer harbor approach.\n\nVISUAL PROMPT NOTES:\nTop-down/isometric settlement map of a ring-shaped floating naval station made of welded ship hulls surrounding a central illuminated glass trading dome, with industrial refineries, research bays, and sub-hull docks.",
+    "secrets": [
+      {
+        "id": "sec-aurelia-1",
+        "title": "Secret Corsair Trust Account",
+        "content": "Lady Seraphine [REDACTED] secretly maintains a blind trust account inside the Celestial Exchange under the alias 'Siren Trading Group'.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-aurelia-2",
+        "title": "Smuggled Engine Prototypes",
+        "content": "15% of the mist-engine prototypes tested at Accord's Crucible are smuggled directly to Corsair privateers.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-aurelia-3",
+        "title": "Sub-Hull Black Market Auction",
+        "content": "A concealed flooded hatch beneath Gantry 12 leads to an underground auction room trading forbidden Warp grimoires, stolen Imperial codes, and unlicensed mist capacitors.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3Ybx2ef.png",
+    "thumbnail": "https://iili.io/3Ybx2ef.th.png",
+    "notableFeatures": [
+      {
+        "name": "The Celestial Exchange",
+        "description": "A stock market for mist-engine components, where prices shift hourly based on route stability reports. Sabotage and insider trading are rampant."
+      },
+      {
+        "name": "The Accord’s Crucible",
+        "description": "A high-security lab where engineers test experimental mist engines. Leaked prototypes often end up in Corsair hands."
+      }
+    ],
+    "mapX": 72,
+    "mapY": 22,
+    "id": 2,
+    "category": "harbor",
+    "categorySize": 3
   },
-  "name": "Stormwatch",
-  "description": "A storm-wracked island with towering cliffs and constant lightning strikes. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena. The perpetual tempests amplify mist anomalies, allowing the Imperium to study their warp-resistant properties and potential military applications.",
-  "faction": "The Imperium of Man",
-  "isCapital": false,
-  "isWorldMap": false,
-  "id": 4,
-  "imgUrl": "https://iili.io/3R2BhjS.jpg",
-  "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
-  "category": "fortress",
-  "categorySize": 3,
-  "mapX": 22,
-  "mapY": 40
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c08888"
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c08887"
+    },
+    "name": "Stormwatch",
+    "description": "A storm-wracked island fortress rising from violent ocean cliffs, perpetually surrounded by lightning strikes and raging sea tempests. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena.",
+    "rpgMapLayout": "SECTOR 1: CLIFFSIDE AIRSHIP LANDING PAD & DRAWBRIDGE (SOUTH)\nA reinforced stone landing pad built over crashing waves, connected to the main fort via a heavy iron drawbridge, gatehouse, and blast gates.\n\nSECTOR 2: LIGHTNING HARVESTER TOWER PLAZA (CENTER)\nOpen stone courtyard surrounded by towering copper rod towers drawing perpetual lightning strikes into underground capacitor banks.\n\nSECTOR 3: DRESDAN'S SANCTUM & RESEARCH TOWER KEEP (NORTH)\nGothic stone research keeps with shielded augur windows, stasis vaults, warp-suppression pylons, tactical inquisitorial archives, and private study chambers.\n\nSECTOR 4: WEATHER AUGUR OBSERVATORY SPIRE (WEST)\nA glass-domed observatory tower featuring long-range storm-tracking augurs, vox-dishes, and atmospheric sensors.\n\nSECTOR 5: IMPERIAL GARRISON & BARRACKS COURTYARD (EAST)\nDefensive courtyard, guard barracks, armory vaults, and heavy storm-cannon emplacements facing the sea.\n\nSECTOR 6: SUBTERRANEAN CONTAINMENT CATAFALKS & STASIS CELLS (LEVEL 1 BELOW)\nDeep dungeons carved into basalt cliff rock, holding mist-corrupted relics, warp anomalies, and containment cells behind psychic warding seals.\n\nSECTOR 7: PRECURSOR XENOTECH AUTOPSY & RELIC VAULTS (LEVEL 2 BELOW)\nHeavily guarded subterranean lab level housing dissection tables, stasis pods, and archived records of mistborn creature cybernetics.\n\nVISUAL PROMPT NOTES:\nDark, atmospheric top-down RPG map of a cliffside island fortress under a stormy sky, featuring copper lightning towers, iron drawbridges, gothic research keeps, observatory spires, and subterranean vault dungeons.",
+    "secrets": [
+      {
+        "id": "sec-stormwatch-1",
+        "title": "Stasis Cell #7 Star-Navigator",
+        "content": "Inquisitor Dresdan is secretly holding a former Voss star-navigator in Stasis Cell 7. The navigator possessed maps detailing an uncharted warp breach known as 'The Deathless Drift'.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-stormwatch-2",
+        "title": "Lightning Harvester EMP Overload",
+        "content": "The copper lightning rod array can be manually overloaded from the lower sub-basement to generate a massive EMP pulse, disabling all nearby vox signals and airborne drones.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-stormwatch-3",
+        "title": "Xenotech Autopsy Vault",
+        "content": "Archived records in Dresdan's sanctum detail autopsies of mist-born creatures that revealed cybernetic implants manufactured by an unknown precursor faction.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3R2BhjS.jpg",
+    "thumbnail": "https://iili.io/3R2BhjS.th.jpg",
+    "category": "fortress",
+    "categorySize": 3,
+    "mapX": 22,
+    "mapY": 40
   },
-  "name": "Zephyria",
-  "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
-  "imgUrl": "https://iili.io/fvZP8AX.jpg",
-  "thumbnail": "https://iili.io/fvZP8AX.th.jpg",
-  "faction": "The Gilded Accord",
-  "isCapital": true,
-  "notableFeatures": [
-    {
-      "name": "Sky Bazaar",
-      "description": "A sprawling, multi-tiered marketplace where all factions trade."
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c08888"
     },
-    {
-      "name": "Mistforge",
-      "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
-    },
-    {
-      "name": "Anchorforge's Drydock",
-      "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it's a hub for sailors, traders, and explorers.",
-      "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
-    },
-    {
-      "name": "The Stoutbarrel Tavern",
-      "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
-      "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
-    }
-  ],
-  "shops": [
-    {
-      "name": "Herbwhisper’s Apothecary",
-      "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-      "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
-    },
-    {
-      "name": "Ironveil’s Ward",
-      "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
-      "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
-    },
-    {
-      "name": "Blackhammer’s Arsenal",
-      "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
-      "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
-    }
-  ],
-  "mapX": 52,
-  "mapY": 22,
-  "id": 1,
-  "category": "city",
-  "categorySize": 4
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c0888a"
+    "name": "Zephyria",
+    "description": "A colossal, floating island-metropolis lifted by ancient mist-turbines and antigravity matrices. Serving as the undisputed crown jewel and capital of the Gilded Accord, Zephyria hovers high above the turbulent mist seas of Nebryss.",
+    "rpgMapLayout": "SECTOR 1: GRAND SKY DOCKS & AIRSHIP GANTRY PIERS (NORTH)\nMulti-tiered wooden and brass piers jutting out over the mist abyss. Mooring gantries, cranes, airship refueling rigs, and customs checkpoints. Primary entrance for air travel.\n\nSECTOR 2: MISTFORGE INDUSTRIAL BASIN & POWER CONDUITS (EAST)\nA sunken mechanical basin powered by massive humming mist-reactors, brass pipes, glowing blue conduits, forge pits, and high-security automated sentinels.\n\nSECTOR 3: SKY BAZAAR & CENTRAL FOUNTAIN MARKETPLACE (CENTER)\nA sprawling three-story open plaza surrounded by golden archways. Packed with stalls selling mistral components, exotic spices, and wargear. Central fountain plaza with live exchange tickers.\n\nSECTOR 4: ANCHORFORGE'S DRYDOCK & SHIPWRIGHT YARD (CENTER-NORTH)\nA bustling shipyard with wooden scaffolding, timber bays, welding pits, paint sheds, and vessel fitting slips.\n\nSECTOR 5: STOUTBARREL TAVERN & MERCHANTS' QUARTER (CENTER-SOUTH)\nLively multi-story wooden tavern surrounded by merchant counting houses, hostels, apothecary shops, and armories.\n\nSECTOR 6: COUNCIL SPIRES & GILDED BANK TOWER (SOUTH)\nOpulent marble and alloy towers housing Gilded Accord consuls, central bank vaults, financial exchange rooms, and diplomatic suites. Heavily guarded by guild enforcers.\n\nSECTOR 7: THE UNDER-DECK RUNS & SMUGGLER WALKWAYS (BELOW HULL)\nNarrow, shadowed walkways slung beneath the floating hull. Frequented by smugglers, black-market traders, illegal taverns, and mistweavers seeking unsanctioned rituals.\n\nSECTOR 8: LEVITATION MATRIX GENERATOR CHAMBER (DEEP CORE)\nRestricted central power hub housing ancient antigravity turbines, stabilization gyros, and plasma conduits controlling the city's altitude.\n\nVISUAL PROMPT NOTES:\nIsometric aerial RPG map view of a majestic floating steampunk/scifi sky-island city with brass docks, glowing mist conduits, central marble marketplace, shipwright drydocks, and airships moored around peripheral gantries.",
+    "secrets": [
+      {
+        "id": "sec-zephyria-1",
+        "title": "Hidden Voss Safehouse",
+        "content": "The Under-deck Runs contain a hidden safehouse once owned by House Voss containing ancient navigation journals.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-zephyria-2",
+        "title": "Inquisitorial Drydock Surveillance",
+        "content": "Inquisitorial agents under cover of trade merchant credentials are actively monitoring all ship repair slips at Anchorforge's Drydock for any vessel bearing the Voss heraldry.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-zephyria-3",
+        "title": "Antigravity Matrix Vulnerability",
+        "content": "The central levitation matrix stabilizing the sky city has a secret structural resonance vulnerability. If targeted with sonic charges, it would cause localized altitude drops.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-zephyria-4",
+        "title": "Stoutbarrel's Rebel Supply Cache",
+        "content": "Behind the ale kegs in Stoutbarrel Tavern lies a hidden trapdoor storing NLR vox-transceivers, medical supplies, and escape parachutes.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/fvZP8AX.jpg",
+    "thumbnail": "https://iili.io/fvZP8AX.th.jpg",
+    "faction": "The Gilded Accord",
+    "isCapital": true,
+    "notableFeatures": [
+      {
+        "name": "Sky Bazaar",
+        "description": "A sprawling, multi-tiered marketplace where all factions trade."
+      },
+      {
+        "name": "Mistforge",
+        "description": "The technological heart of the Gilded Accord, where mist-based innovations are developed and refined."
+      },
+      {
+        "name": "Anchorforge's Drydock",
+        "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it's a hub for sailors, traders, and explorers.",
+        "owner": "Drakos Anchorforge – The grizzled and experienced owner, a master shipwright with a deep respect for the sea and a wealth of tales from his own voyages."
+      },
+      {
+        "name": "The Stoutbarrel Tavern",
+        "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it's filled with laughter, music, and the occasional brawl.",
+        "owner": "Nessa Stoutbarrel – The jovial and quick-witted owner, a natural storyteller who keeps her patrons entertained with tales of her adventures."
+      }
+    ],
+    "shops": [
+      {
+        "name": "Herbwhisper’s Apothecary",
+        "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+        "owner": "Tessa Herbwhisper – The cheerful and knowledgeable owner, known for her expertise in plants and alchemy."
+      },
+      {
+        "name": "Ironveil’s Ward",
+        "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+        "owner": "Kaela Ironveil – The elegant and meticulous owner, who takes great pride in her craftsmanship and refuses to sell to those she deems unworthy."
+      },
+      {
+        "name": "Blackhammer’s Arsenal",
+        "description": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+        "owner": "Orion Blackhammer – The burly and gruff owner, a master blacksmith with a soft spot for those who respect the art of war."
+      }
+    ],
+    "mapX": 52,
+    "mapY": 22,
+    "id": 1,
+    "category": "city",
+    "categorySize": 4
   },
-  "name": "Maledictum Prime",
-  "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
-  "imgUrl": "https://iili.io/3R2BXu2.jpg",
-  "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
-  "faction": "The Abyssal Cabal",
-  "isCapital": true,
-  "notableFeatures": [
-    {
-      "name": "The Veilrend Spire",
-      "description": "A towering obsidian monolith at Maledictum Prime's heart, where the Cabal conducts warp rituals to harness the mist's power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
-    }
-  ],
-  "mapX": 15,
-  "mapY": 6,
-  "id": 8,
-  "category": "wasteland",
-  "categorySize": 4
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c0888c"
-  },
-  "name": "Verdant Veil",
-  "faction": "The Nebryssian Liberation Republic",
-  "isCapital": false,
-  "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
-  "imgUrl": "https://iili.io/3Ybxd5G.png",
-  "thumbnail": "https://iili.io/3Ybxd5G.th.png",
-  "keyFeatures": [
-    {
-      "name": "The Grove of Echoes",
-      "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. Commander Voss frequently visits to assess new recruits, often participating in rituals to bolster their morale. The grove’s trees hum with faint voices from the past."
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0888a"
     },
-    {
-      "name": "Veilroot Farms",
-      "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies. Voss ensures surplus harvests are smuggled to Misthaven to support frontline forces."
+    "name": "Maledictum Prime",
+    "description": "A corrupted landmass dominated by jagged obsidian crags, lava fissures, and warp-tainted ruins. Serving as the dread capital of the Abyssal Cabal, Maledictum Prime is anchored around the Veilrend Spire.",
+    "rpgMapLayout": "SECTOR 1: THE VEILREND SPIRE MONOLITH (CENTER)\nColossal obsidian spire emitting purple/crimson warp lightning into the sky. Surrounded by blood ritual altars and demonic summoning circles.\n\nSECTOR 2: DAEMON-BOUND FORGE PITS & LAVA RIVERS (EAST)\nBasalt foundries built over lava rivers, where weapons are infused with screaming warp entities, bound daemon spirits, and sulfur cauldrons.\n\nSECTOR 3: CABAL WARLORD HARBOR & SPIKED DOCKS (SOUTH)\nJagged black stone docks littered with spiked war-galleys, bone-adorned skiffs, vessel fitting slips, and dark drydocks.\n\nSECTOR 4: CULTIST REFUGE & SLAVE PEN RUINS (WEST)\nRuined stone amphitheaters and cage complexes built into volcanic rock cliffs, holding prisoners, thralls, and labor gangs.\n\nSECTOR 5: BLOOD RITUAL ALTARS & SACRIFICIAL PITS (NORTH-EAST)\nBasalt altars carved with Chaos runes, encircled by skull braziers, blood channels, and sacrificial pools.\n\nSECTOR 6: DARK ALCHEMY & MUTATION BARRACKS (NORTH-WEST)\nFortified keeps housing flesh-crafting labs, warp-potion vats, and mutated Cabal shock troops.\n\nSECTOR 7: SUBTERRANEAN LAVA TUBE ESCAPE TUNNELS (BELOW SLAVE PENS)\nUnmapped natural lava tube system running beneath Sector 4, exiting out to sea caves along the southern reefs.\n\nVISUAL PROMPT NOTES:\nDark fantasy/Chaos RPG isometric map of a corrupted volcanic island with an obsidian spire emitting warp lightning, lava rivers, blood altars, mutation labs, and spiked black docks.",
+    "secrets": [
+      {
+        "id": "sec-maledictum-1",
+        "title": "Tethered Warp Rift Core",
+        "content": "The Veilrend Spire is powered by a tethered Warp Rift that requires monthly blood offerings to maintain its dimensional stability.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-maledictum-2",
+        "title": "Warrant Corruption Ritual",
+        "content": "Cabal Warlocks are attempting to corrupt the Voss Rogue Trader Warrant of Trade to open a permanent Chaos portal across the entire Nebryss archipelago.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-maledictum-3",
+        "title": "Slave Pen Lava Tunnel Escape",
+        "content": "A natural unmapped lava tube behind the eastern slave pens offers a secret, precarious escape route to the southern sea stacks.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3R2BXu2.jpg",
+    "thumbnail": "https://iili.io/3R2BXu2.th.jpg",
+    "faction": "The Abyssal Cabal",
+    "isCapital": true,
+    "notableFeatures": [
+      {
+        "name": "The Veilrend Spire",
+        "description": "A towering obsidian monolith at Maledictum Prime's heart, where the Cabal conducts warp rituals to harness the mist's power. Its jagged pinnacle pierces the mist, channeling raw Chaos energy to fuel daemonic incursions. Mortals who approach unprotected risk mutation or madness."
+      }
+    ],
+    "mapX": 15,
+    "mapY": 6,
+    "id": 8,
+    "category": "wasteland",
+    "categorySize": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0888c"
     },
-    {
-      "name": "Voss’s Landing",
-      "description": "A hidden cove where Elara Voss docks her stealth skiffs during neophyte transports. The landing is littered with wreckage from ambushed Cabal vessels—a testament to her tactical ingenuity."
-    }
-  ],
-  "mapX": 48,
-  "mapY": 62,
-  "id": 7,
-  "category": "forest",
-  "categorySize": 3
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c08889"
+    "name": "Verdant Veil",
+    "faction": "The Nebryssian Liberation Republic",
+    "isCapital": false,
+    "description": "A mist-shrouded sanctuary island where primeval rainforest canopy merges with swirling bioluminescent vapors. Maintained by the Nebryssian Liberation Republic, Verdant Veil serves as a sacred retreat for training Mistweavers and cultivating mist-adapted crops.",
+    "rpgMapLayout": "SECTOR 1: GROVE OF ECHOES & ANCESTRAL STONE CIRCLE (CENTER)\nAncient megalithic stone circle surrounded by giant bioluminescent trees. Central ritual dais for Mistweaver training, chanting, and spirit communion.\n\nSECTOR 2: VEILROOT TERRACED FARMS & MIST CHANNELS (EAST)\nTerraced hillsides glowing with bioluminescent mist-crops, irrigated by misty mountain streams, mist-condenser channels, and aqueducts.\n\nSECTOR 3: REBEL COMMAND COVE & STEALTH DOCKS (SOUTH)\nHidden rocky landing inlet shielded by overhanging vines, camouflage netting, stealth skiff moorings, and hidden ammo caches.\n\nSECTOR 4: CANOPY OUTPOST & JUNGLE WATCHTOWERS (NORTH)\nTreehouse posts connected by ziplines, rope bridges, and vine walkways, manned by NLR rangers and guerrilla snipers.\n\nSECTOR 5: MISTWEAVER SANCTUARY & HERBAL APOTHECARY (WEST)\nThatched wooden pavilions housing healing baths, rare medicinal herb gardens, and sacred potion cauldrons.\n\nSECTOR 6: VAULT OF THE ANCIENT WEAVERS (BELOW GROVE)\nSubterranean stone chamber beneath Sector 1 containing ancestral scrolls, mist-crystal runes, and ancient records.\n\nSECTOR 7: GUERRILLA TRAINING CAMP & TRAP CORRIDORS (OUTER PERIMETER)\nDense rainforest trails rigged with bamboo pit traps, vine snares, and camouflaged sniper blinds guarding island approaches.\n\nVISUAL PROMPT NOTES:\nLush primeval forest RPG map with ancient stone circles, glowing bioluminescent terraces, jungle canopy watchtowers, treehouse bridges, and hidden coastal inlets.",
+    "secrets": [
+      {
+        "id": "sec-verdant-1",
+        "title": "Commander Voss Incognito",
+        "content": "Commander Elara [REDACTED] personally leads stealth transports here under an assumed identity to protect new recruits from Cabal ambushes.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-verdant-2",
+        "title": "Vault of the Ancient Weavers",
+        "content": "The Grove of Echoes hides a sealed Vault of the Ancient Weavers containing the original Warrant of Trade granted to House Voss 200 years ago.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-verdant-3",
+        "title": "Psychic Ancestral Matrix",
+        "content": "The ancient megalithic stones tap into the planetary Mistheart. Non-psykers who sleep inside the stone circle experience vivid visions of the world's pre-human era.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3Ybxd5G.png",
+    "thumbnail": "https://iili.io/3Ybxd5G.th.png",
+    "notableFeatures": [
+      {
+        "name": "The Grove of Echoes",
+        "description": "A training ground where Mistweavers commune with ancestral spirits through the mist. Resistance commanders frequently visit to assess new recruits, often participating in rituals to bolster their morale. The grove’s trees hum with faint voices from the past."
+      },
+      {
+        "name": "Veilroot Farms",
+        "description": "Terraced fields growing bioluminescent plants that thrive in mist. The NLR relies on these crops to sustain their hidden armies. Leadership ensures surplus harvests are smuggled to Misthaven to support frontline forces."
+      },
+      {
+        "name": "Rebel Landing Cove",
+        "description": "A hidden cove where NLR leaders dock their stealth skiffs during neophyte transports. The landing is littered with wreckage from ambushed Cabal vessels—a testament to tactical ingenuity."
+      }
+    ],
+    "mapX": 48,
+    "mapY": 62,
+    "id": 7,
+    "category": "forest",
+    "categorySize": 3
   },
-  "name": "Luminos",
-  "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture. Home to the Nebryssian Reserve—the central bank controlling Mistral coins. The Reserve’s vaults are embedded within crystalline structures that shift color to indicate market stability, visible across the island as an economic barometer.",
-  "imgUrl": "https://iili.io/3YDnziX.jpg",
-  "thumbnail": "https://iili.io/3YDnziX.th.jpg",
-  "faction": "The Gilded Accord",
-  "isCapital": false,
-  "notableFeatures": [
-    {
-      "name": "The Nebryssian Reserve",
-      "description": "A fortress-like bank complex guarded by mechanized sentinels and light-based security systems. Its vaults use bioluminescent flora as living locks—only Thalos Grenn and his inner circle know the chromatic sequences to access the Mistral reserves. The Reserve’s towering spires project holographic exchange rates visible for miles."
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c08889"
     },
-    {
-      "name": "Luminos Artisan Quarter",
-      "description": "A district where artists craft glowstone sculptures and mist-reactive tapestries traded across Nebryss. Many works secretly encode market trends or faction messages using light patterns."
-    }
-  ],
-  "mapX": 48,
-  "mapY": 73,
-  "id": 5,
-  "category": "city",
-  "categorySize": 3
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c0888b"
+    "name": "Luminos",
+    "description": "A radiant island city bathed in natural bioluminescence from crystalline rock formations and glowing flora. Renowned across Nebryss as the cultural and financial heart of the Gilded Accord, Luminos houses the central vaults of the Nebryssian Reserve.",
+    "rpgMapLayout": "SECTOR 1: NEBRYSSIAN RESERVE CRYSTAL GEODE VAULT (NORTH)\nA crystalline fortress built into a glowing geode structure, guarded by automated light-sentinels, optical warding fields, and vault gates.\n\nSECTOR 2: ARTISAN & GLASSWORKERS' PLAZA (EAST)\nPedestrian plazas paved with polished light-stone, lined with art studios, glowstone workshops, and outdoor glass galleries.\n\nSECTOR 3: LUMINOS CENTRAL BIOLUMINESCENT PROMENADE (CENTER)\nWide tree-lined boulevard featuring bioluminescent flora, crystal fountains, and holographic market boards displaying live exchange rates.\n\nSECTOR 4: MERCHANTS' HEIGHTS VILLA TERRACES (WEST)\nTerraced luxury villas overlooking crystal bays, with private airship moorings and manicured glowing gardens.\n\nSECTOR 5: GLOWSTONE TAPESTRY GALLERIES (SOUTH)\nGrand exhibition halls displaying mist-reactive tapestries, rare artifacts, and luxury trade goods.\n\nSECTOR 6: SUBTERRANEAN CHROMATIC LOCK SANCTUARY (BELOW RESERVE)\nDeep geode vault level beneath Sector 1 requiring chromatic bioluminescent flower light sequences to open bullion vaults.\n\nSECTOR 7: LIGHT-SENTINEL COMMAND TOWER (NORTH-EAST)\nA glass spire housing security operators, optical sensor arrays, and vault defense controls.\n\nVISUAL PROMPT NOTES:\nHigh-fantasy/scifi isometric city map of a glowing crystal-studded island metropolis with bioluminescent trees, polished light-stone plazas, geode bank vaults, and glass arcades.",
+    "secrets": [
+      {
+        "id": "sec-luminos-1",
+        "title": "Frozen Voss Ledgers",
+        "content": "Thalos Grenn holds frozen asset ledgers belonging to Lady Seraphine [REDACTED]. Unlocking these ledgers grants access to 50,000 Mistrals in reserve bullion.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-luminos-2",
+        "title": "Bioluminescent Lock Combination",
+        "content": "Unlocking Vault 4 requires a chromatic key code stored inside a bioluminescent flower lock in the Reserve inner sanctuary.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-luminos-3",
+        "title": "Smuggled Glowstone Cryptography",
+        "content": "Master glass artisans in the Artisan Quarter craft glowstone sculptures that project secret trade codes and rebel meeting coordinates under ultraviolet light.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3YDnziX.jpg",
+    "thumbnail": "https://iili.io/3YDnziX.th.jpg",
+    "faction": "The Gilded Accord",
+    "isCapital": false,
+    "notableFeatures": [
+      {
+        "name": "The Nebryssian Reserve",
+        "description": "A fortress-like bank complex guarded by mechanized sentinels and light-based security systems. Its vaults use bioluminescent flora as living locks—only Thalos Grenn and his inner circle know the chromatic sequences to access the Mistral reserves. The Reserve’s towering spires project holographic exchange rates visible for miles."
+      },
+      {
+        "name": "Luminos Artisan Quarter",
+        "description": "A district where artists craft glowstone sculptures and mist-reactive tapestries traded across Nebryss. Many works secretly encode market trends or faction messages using light patterns."
+      }
+    ],
+    "mapX": 48,
+    "mapY": 73,
+    "id": 5,
+    "category": "city",
+    "categorySize": 3
   },
-  "name": "Misthaven",
-  "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
-  "faction": "The Nebryssian Liberation Republic",
-  "isCapital": true,
-  "isWorldMap": false,
-  "id": 6,
-  "imgUrl": "https://iili.io/3RFipWB.jpg",
-  "thumbnail": "https://iili.io/3RFipWB.th.jpg",
-  "category": "village",
-  "categorySize": 2,
-  "mapX": 44,
-  "mapY": 51
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c0888e"
-  },
-  "name": "Emberreach",
-  "faction": "The Abyssal Cabal",
-  "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
-  "imgUrl": "https://iili.io/3YbxJJs.png",
-  "thumbnail": "https://iili.io/3YbxJJs.th.png",
-  "isCapital": false,
-  "notableFeatures": [
-    {
-      "name": "The Ashen Forge",
-      "description": "A massive foundry where Cabal warlocks forge weapons fused with soul-embers. The screams of bound daemons echo from its furnaces."
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0888b"
     },
-    {
-      "name": "The Shattered Maw",
-      "description": "A fissure spewing warp energy into the sky. Cabal cultists throw prisoners into it as offerings to the Chaos Gods."
-    }
-  ],
-  "mapX": 13,
-  "mapY": 18,
-  "id": 9,
-  "category": "city",
-  "categorySize": 1
-},
-{
-  "_id": {
-    "$oid": "6999dcf6f7703abfb2c08885"
+    "name": "Misthaven",
+    "description": "The secretive capital of the Nebryssian Liberation Republic (NLR), completely cloaked within a dense, perpetual artificial mist bank. Hidden among jagged sea stacks and narrow kelp-strewn reefs, Misthaven is virtually invisible to Imperial augurs and Cabal scouts.",
+    "rpgMapLayout": "SECTOR 1: HIDDEN SEA-CAVE DOCKS & SUBMERGED TUNNELS (SOUTH)\nUnderground cavern docks accessible only at high tide through submerged tunnels. Houses stealth skiffs, repair tools, and supply barges.\n\nSECTOR 2: CENTRAL MIST GENERATOR TOWER (CENTER)\nA disguised stone tower housing arcano-tech mist generators that pump thick fog blankets across the entire island.\n\nSECTOR 3: REBEL COMMAND BUNKER & VOX MAP-ROOM (NORTH)\nSubterranean command center with map tables, vox-relays, tactical armories, and emergency tunnel routes.\n\nSECTOR 4: CANOPY RESIDENTIAL & REFUGEE SHELTERS (EAST)\nCamouflaged wooden huts and suspended rope bridge networks hidden under dense foliage and fog canopy.\n\nSECTOR 5: MISTWEAVER HERBAL INFIRMARY (WEST)\nLog cabin clinic treating mist-sickness, wounded fighters, and training young shamans.\n\nSECTOR 6: SUBMERGED ESCAPE FLOTILLA & MINED SEA-GATES (BELOW DOCKS)\nHidden sea-cave moorings containing an emergency fleet of 6 mist-cloaked stealth skiffs primed with demolition charges to collapse entrance tunnels if overrun.\n\nVISUAL PROMPT NOTES:\nTop-down RPG map of a mist-shrouded island village built inside sea-caves and dense jungle canopy, featuring rope bridges, hidden bunker entrances, and a central mist generator tower.",
+    "secrets": [
+      {
+        "id": "sec-misthaven-1",
+        "title": "Master Vox Cipher",
+        "content": "Misthaven's central command bunker contains the master communications cipher connecting Commander Elara [REDACTED] with allied Corsair privateer captains.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-misthaven-2",
+        "title": "Submerged Escape Flotilla",
+        "content": "Hidden sea-cave moorings contain an emergency fleet of 6 mist-cloaked stealth skiffs primed with demolition charges to collapse entrance tunnels if overrun.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-misthaven-3",
+        "title": "Precursor Crystal Power Core",
+        "content": "The central mist generator tower is powered by an ancient precursor crystal stolen from an Imperial Explorator vault in M39.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "faction": "The Nebryssian Liberation Republic",
+    "isCapital": true,
+    "isWorldMap": false,
+    "id": 6,
+    "imgUrl": "https://iili.io/3RFipWB.jpg",
+    "thumbnail": "https://iili.io/3RFipWB.th.jpg",
+    "category": "village",
+    "categorySize": 2,
+    "mapX": 44,
+    "mapY": 51
   },
-  "name": "Nebryss",
-  "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
-  "imgUrl": "https://iili.io/3R2Be6u.png",
-  "thumbnail": "https://iili.io/3R2Be6u.th.png",
-  "faction": "Planet",
-  "isCapital": false,
-  "notableFeatures": [
-    {
-      "name": "Mist Trade Routes",
-      "description": "Formed by stable mist zones, these routes are crucial for travel and commerce. Control over mist trade routes is key to power."
-    }
-  ],
-  "isworldMap": true,
-  "id": 0
-},
-{
-  "_id": {
-    "$oid": "6a6ecc087c50046efa3e3727"
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0888e"
+    },
+    "name": "Emberreach",
+    "faction": "The Abyssal Cabal",
+    "description": "A jagged volcanic outpost island perpetually shrouded in volcanic ash, sulfur fumes, and warpfire. Emberreach is harvested by the Abyssal Cabal for soul-embers—crystallized fragments of corrupted mist energy mined from molten rifts.",
+    "rpgMapLayout": "SECTOR 1: ASHEN FORGE FOUNDRY & SOUL-SMELTING CAULDRONS (NORTH)\nIndustrial basalt complex built into the caldera, housing soul-ember smelting cauldrons, blast furnaces, and demon-forged weaponsmiths.\n\nSECTOR 2: SOUL-EMBER CRATER MINES & IRON SCAFFOLDING (CENTER)\nOpen volcanic pit with iron scaffolding, winches, crane gantries, and glowing purple soul-gem veins mined by thralls.\n\nSECTOR 3: THE SHATTERED MAW FISSURE & MAGMA CHASM (SOUTH)\nA glowing chasm spewing warpfire and molten magma into the sky, used for dark sacrifices to Chaos gods.\n\nSECTOR 4: SLAVE BARRACKS & SPIKED BASTIONS (WEST)\nReinforced iron cages, spiked guard posts, and overseer towers overlooking mine entrances and cliff passages.\n\nSECTOR 5: WARPFIRE HARVESTING PRAMS (EAST)\nVolcanic barges and iron buckets used to scoop molten soul-embers from lava streams.\n\nSECTOR 6: SUBMERGED VOSS FLAGSHIP WRECKAGE (DESCENT IN MAW)\nSubmerged ancient Imperial frigate hull—the original flagship of House Voss that vanished 40 years ago, containing lost family heirlooms and corrupted navigation logs.\n\nVISUAL PROMPT NOTES:\nIsometric volcanic mining/forge map with a central magma pit, iron mining gantries, basalt foundries, soul-ember veins, and sulfur steam vents.",
+    "secrets": [
+      {
+        "id": "sec-emberreach-1",
+        "title": "Submerged Flagship Wreckage",
+        "content": "The Shattered Maw contains a submerged ancient Imperial frigate hull—the original flagship of House Voss that vanished 40 years ago, containing lost family heirlooms and corrupted navigation logs.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-emberreach-2",
+        "title": "Soul-Ember Mining Revolt",
+        "content": "A group of enslaved miners in Sector 2 have secretly hoarded 50 volatile soul-gem crystals, planning to detonate the main iron winch during the next Cabal sacrifice.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3YbxJJs.png",
+    "thumbnail": "https://iili.io/3YbxJJs.th.png",
+    "isCapital": false,
+    "notableFeatures": [
+      {
+        "name": "The Ashen Forge",
+        "description": "A massive foundry where Cabal warlocks forge weapons fused with soul-embers. The screams of bound daemons echo from its furnaces."
+      },
+      {
+        "name": "The Shattered Maw",
+        "description": "A fissure spewing warp energy into the sky. Cabal cultists throw prisoners into it as offerings to the Chaos Gods."
+      }
+    ],
+    "mapX": 13,
+    "mapY": 18,
+    "id": 9,
+    "category": "city",
+    "categorySize": 1
   },
-  "name": "asa",
-  "description": "asa",
-  "faction": "",
-  "isCapital": false,
-  "isWorldMap": false,
-  "category": "shrine",
-  "categorySize": 1,
-  "mapX": 59.54,
-  "mapY": 49.33,
-  "id": 10,
-  "isDeleted": true
-}]
+  {
+    "_id": {
+      "$oid": "6999dcf6f7703abfb2c0885"
+    },
+    "name": "Nebryss",
+    "description": "The ocean world of Nebryss—a vast seascape peppered with floating island archipelagos, shifting mist trade routes, and mysterious warp zones.",
+    "rpgMapLayout": "SECTOR 1: ZEPHYRIA CENTRAL SKY CORRIDOR (CENTER)\nPrimary floating island sky-lane network connecting merchant fleets, sky-docks, and trading hubs.\n\nSECTOR 2: FORTRESS SANCTUS ADAMANTIUM SHIELD SECTOR (EAST)\nImperial naval perimeter with macro-cannons, patrol galleons, and blockade stations.\n\nSECTOR 3: AURELIAN HULL RING DOCKS (NORTH-EAST)\nRing anchorage and experimental mist-engine research complex.\n\nSECTOR 4: MALEDICTUM WARP SPIRE REEF (NORTH-WEST)\nChaos-corrupted volcanic reefs emitting purple warp surges and daemon-galley harbors.\n\nSECTOR 5: VERDANT VEIL & LUMINOS BIOLUMINESCENT ARCHIPELAGO (SOUTH)\nBioluminescent rainforest islands, terraced farms, and glowing crystal bank cities.\n\nSECTOR 6: MISTHAVEN REEF & FOG SANCTUARY (WEST)\nPerpetual artificial fog bank hiding sea-cave moorings and NLR resistance bunkers.\n\nSECTOR 7: EMBERREACH VOLCANIC TRENCH (FAR NORTH-WEST)\nVolcanic ash crater mines and soul-ember foundries.\n\nSECTOR 8: THE ABYSSAL SUBMERGED PRECURSOR ENGINE TRENCH (OCEAN BED)\nIntact pre-Imperial Xenos world-engine buried in deep sea trenches beneath the central sea.\n\nVISUAL PROMPT NOTES:\nComplete world archipelago map showing island chains, mist trade channels, volcanic trenches, and sea depths.",
+    "secrets": [
+      {
+        "id": "sec-nebryss-1",
+        "title": "Planetary Warp Alignment",
+        "content": "The entire archipelago is approaching a critical warp alignment. House Voss descendants across all factions hold pieces of the grand cipher needed to stabilize or collapse the mist zones.",
+        "isRevealed": false
+      },
+      {
+        "id": "sec-nebryss-2",
+        "title": "The Sleeping Precursor World-Engine",
+        "content": "Beneath the oceanic abyssal floor lies an intact pre-Imperial world-engine capable of dispersing the mist entirely or enclosing the planet in an impenetrable void shield.",
+        "isRevealed": false
+      }
+    ],
+    "isSecret": false,
+    "isSecretRevealed": false,
+    "imgUrl": "https://iili.io/3R2Be6u.png",
+    "thumbnail": "https://iili.io/3R2Be6u.th.png",
+    "faction": "Planet",
+    "isCapital": false,
+    "notableFeatures": [
+      {
+        "name": "Mist Trade Routes",
+        "description": "Formed by stable mist zones, these routes are crucial for travel and commerce. Control over mist trade routes is key to power."
+      }
+    ],
+    "isworldMap": true,
+    "id": 0
+  }
+]

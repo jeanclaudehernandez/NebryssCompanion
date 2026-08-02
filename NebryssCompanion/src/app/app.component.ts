@@ -15,6 +15,9 @@ import { APP_VIEWS, AppView } from './app-view.types';
 import { Location } from './model';
 import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service';
 
+import { AdminService } from './admin.service';
+import { ToastService } from './toast.service';
+
   @Component({
   selector: 'app-root',
   standalone: true,
@@ -32,6 +35,18 @@ import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service'
       </button>
 
       <h1 class="header-title">{{ currentViewTitle }}</h1>
+
+      <button
+        *ngIf="hasAdminAccess$ | async"
+        type="button"
+        class="top-gm-toggle-btn"
+        [class.active]="isAdmin$ | async"
+        (click)="toggleAdminMode()"
+        [title]="(isAdmin$ | async) ? 'Modo GM Activado (Ver secretos de campaña). Clic para cambiar a Modo Jugador' : 'Modo Jugador. Clic para activar Modo GM'"
+      >
+        <span class="material-icons">security</span>
+        <span>{{ (isAdmin$ | async) ? 'GM ON' : 'GM OFF' }}</span>
+      </button>
 
       <div class="header-actions">
         <button
@@ -161,6 +176,17 @@ export class AppComponent {
   bestiaryMaterialsCount = 0;
   bestiaryMaterialsSidebarOpen = false;
   activePlayer$ = this.activePlayerService.activePlayer$;
+  hasAdminAccess$ = this.adminService.hasAdminAccess$;
+  isAdmin$ = this.adminService.isAdmin$;
+
+  toggleAdminMode(): void {
+    const nextState = !this.adminService.isAdmin;
+    this.adminService.setAdminStatus(nextState);
+    this.toastService.show(
+      nextState ? 'Modo GM Activado (Viendo Secretos de Campaña)' : 'Modo Jugador Activado (Secretos Ocultos)',
+      'info'
+    );
+  }
 
   get showFooterMenu(): boolean {
     return this.currentView !== 'bestiary';
@@ -221,6 +247,8 @@ export class AppComponent {
   constructor(
     public themeService: ThemeService,
     public loadingService: LoadingService,
+    public adminService: AdminService,
+    private toastService: ToastService,
     private dataService: DataService,
     private dialog: MatDialog,
     private activePlayerService: ActivePlayerService,

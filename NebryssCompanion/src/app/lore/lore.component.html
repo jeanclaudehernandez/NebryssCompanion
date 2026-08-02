@@ -11,15 +11,50 @@
         </div>
         <div class="player-card" *ngIf="section.title !== 'Factions' && section.title !== 'Locations'" [innerHTML]="formatLoreContent(section.content)"></div>
         
-        <!-- Locations Section -->
-        <div *ngIf="section.title === 'Locations'" class="locations-container" style="display: none;">
-          <!-- Content removed - now in separate Locations view -->
+        <!-- Public Revealed Banner for General Sections -->
+        <div class="revealed-lore-banner lore-section-revealed" *ngIf="section.content?.isSecretRevealed && section.content?.privateNotes">
+          <div class="revealed-lore-header">
+            <span class="material-icons">auto_awesome</span>
+            <h4>Campaign Discovery Unlocked: {{ section.title }}</h4>
+          </div>
+          <div class="revealed-lore-body">
+            <p>{{ section.content.privateNotes }}</p>
+          </div>
         </div>
-        
+
+        <!-- GM Private Vault for General Sections -->
+        <div class="gm-vault-card lore-section-vault" *ngIf="isAdmin && section.content?.privateNotes">
+          <div class="gm-vault-header">
+            <div class="gm-vault-title">
+              <span class="material-icons">security</span>
+              <h4>GM Secret Vault: {{ section.title }}</h4>
+            </div>
+            <button
+              type="button"
+              class="gm-reveal-btn"
+              [class.active]="section.content.isSecretRevealed"
+              (click)="toggleSecrecy(section.content, section.title)"
+            >
+              <span class="material-icons">{{ section.content.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+              {{ section.content.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+            </button>
+          </div>
+          <div class="gm-vault-content">
+            <div class="gm-vault-field">
+              <p>{{ section.content.privateNotes }}</p>
+            </div>
+          </div>
+        </div>
+
         <!-- Factions Section -->
         <div *ngIf="section.title === 'Factions'" class="factions-container">
             <div *ngFor="let faction of section.content.factions" class="faction-card" [id]="factionScrollId(faction)">
-            <h3>{{faction.name}} (Controls {{faction.control}})</h3>
+            <div class="faction-card-header-row">
+              <h3>{{faction.name}} <span class="faction-control-badge">(Controls {{faction.control}})</span></h3>
+              <span *ngIf="isAdmin && faction.privateNotes && !faction.isSecretRevealed" class="secret-badge">GM Secret</span>
+              <span *ngIf="isAdmin && faction.privateNotes && faction.isSecretRevealed" class="revealed-badge">Revealed</span>
+            </div>
+
             <div *ngIf="faction.image" class="faction-image-container">
                 <app-image-viewer
                     [imageUrl]="faction.image"
@@ -59,10 +94,10 @@
                 <p *ngIf="!Array.isArray(faction.challenges)">{{faction.challenges}}</p>
                 </div>
 
-                <ng-container *ngFor="let section of Object.keys(faction)">
-                    <div class="faction-info" *ngIf="!isStandardSection(section)">
-                        <h4>{{section | capitalCase}}</h4>
-                        <p>{{faction[section]}}</p>
+                <ng-container *ngFor="let sec of Object.keys(faction)">
+                    <div class="faction-info" *ngIf="!isStandardSection(sec)">
+                        <h4>{{sec | capitalCase}}</h4>
+                        <p>{{faction[sec]}}</p>
                     </div>
                 </ng-container>
 
@@ -76,12 +111,6 @@
                         [thumbnailUrl]="capital.thumbnail"
                         [altText]="capital.name"
                     ></app-image-viewer>
-                    <!-- Notable features removed from lore view as requested -->
-                </div>
-                
-                <!-- Notable Islands Section - Removed as it now appears in its own view -->
-                <div class="faction-info" *ngIf="false && getFactionIslands(faction.name).length > 0">
-                    <!-- Content removed - now in separate Locations view -->
                 </div>
 
                 <div class="faction-info" *ngIf="faction.notableOrganizations">
@@ -93,11 +122,142 @@
                         </li>
                     </ul>
                 </div>
+
+                <!-- Revealed Campaign Discovery for Factions -->
+                <div class="revealed-lore-banner" *ngIf="faction.isSecretRevealed && faction.privateNotes">
+                  <div class="revealed-lore-header">
+                    <span class="material-icons">auto_awesome</span>
+                    <h4>Campaign Secret Unlocked: {{ faction.name }}</h4>
+                  </div>
+                  <div class="revealed-lore-body">
+                    <p>{{ faction.privateNotes }}</p>
+                  </div>
+                </div>
+
+                <!-- GM Private Campaign Vault for Factions -->
+                <div class="gm-vault-card" *ngIf="isAdmin && faction.privateNotes">
+                  <div class="gm-vault-header">
+                    <div class="gm-vault-title">
+                      <span class="material-icons">security</span>
+                      <h4>GM Secret Vault: {{ faction.name }}</h4>
+                    </div>
+                    <button
+                      type="button"
+                      class="gm-reveal-btn"
+                      [class.active]="faction.isSecretRevealed"
+                      (click)="toggleSecrecy(faction, faction.name)"
+                    >
+                      <span class="material-icons">{{ faction.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+                      {{ faction.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+                    </button>
+                  </div>
+                  <div class="gm-vault-content">
+                    <div class="gm-vault-field">
+                      <p>{{ faction.privateNotes }}</p>
+                    </div>
+                  </div>
+                </div>
             </div>
             </div>
         </div>
       </ng-container>
-    </div>
-  </div>
 
-  <app-scroll-nav [sections]="scrollSections"></app-scroll-nav>
+      <!-- Chronicles of Nebryss Special Renderer -->
+      <ng-container *ngIf="section.key === 'chroniclesOfNebryss'">
+        <h2 style="text-align: center;">Chronicles of Nebryss</h2>
+        <div class="chronicles-container">
+          <div *ngFor="let era of section.content.chronicles" class="chronicle-card player-card">
+            <div class="chronicle-header">
+              <h3>{{ era.era }}</h3>
+              <span *ngIf="isAdmin && era.privateNotes && !era.isSecretRevealed" class="secret-badge">GM Secret</span>
+              <span *ngIf="isAdmin && era.privateNotes && era.isSecretRevealed" class="revealed-badge">Revealed</span>
+            </div>
+            <p class="chronicle-summary">{{ era.summary }}</p>
+
+            <div class="revealed-lore-banner" *ngIf="era.isSecretRevealed && era.privateNotes">
+              <div class="revealed-lore-header">
+                <span class="material-icons">auto_awesome</span>
+                <h4>Campaign Secret Unlocked</h4>
+              </div>
+              <div class="revealed-lore-body">
+                <p>{{ era.privateNotes }}</p>
+              </div>
+            </div>
+
+            <div class="gm-vault-card" *ngIf="isAdmin && era.privateNotes">
+              <div class="gm-vault-header">
+                <div class="gm-vault-title">
+                  <span class="material-icons">security</span>
+                  <h4>GM Secret Vault</h4>
+                </div>
+                <button
+                  type="button"
+                  class="gm-reveal-btn"
+                  [class.active]="era.isSecretRevealed"
+                  (click)="toggleSecrecy(era, era.era)"
+                >
+                  <span class="material-icons">{{ era.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+                  {{ era.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+                </button>
+              </div>
+              <div class="gm-vault-content">
+                <div class="gm-vault-field">
+                  <p>{{ era.privateNotes }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Story Hooks Special Renderer -->
+      <ng-container *ngIf="section.key === 'storyHooks'">
+        <h2 style="text-align: center;">Story Hooks</h2>
+        <div class="hooks-container">
+          <div *ngFor="let hook of section.content.hooks" class="hook-card player-card">
+            <div class="hook-header">
+              <h3>{{ hook.name }}</h3>
+              <span *ngIf="isAdmin && hook.privateNotes && !hook.isSecretRevealed" class="secret-badge">GM Secret</span>
+              <span *ngIf="isAdmin && hook.privateNotes && hook.isSecretRevealed" class="revealed-badge">Revealed</span>
+            </div>
+            <p><strong>Premise:</strong> {{ hook.premise }}</p>
+            <p><strong>Key Elements:</strong> {{ hook.keyElements }}</p>
+            <p><strong>Potential Impact:</strong> {{ hook.potentialImpact }}</p>
+
+            <div class="revealed-lore-banner" *ngIf="hook.isSecretRevealed && hook.privateNotes">
+              <div class="revealed-lore-header">
+                <span class="material-icons">auto_awesome</span>
+                <h4>Campaign Secret Unlocked</h4>
+              </div>
+              <div class="revealed-lore-body">
+                <p>{{ hook.privateNotes }}</p>
+              </div>
+            </div>
+
+            <div class="gm-vault-card" *ngIf="isAdmin && hook.privateNotes">
+              <div class="gm-vault-header">
+                <div class="gm-vault-title">
+                  <span class="material-icons">security</span>
+                  <h4>GM Secret Vault</h4>
+                </div>
+                <button
+                  type="button"
+                  class="gm-reveal-btn"
+                  [class.active]="hook.isSecretRevealed"
+                  (click)="toggleSecrecy(hook, hook.name)"
+                >
+                  <span class="material-icons">{{ hook.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+                  {{ hook.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+                </button>
+              </div>
+              <div class="gm-vault-content">
+                <div class="gm-vault-field">
+                  <p>{{ hook.privateNotes }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+</div>

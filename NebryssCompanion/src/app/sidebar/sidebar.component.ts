@@ -132,7 +132,7 @@ export class SidebarComponent {
     const dialogContext = {
       check: (password: string) => {
         if (password === '2602') {
-          this.adminService.setAdminStatus(true);
+          this.adminService.setAdminAuthenticated(true);
           this.modalService.close();
           onSuccess?.();
         } else {
@@ -147,6 +147,6 @@ export class SidebarComponent {
   }
 
   logoutAdmin() {
-    this.adminService.setAdminStatus(false);
+    this.adminService.setAdminAuthenticated(false);
   }
 }
