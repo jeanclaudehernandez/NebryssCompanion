@@ -2180,5 +2180,148 @@
       }
     ],
     "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897060"
+    },
+    "id": 60,
+    "name": "Vale Seneschal",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      111,
+      3
+    ],
+    "abilities": [
+      {
+        "name": "Steward of House Voss",
+        "effect": "1AP: Select one friendly Seneschal or Voss operative within 6 inches. That operative gains +1 APL and can re-roll one attack die until the end of the Turning Point.",
+        "prModifier": 4
+      },
+      {
+        "name": "Iron-Clad Authority",
+        "effect": "Enemy operatives within 3 inches of this operative worsen their HIT by 1 when making attacks or shoots against this operative.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897061"
+    },
+    "id": 61,
+    "name": "Seneschal Enforcer",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      111,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Voss Family Oath",
+        "effect": "When a friendly Seneschal officer or Voss noble within 3 inches is targeted by a shoot action, reduce damage taken from each die by 1.",
+        "prModifier": 4
+      },
+      {
+        "name": "Bulwark of the Seneschal",
+        "effect": "Gain +1 Save when in light or heavy cover, and enemy operatives cannot land critical hits against this operative in melee.",
+        "prModifier": 112
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897062"
+    },
+    "id": 62,
+    "name": "Seneschal Cipher Agent",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      33,
+      25
+    ],
+    "abilities": [
+      {
+        "name": "Shadow Retainer",
+        "effect": "When concealed or standing in mist zones, enemy operatives cannot target this operative at a range greater than 6.",
+        "prModifier": 4
+      },
+      {
+        "name": "Ledger Concealment",
+        "effect": "1AP: Target an enemy operative within 9 inches. That operative loses 1 APL until the end of its next activation.",
+        "prModifier": 6
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897063"
+    },
+    "id": 63,
+    "name": "Seneschal Quartermaster",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      35,
+      108
+    ],
+    "abilities": [
+      {
+        "name": "Supply Coordinator",
+        "effect": "1AP: Friendly operative within 3 inches gains Ceaseless on its ranged attacks until the end of the Turning Point.",
+        "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
   }
 ]
