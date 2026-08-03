@@ -120,6 +120,17 @@ export class SidebarComponent {
     });
   }
 
+  openAdminCreatureEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminCreatureEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminCreatureEditor');
+    });
+  }
+
   forceUpdate() {
     this.updateService.unregisterAndReload();
   }

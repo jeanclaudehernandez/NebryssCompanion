@@ -230,6 +230,88 @@ export class DataService {
     return this.bestiaryCache$;
   }
 
+  refreshBestiary(): Observable<BestiaryEntry[]> {
+    this.bestiaryCache$ = this.http.get<BestiaryEntry[]>(`${this.apiUrl}/bestiary`).pipe(
+      catchError(() => this.http.get<BestiaryEntry[]>('assets/bestiary.json')),
+      tap(bestiary => {
+        this.bestiary = bestiary;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.bestiaryCache$;
+  }
+
+  saveBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    if (entry.id && entry.id > 0 && this.bestiary.some(b => b.id === entry.id)) {
+      return this.updateBestiary(entry);
+    } else {
+      return this.createBestiary(entry);
+    }
+  }
+
+  createBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    if (!entry.id || entry.id === 0) {
+      const maxId = this.bestiary.reduce((max, b) => (b.id > max ? b.id : max), 0);
+      entry.id = maxId + 1;
+    }
+    return this.http.post<BestiaryEntry>(`${this.apiUrl}/bestiary`, entry).pipe(
+      catchError(() => {
+        const index = this.bestiary.findIndex(b => b.id === entry.id);
+        if (index === -1) {
+          this.bestiary.push(entry);
+        } else {
+          this.bestiary[index] = entry;
+        }
+        return of(entry);
+      }),
+      tap(created => {
+        const index = this.bestiary.findIndex(b => b.id === created.id);
+        if (index !== -1) {
+          this.bestiary[index] = created;
+        } else {
+          this.bestiary.push(created);
+        }
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    return this.http.put<BestiaryEntry>(`${this.apiUrl}/bestiary`, entry).pipe(
+      catchError(() => {
+        const index = this.bestiary.findIndex(b => b.id === entry.id);
+        if (index !== -1) {
+          this.bestiary[index] = entry;
+        }
+        return of(entry);
+      }),
+      tap(updated => {
+        const index = this.bestiary.findIndex(b => b.id === updated.id);
+        if (index !== -1) {
+          this.bestiary[index] = updated;
+        }
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteBestiary(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/bestiary/${id}`).pipe(
+      catchError(() => {
+        this.bestiary = this.bestiary.filter(b => b.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.bestiary = this.bestiary.filter(b => b.id !== id);
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   refreshWeapons(): Observable<Weapon[]> {
     this.weaponsCache$ = null;
     return this.getWeapons();

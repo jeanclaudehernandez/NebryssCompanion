@@ -164,7 +164,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     private readonly adminService: AdminService,
     private readonly dataService: DataService,
     private readonly toastService: ToastService
-  ) {}
+  ) { }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['editSession']) {
@@ -301,17 +301,6 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     return this.editingItemId !== null || this.editingWeaponId !== null || this.editingLetterId !== null;
   }
 
-  get headerTitle(): string {
-    if (this.creatorMode === 'letter') {
-      return this.editingLetterId !== null ? 'Edit Letter' : 'Admin Creator';
-    }
-
-    if (this.creatorMode === 'weapon') {
-      return this.editingWeaponId !== null ? 'Edit Weapon' : 'Admin Creator';
-    }
-
-    return this.editingItemId !== null ? 'Edit Item' : 'Admin Creator';
-  }
 
   get headerDescription(): string {
     if (this.creatorMode === 'letter') {

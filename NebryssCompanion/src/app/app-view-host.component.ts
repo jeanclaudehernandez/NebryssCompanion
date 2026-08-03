@@ -77,7 +77,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     adminLocationCreator: () => import('./location-admin-page/location-admin-page.component').then(m => m.LocationAdminPageComponent),
     adminPlayerEditor: () => import('./player-admin-page/player-admin-page.component').then(m => m.PlayerAdminPageComponent),
     adminNpcEditor: () => import('./npc-admin-page/npc-admin-page.component').then(m => m.NpcAdminPageComponent),
-    adminShopEditor: () => import('./shop-admin-page/shop-admin-page.component').then(m => m.ShopAdminPageComponent)
+    adminShopEditor: () => import('./shop-admin-page/shop-admin-page.component').then(m => m.ShopAdminPageComponent),
+    adminCreatureEditor: () => import('./creature-admin-page/creature-admin-page.component').then(m => m.CreatureAdminPageComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -228,6 +229,11 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'adminShopEditor':
         if (this.adminEditSession?.mode === 'shop') {
           this.componentRef.setInput('initialShop', this.adminEditSession.shop);
+        }
+        break;
+      case 'adminCreatureEditor':
+        if (this.adminEditSession?.mode === 'creature') {
+          this.componentRef.setInput('initialCreature', this.adminEditSession.creature);
         }
         break;
     }

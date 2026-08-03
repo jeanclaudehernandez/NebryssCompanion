@@ -19,7 +19,7 @@ import { ModalService } from './modal.service';
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
 
-  @Component({
+@Component({
   selector: 'app-root',
   standalone: true,
   imports: [
@@ -142,6 +142,17 @@ import { ToastService } from './toast.service';
         <button
           type="button"
           class="footer-btn"
+          [class.active]="currentView === 'shops'"
+          (click)="onViewChange('shops')"
+          aria-label="Open Shops"
+        >
+          <span class="material-icons" aria-hidden="true">storefront</span>
+          <span class="footer-label">Shops</span>
+        </button>
+
+        <button
+          type="button"
+          class="footer-btn"
           [class.active]="currentView === 'letters'"
           (click)="onViewChange('letters')"
           aria-label="Open Letters"
@@ -149,17 +160,6 @@ import { ToastService } from './toast.service';
           <span class="footer-badge" *ngIf="letterUnreadCount > 0">{{ letterUnreadCount }}</span>
           <span class="material-icons" aria-hidden="true">mail</span>
           <span class="footer-label">Letters</span>
-        </button>
-
-        <button
-          type="button"
-          class="footer-btn"
-          [class.active]="currentView === 'shops'"
-          (click)="onViewChange('shops')"
-          aria-label="Open Shops"
-        >
-          <span class="material-icons" aria-hidden="true">storefront</span>
-          <span class="footer-label">Shops</span>
         </button>
       </nav>
     }
@@ -260,6 +260,7 @@ export class AppComponent {
       case 'adminItemCreator': return 'Item Creator';
       case 'adminLocationCreator': return 'Location Creator';
       case 'adminPlayerEditor': return 'Player Editor';
+      case 'adminCreatureEditor': return 'Creature Editor';
       default: return 'Nebryss Companion';
     }
   }
@@ -272,11 +273,11 @@ export class AppComponent {
   private readonly PULL_ACTIVATION_DISTANCE = 14;
   public pullProgress = 0; // 0 to 1
   public isRefreshing = false;
-  
+
   get pullIndicatorHeight(): number {
     return Math.min(this.pullProgress * 60, 80);
   }
-  
+
   get contentTransform(): string {
     // Optional: push content down as we pull
     // return `translateY(${this.pullIndicatorHeight}px)`;
@@ -403,10 +404,10 @@ export class AppComponent {
 
   onTouchMove(event: TouchEvent) {
     if (!this.isPulling || this.isRefreshing || event.touches.length !== 1) return;
-    
+
     const currentY = event.touches[0].clientY;
     const diff = currentY - this.pullStartY;
-    
+
     if (diff <= 0 || window.scrollY > 0) {
       this.resetPullState();
       return;
@@ -424,9 +425,9 @@ export class AppComponent {
 
   onTouchEnd() {
     if (this.isPulling && this.pullProgress >= 0.8 && !this.isRefreshing) {
-       this.triggerRefresh();
+      this.triggerRefresh();
     } else {
-       this.resetPullState();
+      this.resetPullState();
     }
   }
 
@@ -461,7 +462,7 @@ export class AppComponent {
     this.isRefreshing = true;
     this.pullProgress = 1; // Keep indicator shown
     this.isPulling = false;
-    
+
     // Simulate refresh delay then reload
     setTimeout(() => {
       window.location.reload();
@@ -497,7 +498,7 @@ export class AppComponent {
     if (view !== 'adminLocationCreator') {
       this.adminLocationDraft = null;
     }
-    
+
     // Save current view
     localStorage.setItem('lastView', view);
     window.scrollTo({ top: 0 });
@@ -509,6 +510,8 @@ export class AppComponent {
       this.currentView = 'adminShopEditor';
     } else if (session.mode === 'npc') {
       this.currentView = 'adminNpcEditor';
+    } else if (session.mode === 'creature') {
+      this.currentView = 'adminCreatureEditor';
     } else {
       this.currentView = 'adminItemCreator';
     }
@@ -664,16 +667,54 @@ export class AppComponent {
   private openWeaponRuleModal(ruleName: string) {
     this.dataService.getAllData().subscribe(data => {
       void import('./weapon-rule/weapon-rule.component').then(({ WeaponRuleDialogComponent }) => {
-      const rule = data.weaponRules.find((r: any) => r.name === ruleName);
+        const rule = data.weaponRules.find((r: any) => r.name === ruleName);
 
-      if (!rule) {
-        const fallbackRule = {
-          name: ruleName,
-          description: 'Rule definition not found'
-        };
+        if (!rule) {
+          const fallbackRule = {
+            name: ruleName,
+            description: 'Rule definition not found'
+          };
+
+          const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
+            data: { rule: fallbackRule },
+            panelClass: 'image-dialog-container',
+            hasBackdrop: true,
+            backdropClass: 'image-dialog-backdrop',
+            disableClose: true
+          });
+          setTimeout(() => {
+            dialogRef.disableClose = false;
+          }, 0);
+          return;
+        }
+
+        let name = rule.name;
+        let description = rule.effect;
+
+        const statusMatches = [...new Set((description || '').match(/\/status\/:\d+\//g))];
+        const statusEntries: string[] = [];
+
+        if (statusMatches) {
+          statusMatches.forEach(match => {
+            const statusId = parseInt(match.replace('/status/:', '').replace('/', ''));
+            const status = data.alteredStates.find((s: any) => s.id === statusId);
+
+            if (status) {
+              const link = `<span class="status-link" data-status="${status.name}">${status.name}</span>`;
+              description = description.replace(new RegExp(match, 'g'), link);
+              statusEntries.push(`<strong><span class="status-link" data-status="${status.name}">${status.name}</span></strong>: ${status.effect}`);
+            }
+          });
+        }
+
+        if (statusEntries.length > 0) {
+          description += '\n\n' + statusEntries.map(entry => `<em>${entry}</em>`).join('\n\n');
+        }
+
+        const ruleDisplay = { name, description };
 
         const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
-          data: { rule: fallbackRule },
+          data: { rule: ruleDisplay },
           panelClass: 'image-dialog-container',
           hasBackdrop: true,
           backdropClass: 'image-dialog-backdrop',
@@ -682,44 +723,6 @@ export class AppComponent {
         setTimeout(() => {
           dialogRef.disableClose = false;
         }, 0);
-        return;
-      }
-
-      let name = rule.name;
-      let description = rule.effect;
-
-      const statusMatches = [...new Set((description || '').match(/\/status\/:\d+\//g))];
-      const statusEntries: string[] = [];
-
-      if (statusMatches) {
-        statusMatches.forEach(match => {
-          const statusId = parseInt(match.replace('/status/:', '').replace('/', ''));
-          const status = data.alteredStates.find((s: any) => s.id === statusId);
-
-          if (status) {
-            const link = `<span class="status-link" data-status="${status.name}">${status.name}</span>`;
-            description = description.replace(new RegExp(match, 'g'), link);
-            statusEntries.push(`<strong><span class="status-link" data-status="${status.name}">${status.name}</span></strong>: ${status.effect}`);
-          }
-        });
-      }
-
-      if (statusEntries.length > 0) {
-        description += '\n\n' + statusEntries.map(entry => `<em>${entry}</em>`).join('\n\n');
-      }
-
-      const ruleDisplay = { name, description };
-
-      const dialogRef = this.dialog.open(WeaponRuleDialogComponent, {
-        data: { rule: ruleDisplay },
-        panelClass: 'image-dialog-container',
-        hasBackdrop: true,
-        backdropClass: 'image-dialog-backdrop',
-        disableClose: true
-      });
-      setTimeout(() => {
-        dialogRef.disableClose = false;
-      }, 0);
       });
     });
   }

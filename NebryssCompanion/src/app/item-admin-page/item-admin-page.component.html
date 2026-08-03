@@ -1,9 +1,4 @@
 <div class="admin-page">
-  <div class="player-detail-container admin-header">
-    <div>
-      <h2>{{ headerTitle }}</h2>
-    </div>
-  </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
     <h3>Admin Access Required</h3>
@@ -12,15 +7,9 @@
   <div *ngIf="isAdmin" class="layout">
     <div class="player-detail-container admin-mode-panel">
       <div class="admin-section">
-        <h3>Creator Type</h3>
         <div class="creator-mode-buttons">
-          <button
-            *ngFor="let mode of creatorModes"
-            type="button"
-            class="inline-btn"
-            [class.active-mode]="creatorMode === mode.value"
-            (click)="setCreatorMode(mode.value)"
-          >
+          <button *ngFor="let mode of creatorModes" type="button" class="inline-btn"
+            [class.active-mode]="creatorMode === mode.value" (click)="setCreatorMode(mode.value)">
             {{ mode.label }}
           </button>
         </div>
@@ -55,7 +44,8 @@
 
         <label class="field">
           <span>Description</span>
-          <textarea [(ngModel)]="description" name="description" rows="4" placeholder="Item effect or flavor text"></textarea>
+          <textarea [(ngModel)]="description" name="description" rows="4"
+            placeholder="Item effect or flavor text"></textarea>
         </label>
 
         <div class="field-grid">
@@ -300,7 +290,8 @@
 
             <label class="field">
               <span>Apply To Value</span>
-              <input [(ngModel)]="modification.applyToValue" [name]="'applyToValue-' + i" type="text" placeholder="human, rifle, 0..." />
+              <input [(ngModel)]="modification.applyToValue" [name]="'applyToValue-' + i" type="text"
+                placeholder="human, rifle, 0..." />
             </label>
           </div>
 
@@ -322,12 +313,8 @@
           <label class="field">
             <span>Recipients</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                multiple
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="letterRecipientIds"
-                name="letterRecipientIds"
-              >
+              <mat-select multiple panelClass="weapon-rules-panel" [(ngModel)]="letterRecipientIds"
+                name="letterRecipientIds">
                 <mat-option *ngFor="let player of players" [value]="player.id">
                   {{ player.name }}
                 </mat-option>
@@ -338,12 +325,8 @@
           <label class="field">
             <span>Sender NPC</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="letterSenderId"
-                name="letterSenderId"
-                (selectionChange)="onLetterSenderIdChange()"
-              >
+              <mat-select panelClass="weapon-rules-panel" [(ngModel)]="letterSenderId" name="letterSenderId"
+                (selectionChange)="onLetterSenderIdChange()">
                 <mat-option [value]="null">None</mat-option>
                 <mat-option *ngFor="let npc of npcs" [value]="npc.id">
                   {{ npc.name }}
@@ -361,29 +344,21 @@
 
           <label class="field">
             <span>Date</span>
-            <input
-              [(ngModel)]="letterDate"
-              name="letterDate"
-              type="text"
-              placeholder="Start typing an Imperial date"
-            />
+            <input [(ngModel)]="letterDate" name="letterDate" type="text" placeholder="Start typing an Imperial date" />
             <small class="hint">{{ letterDateHelper }}</small>
           </label>
         </div>
 
         <label class="field">
           <span>Sender Name</span>
-          <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text" placeholder="NPC name or custom sender" />
+          <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text"
+            placeholder="NPC name or custom sender" />
         </label>
 
         <label class="field">
           <span>Intended Targets</span>
-          <input
-            [(ngModel)]="letterTargetNamesInput"
-            name="letterTargetNamesInput"
-            type="text"
-            placeholder="Comma-separated names shown in the To: field"
-          />
+          <input [(ngModel)]="letterTargetNamesInput" name="letterTargetNamesInput" type="text"
+            placeholder="Comma-separated names shown in the To: field" />
         </label>
 
         <div class="field">
@@ -391,15 +366,12 @@
           <div class="creator-mode-buttons editor-toolbar">
             <button class="inline-btn" type="button" (click)="applyLetterFormatting('bold')">Bold</button>
             <button class="inline-btn" type="button" (click)="applyLetterFormatting('italic')">Italic</button>
-            <button class="inline-btn" type="button" (click)="applyLetterFormatting('insertUnorderedList')">Bullet List</button>
+            <button class="inline-btn" type="button" (click)="applyLetterFormatting('insertUnorderedList')">Bullet
+              List</button>
           </div>
-          <div
-            #letterMessageEditor
-            class="rich-editor"
-            contenteditable="true"
+          <div #letterMessageEditor class="rich-editor" contenteditable="true"
             data-placeholder="Write the letter here. Use Enter for new lines and the toolbar for formatting."
-            (input)="onLetterMessageInput($event)"
-          ></div>
+            (input)="onLetterMessageInput($event)"></div>
           <p class="hint">Supports bold, italic, new lines, and bullet points.</p>
         </div>
       </section>
@@ -407,20 +379,17 @@
       <section class="admin-section" *ngIf="creatorMode === 'letter'">
         <div class="section-header">
           <h3>Existing Letters</h3>
-          <button class="inline-btn" type="button" [disabled]="editingLetterId === null" (click)="clearLetterSelection()">
+          <button class="inline-btn" type="button" [disabled]="editingLetterId === null"
+            (click)="clearLetterSelection()">
             Deselect Letter
           </button>
         </div>
 
 
         <div class="admin-selection-list" *ngIf="letterSummaryOptions.length; else noLettersState">
-          <button
-            *ngFor="let letter of letterSummaryOptions"
-            type="button"
-            class="item admin-selection-item"
+          <button *ngFor="let letter of letterSummaryOptions" type="button" class="item admin-selection-item"
             [class.admin-selection-item-active]="editingLetterId === letter.id"
-            (click)="toggleLetterSelection(letter.id)"
-          >
+            (click)="toggleLetterSelection(letter.id)">
             <div class="selection-item-header">
               <strong>{{ letter.subject }}</strong>
               <span>{{ letter.date }}</span>
@@ -467,7 +436,8 @@
           <div class="field-grid">
             <label class="field">
               <span>Profile Name</span>
-              <input [(ngModel)]="profile.profileName" [name]="'weapon-profile-name-' + i" type="text" placeholder='Leave empty for default "" profile' />
+              <input [(ngModel)]="profile.profileName" [name]="'weapon-profile-name-' + i" type="text"
+                placeholder='Leave empty for default "" profile' />
             </label>
 
             <label class="field">
@@ -479,12 +449,14 @@
 
             <label class="field">
               <span>Type</span>
-              <input [(ngModel)]="profile.type" [name]="'weapon-type-' + i" type="text" placeholder="rifle, sword, staff..." />
+              <input [(ngModel)]="profile.type" [name]="'weapon-type-' + i" type="text"
+                placeholder="rifle, sword, staff..." />
             </label>
 
             <label class="field">
               <span>Range</span>
-              <input [(ngModel)]="profile.rngInput" [name]="'weapon-range-' + i" type="text" placeholder='Use 0 for melee, blank for null/infinite' />
+              <input [(ngModel)]="profile.rngInput" [name]="'weapon-range-' + i" type="text"
+                placeholder='Use 0 for melee, blank for null/infinite' />
             </label>
 
             <label class="field">
@@ -511,13 +483,8 @@
           <div class="field">
             <span>Weapon Rules</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                multiple
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="profile.selectedRuleIds"
-                [name]="'weapon-rules-' + i"
-                (selectionChange)="onWeaponRuleSelectionChange(profile)"
-              >
+              <mat-select multiple panelClass="weapon-rules-panel" [(ngModel)]="profile.selectedRuleIds"
+                [name]="'weapon-rules-' + i" (selectionChange)="onWeaponRuleSelectionChange(profile)">
                 <mat-option *ngFor="let rule of weaponRules" [value]="rule.id">
                   {{ rule.name }}
                 </mat-option>
@@ -528,13 +495,8 @@
           <div class="field-grid" *ngIf="profile.specialRules.length">
             <label class="field" *ngFor="let rule of profile.specialRules; let ruleIndex = index">
               <span>{{ getRuleName(rule.ruleId) }} Value</span>
-              <input
-                [(ngModel)]="rule.modValue"
-                [name]="'weapon-rule-value-' + i + '-' + ruleIndex"
-                [disabled]="!ruleNeedsValue(rule.ruleId)"
-                type="number"
-                placeholder="Optional"
-              />
+              <input [(ngModel)]="rule.modValue" [name]="'weapon-rule-value-' + i + '-' + ruleIndex"
+                [disabled]="!ruleNeedsValue(rule.ruleId)" type="number" placeholder="Optional" />
             </label>
           </div>
         </div>
@@ -559,9 +521,12 @@
           <div><strong>Name:</strong> {{ lastCreatedItem.name }}</div>
           <div><strong>Type:</strong> {{ lastCreatedItem.type }}</div>
           <div><strong>ID:</strong> {{ lastCreatedItem.id }}</div>
-          <div *ngIf="lastCreatedItem.talentId"><strong>Talent:</strong> {{ getTalentLabel(lastCreatedItem.talentId) }}</div>
-          <div *ngIf="lastCreatedDeployableSubtype"><strong>Deployable Subtype:</strong> {{ lastCreatedDeployableSubtype }}</div>
-          <div *ngIf="lastCreatedItem.bestiaryId"><strong>Creature:</strong> {{ getCreatureName(lastCreatedItem.bestiaryId) }}</div>
+          <div *ngIf="lastCreatedItem.talentId"><strong>Talent:</strong> {{ getTalentLabel(lastCreatedItem.talentId) }}
+          </div>
+          <div *ngIf="lastCreatedDeployableSubtype"><strong>Deployable Subtype:</strong> {{ lastCreatedDeployableSubtype
+            }}</div>
+          <div *ngIf="lastCreatedItem.bestiaryId"><strong>Creature:</strong> {{
+            getCreatureName(lastCreatedItem.bestiaryId) }}</div>
         </div>
       </section>
 
@@ -580,7 +545,8 @@
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastCreatedLetter.id }}</div>
           <div><strong>Subject:</strong> {{ lastCreatedLetter.subject || '(No subject)' }}</div>
-          <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}</div>
+          <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}
+          </div>
           <div><strong>Recipients:</strong> {{ lastCreatedLetter.recipientIds.length }}</div>
           <div><strong>Date:</strong> {{ lastCreatedLetter.date }}</div>
         </div>
