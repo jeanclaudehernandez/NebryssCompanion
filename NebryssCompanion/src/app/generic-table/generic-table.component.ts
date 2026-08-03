@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
@@ -20,14 +20,31 @@ import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.compo
       <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
         <div *ngIf="enableBodyFilter" class="filter-container">
           <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
-          <app-custom-dropdown
-              [options]="availableBodyTypes"
-              [selectedOption]="selectedBodyType"
-              [placeholder]="'All Body Types'"
-              [showClearOption]="true"
-              [type]="'simple'"
-              (selectionChange)="onBodyTypeChange($event)">
-          </app-custom-dropdown>
+          <div class="body-editor" #bodyEditor>
+            <button
+              type="button"
+              class="body-editor-trigger"
+              (click)="toggleBodySelector($event)">
+              <app-body-type-icons [value]="selectedBodyTypes" [emptyText]="'All Body Types'"></app-body-type-icons>
+              <span class="body-editor-trigger-caret">{{ isBodySelectorOpen ? '▲' : '▼' }}</span>
+            </button>
+
+            <div
+              class="body-selector-panel"
+              *ngIf="isBodySelectorOpen"
+              (click)="$event.stopPropagation()">
+              <label class="body-option" *ngFor="let option of availableBodyTypes">
+                <input
+                  type="checkbox"
+                  [checked]="selectedBodyTypes.includes(option)"
+                  (change)="onBodyTypeToggle(option, $any($event.target).checked)" />
+                <span class="body-option-content">
+                  <app-body-type-icons [value]="option" [size]="14"></app-body-type-icons>
+                  <span class="body-option-label">{{ option }}</span>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="table-scroll-wrapper">
           <table class="items-table">
@@ -169,7 +186,9 @@ export class GenericTableComponent implements OnInit, OnChanges {
   sortDirection: 'asc' | 'desc' = 'asc';
   
   availableBodyTypes: string[] = [];
-  selectedBodyType: string | null = null;
+  selectedBodyTypes: string[] = [];
+  isBodySelectorOpen = false;
+  @ViewChild('bodyEditor') bodyEditorRef?: ElementRef;
   private bodyFilterRestored = false;
 
   getShortHeader(header: string): string {
@@ -280,8 +299,42 @@ export class GenericTableComponent implements OnInit, OnChanges {
     this.availableBodyTypes = validTypes.sort();
   }
 
-  onBodyTypeChange(selected: any) {
-    this.selectedBodyType = selected;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isBodySelectorOpen) {
+      return;
+    }
+    const editor = this.bodyEditorRef?.nativeElement;
+    if (editor && event.target instanceof Node && !editor.contains(event.target)) {
+      this.isBodySelectorOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isBodySelectorOpen = false;
+  }
+
+  toggleBodySelector(event?: Event): void {
+    event?.stopPropagation();
+    this.isBodySelectorOpen = !this.isBodySelectorOpen;
+  }
+
+  onBodyTypeToggle(bodyType: string, checked: boolean): void {
+    const current = [...this.selectedBodyTypes];
+    if (checked) {
+      if (!current.includes(bodyType)) {
+        current.push(bodyType);
+      }
+    } else {
+      const idx = current.indexOf(bodyType);
+      if (idx >= 0) {
+        current.splice(idx, 1);
+      }
+    }
+    const order = new Map<string, number>(this.availableBodyTypes.map((k, i) => [k, i]));
+    current.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+    this.selectedBodyTypes = current;
     this.persistBodyFilterSelection();
     this.applySort();
   }
@@ -365,12 +418,26 @@ export class GenericTableComponent implements OnInit, OnChanges {
     }
 
     const savedFilter = localStorage.getItem(key);
-    this.selectedBodyType = savedFilter || null;
+    if (savedFilter) {
+      try {
+        if (savedFilter.startsWith('[')) {
+          const parsed = JSON.parse(savedFilter);
+          if (Array.isArray(parsed)) {
+            this.selectedBodyTypes = parsed;
+          }
+        } else {
+          this.selectedBodyTypes = savedFilter.split(',').map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
+        this.selectedBodyTypes = [];
+      }
+    } else {
+      this.selectedBodyTypes = [];
+    }
     this.bodyFilterRestored = true;
 
-    if (this.selectedBodyType && this.availableBodyTypes.length > 0 && !this.availableBodyTypes.includes(this.selectedBodyType)) {
-      this.selectedBodyType = null;
-      localStorage.removeItem(key);
+    if (this.availableBodyTypes.length > 0) {
+      this.selectedBodyTypes = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
     }
   }
 
@@ -380,20 +447,21 @@ export class GenericTableComponent implements OnInit, OnChanges {
       return;
     }
 
-    if (this.selectedBodyType) {
-      localStorage.setItem(key, this.selectedBodyType);
+    if (this.selectedBodyTypes.length > 0) {
+      localStorage.setItem(key, JSON.stringify(this.selectedBodyTypes));
     } else {
       localStorage.removeItem(key);
     }
   }
 
   private validateBodyFilterSelection(): void {
-    if (!this.selectedBodyType || this.availableBodyTypes.length === 0) {
+    if (this.selectedBodyTypes.length === 0 || this.availableBodyTypes.length === 0) {
       return;
     }
 
-    if (!this.availableBodyTypes.includes(this.selectedBodyType)) {
-      this.selectedBodyType = null;
+    const valid = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    if (valid.length !== this.selectedBodyTypes.length) {
+      this.selectedBodyTypes = valid;
       this.persistBodyFilterSelection();
     }
   }
@@ -401,22 +469,22 @@ export class GenericTableComponent implements OnInit, OnChanges {
   private applySort() {
     let filteredData = [...(this.data || [])];
 
-    if (this.enableBodyFilter && this.selectedBodyType) {
+    if (this.enableBodyFilter && this.selectedBodyTypes.length > 0) {
         filteredData = filteredData.filter(item => {
             // Check raceReq (items/armor)
             if (item.raceReq) {
                 if (Array.isArray(item.raceReq)) {
-                    return item.raceReq.includes(this.selectedBodyType);
+                    return (item.raceReq as string[]).some(req => this.selectedBodyTypes.includes(req));
                 }
-                return item.raceReq === this.selectedBodyType;
+                return this.selectedBodyTypes.includes(item.raceReq);
             }
 
             // Check body (weapons/other)
             if (item.body) {
                 if (Array.isArray(item.body)) {
-                    return item.body.includes(this.selectedBodyType);
+                    return (item.body as string[]).some(b => this.selectedBodyTypes.includes(b));
                 }
-                return item.body === this.selectedBodyType;
+                return this.selectedBodyTypes.includes(item.body);
             }
             
             // If neither property exists, keep item (e.g. other categories without restriction)

@@ -5,14 +5,31 @@
     <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
         <div *ngIf="enableBodyFilter" class="filter-container">
           <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
-          <app-custom-dropdown
-              [options]="availableBodyTypes"
-              [selectedOption]="selectedBodyType"
-              [placeholder]="'All Body Types'"
-              [showClearOption]="true"
-              [type]="'simple'"
-              (selectionChange)="onBodyTypeChange($event)">
-          </app-custom-dropdown>
+          <div class="body-editor" #bodyEditor>
+            <button
+              type="button"
+              class="body-editor-trigger"
+              (click)="toggleBodySelector($event)">
+              <app-body-type-icons [value]="selectedBodyTypes" [emptyText]="'All Body Types'"></app-body-type-icons>
+              <span class="body-editor-trigger-caret">{{ isBodySelectorOpen ? '▲' : '▼' }}</span>
+            </button>
+
+            <div
+              class="body-selector-panel"
+              *ngIf="isBodySelectorOpen"
+              (click)="$event.stopPropagation()">
+              <label class="body-option" *ngFor="let option of availableBodyTypes">
+                <input
+                  type="checkbox"
+                  [checked]="selectedBodyTypes.includes(option)"
+                  (change)="onBodyTypeToggle(option, $any($event.target).checked)" />
+                <span class="body-option-content">
+                  <app-body-type-icons [value]="option" [size]="14"></app-body-type-icons>
+                  <span class="body-option-label">{{ option }}</span>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="table-scroll-wrapper">
           <table class="weapons-table">

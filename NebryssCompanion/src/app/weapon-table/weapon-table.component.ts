@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
@@ -101,7 +101,9 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   availableBodyTypes: string[] = [];
-  selectedBodyType: string | null = null;
+  selectedBodyTypes: string[] = [];
+  isBodySelectorOpen = false;
+  @ViewChild('bodyEditor') bodyEditorRef?: ElementRef;
   sortKey: WeaponSortKey | null = null;
   sortDir: 'asc' | 'desc' = 'asc';
   private playerSubscription: Subscription | null = null;
@@ -173,8 +175,42 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     this.availableBodyTypes = Array.from(types).sort();
   }
 
-  onBodyTypeChange(selected: any) {
-    this.selectedBodyType = selected;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isBodySelectorOpen) {
+      return;
+    }
+    const editor = this.bodyEditorRef?.nativeElement;
+    if (editor && event.target instanceof Node && !editor.contains(event.target)) {
+      this.isBodySelectorOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isBodySelectorOpen = false;
+  }
+
+  toggleBodySelector(event?: Event): void {
+    event?.stopPropagation();
+    this.isBodySelectorOpen = !this.isBodySelectorOpen;
+  }
+
+  onBodyTypeToggle(bodyType: string, checked: boolean): void {
+    const current = [...this.selectedBodyTypes];
+    if (checked) {
+      if (!current.includes(bodyType)) {
+        current.push(bodyType);
+      }
+    } else {
+      const idx = current.indexOf(bodyType);
+      if (idx >= 0) {
+        current.splice(idx, 1);
+      }
+    }
+    const order = new Map<string, number>(this.availableBodyTypes.map((k, i) => [k, i]));
+    current.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+    this.selectedBodyTypes = current;
     this.persistBodyFilterSelection();
     this.updateSortedProfiles();
   }
@@ -304,15 +340,25 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       const weapon = this.getWeaponById(weaponId);
       if (weapon) {
         weapon.profiles.forEach(profile => {
-          if (this.characterBody && this.characterBody.length > 0) {
+          if (this.isCharacterDisplayPage && this.characterBody && this.characterBody.length > 0) {
             const isBodyMatch = !profile.body || profile.body === 'universal' || profile.body === 'all' || this.characterBody.includes(profile.body);
             if (!isBodyMatch) {
               return;
             }
           }
 
-          if (this.enableBodyFilter && this.selectedBodyType && profile.body !== this.selectedBodyType) {
-            return;
+          if (this.enableBodyFilter && this.selectedBodyTypes.length > 0) {
+            if (!profile.body) {
+              return;
+            }
+            if (Array.isArray(profile.body)) {
+              const hasMatch = (profile.body as string[]).some(b => this.selectedBodyTypes.includes(b));
+              if (!hasMatch) return;
+            } else {
+              if (!this.selectedBodyTypes.includes(profile.body)) {
+                return;
+              }
+            }
           }
           
           const modifiedProfile = this.applyStatModifications(profile, activeModifiers);
@@ -337,12 +383,26 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     }
 
     const savedFilter = localStorage.getItem(this.filterStorageKey);
-    this.selectedBodyType = savedFilter || null;
+    if (savedFilter) {
+      try {
+        if (savedFilter.startsWith('[')) {
+          const parsed = JSON.parse(savedFilter);
+          if (Array.isArray(parsed)) {
+            this.selectedBodyTypes = parsed;
+          }
+        } else {
+          this.selectedBodyTypes = savedFilter.split(',').map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
+        this.selectedBodyTypes = [];
+      }
+    } else {
+      this.selectedBodyTypes = [];
+    }
     this.bodyFilterRestored = true;
 
-    if (this.selectedBodyType && this.availableBodyTypes.length > 0 && !this.availableBodyTypes.includes(this.selectedBodyType)) {
-      this.selectedBodyType = null;
-      localStorage.removeItem(this.filterStorageKey);
+    if (this.availableBodyTypes.length > 0) {
+      this.selectedBodyTypes = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
     }
   }
 
@@ -351,20 +411,21 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       return;
     }
 
-    if (this.selectedBodyType) {
-      localStorage.setItem(this.filterStorageKey, this.selectedBodyType);
+    if (this.selectedBodyTypes.length > 0) {
+      localStorage.setItem(this.filterStorageKey, JSON.stringify(this.selectedBodyTypes));
     } else {
       localStorage.removeItem(this.filterStorageKey);
     }
   }
 
   private validateBodyFilterSelection(): void {
-    if (!this.selectedBodyType || this.availableBodyTypes.length === 0) {
+    if (this.selectedBodyTypes.length === 0 || this.availableBodyTypes.length === 0) {
       return;
     }
 
-    if (!this.availableBodyTypes.includes(this.selectedBodyType)) {
-      this.selectedBodyType = null;
+    const valid = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    if (valid.length !== this.selectedBodyTypes.length) {
+      this.selectedBodyTypes = valid;
       this.persistBodyFilterSelection();
     }
   }
