@@ -38,14 +38,18 @@
     <div *ngFor="let creature of selectedCreatures" class="creature-detail-container" [id]="'creature-' + creature.id">
         <div class="creature-header">
             <h3>{{ creature.name }}</h3>
-            <button class="remove-creature-btn" (click)="removeCreature(creature)">✕</button>
+            <div class="creature-header-actions">
+                <button *ngIf="getNpcForCreature(creature.id) as npc" type="button" class="view-npc-btn"
+                    (click)="goToNpc(npc)" title="View NPC profile for {{ npc.name }}">
+                    <span class="material-icons">person</span>
+                    <span>NPC</span>
+                </button>
+                <button class="remove-creature-btn" (click)="removeCreature(creature)"
+                    title="Remove creature">✕</button>
+            </div>
         </div>
-        <app-player-detail 
-            [character]="creature"
-            [weaponsData]="weaponsData"
-            [itemsData]="itemsData"
-            [weaponRulesData]="weaponRulesData"
-            [alteredStates]="alteredStates">
+        <app-player-detail [character]="creature" [weaponsData]="weaponsData" [itemsData]="itemsData"
+            [weaponRulesData]="weaponRulesData" [alteredStates]="alteredStates">
         </app-player-detail>
     </div>
 </div>
@@ -66,7 +70,8 @@
             <h4>{{ material.name }}</h4>
             <p class="material-description">{{ material.description }}</p>
             <div class="material-meta">
-                <span class="dropped-from">Dropped by: <strong>{{ getCreatureName(material.bestiaryId) }}</strong></span>
+                <span class="dropped-from">Dropped by: <strong>{{ getCreatureName(material.bestiaryId)
+                        }}</strong></span>
                 <span class="price">Value: {{ material.price }}</span>
             </div>
         </div>

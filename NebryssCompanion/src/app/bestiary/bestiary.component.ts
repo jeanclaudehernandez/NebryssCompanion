@@ -1,10 +1,11 @@
 // bestiary.component.ts
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
+import { AdminService } from '../admin.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
-import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection } from '../model';
+import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection, NPC } from '../model';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
@@ -23,9 +24,14 @@ import { BestiaryMaterialsService } from './bestiary-materials.service';
   styleUrls: ['./bestiary.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class BestiaryComponent implements OnInit, OnDestroy {
+export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('mobDetailContainer') mobDetailContainer!: ElementRef;
+  @Input() initialBestiaryId: number | null = null;
+  @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
+
   bestiary: BestiaryEntry[] = [];
+  npcs: NPC[] = [];
+  isAdmin: boolean = false;
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | null = null;
   selectedCreatures: BestiaryEntry[] = [];
@@ -48,14 +54,21 @@ export class BestiaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
+    private adminService: AdminService,
     private themeService: ThemeService,
     private bestiaryMaterialsService: BestiaryMaterialsService
   ) {}
 
   ngOnInit() {
-    this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
-      this.isDarkMode = isDark;
+    this.themeSubscription = this.adminService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
     });
+
+    this.themeSubscription.add(
+      this.themeService.darkMode$.subscribe(isDark => {
+        this.isDarkMode = isDark;
+      })
+    );
 
     this.themeSubscription.add(
       this.bestiaryMaterialsService.open$.subscribe(isOpen => {
@@ -65,6 +78,7 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     
     this.dataService.getAllData().subscribe(response => {
       this.bestiary = response.bestiary;
+      this.npcs = response.npcs || [];
       this.itemsData = response.items;
       this.weaponsData = response.weapons;
       this.weaponRulesData = response.weaponRules;
@@ -101,8 +115,16 @@ export class BestiaryComponent implements OnInit, OnDestroy {
         this.updateDroppedMaterials();
       }
 
-      console.log(this.dataService.validateBestiaryPR().filter((creature) => creature.calculatedPR != creature.currentPR));
+      if (this.initialBestiaryId) {
+        this.selectAndScrollToCreature(this.initialBestiaryId);
+      }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialBestiaryId'] && this.initialBestiaryId && this.bestiary.length > 0) {
+      this.selectAndScrollToCreature(this.initialBestiaryId);
+    }
   }
 
   ngOnDestroy() {
@@ -169,6 +191,36 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     this.scrollToMob();
   }
 
+  selectAndScrollToCreature(bestiaryId: number): void {
+    if (!bestiaryId) return;
+    const creature = this.bestiary.find(c => c.id === Number(bestiaryId));
+    if (!creature) return;
+
+    const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
+    if (!alreadySelected) {
+      this.selectedCreatures.push(creature);
+      const creatureIds = this.selectedCreatures.map(c => c.id);
+      localStorage.setItem('bestiaryCreatureIds', JSON.stringify(creatureIds));
+    }
+
+    this.syncCreatureScrollSections();
+    this.updateDroppedMaterials();
+    this.scrollToMob(creature.id);
+  }
+
+  getNpcForCreature(creatureId: number): NPC | undefined {
+    const npc = this.npcs.find(n => n.bestiaryId === creatureId);
+    if (!npc) return undefined;
+    if (this.isAdmin || npc.discovered !== false) {
+      return npc;
+    }
+    return undefined;
+  }
+
+  goToNpc(npc: NPC): void {
+    this.navigateToNpc.emit({ npcId: npc.id, npcName: npc.name });
+  }
+
   removeCreature(creature: BestiaryEntry) {
     this.selectedCreatures = this.selectedCreatures.filter(c => c.id !== creature.id);
     this.syncCreatureScrollSections();
@@ -184,15 +236,25 @@ export class BestiaryComponent implements OnInit, OnDestroy {
     this.updateDroppedMaterials();
   }
 
-  scrollToMob(): void {
+  scrollToMob(creatureId?: number): void {
     setTimeout(() => {
+      if (creatureId) {
+        const el = document.getElementById(`creature-${creatureId}`);
+        if (el) {
+          el.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start'
+          });
+          return;
+        }
+      }
       if (this.mobDetailContainer?.nativeElement) {
         this.mobDetailContainer.nativeElement.scrollIntoView({ 
           behavior: 'smooth', 
           block: 'start'
         });
       }
-    }, 0);
+    }, 100);
   }
 
   private syncCreatureScrollSections(): void {

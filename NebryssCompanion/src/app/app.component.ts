@@ -100,6 +100,7 @@ import { ToastService } from './toast.service';
         [selectedStateName]="selectedStateName"
         [selectedNpcName]="selectedNpcName"
         [selectedShopName]="selectedShopName"
+        [selectedBestiaryId]="selectedBestiaryId"
         [adminEditSession]="adminEditSession"
         [adminLocationDraft]="adminLocationDraft"
         (viewChange)="onViewChange($event)"
@@ -109,6 +110,7 @@ import { ToastService } from './toast.service';
         (navigateToLore)="onNavigateToLore($event)"
         (navigateToShop)="onNavigateToShop($event)"
         (navigateToNpc)="onNavigateToNpc($event)"
+        (navigateToBestiary)="onNavigateToBestiary($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
       ></app-view-host>
     </div>
@@ -205,6 +207,7 @@ export class AppComponent {
   selectedStateName: string | null = null;
   selectedNpcName: string | null = null;
   selectedShopName: string | null = null;
+  selectedBestiaryId: number | null = null;
   adminEditSession: AdminEditorSession | null = null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
@@ -490,6 +493,7 @@ export class AppComponent {
     this.selectedStateName = null;
     this.selectedNpcName = null;
     this.selectedShopName = null;
+    this.selectedBestiaryId = null;
     if (view !== 'adminLocationCreator') {
       this.adminLocationDraft = null;
     }
@@ -581,6 +585,13 @@ export class AppComponent {
     this.selectedNpcName = npcName;
     this.currentView = 'npcs';
     localStorage.setItem('lastView', 'npcs');
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToBestiary(bestiaryId: number) {
+    this.selectedBestiaryId = bestiaryId;
+    this.currentView = 'bestiary';
+    localStorage.setItem('lastView', 'bestiary');
     window.scrollTo({ top: 0 });
   }
 

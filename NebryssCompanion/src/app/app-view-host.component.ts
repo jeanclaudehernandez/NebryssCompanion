@@ -34,6 +34,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() selectedStateName: string | null = null;
   @Input() selectedNpcName: string | null = null;
   @Input() selectedShopName: string | null = null;
+  @Input() selectedBestiaryId: number | null = null;
   @Input() adminEditSession: AdminEditorSession | null = null;
   @Input() adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
 
@@ -44,6 +45,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
+  @Output() navigateToBestiary = new EventEmitter<number>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
 
   @ViewChild('viewHost', { read: ViewContainerRef, static: true })
@@ -132,6 +134,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'players':
         subscribeToOutput('navigateToTalents', () => this.viewChange.emit('talents'));
         break;
+      case 'bestiary':
+        subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        break;
       case 'items':
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
         break;
@@ -159,6 +164,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
+        subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
         break;
       case 'worldMap':
         subscribeToOutput('navigateToLocation', locationName =>
@@ -181,6 +187,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     }
 
     switch (this.view) {
+      case 'bestiary':
+        this.componentRef.setInput('initialBestiaryId', this.selectedBestiaryId);
+        break;
       case 'lore':
         this.componentRef.setInput('initialFactionName', this.selectedFactionName);
         break;

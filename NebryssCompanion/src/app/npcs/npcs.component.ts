@@ -39,6 +39,7 @@ export class NpcsComponent implements OnInit {
   @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
+  @Output() navigateToBestiary = new EventEmitter<number>();
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly STORAGE_KEY = 'selectedNpcName';
@@ -323,6 +324,11 @@ export class NpcsComponent implements OnInit {
   goToLore(factionName: string | undefined): void {
     if (!factionName) return;
     this.navigateToLore.emit(factionName);
+  }
+
+  goToBestiary(bestiaryId: number | undefined): void {
+    if (!bestiaryId) return;
+    this.navigateToBestiary.emit(bestiaryId);
   }
 
   editInGmEditor(npc: NPC): void {

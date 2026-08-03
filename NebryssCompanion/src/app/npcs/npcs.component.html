@@ -1,36 +1,23 @@
-<div class="npcs-page" [class.no-npc-selected]="!selectedNpc" [class.has-selected-npc]="!!selectedNpc" [class.full-screen]="!!selectedNpc">
+<div class="npcs-page" [class.no-npc-selected]="!selectedNpc" [class.has-selected-npc]="!!selectedNpc"
+  [class.full-screen]="!!selectedNpc">
 
   <!-- Controls Bar: Group By & Search -->
   <div class="npcs-top-bar">
     <div class="search-box">
       <span class="material-icons search-icon">search</span>
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search NPCs by name, faction, location, role..."
-        [value]="searchTerm"
-        (input)="onSearchChange($event)"
-      />
+      <input type="text" class="search-input" placeholder="Search NPCs by name, faction, location, role..."
+        [value]="searchTerm" (input)="onSearchChange($event)" />
     </div>
 
     <div class="group-toggle-container">
       <span class="toggle-label">Group By:</span>
       <div class="toggle-btn-group">
-        <button
-          type="button"
-          class="toggle-btn"
-          [class.active]="groupBy === 'faction'"
-          (click)="setGroupBy('faction')"
-        >
+        <button type="button" class="toggle-btn" [class.active]="groupBy === 'faction'" (click)="setGroupBy('faction')">
           <span class="material-icons">flag</span>
           <span>Faction</span>
         </button>
-        <button
-          type="button"
-          class="toggle-btn"
-          [class.active]="groupBy === 'location'"
-          (click)="setGroupBy('location')"
-        >
+        <button type="button" class="toggle-btn" [class.active]="groupBy === 'location'"
+          (click)="setGroupBy('location')">
           <span class="material-icons">place</span>
           <span>Location</span>
         </button>
@@ -47,7 +34,8 @@
         <p>No NPCs found matching your search.</p>
       </div>
 
-      <div *ngFor="let group of npcGroups; trackBy: trackByGroup" class="npc-group-section" [class.is-collapsed]="isGroupCollapsed(group.name)">
+      <div *ngFor="let group of npcGroups; trackBy: trackByGroup" class="npc-group-section"
+        [class.is-collapsed]="isGroupCollapsed(group.name)">
         <div class="npc-group-header" (click)="toggleGroupCollapse(group.name)">
           <div class="group-header-main">
             <div class="group-thumb" *ngIf="group.thumbnail">
@@ -60,18 +48,15 @@
             <span class="group-badge">{{ group.count }}</span>
           </div>
 
-          <button type="button" class="group-collapse-btn" (click)="toggleGroupCollapse(group.name, $event)" aria-label="Toggle section">
+          <button type="button" class="group-collapse-btn" (click)="toggleGroupCollapse(group.name, $event)"
+            aria-label="Toggle section">
             <span class="material-icons">{{ isGroupCollapsed(group.name) ? 'expand_more' : 'expand_less' }}</span>
           </button>
         </div>
 
         <div class="npc-cards" *ngIf="!isGroupCollapsed(group.name)">
-          <div
-            *ngFor="let npc of group.npcs; trackBy: trackByNpc"
-            class="npc-card"
-            [class.selected]="selectedNpc?.id === npc.id"
-            (click)="selectNpc(npc)"
-          >
+          <div *ngFor="let npc of group.npcs; trackBy: trackByNpc" class="npc-card"
+            [class.selected]="selectedNpc?.id === npc.id" (click)="selectNpc(npc)">
             <div class="npc-card-thumb" *ngIf="npc.thumbnail || npc.imgUrl">
               <img [src]="npc.thumbnail || npc.imgUrl" [alt]="npc.name" loading="lazy">
             </div>
@@ -112,21 +97,19 @@
               <span class="reputation-badge" *ngIf="selectedNpc.reputation">
                 {{ selectedNpc.reputation }}
               </span>
-              <button
-                *ngIf="isAdmin"
-                type="button"
-                class="gm-discovered-btn"
+              <button *ngIf="isAdmin" type="button" class="gm-discovered-btn"
                 [class.is-discovered]="selectedNpc.discovered !== false"
                 (click)="toggleNpcDiscovered(selectedNpc, $event)"
-                [title]="selectedNpc.discovered !== false ? 'NPC is Discovered by players. Click to mark Undiscovered.' : 'NPC is Undiscovered. Click to mark Discovered.'"
-              >
-                <span class="material-icons">{{ selectedNpc.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+                [title]="selectedNpc.discovered !== false ? 'NPC is Discovered by players. Click to mark Undiscovered.' : 'NPC is Undiscovered. Click to mark Discovered.'">
+                <span class="material-icons">{{ selectedNpc.discovered !== false ? 'visibility' : 'visibility_off'
+                  }}</span>
                 <span>{{ selectedNpc.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
               </button>
             </div>
 
             <div class="npc-sub-row">
-              <span class="faction-link" *ngIf="selectedNpc.faction" (click)="goToLore(selectedNpc.faction)" title="View Faction in Lore">
+              <span class="faction-link" *ngIf="selectedNpc.faction" (click)="goToLore(selectedNpc.faction)"
+                title="View Faction in Lore">
                 <span class="material-icons">flag</span> {{ selectedNpc.faction }}
               </span>
               <span class="subgroup-badge" *ngIf="selectedNpc.subgroup">
@@ -144,49 +127,37 @@
         <!-- Interactive Quick Navigation Actions Bar -->
         <div class="npc-actions-bar">
           <!-- 1. Go to Location Button -->
-          <button
-            *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)"
-            type="button"
-            class="action-btn location-btn"
-            (click)="goToLocation(selectedNpc.location)"
-            title="Go to location page for {{ selectedNpc.location }}"
-          >
+          <button *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)" type="button"
+            class="action-btn location-btn" (click)="goToLocation(selectedNpc.location)"
+            title="Go to location page for {{ selectedNpc.location }}">
             <span class="material-icons">place</span>
-            <span>Go to Location: <strong>{{ selectedNpc.location }}</strong></span>
+            <span><strong>{{ selectedNpc.location }}</strong></span>
           </button>
 
           <!-- 2. View on World Map Button -->
-          <button
-            *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)"
-            type="button"
-            class="action-btn map-btn"
-            (click)="goToWorldMap(selectedNpc.location)"
-            title="View pin on World Map"
-          >
+          <button *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)" type="button"
+            class="action-btn map-btn" (click)="goToWorldMap(selectedNpc.location)" title="View pin on World Map">
             <span class="material-icons">public</span>
             <span>World Map</span>
           </button>
 
           <!-- 3. Visit NPC Shop Button -->
-          <button
-            *ngIf="isNpcShopDiscovered(selectedNpc) && getNpcShop(selectedNpc) as shop"
-            type="button"
-            class="action-btn shop-btn"
-            (click)="goToShop(shop)"
-            title="Visit shop {{ shop.name }}"
-          >
+          <button *ngIf="isNpcShopDiscovered(selectedNpc) && getNpcShop(selectedNpc) as shop" type="button"
+            class="action-btn shop-btn" (click)="goToShop(shop)" title="Visit shop {{ shop.name }}">
             <span class="material-icons">storefront</span>
-            <span>Visit Shop: <strong>{{ shop.name }}</strong></span>
+            <span><strong>{{ shop.name }}</strong></span>
           </button>
 
-          <!-- 4. GM Edit Button -->
-          <button
-            *ngIf="isAdmin"
-            type="button"
-            class="action-btn edit-btn"
-            (click)="editInGmEditor(selectedNpc)"
-            title="Edit this NPC in Admin NPC Editor"
-          >
+          <!-- 4. Go to Bestiary Button (GM Mode only) -->
+          <button *ngIf="isAdmin && selectedNpc.bestiaryId" type="button" class="action-btn bestiary-btn"
+            (click)="goToBestiary(selectedNpc.bestiaryId)" title="View creature entry in Bestiary">
+            <span class="material-icons">pets</span>
+            <span>Bestiary</span>
+          </button>
+
+          <!-- 5. GM Edit Button -->
+          <button *ngIf="isAdmin" type="button" class="action-btn edit-btn" (click)="editInGmEditor(selectedNpc)"
+            title="Edit this NPC in Admin NPC Editor">
             <span class="material-icons">edit</span>
             <span>Edit NPC</span>
           </button>
