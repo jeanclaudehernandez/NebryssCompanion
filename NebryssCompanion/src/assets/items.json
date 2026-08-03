@@ -1219,24 +1219,4 @@
   "isEquippable": true,
   "raceReq": "universal",
   "id": 93
-},
-{
-  "_id": {
-    "$oid": "6a6d3a6b650a79ea48c19811"
-  },
-  "id": 94,
-  "name": "Porcine Bio-Injector",
-  "price": 35,
-  "type": "consumable",
-  "description": "Dr. Vance's experimental porcine-spliced injector. 1AP: Restores 2D6 Wounds immediately. Roll 1D6: on a 1, the target gains +1 max Wounds but suffers a strange porcine appetite."
-},
-{
-  "_id": {
-    "$oid": "6a6d3a6b650a79ea48c19812"
-  },
-  "id": 95,
-  "name": "Chimeric Regenerative Serum",
-  "price": 60,
-  "type": "consumable",
-  "description": "High-grade tissue renewal elixir infused with pig cellular matrices. Restores 1D3 Wounds at the start of each turning point for 3 turns."
 }]
