@@ -247,6 +247,7 @@
   "name": "Verdant Veil",
   "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
   "faction": "The Nebryssian Liberation Republic",
+  "discovered": false,
   "isCapital": false,
   "isWorldMap": false,
   "isSecret": false,
@@ -274,11 +275,10 @@
   "rpgMapLayout": "SECTOR 1: GROVE OF ECHOES & ANCESTRAL STONE CIRCLE (CENTER)\nAncient megalithic stone circle surrounded by giant bioluminescent trees. Central ritual dais for Mistweaver training, chanting, and spirit communion.\n\nSECTOR 2: VEILROOT TERRACED FARMS & MIST CHANNELS (EAST)\nTerraced hillsides glowing with bioluminescent mist-crops, irrigated by misty mountain streams, mist-condenser channels, and aqueducts.\n\nSECTOR 3: REBEL COMMAND COVE & STEALTH DOCKS (SOUTH)\nHidden rocky landing inlet shielded by overhanging vines, camouflage netting, stealth skiff moorings, and hidden ammo caches.\n\nSECTOR 4: CANOPY OUTPOST & JUNGLE WATCHTOWERS (NORTH)\nTreehouse posts connected by ziplines, rope bridges, and vine walkways, manned by NLR rangers and guerrilla snipers.\n\nSECTOR 5: MISTWEAVER SANCTUARY & HERBAL APOTHECARY (WEST)\nThatched wooden pavilions housing healing baths, rare medicinal herb gardens, and sacred potion cauldrons.\n\nSECTOR 6: VAULT OF THE ANCIENT WEAVERS (BELOW GROVE)\nSubterranean stone chamber beneath Sector 1 containing ancestral scrolls, mist-crystal runes, and ancient records.\n\nSECTOR 7: GUERRILLA TRAINING CAMP & TRAP CORRIDORS (OUTER PERIMETER)\nDense rainforest trails rigged with bamboo pit traps, vine snares, and camouflaged sniper blinds guarding island approaches.\n\nVISUAL PROMPT NOTES:\nLush primeval forest RPG map with ancient stone circles, glowing bioluminescent terraces, jungle canopy watchtowers, treehouse bridges, and hidden coastal inlets.",
   "imgUrl": "https://iili.io/3Ybxd5G.png",
   "thumbnail": "https://iili.io/3Ybxd5G.th.png",
-  "category": "forest",
-  "categorySize": 3,
+  "category": "shrine",
+  "categorySize": "1",
   "mapX": 36.35,
-  "mapY": 57.23,
-  "discovered": false
+  "mapY": 57.23
 },
 {
   "_id": {
@@ -333,8 +333,9 @@
     "$oid": "6999dcf6f7703abfb2c0888b"
   },
   "name": "Misthaven",
-  "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate.",
+  "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate..",
   "faction": "The Nebryssian Liberation Republic",
+  "discovered": true,
   "isCapital": true,
   "isWorldMap": false,
   "isSecret": false,
@@ -362,12 +363,10 @@
   "rpgMapLayout": "SECTOR 1: HIDDEN SEA-CAVE DOCKS & SUBMERGED TUNNELS (SOUTH)\nUnderground cavern docks accessible only at high tide through submerged tunnels. Houses stealth skiffs, repair tools, and supply barges.\n\nSECTOR 2: CENTRAL MIST GENERATOR TOWER (CENTER)\nA disguised stone tower housing arcano-tech mist generators that pump thick fog blankets across the entire island.\n\nSECTOR 3: REBEL COMMAND BUNKER & VOX MAP-ROOM (NORTH)\nSubterranean command center with map tables, vox-relays, tactical armories, and emergency tunnel routes.\n\nSECTOR 4: CANOPY RESIDENTIAL & REFUGEE SHELTERS (EAST)\nCamouflaged wooden huts and suspended rope bridge networks hidden under dense foliage and fog canopy.\n\nSECTOR 5: MISTWEAVER HERBAL INFIRMARY (WEST)\nLog cabin clinic treating mist-sickness, wounded fighters, and training young shamans.\n\nSECTOR 6: SUBMERGED ESCAPE FLOTILLA & MINED SEA-GATES (BELOW DOCKS)\nHidden sea-cave moorings containing an emergency fleet of 6 mist-cloaked stealth skiffs primed with demolition charges to collapse entrance tunnels if overrun.\n\nVISUAL PROMPT NOTES:\nTop-down RPG map of a mist-shrouded island village built inside sea-caves and dense jungle canopy, featuring rope bridges, hidden bunker entrances, and a central mist generator tower.",
   "imgUrl": "https://iili.io/3RFipWB.jpg",
   "thumbnail": "https://iili.io/3RFipWB.th.jpg",
-  "category": "village",
-  "categorySize": 2,
+  "category": "forest",
+  "categorySize": 3,
   "mapX": 49.26,
-  "mapY": 50.46,
-  "discovered": true,
-  "isSecretRevealed": false
+  "mapY": 50.46
 },
 {
   "_id": {

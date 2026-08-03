@@ -90,7 +90,8 @@
       "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
       "prModifier": 7
     }
-  ]
+  ],
+  "items": []
 },
 {
   "_id": {
@@ -282,7 +283,8 @@
       "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
       "prModifier": 7
     }
-  ]
+  ],
+  "items": []
 },
 {
   "_id": {
@@ -802,7 +804,8 @@
       "effect": "+1 Damage to successful Fight actions. ",
       "prModifier": 7
     }
-  ]
+  ],
+  "items": []
 },
 {
   "_id": {
@@ -1666,10 +1669,10 @@
     "$oid": "699f9d06ac9c1cc3b21d8304"
   },
   "id": 47,
-  "name": "Deathkorps Sniper",
+  "name": "Deathkorps Snipers",
   "faction": "Imperium",
   "subgroup": "Human",
-  "pr": 117,
+  "pr": 136,
   "attributes": {
     "Movement": 6,
     "Wounds": 8,
@@ -1682,7 +1685,8 @@
   },
   "weapons": [
     26,
-    1
+    1,
+    80
   ],
   "abilities": [
     {
@@ -1700,7 +1704,8 @@
       "effect": "While in Cover, improve Save characteristic by 1.",
       "prModifier": 5
     }
-  ]
+  ],
+  "items": []
 },
 {
   "_id": {

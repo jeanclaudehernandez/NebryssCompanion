@@ -485,11 +485,13 @@
   "id": 7,
   "name": "The Shaman's Circle",
   "owner": 16,
-  "location": "Misthaven",
+  "locationId": 6,
   "locationName": "Misthaven",
+  "location": "Misthaven",
+  "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
+  "discovered": false,
   "imgUrl": "https://iili.io/CSTijPS.png",
   "thumbnail": "https://iili.io/CSTijPS.th.png",
-  "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
   "paymentMethod": {
     "digital": false,
     "physical": true
@@ -505,81 +507,7 @@
       "price": 40,
       "type": "weapon"
     }
-  ],
-  "locationId": 6,
-  "discovered": false,
-  "categoriesData": [],
-  "weaponsData": [
-    {
-      "_id": "69ac39b03b7e32e8c2926ac5",
-      "id": 102,
-      "name": "Fireball",
-      "price": 50,
-      "profiles": [
-        {
-          "profileName": "",
-          "rng": 8,
-          "attacks": 4,
-          "ws": 4,
-          "damage": {
-            "min": 3,
-            "max": 4
-          },
-          "specialRules": [
-            {
-              "ruleId": 32,
-              "modValue": null
-            },
-            {
-              "ruleId": 30,
-              "modValue": 2
-            },
-            {
-              "ruleId": 6,
-              "modValue": null
-            }
-          ],
-          "body": "spell",
-          "type": "warp"
-        }
-      ]
-    },
-    {
-      "_id": "69ac39b03b7e32e8c2926ac8",
-      "id": 105,
-      "name": "Arcane Missiles",
-      "price": 40,
-      "profiles": [
-        {
-          "profileName": "",
-          "rng": 12,
-          "attacks": 5,
-          "ws": 3,
-          "damage": {
-            "min": 3,
-            "max": 3
-          },
-          "specialRules": [
-            {
-              "ruleId": 32,
-              "modValue": null
-            },
-            {
-              "ruleId": 18,
-              "modValue": null
-            }
-          ],
-          "body": "spell",
-          "type": "warp"
-        }
-      ]
-    }
-  ],
-  "weaponIds": [
-    102,
-    105
-  ],
-  "hasWeapons": true
+  ]
 },
 {
   "_id": {
