@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
@@ -54,7 +54,9 @@ interface ShopLocationGroup {
   encapsulation: ViewEncapsulation.None
 })
 export class ShopsComponent implements OnInit, OnDestroy {
+  @Input() initialShopName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
+  @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
@@ -137,7 +139,26 @@ export class ShopsComponent implements OnInit, OnDestroy {
       this.shops = response.shops;
       this.itemsCategories = response.itemCategories;
       this.locations = response.locations.locations;
+      this.npcs = response.npcs || [];
       this.processShops();
+
+      if (this.initialShopName) {
+        const targetShop = this.shops.find(s => s.name.toLowerCase() === this.initialShopName?.toLowerCase());
+        if (targetShop) {
+          const matchedGroup = this.processedShopGroups.find(g => g.shops.some(s => s.id === targetShop.id));
+          if (matchedGroup) {
+            localStorage.setItem(`${matchedGroup.key}-collapsed`, 'false');
+          }
+          setTimeout(() => {
+            const el = document.getElementById(`shop-${targetShop.id}`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.classList.add('highlight-shop');
+              setTimeout(() => el.classList.remove('highlight-shop'), 2500);
+            }
+          }, 200);
+        }
+      }
     });
   }
 
@@ -611,6 +632,20 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   onLocationClick(locationName: string) {
     this.navigateToLocation.emit(locationName);
+  }
+
+  getOwnerNpc(ownerId: number | null): NPC | null {
+    if (!ownerId) return null;
+    return this.npcs.find(n => n.id === ownerId) || null;
+  }
+
+  onNpcOwnerClick(ownerId: number | null, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (!ownerId) return;
+    const npc = this.npcs.find(n => n.id === ownerId);
+    if (npc) {
+      this.navigateToNpc.emit({ npcId: npc.id, npcName: npc.name });
+    }
   }
 
   openShopImageModal(shop: Shop) {

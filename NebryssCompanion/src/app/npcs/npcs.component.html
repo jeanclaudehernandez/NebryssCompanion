@@ -1,0 +1,265 @@
+<div class="npcs-page" [class.no-npc-selected]="!selectedNpc" [class.has-selected-npc]="!!selectedNpc" [class.full-screen]="!!selectedNpc">
+
+  <!-- Controls Bar: Group By & Search -->
+  <div class="npcs-top-bar">
+    <div class="search-box">
+      <span class="material-icons search-icon">search</span>
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search NPCs by name, faction, location, role..."
+        [value]="searchTerm"
+        (input)="onSearchChange($event)"
+      />
+    </div>
+
+    <div class="group-toggle-container">
+      <span class="toggle-label">Group By:</span>
+      <div class="toggle-btn-group">
+        <button
+          type="button"
+          class="toggle-btn"
+          [class.active]="groupBy === 'faction'"
+          (click)="setGroupBy('faction')"
+        >
+          <span class="material-icons">flag</span>
+          <span>Faction</span>
+        </button>
+        <button
+          type="button"
+          class="toggle-btn"
+          [class.active]="groupBy === 'location'"
+          (click)="setGroupBy('location')"
+        >
+          <span class="material-icons">place</span>
+          <span>Location</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Split Layout -->
+  <div class="npcs-layout">
+    <!-- Sidebar: Grouped NPC List -->
+    <div class="npcs-sidebar">
+      <div *ngIf="npcGroups.length === 0" class="no-results">
+        <span class="material-icons">search_off</span>
+        <p>No NPCs found matching your search.</p>
+      </div>
+
+      <div *ngFor="let group of npcGroups; trackBy: trackByGroup" class="npc-group-section" [class.is-collapsed]="isGroupCollapsed(group.name)">
+        <div class="npc-group-header" (click)="toggleGroupCollapse(group.name)">
+          <div class="group-header-main">
+            <div class="group-thumb" *ngIf="group.thumbnail">
+              <img [src]="group.thumbnail" [alt]="group.name" loading="lazy">
+            </div>
+            <span class="group-icon material-icons" *ngIf="!group.thumbnail">
+              {{ groupBy === 'faction' ? 'flag' : 'place' }}
+            </span>
+            <h3>{{ group.name }}</h3>
+            <span class="group-badge">{{ group.count }}</span>
+          </div>
+
+          <button type="button" class="group-collapse-btn" (click)="toggleGroupCollapse(group.name, $event)" aria-label="Toggle section">
+            <span class="material-icons">{{ isGroupCollapsed(group.name) ? 'expand_more' : 'expand_less' }}</span>
+          </button>
+        </div>
+
+        <div class="npc-cards" *ngIf="!isGroupCollapsed(group.name)">
+          <div
+            *ngFor="let npc of group.npcs; trackBy: trackByNpc"
+            class="npc-card"
+            [class.selected]="selectedNpc?.id === npc.id"
+            (click)="selectNpc(npc)"
+          >
+            <div class="npc-card-thumb" *ngIf="npc.thumbnail || npc.imgUrl">
+              <img [src]="npc.thumbnail || npc.imgUrl" [alt]="npc.name" loading="lazy">
+            </div>
+            <div class="npc-card-thumb placeholder" *ngIf="!npc.thumbnail && !npc.imgUrl">
+              <span class="material-icons">person</span>
+            </div>
+
+            <div class="npc-card-info">
+              <div class="npc-card-title-row">
+                <h4>{{ npc.name }}</h4>
+                <span *ngIf="isAdmin && npc.discovered === false" class="undiscovered-badge">Undiscovered</span>
+              </div>
+              <p class="npc-card-subtitle" *ngIf="npc.role || npc.subgroup">
+                {{ npc.role || npc.subgroup }}
+              </p>
+              <div class="npc-card-meta">
+                <span class="meta-chip location-chip" *ngIf="npc.location && isNpcLocationDiscovered(npc)">
+                  <span class="material-icons">place</span> {{ npc.location }}
+                </span>
+                <span class="meta-chip shop-chip" *ngIf="isNpcShopDiscovered(npc)">
+                  <span class="material-icons">storefront</span> Shop
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Container: Selected NPC Details -->
+    <div class="npc-details-container" [class.has-selected-npc]="!!selectedNpc">
+      <div class="npc-details" *ngIf="selectedNpc">
+        <!-- Detail Header -->
+        <div class="npc-header">
+          <div class="npc-header-main">
+            <div class="npc-title-row">
+              <h2>{{ selectedNpc.name }}</h2>
+              <span class="reputation-badge" *ngIf="selectedNpc.reputation">
+                {{ selectedNpc.reputation }}
+              </span>
+              <button
+                *ngIf="isAdmin"
+                type="button"
+                class="gm-discovered-btn"
+                [class.is-discovered]="selectedNpc.discovered !== false"
+                (click)="toggleNpcDiscovered(selectedNpc, $event)"
+                [title]="selectedNpc.discovered !== false ? 'NPC is Discovered by players. Click to mark Undiscovered.' : 'NPC is Undiscovered. Click to mark Discovered.'"
+              >
+                <span class="material-icons">{{ selectedNpc.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+                <span>{{ selectedNpc.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
+              </button>
+            </div>
+
+            <div class="npc-sub-row">
+              <span class="faction-link" *ngIf="selectedNpc.faction" (click)="goToLore(selectedNpc.faction)" title="View Faction in Lore">
+                <span class="material-icons">flag</span> {{ selectedNpc.faction }}
+              </span>
+              <span class="subgroup-badge" *ngIf="selectedNpc.subgroup">
+                • {{ selectedNpc.subgroup }}
+              </span>
+              <span class="role-badge" *ngIf="selectedNpc.role">
+                • {{ selectedNpc.role }}
+              </span>
+            </div>
+          </div>
+
+          <button class="close-btn" (click)="clearSelectedNpc()" aria-label="Close NPC details">×</button>
+        </div>
+
+        <!-- Interactive Quick Navigation Actions Bar -->
+        <div class="npc-actions-bar">
+          <!-- 1. Go to Location Button -->
+          <button
+            *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)"
+            type="button"
+            class="action-btn location-btn"
+            (click)="goToLocation(selectedNpc.location)"
+            title="Go to location page for {{ selectedNpc.location }}"
+          >
+            <span class="material-icons">place</span>
+            <span>Go to Location: <strong>{{ selectedNpc.location }}</strong></span>
+          </button>
+
+          <!-- 2. View on World Map Button -->
+          <button
+            *ngIf="selectedNpc.location && isNpcLocationDiscovered(selectedNpc)"
+            type="button"
+            class="action-btn map-btn"
+            (click)="goToWorldMap(selectedNpc.location)"
+            title="View pin on World Map"
+          >
+            <span class="material-icons">public</span>
+            <span>World Map</span>
+          </button>
+
+          <!-- 3. Visit NPC Shop Button -->
+          <button
+            *ngIf="isNpcShopDiscovered(selectedNpc) && getNpcShop(selectedNpc) as shop"
+            type="button"
+            class="action-btn shop-btn"
+            (click)="goToShop(shop)"
+            title="Visit shop {{ shop.name }}"
+          >
+            <span class="material-icons">storefront</span>
+            <span>Visit Shop: <strong>{{ shop.name }}</strong></span>
+          </button>
+
+          <!-- 4. GM Edit Button -->
+          <button
+            *ngIf="isAdmin"
+            type="button"
+            class="action-btn edit-btn"
+            (click)="editInGmEditor(selectedNpc)"
+            title="Edit this NPC in Admin NPC Editor"
+          >
+            <span class="material-icons">edit</span>
+            <span>Edit NPC</span>
+          </button>
+        </div>
+
+        <!-- NPC Image Viewer -->
+        <div class="npc-image" *ngIf="selectedNpc.imgUrl">
+          <app-image-viewer [imageUrl]="selectedNpc.imgUrl" previewMode="full" [altText]="selectedNpc.name">
+          </app-image-viewer>
+        </div>
+
+        <!-- Main Details Content -->
+        <div class="npc-body">
+
+          <div class="detail-section" *ngIf="selectedNpc.description">
+            <h3>Overview</h3>
+            <p>{{ selectedNpc.description }}</p>
+          </div>
+
+          <div class="detail-grid">
+            <div class="grid-card" *ngIf="selectedNpc.mission">
+              <h4><span class="material-icons">track_changes</span> Mission</h4>
+              <p>{{ selectedNpc.mission }}</p>
+            </div>
+
+            <div class="grid-card" *ngIf="selectedNpc.methods">
+              <h4><span class="material-icons">psychology</span> Methods</h4>
+              <p>{{ selectedNpc.methods }}</p>
+            </div>
+
+            <div class="grid-card" *ngIf="selectedNpc.personality">
+              <h4><span class="material-icons">face</span> Personality</h4>
+              <p>{{ selectedNpc.personality }}</p>
+            </div>
+
+            <div class="grid-card" *ngIf="selectedNpc.motivations">
+              <h4><span class="material-icons">favorite_border</span> Motivations</h4>
+              <p>{{ selectedNpc.motivations }}</p>
+            </div>
+
+            <div class="grid-card" *ngIf="selectedNpc.tactics">
+              <h4><span class="material-icons">military_tech</span> Tactics</h4>
+              <p>{{ selectedNpc.tactics }}</p>
+            </div>
+
+            <div class="grid-card" *ngIf="selectedNpc.fleetSize || selectedNpc.flagship">
+              <h4><span class="material-icons">directions_boat</span> Fleet & Assets</h4>
+              <p *ngIf="selectedNpc.fleetSize"><strong>Fleet Size:</strong> {{ selectedNpc.fleetSize }}</p>
+              <p *ngIf="selectedNpc.flagship"><strong>Flagship:</strong> {{ selectedNpc.flagship }}</p>
+            </div>
+          </div>
+
+          <div class="detail-section" *ngIf="selectedNpc.backstory">
+            <h3>Backstory</h3>
+            <p class="backstory-text">{{ selectedNpc.backstory }}</p>
+          </div>
+
+          <!-- Wargear Section -->
+          <div class="detail-section wargear-section" *ngIf="selectedNpc.wargear && selectedNpc.wargear.length > 0">
+            <h3>Wargear & Equipment</h3>
+            <div class="wargear-list">
+              <div *ngFor="let item of selectedNpc.wargear" class="wargear-card">
+                <span class="material-icons wargear-icon">shield</span>
+                <div class="wargear-info">
+                  <h4>{{ item.name }}</h4>
+                  <p>{{ item.description }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

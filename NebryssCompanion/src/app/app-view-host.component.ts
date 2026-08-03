@@ -32,6 +32,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() selectedFactionName: string | null = null;
   @Input() selectedRuleName: string | null = null;
   @Input() selectedStateName: string | null = null;
+  @Input() selectedNpcName: string | null = null;
+  @Input() selectedShopName: string | null = null;
   @Input() adminEditSession: AdminEditorSession | null = null;
   @Input() adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
 
@@ -40,6 +42,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() navigateToLocation = new EventEmitter<{ locationName: string; backTarget: string | null }>();
   @Output() navigateToWorldMap = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
+  @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
+  @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
 
   @ViewChild('viewHost', { read: ViewContainerRef, static: true })
@@ -66,6 +70,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     alteredStates: () => import('./altered-states-page/altered-states-page.component').then(m => m.AlteredStatesPageComponent),
     afflictions: () => import('./afflictions-list/afflictions-list.component').then(m => m.AfflictionsListComponent),
     shipNavigation: () => import('./ship-navigation/ship-navigation.component').then(m => m.ShipNavigationComponent),
+    npcs: () => import('./npcs/npcs.component').then(m => m.NpcsComponent),
     adminItemCreator: () => import('./item-admin-page/item-admin-page.component').then(m => m.ItemAdminPageComponent),
     adminLocationCreator: () => import('./location-admin-page/location-admin-page.component').then(m => m.LocationAdminPageComponent),
     adminPlayerEditor: () => import('./player-admin-page/player-admin-page.component').then(m => m.PlayerAdminPageComponent),
@@ -134,6 +139,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToLocation', locationName =>
           this.navigateToLocation.emit({ locationName, backTarget: null })
         );
+        subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
         break;
       case 'lore':
         subscribeToOutput('navigateToLocation', locationName =>
@@ -144,6 +150,15 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateTo', view => this.viewChange.emit(view));
         subscribeToOutput('navigateToWorldMap', locationName => this.navigateToWorldMap.emit(locationName));
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
+        subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
+        subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        break;
+      case 'npcs':
+        subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
+        subscribeToOutput('navigateToWorldMap', locationName => this.navigateToWorldMap.emit(locationName));
+        subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
+        subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
+        subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
         break;
       case 'worldMap':
         subscribeToOutput('navigateToLocation', locationName =>
@@ -172,6 +187,12 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'locations':
         this.componentRef.setInput('initialLocationName', this.selectedLocationName);
         this.componentRef.setInput('backTarget', this.selectedLocationBackTarget);
+        break;
+      case 'shops':
+        this.componentRef.setInput('initialShopName', this.selectedShopName);
+        break;
+      case 'npcs':
+        this.componentRef.setInput('initialNpcName', this.selectedNpcName);
         break;
       case 'worldMap':
         this.componentRef.setInput('focusLocationName', this.selectedWorldMapLocationName);

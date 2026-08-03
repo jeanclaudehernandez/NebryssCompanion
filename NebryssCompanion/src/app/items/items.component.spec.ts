@@ -45,7 +45,9 @@ describe('ItemsComponent', () => {
       mistEffects: [],
       terrains: [],
       talents: [],
-      afflictions: []
+      afflictions: [],
+      locations: { locations: [] } as any,
+      letters: [] as any
     }));
     mockDataService.getPlayers.and.returnValue(of([]));
 
@@ -54,8 +56,7 @@ describe('ItemsComponent', () => {
       providers: [
         { provide: DataService, useValue: mockDataService }
       ]
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ItemsComponent);
     component = fixture.componentInstance;

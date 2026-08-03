@@ -98,6 +98,8 @@ import { ToastService } from './toast.service';
         [selectedFactionName]="selectedFactionName"
         [selectedRuleName]="selectedRuleName"
         [selectedStateName]="selectedStateName"
+        [selectedNpcName]="selectedNpcName"
+        [selectedShopName]="selectedShopName"
         [adminEditSession]="adminEditSession"
         [adminLocationDraft]="adminLocationDraft"
         (viewChange)="onViewChange($event)"
@@ -105,6 +107,8 @@ import { ToastService } from './toast.service';
         (navigateToLocation)="onNavigateToLocation($event.locationName, $event.backTarget)"
         (navigateToWorldMap)="onNavigateToWorldMap($event)"
         (navigateToLore)="onNavigateToLore($event)"
+        (navigateToShop)="onNavigateToShop($event)"
+        (navigateToNpc)="onNavigateToNpc($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
       ></app-view-host>
     </div>
@@ -199,6 +203,8 @@ export class AppComponent {
   selectedFactionName: string | null = null;
   selectedRuleName: string | null = null;
   selectedStateName: string | null = null;
+  selectedNpcName: string | null = null;
+  selectedShopName: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
@@ -247,6 +253,7 @@ export class AppComponent {
       case 'alteredStates': return 'Altered States';
       case 'afflictions': return 'Afflictions';
       case 'shipNavigation': return 'Ship Navigation';
+      case 'npcs': return 'NPCs';
       case 'adminItemCreator': return 'Item Creator';
       case 'adminLocationCreator': return 'Location Creator';
       case 'adminPlayerEditor': return 'Player Editor';
@@ -481,6 +488,8 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
+    this.selectedNpcName = null;
+    this.selectedShopName = null;
     if (view !== 'adminLocationCreator') {
       this.adminLocationDraft = null;
     }
@@ -556,6 +565,22 @@ export class AppComponent {
     this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToShop(target: { shopId?: number; shopName?: string } | string) {
+    const shopName = typeof target === 'string' ? target : target.shopName || null;
+    this.selectedShopName = shopName;
+    this.currentView = 'shops';
+    localStorage.setItem('lastView', 'shops');
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToNpc(target: { npcId?: number; npcName?: string } | string) {
+    const npcName = typeof target === 'string' ? target : target.npcName || null;
+    this.selectedNpcName = npcName;
+    this.currentView = 'npcs';
+    localStorage.setItem('lastView', 'npcs');
     window.scrollTo({ top: 0 });
   }
 

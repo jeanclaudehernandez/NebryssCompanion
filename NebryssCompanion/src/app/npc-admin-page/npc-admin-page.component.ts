@@ -46,6 +46,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   location = '';
   backstory = '';
   bestiaryId: number | null = null;
+  discovered = true;
 
   readonly defaultFactions: string[] = [
     'Gilded Accord',
@@ -174,6 +175,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.location = '';
     this.backstory = '';
     this.bestiaryId = null;
+    this.discovered = true;
     this.selectedNpcId = null;
     this.showDeleteConfirm = false;
   }
@@ -192,6 +194,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.location = npc.location || '';
     this.backstory = npc.backstory || '';
     this.bestiaryId = typeof npc.bestiaryId === 'number' ? npc.bestiaryId : null;
+    this.discovered = npc.discovered !== false;
     if (this.faction) {
       this.expandedFactions.add(this.faction.trim());
     }
@@ -224,7 +227,8 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
       methods: this.methods.trim() || undefined,
       location: this.location.trim() || undefined,
       backstory: this.backstory.trim() || undefined,
-      bestiaryId: this.bestiaryId !== null ? Number(this.bestiaryId) : undefined
+      bestiaryId: this.bestiaryId !== null ? Number(this.bestiaryId) : undefined,
+      discovered: this.discovered
     };
 
     if (this.isEditing) {

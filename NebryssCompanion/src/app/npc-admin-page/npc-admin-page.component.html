@@ -93,6 +93,14 @@
             />
           </div>
 
+          <!-- Discovered Toggle -->
+          <div class="form-group full-width" style="margin-bottom: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" [(ngModel)]="discovered" style="width: auto; cursor: pointer;" />
+              <span><strong>Discovered by Players</strong> (Checked = Visible to players in campaign companion)</span>
+            </label>
+          </div>
+
           <!-- Faction -->
           <div class="form-group">
             <label for="npc-faction">Faction</label>

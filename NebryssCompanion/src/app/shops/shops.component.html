@@ -4,7 +4,19 @@
       <img *ngIf="group.locationImageUrl" [src]="group.locationThumbnail || group.locationImageUrl" [alt]="group.locationName" class="shop-location-photo" loading="lazy" decoding="async" crossorigin="anonymous" (load)="onLocationGroupImageLoad($event, group)">
       <div class="shop-location-overlay">
         <div class="shop-location-meta">
-          <h2 class="shop-location-title">{{ group.locationName }}</h2>
+          <div class="shop-location-title-row">
+            <h2 class="shop-location-title">{{ group.locationName }}</h2>
+            <button
+              *ngIf="group.key !== 'unbound' && group.locationName !== 'Unbound'"
+              type="button"
+              class="shop-group-location-btn"
+              (click)="$event.stopPropagation(); onLocationClick(group.locationName)"
+              title="Go to location details for {{ group.locationName }}"
+            >
+              <span class="material-icons">place</span>
+              <span>View Location</span>
+            </button>
+          </div>
           <p *ngIf="group.locationDescription" class="shop-location-description">{{ group.locationDescription }}</p>
           <span class="shop-location-count">{{ group.shops.length }} shop{{ group.shops.length === 1 ? '' : 's' }}</span>
         </div>
@@ -31,7 +43,10 @@
           </div>
         </div>
         <p class="location" (click)="onLocationClick(shop.locationName || shop.location || 'Unbound')" style="cursor: pointer;" title="Go to location">{{ shop.location || shop.locationName || 'Unbound' }}</p>
-        <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
+        <p class="owner" [class.clickable-owner]="!!getOwnerNpc(shop.owner)" (click)="onNpcOwnerClick(shop.owner, $event)" [title]="getOwnerNpc(shop.owner) ? 'View NPC details for ' + getOwnerName(shop.owner) : ''">
+          Owner: {{ getOwnerName(shop.owner) }}
+          <span *ngIf="getOwnerNpc(shop.owner)" class="owner-npc-icon material-icons">badge</span>
+        </p>
         <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
 
         <div class="payment-methods-info">

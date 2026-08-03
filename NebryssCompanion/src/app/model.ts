@@ -295,6 +295,7 @@ export interface AlteredState {
     flagship?: string;
     tactics?: string;
     motivations?: string;
+    discovered?: boolean;
     wargear?: Array<{
       name: string;
       description: string;

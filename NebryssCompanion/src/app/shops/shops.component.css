@@ -12,6 +12,58 @@
             rgba(var(--shop-group-color-rgb), 0.14) 100%);
 }
 
+.shop-location-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.shop-group-location-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: rgba(49, 130, 206, 0.35);
+    border: 1px solid rgba(99, 179, 237, 0.5);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.shop-group-location-btn:hover {
+    background: rgba(49, 130, 206, 0.6);
+    border-color: #63b3ed;
+    transform: translateY(-1px);
+}
+
+.shop-group-location-btn .material-icons {
+    font-size: 14px;
+}
+
+.clickable-owner {
+    cursor: pointer !important;
+    color: #63b3ed !important;
+    transition: color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.clickable-owner:hover {
+    text-decoration: underline;
+    color: #90cdf4 !important;
+}
+
+.owner-npc-icon {
+    font-size: 14px;
+    color: #48bb78;
+}
+
 .shop-location-header {
     position: relative;
     display: block;

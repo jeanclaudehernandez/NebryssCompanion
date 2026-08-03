@@ -15,6 +15,7 @@ export const APP_VIEWS = [
   'alteredStates',
   'afflictions',
   'shipNavigation',
+  'npcs',
   'adminItemCreator',
   'adminLocationCreator',
   'adminPlayerEditor',

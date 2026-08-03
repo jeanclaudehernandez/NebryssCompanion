@@ -5,7 +5,7 @@ import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { ToastService } from '../toast.service';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { Location, Lore, SecretBlock } from '../model';
+import { Location, Lore, SecretBlock, NPC, Shop } from '../model';
 
 @Component({
   selector: 'app-locations',
@@ -25,10 +25,14 @@ export class LocationsComponent implements OnInit {
   @Output() navigateTo = new EventEmitter<any>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToWorldMap = new EventEmitter<string>();
+  @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
+  @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
 
   private readonly destroyRef = inject(DestroyRef);
 
   locations: Location[] = [];
+  npcs: NPC[] = [];
+  shops: Shop[] = [];
   selectedLocation: Location | null = null;
   deepLinkMode = false;
   private readonly STORAGE_KEY = 'selectedLocationName';
@@ -226,7 +230,13 @@ export class LocationsComponent implements OnInit {
     });
 
     this.dataService.getShops().subscribe(shops => {
-      this.shopNames = shops.map(shop => shop.name);
+      this.shops = shops || [];
+      this.shopNames = this.shops.map(shop => shop.name);
+      this.cdr.markForCheck();
+    });
+
+    this.dataService.getNpcs().subscribe(npcs => {
+      this.npcs = npcs || [];
       this.cdr.markForCheck();
     });
   }
@@ -432,23 +442,43 @@ export class LocationsComponent implements OnInit {
     this.navigateToWorldMap.emit(this.selectedLocation.name);
   }
 
-  navigateToShop(shopName: string) {
-    this.navigateTo.emit('shops');
+  onShopByNameClick(shopName: string) {
+    this.navigateToShop.emit({ shopName });
+  }
 
-    setTimeout(() => {
-      this.dataService.getShops().subscribe(shops => {
-        const shop = shops.find(s => s.name === shopName);
-        if (shop) {
-          const elementId = `shop-${shop.id}`;
-          const element = document.getElementById(elementId);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            element.classList.add('highlight-shop');
-            setTimeout(() => element.classList.remove('highlight-shop'), 2000);
-          }
-        }
-      });
-    }, 100);
+  getNpcsForSelectedLocation(): NPC[] {
+    if (!this.selectedLocation) return [];
+    const locName = this.selectedLocation.name.toLowerCase();
+    return this.npcs.filter(npc =>
+      (this.isAdmin || npc.discovered !== false) &&
+      npc.location && npc.location.toLowerCase() === locName
+    );
+  }
+
+  getShopsForSelectedLocation(): Shop[] {
+    if (!this.selectedLocation) return [];
+    const locName = this.selectedLocation.name.toLowerCase();
+    const locId = this.selectedLocation.id;
+    return this.shops.filter(shop =>
+      (this.isAdmin || shop.discovered !== false) &&
+      ((shop.location && shop.location.toLowerCase() === locName) ||
+       (shop.locationName && shop.locationName.toLowerCase() === locName) ||
+       (typeof shop.locationId === 'number' && shop.locationId === locId))
+    );
+  }
+
+  getOwnerName(ownerId: number): string {
+    if (!ownerId) return 'Unknown';
+    const npc = this.npcs.find(n => n.id === ownerId);
+    return npc ? npc.name : `NPC ${ownerId}`;
+  }
+
+  onNpcClick(npc: NPC): void {
+    this.navigateToNpc.emit({ npcId: npc.id, npcName: npc.name });
+  }
+
+  onShopClick(shop: Shop): void {
+    this.navigateToShop.emit({ shopId: shop.id, shopName: shop.name });
   }
 
   isShop(featureName: string): boolean {
