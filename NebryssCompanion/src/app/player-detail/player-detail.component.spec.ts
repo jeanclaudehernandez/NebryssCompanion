@@ -25,6 +25,7 @@ class MockWeaponTableComponent {
   @Input() characterBody: any;
   @Input() alteredStates: any;
   @Input() inventoryManagement: any;
+  @Input() collapsible: any;
 }
 
 @Component({

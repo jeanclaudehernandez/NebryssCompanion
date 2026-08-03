@@ -10,7 +10,7 @@ describe('ItemsComponent', () => {
   let mockDataService: jasmine.SpyObj<DataService>;
 
   beforeEach(async () => {
-    mockDataService = jasmine.createSpyObj('DataService', ['getAllData', 'getPlayers']);
+    mockDataService = jasmine.createSpyObj('DataService', ['getAllData', 'getPlayers', 'getItems', 'getTalents', 'getAfflictions', 'getItemById']);
     mockDataService.getAllData.and.returnValue(of({
       players: [],
       npcs: [],
@@ -27,6 +27,10 @@ describe('ItemsComponent', () => {
       afflictions: []
     }));
     mockDataService.getPlayers.and.returnValue(of([]));
+    mockDataService.getItems.and.returnValue(of({ items: [] } as any));
+    mockDataService.getTalents.and.returnValue(of([]));
+    mockDataService.getAfflictions.and.returnValue(of([]));
+    mockDataService.getItemById.and.returnValue(null);
 
     await TestBed.configureTestingModule({
       imports: [ItemsComponent],

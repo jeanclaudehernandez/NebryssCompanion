@@ -233,6 +233,7 @@ export interface AlteredState {
   
   // mistEffects.ts
   export interface MistEffect {
+    id?: number | string;
     effectName: string;
     densityLevel: string;
     description: string;

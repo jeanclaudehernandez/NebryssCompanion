@@ -1,11 +1,36 @@
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const { setupWebSocketServer } = require('./websocket-server');
 
 const app = express();
+const server = http.createServer(app);
+const { broadcastDataUpdate } = setupWebSocketServer(server);
 
 app.use(cors());
 app.use(express.json());
+
+function notifyChange(entity, action, data) {
+  try {
+    broadcastDataUpdate(entity, action, data);
+  } catch (err) {
+    console.error('Error broadcasting update:', err);
+  }
+
+  if (process.env.WS_SERVER_URL) {
+    try {
+      const url = `${process.env.WS_SERVER_URL.replace(/\/$/, '')}/broadcast`;
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity, action, data })
+      }).catch(err => console.error('Error posting to WS_SERVER_URL:', err.message));
+    } catch (e) {
+      console.error('Failed to dispatch WS broadcast:', e);
+    }
+  }
+}
 
 const mongoUri = process.env.MONGODB_URI;
 const mainDbName = process.env.MONGODB_DB_MAIN;
@@ -63,6 +88,7 @@ function createUpdateRoute(path, options) {
         return res.status(404).json({ error: 'Item not found' });
       }
 
+      notifyChange(collectionName, 'update', item);
       res.json(item);
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
@@ -110,6 +136,7 @@ function createInsertRoute(path, options) {
       }
 
       await collection.insertOne(item);
+      notifyChange(collectionName, 'create', item);
       res.status(201).json(item);
     } catch (error) {
       console.error(error);
@@ -148,6 +175,7 @@ function createDeleteRoute(path, options) {
         return res.status(404).json({ error: 'Item not found' });
       }
 
+      notifyChange(collectionName, 'delete', { id: idParam });
       res.json({ success: true, id: idParam });
     } catch (error) {
       console.error(error);
@@ -196,6 +224,7 @@ app.put('/api/player', async (req, res) => {
       return res.status(404).json({ error: 'Player not found' });
     }
 
+    notifyChange('player', 'update', player);
     res.json(player);
   } catch (error) {
     res.status(500).json({ error: error });
@@ -544,6 +573,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
     }
 
     const updatedLetter = await collection.findOne(query);
+    notifyChange('letters', 'update', updatedLetter);
     res.json(updatedLetter);
   } catch (error) {
     console.error(error);
@@ -553,6 +583,6 @@ app.post('/api/letter/:id/read', async (req, res) => {
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  process.stdout.write(`API server listening on port ${port}\n`);
+server.listen(port, () => {
+  process.stdout.write(`API & WebSocket server listening on port ${port}\n`);
 });

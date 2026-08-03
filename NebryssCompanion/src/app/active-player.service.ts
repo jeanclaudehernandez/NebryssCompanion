@@ -13,7 +13,26 @@ export class ActivePlayerService {
   constructor(private dataService: DataService) {
     this.loadFromLocalStorage();
     this.syncActivePlayerFromDatabase();
+    this.listenToRealtimePlayerUpdates();
     this.startPeriodicSync();
+  }
+
+  private listenToRealtimePlayerUpdates(): void {
+    if (!this.dataService || !this.dataService.players$) {
+      return;
+    }
+    this.dataService.players$.subscribe(players => {
+      const current = this.activePlayer;
+      if (!current || !players || players.length === 0) {
+        return;
+      }
+      const freshPlayer = players.find(p => p.id === current.id);
+      if (freshPlayer) {
+        if (JSON.stringify(freshPlayer) !== JSON.stringify(current)) {
+          this.setActivePlayer(freshPlayer);
+        }
+      }
+    });
   }
 
   get activePlayer$(): Observable<Player | null> {
@@ -87,7 +106,7 @@ export class ActivePlayerService {
 
   private syncActivePlayerFromDatabase(): void {
     const storedPlayer = this.activePlayer;
-    if (!storedPlayer) {
+    if (!storedPlayer || !this.dataService || typeof this.dataService.getPlayers !== 'function') {
       return;
     }
 

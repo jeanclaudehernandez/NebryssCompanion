@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, of, shareReplay, map, tap } from 'rxjs';
 import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
+import { WebSocketService, EntityUpdateEvent } from './websocket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,54 @@ export class DataService {
   private afflictions: Affliction[] = [];
   private letters: Letter[] = [];
 
+  private playersSubject = new BehaviorSubject<Player[]>([]);
+  readonly players$ = this.playersSubject.asObservable();
+
+  private npcsSubject = new BehaviorSubject<NPC[]>([]);
+  readonly npcs$ = this.npcsSubject.asObservable();
+
+  private weaponsSubject = new BehaviorSubject<Weapon[]>([]);
+  readonly weapons$ = this.weaponsSubject.asObservable();
+
+  private itemsSubject = new BehaviorSubject<Items>({ items: [] });
+  readonly items$ = this.itemsSubject.asObservable();
+
+  private weaponRulesSubject = new BehaviorSubject<WeaponRule[]>([]);
+  readonly weaponRules$ = this.weaponRulesSubject.asObservable();
+
+  private bestiarySubject = new BehaviorSubject<BestiaryEntry[]>([]);
+  readonly bestiary$ = this.bestiarySubject.asObservable();
+
+  private shopsSubject = new BehaviorSubject<Shop[]>([]);
+  readonly shops$ = this.shopsSubject.asObservable();
+
+  private itemCategoriesSubject = new BehaviorSubject<ItemCategory[]>([]);
+  readonly itemCategories$ = this.itemCategoriesSubject.asObservable();
+
+  private alteredStatesSubject = new BehaviorSubject<AlteredState[]>([]);
+  readonly alteredStates$ = this.alteredStatesSubject.asObservable();
+
+  private mistEffectsSubject = new BehaviorSubject<MistEffect[]>([]);
+  readonly mistEffects$ = this.mistEffectsSubject.asObservable();
+
+  private terrainsSubject = new BehaviorSubject<Terrain[]>([]);
+  readonly terrains$ = this.terrainsSubject.asObservable();
+
+  private talentsSubject = new BehaviorSubject<TalentCategory[]>([]);
+  readonly talents$ = this.talentsSubject.asObservable();
+
+  private afflictionsSubject = new BehaviorSubject<Affliction[]>([]);
+  readonly afflictions$ = this.afflictionsSubject.asObservable();
+
+  private lettersSubject = new BehaviorSubject<Letter[]>([]);
+  readonly letters$ = this.lettersSubject.asObservable();
+
+  private loreSubject = new BehaviorSubject<Lore | null>(null);
+  readonly lore$ = this.loreSubject.asObservable();
+
+  private locationsSubject = new BehaviorSubject<Locations>({ locations: [] });
+  readonly locations$ = this.locationsSubject.asObservable();
+
   private playersCache$: Observable<Player[]> | null = null;
   private npcsCache$: Observable<NPC[]> | null = null;
   private bestiaryCache$: Observable<BestiaryEntry[]> | null = null;
@@ -43,14 +92,115 @@ export class DataService {
   private afflictionsCache$: Observable<Affliction[]> | null = null;
   private lettersCache$: Observable<Letter[]> | null = null;
   private allDataCache$: Observable<any> | null = null;
-  private lettersSubject = new BehaviorSubject<Letter[]>([]);
-  readonly letters$ = this.lettersSubject.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private wsService: WebSocketService
+  ) {
+    this.initRealtimeSync();
+  }
+
+  private initRealtimeSync(): void {
+    this.wsService.messages$.subscribe((event: EntityUpdateEvent) => {
+      this.handleRealtimeEvent(event);
+    });
+  }
+
+  private handleRealtimeEvent(event: EntityUpdateEvent): void {
+    const { entity, action, data } = event;
+    if (!entity || !data) return;
+
+    const normalizedEntity = entity.toLowerCase();
+
+    if (normalizedEntity === 'player' || normalizedEntity === 'players') {
+      this.updateArrayCollection(this.players, data, action, p => p.id);
+      this.playersSubject.next([...this.players]);
+      this.playersCache$ = of(this.players);
+    } else if (normalizedEntity === 'weapon' || normalizedEntity === 'weapons') {
+      this.updateArrayCollection(this.weapons, data, action, w => w.id);
+      this.weaponsSubject.next([...this.weapons]);
+      this.weaponsCache$ = of(this.weapons);
+    } else if (normalizedEntity === 'item' || normalizedEntity === 'items') {
+      if (!this.items) this.items = { items: [] };
+      this.updateArrayCollection(this.items.items, data, action, i => i.id);
+      this.itemsSubject.next({ ...this.items });
+      this.itemsCache$ = of(this.items);
+    } else if (normalizedEntity === 'affliction' || normalizedEntity === 'afflictions') {
+      this.updateArrayCollection(this.afflictions, data, action, a => a.id);
+      this.afflictionsSubject.next([...this.afflictions]);
+      this.afflictionsCache$ = of(this.afflictions);
+    } else if (normalizedEntity === 'letter' || normalizedEntity === 'letters') {
+      const normalizedLetter = this.normalizeLetter(data);
+      this.updateArrayCollection(this.letters, normalizedLetter, action, l => l.id);
+      this.lettersSubject.next([...this.letters]);
+      this.lettersCache$ = of(this.letters);
+    } else if (normalizedEntity === 'bestiary') {
+      this.updateArrayCollection(this.bestiary, data, action, b => b.id);
+      this.bestiarySubject.next([...this.bestiary]);
+      this.bestiaryCache$ = of(this.bestiary);
+    } else if (normalizedEntity === 'npc' || normalizedEntity === 'npcs') {
+      this.updateArrayCollection(this.npcs, data, action, n => n.id);
+      this.npcsSubject.next([...this.npcs]);
+      this.npcsCache$ = of(this.npcs);
+    } else if (normalizedEntity === 'shop' || normalizedEntity === 'shops') {
+      this.updateArrayCollection(this.shops, data, action, s => s.id);
+      this.shopsSubject.next([...this.shops]);
+      this.shopsCache$ = of(this.shops);
+    } else if (normalizedEntity === 'itemcategory' || normalizedEntity === 'itemcategories') {
+      this.updateArrayCollection(this.itemCategories, data, action, c => c.id);
+      this.itemCategoriesSubject.next([...this.itemCategories]);
+    } else if (normalizedEntity === 'weaponrule' || normalizedEntity === 'weaponrules') {
+      this.updateArrayCollection(this.weaponsRules, data, action, r => r.id);
+      this.weaponRulesSubject.next([...this.weaponsRules]);
+      this.weaponRulesCache$ = of(this.weaponsRules);
+    } else if (normalizedEntity === 'status' || normalizedEntity === 'alteredstate' || normalizedEntity === 'alteredstates') {
+      this.updateArrayCollection(this.alteredStates, data, action, s => s.id);
+      this.alteredStatesSubject.next([...this.alteredStates]);
+      this.alteredStatesCache$ = of(this.alteredStates);
+    } else if (normalizedEntity === 'misteffect' || normalizedEntity === 'misteffects') {
+      this.updateArrayCollection(this.mistEffects, data, action, m => m.id || m.effectName);
+      this.mistEffectsSubject.next([...this.mistEffects]);
+      this.mistEffectsCache$ = of(this.mistEffects);
+    } else if (normalizedEntity === 'terrainrule' || normalizedEntity === 'terrain' || normalizedEntity === 'terrains' || normalizedEntity === 'location') {
+      this.updateArrayCollection(this.terrains, data, action, t => t.id);
+      this.terrainsSubject.next([...this.terrains]);
+      this.terrainsCache$ = of(this.terrains);
+    } else if (normalizedEntity === 'talent' || normalizedEntity === 'talents') {
+      this.updateArrayCollection(this.talents, data, action, t => t.id);
+      this.talentsSubject.next([...this.talents]);
+      this.talentsCache$ = of(this.talents);
+    }
+
+    this.allDataCache$ = null;
+  }
+
+  private updateArrayCollection<T>(collection: T[], item: any, action: string, getId: (el: T) => any): void {
+    if (!item) return;
+    const itemId = item.id;
+    const index = collection.findIndex(el => {
+      const id = getId(el);
+      return id === itemId || (typeof id !== 'undefined' && String(id) === String(itemId));
+    });
+
+    if (action === 'delete') {
+      if (index !== -1) {
+        collection.splice(index, 1);
+      }
+    } else {
+      if (index !== -1) {
+        collection[index] = { ...collection[index], ...item };
+      } else {
+        collection.push(item);
+      }
+    }
+  }
 
   getAfflictions(): Observable<Affliction[]> {
     if (!this.afflictionsCache$) {
       this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
         tap(afflictions => {
           this.afflictions = afflictions;
+          this.afflictionsSubject.next([...this.afflictions]);
         }),
         shareReplay(1)
       );
@@ -62,6 +212,7 @@ export class DataService {
     this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
       tap(afflictions => {
         this.afflictions = afflictions;
+        this.afflictionsSubject.next([...this.afflictions]);
       }),
       shareReplay(1)
     );
@@ -71,29 +222,40 @@ export class DataService {
 
   createAffliction(affliction: Affliction): Observable<Affliction> {
     return this.http.post<Affliction>(`${this.apiUrl}/afflictions`, affliction).pipe(
-      tap(() => this.refreshAfflictions().subscribe())
+      tap((newAffliction) => {
+        this.updateArrayCollection(this.afflictions, newAffliction, 'create', a => a.id);
+        this.afflictionsSubject.next([...this.afflictions]);
+        this.refreshAfflictions().subscribe();
+      })
     );
   }
 
   updateAffliction(affliction: Affliction): Observable<Affliction> {
     return this.http.put<Affliction>(`${this.apiUrl}/afflictions`, affliction).pipe(
-      tap(() => this.refreshAfflictions().subscribe())
+      tap((updated) => {
+        this.updateArrayCollection(this.afflictions, updated, 'update', a => a.id);
+        this.afflictionsSubject.next([...this.afflictions]);
+        this.refreshAfflictions().subscribe();
+      })
     );
   }
 
   deleteAffliction(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/afflictions/${id}`).pipe(
-      tap(() => this.refreshAfflictions().subscribe())
+      tap(() => {
+        this.updateArrayCollection(this.afflictions, { id }, 'delete', a => a.id);
+        this.afflictionsSubject.next([...this.afflictions]);
+        this.refreshAfflictions().subscribe();
+      })
     );
   }
-
-  constructor(private http: HttpClient) { }
 
   getPlayers(): Observable<Player[]> {
     if (!this.playersCache$) {
       this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
         tap(players => {
           this.players = players;
+          this.playersSubject.next([...this.players]);
         }),
         shareReplay(1)
       );
@@ -105,6 +267,7 @@ export class DataService {
     this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
       tap(players => {
         this.players = players;
+        this.playersSubject.next([...this.players]);
       }),
       shareReplay(1)
     );
@@ -117,6 +280,7 @@ export class DataService {
       this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
         tap(npcs => {
           this.npcs = npcs;
+          this.npcsSubject.next([...this.npcs]);
         }),
         shareReplay(1)
       );
@@ -129,6 +293,7 @@ export class DataService {
       return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
         tap(categories => {
           this.itemCategories = categories;
+          this.itemCategoriesSubject.next([...this.itemCategories]);
         }),
         shareReplay(1)
       );
@@ -143,6 +308,7 @@ export class DataService {
       this.bestiaryCache$ = this.http.get<BestiaryEntry[]>(`${this.apiUrl}/bestiary`).pipe(
         tap(bestiary => {
           this.bestiary = bestiary;
+          this.bestiarySubject.next([...this.bestiary]);
         }),
         shareReplay(1)
       );
@@ -160,6 +326,7 @@ export class DataService {
       this.weaponsCache$ = this.http.get<Weapon[]>(`${this.apiUrl}/weapon`).pipe(
         tap(weapons => {
           this.weapons = weapons;
+          this.weaponsSubject.next([...this.weapons]);
         }),
         shareReplay(1)
       );
@@ -178,6 +345,7 @@ export class DataService {
         map(itemsArray => {
           const wrapped: Items = { items: itemsArray };
           this.items = wrapped;
+          this.itemsSubject.next({ ...this.items });
           return wrapped;
         }),
         shareReplay(1)
@@ -191,6 +359,7 @@ export class DataService {
       this.weaponRulesCache$ = this.http.get<WeaponRule[]>(`${this.apiUrl}/weaponRule`).pipe(
         tap(rules => {
           this.weaponsRules = rules;
+          this.weaponRulesSubject.next([...this.weaponsRules]);
         }),
         shareReplay(1)
       );
@@ -203,6 +372,7 @@ export class DataService {
       this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
         tap(shops => {
           this.shops = shops;
+          this.shopsSubject.next([...this.shops]);
         }),
         shareReplay(1)
       );
@@ -216,6 +386,7 @@ export class DataService {
         map(response => {
           const lore = Array.isArray(response) ? response[0] : response;
           this.lore = lore as Lore;
+          this.loreSubject.next(this.lore);
           return this.lore;
         }),
         shareReplay(1)
@@ -230,6 +401,7 @@ export class DataService {
         map(locationsArray => {
           const wrapped: Locations = { locations: locationsArray };
           this.locations = wrapped;
+          this.locationsSubject.next({ ...this.locations });
           return wrapped;
         }),
         shareReplay(1)
@@ -260,6 +432,7 @@ export class DataService {
         }))),
         tap(talents => {
           this.talents = talents;
+          this.talentsSubject.next([...this.talents]);
         }),
         shareReplay(1)
       );
@@ -267,12 +440,12 @@ export class DataService {
     return this.talentsCache$;
   }
 
-
   getAlteredStates(): Observable<AlteredState[]> {
     if (!this.alteredStatesCache$) {
       this.alteredStatesCache$ = this.http.get<AlteredState[]>(`${this.apiUrl}/status`).pipe(
         tap(states => {
           this.alteredStates = states;
+          this.alteredStatesSubject.next([...this.alteredStates]);
         }),
         shareReplay(1)
       );
@@ -285,6 +458,7 @@ export class DataService {
       this.mistEffectsCache$ = this.http.get<MistEffect[]>(`${this.apiUrl}/mistEffect`).pipe(
         tap(effects => {
           this.mistEffects = effects;
+          this.mistEffectsSubject.next([...this.mistEffects]);
         }),
         shareReplay(1)
       );
@@ -297,6 +471,7 @@ export class DataService {
       this.terrainsCache$ = this.http.get<Terrain[]>(`${this.apiUrl}/terrainRule`).pipe(
         tap(terrains => {
           this.terrains = terrains;
+          this.terrainsSubject.next([...this.terrains]);
         }),
         shareReplay(1)
       );
@@ -329,8 +504,6 @@ export class DataService {
     return this.lettersCache$;
   }
 
-
-
   getAllData(): Observable<{
     players: Player[],
     npcs: NPC[],
@@ -345,7 +518,7 @@ export class DataService {
     terrains: Terrain[],
     talents: Talent[],
     afflictions: Affliction[],
-    letters: Letter[]
+    letters?: Letter[]
   }> {
     if (!this.allDataCache$) {
       this.allDataCache$ = forkJoin({
@@ -374,28 +547,25 @@ export class DataService {
 
   getItemById(id: number): any {
     if (!this.items) return null;
-    
-    // With new items structure, items are in a single array
     const foundItem = this.items.items.find((item: any) => item.id === id);
-    if (foundItem) return {...foundItem};
-    
+    if (foundItem) return { ...foundItem };
     return null;
   }
 
   getBestiaryById(id: number): any {
-    if(this.bestiary.length === 0) return null;
+    if (this.bestiary.length === 0) return null;
     return this.bestiary.find((beast) => beast.id === id) || null;
   }
 
   getShopWeapons(shopId: number): any[] {
     const shop = this.shops.find((shop) => shop.id === shopId);
-    if(!shop) { return [] }
+    if (!shop) { return [] }
     return shop.items.filter((item: any) => item.type === 'weapon');
   }
 
   getShopItems(shopId: number): any[] {
     const shop = this.shops.find((shop) => shop.id === shopId);
-    if(!shop) { return [] }
+    if (!shop) { return [] }
     return shop.items.filter((item: any) => item.type === 'item');
   }
 
@@ -404,7 +574,7 @@ export class DataService {
   }
 
   getTalentById(id: string): any {
-    if(!this.talents.length) return null;
+    if (!this.talents.length) return null;
     const allTalents = this.talents.flatMap(category => category.talents);
     return allTalents.find(talent => talent.id === id) || null;
   }
@@ -417,10 +587,8 @@ export class DataService {
       const movement = attributes.Movement;
       const apl = attributes.APL;
 
-      // Calculate base components of PR
       const basePR = (wounds * 2.2) + ((6 - save) * 7) + (movement * 4) + (apl * 6);
 
-      // Calculate Weapon Threat (highest among all weapon profiles)
       let weaponThreat = 0;
       if (beast.weapons && beast.weapons.length > 0) {
         beast.weapons.forEach((weaponId: number) => {
@@ -449,7 +617,6 @@ export class DataService {
         });
       }
 
-      // Calculate Ability Score (sum of prModifiers)
       let abilityScore = 0;
       if (beast.abilities) {
         beast.abilities.forEach((ability: any) => {
@@ -459,7 +626,6 @@ export class DataService {
         });
       }
 
-      // Calculate total PR and round to nearest integer
       const calculatedPR = Math.round(basePR + weaponThreat + abilityScore);
       const currentPR = beast.pr;
 
@@ -474,6 +640,9 @@ export class DataService {
   }
 
   savePlayer(player: Player): Observable<Player> {
+    this.updateArrayCollection(this.players, player, 'update', p => p.id);
+    this.playersSubject.next([...this.players]);
+
     return this.http.put<Player>(`${this.apiUrl}/player`, player, {
       headers: new HttpHeaders({
         [SKIP_LOADING_HEADER]: 'true'
@@ -485,8 +654,9 @@ export class DataService {
     return this.http.post<any>(`${this.apiUrl}/item`, item).pipe(
       tap(newItem => {
         if (this.items && this.items.items) {
-          this.items.items.push(newItem);
-          this.itemsCache$ = null; // Invalidate cache
+          this.updateArrayCollection(this.items.items, newItem, 'create', i => i.id);
+          this.itemsSubject.next({ ...this.items });
+          this.itemsCache$ = null;
         }
       })
     );
@@ -496,11 +666,9 @@ export class DataService {
     return this.http.put<any>(`${this.apiUrl}/item`, item).pipe(
       tap(updatedItem => {
         if (this.items && this.items.items) {
-          const index = this.items.items.findIndex(i => i.id === updatedItem.id);
-          if (index !== -1) {
-            this.items.items[index] = updatedItem;
-          }
-          this.itemsCache$ = null; // Invalidate cache
+          this.updateArrayCollection(this.items.items, updatedItem, 'update', i => i.id);
+          this.itemsSubject.next({ ...this.items });
+          this.itemsCache$ = null;
         }
       })
     );
@@ -510,8 +678,9 @@ export class DataService {
     return this.http.delete<any>(`${this.apiUrl}/item/${id}`).pipe(
       tap(() => {
         if (this.items && this.items.items) {
-          this.items.items = this.items.items.filter(item => item.id !== id);
-          this.itemsCache$ = null; // Invalidate cache
+          this.updateArrayCollection(this.items.items, { id }, 'delete', i => i.id);
+          this.itemsSubject.next({ ...this.items });
+          this.itemsCache$ = null;
         }
       })
     );
@@ -520,7 +689,8 @@ export class DataService {
   createWeapon(weapon: Weapon): Observable<Weapon> {
     return this.http.post<Weapon>(`${this.apiUrl}/weapon`, weapon).pipe(
       tap(newWeapon => {
-        this.weapons.push(newWeapon);
+        this.updateArrayCollection(this.weapons, newWeapon, 'create', w => w.id);
+        this.weaponsSubject.next([...this.weapons]);
         this.weaponsCache$ = null;
       })
     );
@@ -529,10 +699,8 @@ export class DataService {
   updateWeapon(weapon: Weapon): Observable<Weapon> {
     return this.http.put<Weapon>(`${this.apiUrl}/weapon`, weapon).pipe(
       tap(updatedWeapon => {
-        const index = this.weapons.findIndex(w => w.id === updatedWeapon.id);
-        if (index !== -1) {
-          this.weapons[index] = updatedWeapon;
-        }
+        this.updateArrayCollection(this.weapons, updatedWeapon, 'update', w => w.id);
+        this.weaponsSubject.next([...this.weapons]);
         this.weaponsCache$ = null;
       })
     );
@@ -541,7 +709,8 @@ export class DataService {
   deleteWeapon(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/weapon/${id}`).pipe(
       tap(() => {
-        this.weapons = this.weapons.filter(w => w.id !== id);
+        this.updateArrayCollection(this.weapons, { id }, 'delete', w => w.id);
+        this.weaponsSubject.next([...this.weapons]);
         this.weaponsCache$ = null;
       })
     );
@@ -550,7 +719,8 @@ export class DataService {
   createLetter(letter: Letter): Observable<Letter> {
     return this.http.post<Letter>(`${this.apiUrl}/letter`, letter).pipe(
       tap(newLetter => {
-        this.letters.push(this.normalizeLetter(newLetter));
+        const normalized = this.normalizeLetter(newLetter);
+        this.updateArrayCollection(this.letters, normalized, 'create', l => l.id);
         this.lettersSubject.next([...this.letters]);
         this.lettersCache$ = null;
         this.allDataCache$ = null;
@@ -561,13 +731,8 @@ export class DataService {
   updateLetter(letter: Letter): Observable<Letter> {
     return this.http.put<Letter>(`${this.apiUrl}/letter`, letter).pipe(
       tap(updatedLetter => {
-        const normalizedLetter = this.normalizeLetter(updatedLetter);
-        const index = this.letters.findIndex(existingLetter => existingLetter.id === normalizedLetter.id);
-        if (index !== -1) {
-          this.letters[index] = normalizedLetter;
-        } else {
-          this.letters.push(normalizedLetter);
-        }
+        const normalized = this.normalizeLetter(updatedLetter);
+        this.updateArrayCollection(this.letters, normalized, 'update', l => l.id);
         this.lettersSubject.next([...this.letters]);
         this.lettersCache$ = null;
         this.allDataCache$ = null;
@@ -578,7 +743,7 @@ export class DataService {
   deleteLetter(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/letter/${id}`).pipe(
       tap(() => {
-        this.letters = this.letters.filter(letter => letter.id !== id);
+        this.updateArrayCollection(this.letters, { id }, 'delete', l => l.id);
         this.lettersSubject.next([...this.letters]);
         this.lettersCache$ = null;
         this.allDataCache$ = null;
@@ -589,13 +754,8 @@ export class DataService {
   markLetterAsRead(letterId: number, playerId: number): Observable<Letter> {
     return this.http.post<Letter>(`${this.apiUrl}/letter/${letterId}/read`, { playerId }).pipe(
       tap(updatedLetter => {
-        const normalizedLetter = this.normalizeLetter(updatedLetter);
-        const index = this.letters.findIndex(letter => letter.id === normalizedLetter.id);
-        if (index !== -1) {
-          this.letters[index] = normalizedLetter;
-        } else {
-          this.letters.push(normalizedLetter);
-        }
+        const normalized = this.normalizeLetter(updatedLetter);
+        this.updateArrayCollection(this.letters, normalized, 'update', l => l.id);
         this.lettersSubject.next([...this.letters]);
         this.lettersCache$ = null;
         this.allDataCache$ = null;
