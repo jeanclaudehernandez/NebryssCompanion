@@ -99,7 +99,7 @@ export interface AlteredState {
     faction: string;
     subgroup: string;
     pr: number;
-    
+    isDiscovered?: boolean;
   }
   
   // itemCategories.ts

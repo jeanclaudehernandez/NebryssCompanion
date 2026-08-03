@@ -74,6 +74,12 @@
                   PR</button>
               </div>
             </label>
+            <div class="field" style="grid-column: 1 / -1; margin-top: 4px;">
+              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;">
+                <input type="checkbox" [(ngModel)]="creature.isDiscovered" name="creatureIsDiscovered" style="width: auto; cursor: pointer;" />
+                <span><strong>Discovered by Players</strong> (Checked = Visible to players in Bestiary)</span>
+              </label>
+            </div>
           </div>
         </section>
 
