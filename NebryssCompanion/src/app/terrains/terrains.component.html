@@ -1,6 +1,4 @@
 <div class="terrains-container">
-  <h1 class="terrains-title">Terrain Features</h1>
-  
   <div class="terrain-list">
     <div *ngFor="let terrain of terrains" class="terrain-card" [id]="'terrain-' + terrain.id">
       <h2 class="terrain-name">{{ terrain.name }}</h2>
@@ -9,7 +7,7 @@
         <div class="terrain-image">
           <app-image-viewer 
             [imageUrl]="terrain.imageUrl" 
-            [thumbnailUrl]="terrain.thumbnailUrl"
+            previewMode="full"
             [altText]="terrain.name">
           </app-image-viewer>
         </div>

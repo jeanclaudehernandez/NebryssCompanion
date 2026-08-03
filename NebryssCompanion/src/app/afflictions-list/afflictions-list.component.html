@@ -1,11 +1,11 @@
 <div class="afflictions-container">
-  <h2>Afflictions</h2>
   <app-generic-table 
     [data]="afflictions" 
     [headers]="headers" 
     [headerKeys]="headerKeys" 
     title="All Afflictions"
     storageKey="afflictions-table"
+    [nameColumnWidth]="'65px'"
     [enableCustomAdd]="true"
     (customAdd)="onAddAffliction($event)">
   </app-generic-table>

@@ -9,11 +9,12 @@ import { MatButtonModule } from '@angular/material/button';
   standalone: true,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
   template: `
-    <div class="image-container" *ngIf="imageUrl">
+    <div class="image-container" *ngIf="imageUrl" [class.full-preview]="previewMode === 'full'">
       <img 
-        [src]="thumbnailUrl || imageUrl" 
+        [src]="previewMode === 'full' ? imageUrl : (thumbnailUrl || imageUrl)"
         (click)="openDialog()" 
         class="thumbnail-image"
+        [class.full-preview-image]="previewMode === 'full'"
         [class.clickable]="showFullImageOnClick"
         [alt]="altText || 'Image'"
         loading="lazy"
@@ -26,9 +27,21 @@ import { MatButtonModule } from '@angular/material/button';
       display: inline-block;
       margin: 5px;
     }
+    .image-container.full-preview {
+      display: block;
+      width: 100%;
+      margin: 0;
+    }
     .thumbnail-image {
       max-height: 100px;
       max-width: 100px;
+      object-fit: contain;
+    }
+    .full-preview-image {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      max-height: none;
       object-fit: contain;
     }
     .clickable {
@@ -46,6 +59,7 @@ export class ImageViewerComponent {
   @Input() thumbnailUrl?: string;
   @Input() altText?: string;
   @Input() showFullImageOnClick = true;
+  @Input() previewMode: 'thumbnail' | 'full' = 'thumbnail';
 
   constructor(private dialog: MatDialog) {}
 

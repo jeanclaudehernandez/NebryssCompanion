@@ -10,14 +10,13 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
   imports: [CommonModule, GenericTableComponent],
   template: `
     <div class="altered-states-page">
-      <h2>Altered States</h2>
       <app-generic-table
-        [title]="'Altered States'"
+        title="Altered States"
         [data]="alteredStates"
         [headers]="tableHeaders"
         [headerKeys]="tableHeaderKeys"
         [renderHtml]="['effect']"
-        [storageKey]="'altered-states-table'"
+        storageKey="altered-states-table"
         [highlightInventory]="false">
       </app-generic-table>
     </div>
@@ -65,4 +64,3 @@ export class AlteredStatesPageComponent implements OnInit, OnChanges {
     }, 200);
   }
 }
-

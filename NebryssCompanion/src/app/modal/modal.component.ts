@@ -1,14 +1,14 @@
 // modal.component.ts
-import { AfterViewInit, ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
   template: `
-    <div class="modal-overlay" (click)="close()">
-      <div class="modal-content" (click)="$event.stopPropagation()" [style.width]="width" [style.height]="height">
+    <div class="modal-overlay" [class]="getOverlayClasses()" (click)="close()">
+      <div class="modal-content" [class]="getContentClasses()" (click)="$event.stopPropagation()" [style.width]="width" [style.height]="height">
         <ng-container #modalContent></ng-container>
-        <button class="modal-close" (click)="close()">&times;</button>
+        <button *ngIf="showCloseButton" class="modal-close" (click)="close()">&times;</button>
       </div>
     </div>
   `,
@@ -65,13 +65,24 @@ export class ModalComponent {
   close: () => void = () => {};
   width: string = '90%';
   height: string = 'auto';
+  overlayClass = '';
+  contentClass = '';
+  showCloseButton = true;
 
   constructor(private cdr: ChangeDetectorRef) {}
+
+  getOverlayClasses(): string {
+    return ['modal-overlay', this.overlayClass].filter(Boolean).join(' ');
+  }
+
+  getContentClasses(): string {
+    return ['modal-content', this.contentClass].filter(Boolean).join(' ');
+  }
 
   setTemplate(template: TemplateRef<any>, context?: any) {
     if (this.viewContainerRef) {
       this.viewContainerRef.clear();
-      const viewRef = this.viewContainerRef.createEmbeddedView(template, context);
+      this.viewContainerRef.createEmbeddedView(template, context);
       this.cdr.detectChanges();
     }
   }

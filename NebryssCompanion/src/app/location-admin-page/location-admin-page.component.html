@@ -1,0 +1,330 @@
+<div class="admin-page">
+  <div *ngIf="isAdmin" class="player-detail-container admin-header">
+    <div>
+      <h2>{{ pageTitle }}</h2>
+    </div>
+    <div class="admin-header-actions">
+      <button
+        *ngIf="name.trim()"
+        type="button"
+        class="icon-btn view-map-btn"
+        (click)="openLocationOnWorldMap()"
+        aria-label="View location on World Map"
+        title="View location focused on World Map"
+      >
+        <span class="material-icons" aria-hidden="true">public</span>
+      </button>
+      <button
+        *ngIf="isEditing"
+        type="button"
+        class="icon-btn delete-location-btn"
+        (click)="promptDeleteLocation()"
+        [disabled]="!canDelete"
+        aria-label="Delete location"
+        title="Delete location"
+      >
+        <span class="material-icons" aria-hidden="true">delete</span>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+  </div>
+
+  <div *ngIf="isAdmin" class="layout">
+    <form class="player-detail-container" (ngSubmit)="submit()">
+      <section class="admin-section">
+        <h3>Basic Details</h3>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>ID</span>
+            <input [(ngModel)]="locationId" name="locationId" type="number" min="1" placeholder="Optional, auto-assigned if blank" />
+          </label>
+
+          <div class="field">
+            <span>Faction</span>
+            <div class="autocomplete-field" (focusout)="onFactionFieldFocusOut($event)">
+              <input
+                [(ngModel)]="faction"
+                name="faction"
+                type="text"
+                placeholder="Faction or world owner"
+                (focus)="showFactionOptions = true"
+                autocomplete="off"
+              />
+              <div class="autocomplete-panel" *ngIf="showFactionOptions && filteredFactionOptions.length">
+                <button
+                  *ngFor="let option of filteredFactionOptions"
+                  type="button"
+                  class="autocomplete-option"
+                  (mousedown)="onFactionSelect(option)"
+                >
+                  {{ option }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Category</span>
+            <select [(ngModel)]="category" name="category">
+              <option value="">Select an icon family</option>
+              <option *ngFor="let option of categoryOptions" [value]="option">
+                {{ formatOptionLabel(option) }}
+              </option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Size</span>
+            <select [(ngModel)]="categorySize" name="categorySize">
+              <option [ngValue]="null">Select icon size</option>
+              <option *ngFor="let option of categorySizeOptions" [value]="option.value">
+                {{ option.label }} ({{ option.value }})
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="category-icon-badge-row">
+          <div class="category-icon-badge">
+            <img [src]="previewPinIconSrc" [alt]="category || 'Location Icon'" class="category-icon-img">
+          </div>
+          <div class="category-icon-info">
+            <span class="category-icon-title">Icon Family: <strong>{{ category ? formatOptionLabel(category) : 'City (Default)' }}</strong></span>
+            <span class="category-icon-subtitle">Size: {{ getCategorySizeLabel(categorySize) }}</span>
+          </div>
+        </div>
+
+        <label class="field">
+          <span>Name</span>
+          <input [(ngModel)]="name" name="name" type="text" placeholder="Location name" />
+        </label>
+
+        <label class="field">
+          <span>Public Description (Known to Players)</span>
+          <textarea [(ngModel)]="description" name="description" rows="4" placeholder="Public summary for the location page and map popup"></textarea>
+        </label>
+      </section>
+
+      <!-- Modular Secret Blocks Section -->
+      <section class="admin-section gm-vault-section">
+        <div class="gm-vault-title-row">
+          <div>
+            <h3>GM Campaign Secret Vaults (`SecretBlock[]`)</h3>
+            <p class="section-hint">Add individual secret blocks. Each block has its own reveal toggle to publish secrets to players as the campaign advances.</p>
+          </div>
+          <button type="button" class="btn-add-secret" (click)="addSecretBlock()">
+            <span class="material-icons">add</span>
+            Add Secret Block
+          </button>
+        </div>
+
+        <div class="secrets-list">
+          <div *ngFor="let secret of secrets; let i = index" class="secret-block-item">
+            <div class="secret-block-header">
+              <div class="secret-title-field">
+                <span class="material-icons secret-icon">security</span>
+                <input
+                  [(ngModel)]="secret.title"
+                  [name]="'secretTitle_' + i"
+                  type="text"
+                  placeholder="Secret Title (e.g. Subterranean Relic Vault)"
+                  class="secret-title-input"
+                />
+              </div>
+
+              <div class="secret-actions">
+                <label class="secret-reveal-checkbox" title="Reveal this secret block to players">
+                  <input
+                    type="checkbox"
+                    [(ngModel)]="secret.isRevealed"
+                    [name]="'secretRevealed_' + i"
+                  />
+                  <span class="material-icons">{{ secret.isRevealed ? 'visibility' : 'visibility_off' }}</span>
+                  <span>{{ secret.isRevealed ? 'Revealed' : 'Private (GM)' }}</span>
+                </label>
+
+                <button
+                  type="button"
+                  class="btn-delete-secret"
+                  (click)="removeSecretBlock(i)"
+                  title="Remove secret block"
+                >
+                  <span class="material-icons">delete_outline</span>
+                </button>
+              </div>
+            </div>
+
+            <textarea
+              [(ngModel)]="secret.content"
+              [name]="'secretContent_' + i"
+              rows="3"
+              placeholder="Secret campaign details, DM plot hooks, hidden treasure, or Voss connections..."
+              class="secret-content-textarea"
+            ></textarea>
+          </div>
+
+          <div *ngIf="secrets.length === 0" class="empty-secrets-hint">
+            No secret campaign blocks added yet. Click "+ Add Secret Block" to create one.
+          </div>
+        </div>
+
+        <label class="field margin-top-field">
+          <span>Internal RPG Map Layout (Private GM Guide)</span>
+          <textarea [(ngModel)]="rpgMapLayout" name="rpgMapLayout" rows="5" placeholder="Detailed internal map description (sectors, paths, plazas, harbors, choke points, and visual cues for AI image generation)"></textarea>
+        </label>
+
+        <div class="field-grid toggles-grid">
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isSecret" name="isSecret" type="checkbox" />
+            <span>Undiscovered / Secret Location (Hidden from Player World Map)</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <div class="map-picker-header">
+          <h3>World Map Placement</h3>
+          <div class="map-picker-controls">
+            <button
+              *ngIf="name.trim()"
+              type="button"
+              class="map-picker-btn map-picker-view-world-btn"
+              (click)="openLocationOnWorldMap()"
+              aria-label="Open on World Map"
+              title="Open full World Map view focused on this location"
+            >
+              <span class="material-icons">public</span>
+            </button>
+            <button type="button" class="map-picker-btn" (click)="zoomOutPicker()" aria-label="Zoom out" title="Zoom out">
+              <span class="material-icons">remove</span>
+            </button>
+            <span class="map-picker-zoom-level">{{ pickerZoomPercent }}%</span>
+            <button type="button" class="map-picker-btn" (click)="zoomInPicker()" aria-label="Zoom in" title="Zoom in">
+              <span class="material-icons">add</span>
+            </button>
+            <button type="button" class="map-picker-btn" (click)="resetPickerView()" aria-label="Reset map view" title="Reset view">
+              <span class="material-icons">center_focus_strong</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="map-picker-wrapper">
+          <p class="map-picker-instruction">Click anywhere on the map to set pin coordinates. Drag to pan, scroll to zoom.</p>
+          <div
+            #mapPickerViewport
+            class="map-picker-viewport"
+            [class.is-panning]="isPickerPanning"
+            (wheel)="onPickerWheel($event)"
+            (pointerdown)="onPickerPointerDown($event)"
+            (pointermove)="onPickerPointerMove($event)"
+            (pointerup)="onPickerPointerUp($event)"
+            (pointercancel)="onPickerPointerUp($event)"
+          >
+            <div
+              #mapPickerSurface
+              class="map-picker-surface"
+              [style.transform]="pickerTransform"
+            >
+              <img [src]="worldMapImageUrl" alt="World Map Picker" class="map-picker-image" draggable="false">
+              <div
+                *ngIf="mapX !== null && mapY !== null"
+                class="map-picker-pin"
+                [style.left.%]="mapX"
+                [style.top.%]="mapY"
+              >
+                <span class="map-picker-pin-badge">
+                  <img [src]="previewPinIconSrc" alt="Pin Icon" class="map-picker-pin-icon">
+                </span>
+                <span class="map-picker-pin-label">{{ name || 'New Location' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <label class="field">
+            <span>Map X (%)</span>
+            <input [(ngModel)]="mapX" name="mapX" type="number" min="0" max="100" step="0.01" placeholder="Optional" />
+          </label>
+
+          <label class="field">
+            <span>Map Y (%)</span>
+            <input [(ngModel)]="mapY" name="mapY" type="number" min="0" max="100" step="0.01" placeholder="Optional" />
+          </label>
+        </div>
+
+        <div class="field-grid toggles-grid">
+          <label class="field checkbox-field">
+            <input [(ngModel)]="discovered" name="discovered" type="checkbox" />
+            <span>Discovered (Visible to Players on Map & Locations List)</span>
+          </label>
+
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isCapital" name="isCapital" type="checkbox" />
+            <span>Capital location</span>
+          </label>
+
+          <label class="field checkbox-field">
+            <input [(ngModel)]="isWorldMap" name="isWorldMap" type="checkbox" />
+            <span>Use as world map background</span>
+          </label>
+        </div>
+      </section>
+
+      <section class="admin-section">
+        <h3>Images</h3>
+
+        <label class="field">
+          <span>Main Image URL</span>
+          <input [(ngModel)]="imgUrl" name="imgUrl" type="url" placeholder="https://..." />
+        </label>
+
+        <label class="field">
+          <span>Thumbnail URL</span>
+          <input [(ngModel)]="thumbnail" name="thumbnail" type="url" placeholder="https://..." />
+        </label>
+      </section>
+
+      <div class="actions dialog-buttons">
+        <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
+          {{ submitLabel }}
+        </button>
+      </div>
+    </form>
+
+    <aside class="player-detail-container">
+      <section class="admin-section">
+        <h3>Location JSON Preview</h3>
+        <pre class="admin-preview-json">{{ previewJson }}</pre>
+      </section>
+
+      <section class="admin-section" *ngIf="lastCreatedLocation">
+        <h3>Last Saved Location</h3>
+        <div class="summary-list">
+          <div><strong>ID:</strong> {{ lastCreatedLocation.id }}</div>
+          <div><strong>Name:</strong> {{ lastCreatedLocation.name }}</div>
+          <div><strong>Faction:</strong> {{ lastCreatedLocation.faction }}</div>
+          <div><strong>Secrets Count:</strong> {{ (lastCreatedLocation.secrets || []).length }}</div>
+          <div><strong>Map:</strong> {{ lastCreatedLocation.mapX ?? 'n/a' }}, {{ lastCreatedLocation.mapY ?? 'n/a' }}</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>
+
+<ng-template #deleteLocationConfirmDialog let-locationName="locationName" let-confirm="confirm" let-cancel="cancel">
+  <div class="confirmation-dialog delete-location-dialog">
+    <h3>Delete Location</h3>
+    <p>Are you sure you want to delete <strong>{{ locationName }}</strong>? This action cannot be undone.</p>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn-danger" type="button" (click)="confirm()">Delete</button>
+    </div>
+  </div>
+</ng-template>

@@ -12,85 +12,107 @@ import { ToastService } from '../toast.service';
 import { AdminService } from '../admin.service';
 import { AdminEditorSession } from '../admin-editor.models';
 
+interface ItemsTab {
+  key: string;
+  label: string;
+  count: number;
+  category?: ItemCategory;
+}
+
 @Component({
   selector: 'app-items',
   standalone: true,
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
     <div class="items-container">
-      <!-- Search Bar -->
+      <!-- Search Bar (always visible) -->
       <div class="items-search-container">
         <div class="search-input-wrapper">
           <span class="search-icon">🔍</span>
-          <input 
-            type="text" 
-            [(ngModel)]="searchQuery" 
+          <input
+            type="text"
+            [(ngModel)]="searchQuery"
             (ngModelChange)="onSearchChange()"
-            placeholder="Search items, descriptions..." 
+            placeholder="Search all items, descriptions..."
             class="items-search-input">
           <button *ngIf="searchQuery" class="clear-search-btn" (click)="clearSearch()">✕</button>
         </div>
         <span *ngIf="searchQuery" class="search-results-count">
-          Found {{ totalSearchResultsCount }} item(s)
+          Found {{ totalSearchResultsCount }} item(s) across all categories
         </span>
       </div>
 
       <!-- Category Tab Bar -->
-      <div class="items-tab-bar" *ngIf="!searchQuery">
-        <button
-          class="items-tab"
-          [class.active]="activeTab === 'weapon'"
-          (click)="setTab('weapon')"
-          id="tab-weapon">
-          Weapons
-        </button>
-        <button
-          *ngFor="let category of itemCategories"
-          class="items-tab"
-          [class.active]="activeTab === category.key"
-          (click)="setTab(category.key)"
-          [id]="'tab-' + category.key">
-          {{ category.name }}
-        </button>
+      <ng-container *ngIf="visibleTabs.length > 0">
+        <div class="items-tab-bar">
+          <button
+            *ngFor="let tab of visibleTabs"
+            class="items-tab"
+            [class.active]="activeTab === tab.key"
+            (click)="setTab(tab.key)"
+            [id]="'tab-' + tab.key">
+            {{ getTabLabel(tab) }}
+          </button>
+        </div>
+      </ng-container>
+
+      <!-- Active Tab Content -->
+      <div *ngIf="activeTab === 'weapon-melee' && visibleTabKeys.has('weapon-melee')">
+        <app-weapon-table
+          [title]="''"
+          [collapsible]="false"
+          [weaponIds]="filteredMeleeWeaponIds"
+          [weaponsData]="weaponsData"
+          [weaponRulesData]="weaponRules"
+          [alteredStates]="alteredStates"
+          [displayPrice]="true"
+          [displayBody]="true"
+          [enableBodyFilter]="true"
+          [filterStorageKey]="'items-weapon-melee-body-filter'"
+          [characterBody]="activePlayerBodyTypes"
+          [inventoryManagement]="hasActivePlayer()"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
+          (clone)="onCloneWeapon($event)"
+          (delete)="onDeleteWeapon($event)"
+          (edit)="onEditWeapon($event)">
+        </app-weapon-table>
       </div>
 
-      <div *ngIf="searchQuery">
-        <div *ngIf="totalSearchResultsCount === 0" class="search-empty-state">
-          No results found
-        </div>
+      <div *ngIf="activeTab === 'weapon-ranged' && visibleTabKeys.has('weapon-ranged')">
+        <app-weapon-table
+          [title]="''"
+          [collapsible]="false"
+          [weaponIds]="filteredRangedWeaponIds"
+          [weaponsData]="weaponsData"
+          [weaponRulesData]="weaponRules"
+          [alteredStates]="alteredStates"
+          [displayPrice]="true"
+          [displayBody]="true"
+          [enableBodyFilter]="true"
+          [filterStorageKey]="'items-weapon-ranged-body-filter'"
+          [characterBody]="activePlayerBodyTypes"
+          [inventoryManagement]="hasActivePlayer()"
+          [enableCloning]="isAdmin"
+          [enableDeleting]="isAdmin"
+          [enableEditing]="isAdmin"
+          (clone)="onCloneWeapon($event)"
+          (delete)="onDeleteWeapon($event)"
+          (edit)="onEditWeapon($event)">
+        </app-weapon-table>
+      </div>
 
-        <div *ngIf="filteredWeaponIds.length > 0">
-          <h2>Weapons</h2>
-          <app-weapon-table 
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredWeaponIds" 
-            [weaponsData]="weaponsData" 
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="true"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
-        </div>
-
-        <ng-container *ngFor="let category of matchedItemCategories">
-          <h2>{{ category.name }}</h2>
-          <app-generic-table 
+      <ng-container *ngFor="let category of itemCategories">
+        <div *ngIf="activeTab === category.key && visibleTabKeys.has(category.key)">
+          <app-generic-table
             [storageKey]="'items-category-' + category.key"
             [title]="''"
             [collapsible]="false"
             [data]="filteredCategoryDataMap[category.key] || []"
             [headers]="category.headers"
             [headerKeys]="category.keys"
+            [nameColumnWidth]="category.key === 'modification' ? '78px' : '95px'"
             [renderHtml]="['description']"
             [inventoryManagement]="hasActivePlayer()"
             [enableCloning]="isAdmin"
@@ -103,55 +125,11 @@ import { AdminEditorSession } from '../admin-editor.models';
             (delete)="onDeleteItem($event)"
             (edit)="onEditItem($event)">
           </app-generic-table>
-        </ng-container>
-      </div>
-
-      <div *ngIf="!searchQuery">
-        <div *ngIf="activeTab === 'weapon'">
-          <app-weapon-table 
-            [title]="''"
-            [collapsible]="false"
-            [weaponIds]="filteredWeaponIds" 
-            [weaponsData]="weaponsData" 
-            [weaponRulesData]="weaponRules"
-            [alteredStates]="alteredStates"
-            [displayPrice]="true"
-            [displayBody]="true"
-            [enableBodyFilter]="true"
-            [characterBody]="activePlayerBodyTypes"
-            [inventoryManagement]="hasActivePlayer()"
-            [enableCloning]="isAdmin"
-            [enableDeleting]="isAdmin"
-            [enableEditing]="isAdmin"
-            (clone)="onCloneWeapon($event)"
-            (delete)="onDeleteWeapon($event)"
-            (edit)="onEditWeapon($event)">
-          </app-weapon-table>
         </div>
+      </ng-container>
 
-        <ng-container *ngFor="let category of itemCategories">
-          <div *ngIf="activeTab === category.key">
-            <app-generic-table 
-              [storageKey]="'items-category-' + category.key"
-              [title]="''"
-              [collapsible]="false"
-              [data]="filteredCategoryDataMap[category.key] || []"
-              [headers]="category.headers"
-              [headerKeys]="category.keys"
-              [renderHtml]="['description']"
-              [inventoryManagement]="hasActivePlayer()"
-              [enableCloning]="isAdmin"
-              [enableDeleting]="isAdmin"
-              [enableEditing]="isAdmin"
-              [enableBodyFilter]="category.key === 'armor'"
-              [characterBody]="activePlayerBodyTypes"
-              (craft)="onCraftItem($event)"
-              (clone)="onCloneItem($event)"
-              (delete)="onDeleteItem($event)"
-              (edit)="onEditItem($event)">
-            </app-generic-table>
-          </div>
-        </ng-container>
+      <div *ngIf="searchQuery && totalSearchResultsCount === 0" class="search-empty-state">
+        No results found for "{{ searchQuery }}"
       </div>
     </div>
 
@@ -217,7 +195,16 @@ export class ItemsComponent implements OnInit {
   weaponsCollapsed = true;
   scrollSections: ScrollSection[] = [];
   activePlayerBodyTypes: string[] = [];
-  activeTab: string = 'weapon';
+  activeTab: string = 'weapon-melee';
+
+  private alteredStateById = new Map<number, AlteredState>();
+  private weaponRuleById = new Map<number, WeaponRule>();
+  private bestiaryById = new Map<number, BestiaryEntry>();
+  private weaponById = new Map<number, Weapon>();
+  private itemById = new Map<number, any>();
+  private categoryDataBuiltKeys = new Set<string>();
+  private categoryBuildInProgress = new Set<string>();
+  private categoryBuildToken = 0;
   
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
@@ -259,13 +246,19 @@ export class ItemsComponent implements OnInit {
       this.bestiary = data.bestiary;
       
       this.allWeaponIds = this.weaponsData.map(w => w.id);
+
+      this.rebuildLookups();
       
       const saved = localStorage.getItem('items-weapons-collapsed');
       this.weaponsCollapsed = saved ? JSON.parse(saved) : true;
       this.scrollSections = [
         {
-          id: 'weapon',
-          title: 'Weapons',
+          id: 'weapon-melee',
+          title: 'Melee Weapons',
+        },
+        {
+          id: 'weapon-ranged',
+          title: 'Ranged Weapons',
         },
         ...this.itemCategories.map((category: ItemCategory) => {
           return {
@@ -296,20 +289,21 @@ export class ItemsComponent implements OnInit {
 
   setTab(key: string): void {
     this.activeTab = key;
-    // Re-apply existing search to the new tab (don't clear it)
-    if (this.searchQuery) {
-      this.onSearchChange();
-    }
+    this.ensureCategoryDataBuilt(key);
+    this.onSearchChange();
   }
 
   onSearchChange(): void {
     const query = (this.searchQuery || '').toLowerCase().trim();
     if (!query) {
+      this.ensureCategoryDataBuilt(this.activeTab);
       this.filteredWeaponIds = [...this.allWeaponIds];
       this.filteredCategoryDataMap = { ...this.categoryDataMap };
+      this.ensureActiveTabIsVisible();
       return;
     }
 
+    this.ensureAllCategoryDataBuilt();
     const matchingWeapons = this.weaponsData.filter(w => {
       const nameMatch = w.name?.toLowerCase().includes(query);
       const profileMatch = w.profiles?.some((p: any) =>
@@ -330,13 +324,15 @@ export class ItemsComponent implements OnInit {
         const nameMatch = item.name?.toLowerCase().includes(query);
         const descMatch = item.description?.toLowerCase().includes(query);
         const typeMatch = item.type?.toLowerCase().includes(query);
-        const subTypeMatch = item.subType?.toLowerCase().includes(query);
+        const subTypeMatch = item.subtype?.toLowerCase().includes(query);
         const bodyMatch = item.raceReq?.toLowerCase().includes(query);
         const partMatch = item.part?.toLowerCase().includes(query);
         return nameMatch || descMatch || typeMatch || subTypeMatch || bodyMatch || partMatch;
       });
       return acc;
     }, {} as Record<string, any[]>);
+
+    this.ensureActiveTabIsVisible();
   }
 
   clearSearch(): void {
@@ -353,6 +349,55 @@ export class ItemsComponent implements OnInit {
   get matchedItemCategories(): ItemCategory[] {
     if (!this.searchQuery) return [];
     return this.itemCategories.filter(c => (this.filteredCategoryDataMap[c.key] || []).length > 0);
+  }
+
+  get isSearchActive(): boolean {
+    return !!this.searchQuery.trim();
+  }
+
+  get visibleTabs(): ItemsTab[] {
+    const tabs: ItemsTab[] = [
+      {
+        key: 'weapon-melee',
+        label: 'Melee Weapons',
+        count: this.filteredMeleeWeaponIds.length
+      },
+      {
+        key: 'weapon-ranged',
+        label: 'Ranged Weapons',
+        count: this.filteredRangedWeaponIds.length
+      },
+      ...this.itemCategories.map(category => ({
+        key: category.key,
+        label: category.name,
+        count: (this.filteredCategoryDataMap[category.key] || []).length,
+        category
+      }))
+    ];
+
+    return this.isSearchActive ? tabs.filter(tab => tab.count > 0) : tabs;
+  }
+
+  get visibleTabKeys(): Set<string> {
+    return new Set(this.visibleTabs.map(tab => tab.key));
+  }
+
+  get filteredMeleeWeaponIds(): number[] {
+    return this.filteredWeaponIds.filter(id => {
+      const weapon = this.weaponById.get(id);
+      return !!weapon && this.isMeleeWeapon(weapon);
+    });
+  }
+
+  get filteredRangedWeaponIds(): number[] {
+    return this.filteredWeaponIds.filter(id => {
+      const weapon = this.weaponById.get(id);
+      return !!weapon && !this.isMeleeWeapon(weapon);
+    });
+  }
+
+  getTabLabel(tab: ItemsTab): string {
+    return this.isSearchActive ? `${tab.label}(${tab.count})` : tab.label;
   }
 
   // Weapon Management Methods
@@ -376,7 +421,7 @@ export class ItemsComponent implements OnInit {
   }
 
   getMaterialName(id: number): string {
-    const item = this.itemsData.items.find(i => i.id === id);
+    const item = this.itemById.get(id);
     return item ? item.name || 'Unknown Material' : 'Unknown Material';
   }
 
@@ -422,6 +467,7 @@ export class ItemsComponent implements OnInit {
           // Refresh items
           this.dataService.refreshItems().subscribe(items => {
             this.itemsData = items;
+            this.rebuildLookups();
             this.refreshCategoryData();
           });
         },
@@ -445,6 +491,7 @@ export class ItemsComponent implements OnInit {
           this.dataService.refreshWeapons().subscribe(weapons => {
             this.weaponsData = weapons;
             this.allWeaponIds = this.weaponsData.map(w => w.id);
+            this.rebuildLookups();
             this.refreshCategoryData();
           });
           
@@ -469,6 +516,7 @@ export class ItemsComponent implements OnInit {
           // Refresh items
           this.dataService.refreshItems().subscribe(items => {
             this.itemsData = items;
+            this.rebuildLookups();
             this.refreshCategoryData();
           });
         },
@@ -487,6 +535,7 @@ export class ItemsComponent implements OnInit {
           this.dataService.refreshWeapons().subscribe(weapons => {
             this.weaponsData = weapons;
             this.allWeaponIds = this.weaponsData.map(w => w.id);
+            this.rebuildLookups();
             this.refreshCategoryData();
           });
           
@@ -542,17 +591,8 @@ export class ItemsComponent implements OnInit {
   }
 
   private refreshCategoryData(): void {
-    if (!this.itemsData?.items || !this.itemCategories.length) {
-      this.categoryDataMap = {};
-      this.onSearchChange();
-      return;
-    }
-
-    this.categoryDataMap = this.itemCategories.reduce((acc, category) => {
-      acc[category.key] = this.buildCategoryData(category.key);
-      return acc;
-    }, {} as Record<string, any[]>);
-
+    this.invalidateCategoryCaches();
+    this.ensureCategoryDataBuilt(this.activeTab);
     this.onSearchChange();
   }
 
@@ -562,6 +602,11 @@ export class ItemsComponent implements OnInit {
       return [];
     }
     
+    const activePlayer = this.activePlayerService.activePlayer;
+    const playerItemQuantById = activePlayer?.items
+      ? new Map(activePlayer.items.map(i => [i.id, i.quant] as const))
+      : null;
+
     // Get items matching the requested type
     const items = this.itemsData.items
       .filter(item => item.type === key)
@@ -577,7 +622,7 @@ export class ItemsComponent implements OnInit {
 
         if (key === 'material') {
           if (item.bestiaryId) {
-            const creature = this.bestiary.find(b => b.id === item.bestiaryId);
+            const creature = this.bestiaryById.get(item.bestiaryId);
             (newItem as any).bestiaryId = creature ? creature.name : `Unknown Creature (${item.bestiaryId})`;
           }
         }
@@ -586,7 +631,7 @@ export class ItemsComponent implements OnInit {
           // Append materials
           if (item.buildMaterials && item.buildMaterials.length > 0) {
             const materialsList = item.buildMaterials.map(mat => {
-              const materialItem = this.itemsData.items.find(i => i.id === mat.id);
+              const materialItem = this.itemById.get(mat.id);
               return `${materialItem ? materialItem.name : 'Unknown Material'} (x${mat.amount})`;
             }).join(', ');
             newItem.description += `<div class="materials-list" style="margin-top: 5px;"><strong>Required Materials:</strong> ${materialsList}</div>`;
@@ -594,7 +639,7 @@ export class ItemsComponent implements OnInit {
 
           // Resolve Weapon Name
           if (item.blueprintFor) {
-            const weapon = this.weaponsData.find(w => w.id === item.blueprintFor);
+            const weapon = this.weaponById.get(item.blueprintFor);
             const weaponName = weapon ? weapon.name : `Unknown Weapon (${item.blueprintFor})`;
             (newItem as any).blueprintFor = weaponName;
             (newItem as any).blueprintForName = weaponName;
@@ -602,15 +647,15 @@ export class ItemsComponent implements OnInit {
           }
 
           // Check if craftable
-          const activePlayer = this.activePlayerService.activePlayer;
           let canCraft = false;
-          if (activePlayer && activePlayer.items && item.buildMaterials) {
-             const hasBlueprint = activePlayer.items.some(i => i.id === item.id);
-             const hasMaterials = item.buildMaterials.every((mat: any) => {
-                const playerItem = activePlayer.items!.find(i => i.id === mat.id);
-                return playerItem && playerItem.quant >= mat.amount;
-             });
-             canCraft = hasBlueprint && hasMaterials;
+          if (playerItemQuantById && item.buildMaterials) {
+            const itemId = typeof item.id === 'number' ? item.id : null;
+            const hasBlueprint = itemId !== null && playerItemQuantById.has(itemId);
+            const hasMaterials = item.buildMaterials.every((mat: any) => {
+              const quant = playerItemQuantById.get(mat.id) ?? 0;
+              return quant >= mat.amount;
+            });
+            canCraft = hasBlueprint && hasMaterials;
           }
           (newItem as any).canCraft = canCraft;
         }
@@ -619,7 +664,6 @@ export class ItemsComponent implements OnInit {
       });
     
     // Check if we have an active player
-    const activePlayer = this.activePlayerService.activePlayer;
     if (!activePlayer || !activePlayer.items || !activePlayer.items.length) {
       return items;
     }
@@ -640,7 +684,7 @@ export class ItemsComponent implements OnInit {
     const regex = /\/weaponRule\/:(\d+)\//g;
     return text.replace(regex, (match: string, idStr: string) => {
       const id = parseInt(idStr, 10);
-      const rule = this.weaponRules.find(r => r.id === id);
+      const rule = this.weaponRuleById.get(id);
       if (!rule) return match;
       const name = rule.name;
       return `<span class="weapon-rule-link" data-weapon-rule="${name}">${name}</span>`;
@@ -652,7 +696,7 @@ export class ItemsComponent implements OnInit {
     const regex = /\/status\/:(\d+)\//g;
     return text.replace(regex, (match: string, idStr: string) => {
       const id = parseInt(idStr, 10);
-      const status = this.alteredStates.find(s => s.id === id);
+      const status = this.alteredStateById.get(id);
       if (!status) return match;
       const name = status.name;
       return `<span class="status-link" data-status="${name}">${name}</span>`;
@@ -661,5 +705,156 @@ export class ItemsComponent implements OnInit {
 
   hasActivePlayer(): boolean {
     return this.activePlayerService.activePlayer !== null;
+  }
+
+  private isMeleeWeapon(weapon: Weapon): boolean {
+    return weapon.profiles.length > 0 && weapon.profiles.every(profile => profile.rng === 0);
+  }
+
+  private rebuildLookups(): void {
+    this.alteredStateById = new Map((this.alteredStates || []).map(s => [s.id, s]));
+    this.weaponRuleById = new Map((this.weaponRules || []).map(r => [r.id, r]));
+    this.bestiaryById = new Map((this.bestiary || []).map(b => [b.id, b]));
+    this.weaponById = new Map((this.weaponsData || []).map(w => [w.id, w]));
+
+    const items = (this.itemsData as any)?.items || [];
+    this.itemById = new Map(items.map((i: any) => [i.id, i]));
+  }
+
+  private invalidateCategoryCaches(): void {
+    this.categoryDataMap = {};
+    this.filteredCategoryDataMap = {};
+    this.categoryDataBuiltKeys.clear();
+    this.categoryBuildInProgress.clear();
+    this.categoryBuildToken++;
+  }
+
+  private ensureCategoryDataBuilt(key: string): void {
+    if (!key || !this.itemCategories?.length) {
+      return;
+    }
+    if (!this.itemCategories.some(c => c.key === key)) {
+      return;
+    }
+    if (this.categoryDataBuiltKeys.has(key)) {
+      return;
+    }
+    if (this.categoryBuildInProgress.has(key)) {
+      return;
+    }
+
+    const buildToken = this.categoryBuildToken;
+    this.categoryBuildInProgress.add(key);
+    this.categoryDataMap[key] = [];
+
+    this.buildCategoryDataChunked(key).then(data => {
+      if (buildToken !== this.categoryBuildToken) {
+        return;
+      }
+      this.categoryDataMap[key] = data;
+      this.categoryDataBuiltKeys.add(key);
+      this.onSearchChange();
+    }).finally(() => {
+      this.categoryBuildInProgress.delete(key);
+    });
+  }
+
+  private ensureAllCategoryDataBuilt(): void {
+    (this.itemCategories || []).forEach(c => this.ensureCategoryDataBuilt(c.key));
+  }
+
+  private async buildCategoryDataChunked(key: string): Promise<any[]> {
+    if (!this.itemsData || !(this.itemsData as any).items) {
+      return [];
+    }
+
+    const source = (this.itemsData as any).items as any[];
+    const activePlayer = this.activePlayerService.activePlayer;
+    const playerItemQuantById = activePlayer?.items
+      ? new Map(activePlayer.items.map(i => [i.id, i.quant] as const))
+      : null;
+    const playerItemIds = activePlayer?.items?.length
+      ? new Set(activePlayer.items.map(i => i.id))
+      : null;
+
+    const owned: any[] = [];
+    const unowned: any[] = [];
+
+    let processed = 0;
+    for (let i = 0; i < source.length; i++) {
+      const item = source[i];
+      if (item?.type !== key) {
+        continue;
+      }
+
+      const raw = item.description || '';
+      const withStatuses = this.replaceStatusTokens(raw);
+      const withRules = this.replaceWeaponRuleTokens(withStatuses);
+
+      const newItem: any = {
+        ...item,
+        description: withRules
+      };
+
+      if (key === 'material' && item.bestiaryId) {
+        const creature = this.bestiaryById.get(item.bestiaryId);
+        newItem.bestiaryId = creature ? creature.name : `Unknown Creature (${item.bestiaryId})`;
+      }
+
+      if (key === 'blueprint') {
+        if (item.buildMaterials && item.buildMaterials.length > 0) {
+          const materialsList = item.buildMaterials.map((mat: any) => {
+            const materialItem = this.itemById.get(mat.id);
+            return `${materialItem ? materialItem.name : 'Unknown Material'} (x${mat.amount})`;
+          }).join(', ');
+          newItem.description += `<div class="materials-list" style="margin-top: 5px;"><strong>Required Materials:</strong> ${materialsList}</div>`;
+        }
+
+        if (item.blueprintFor) {
+          const weapon = this.weaponById.get(item.blueprintFor);
+          const weaponName = weapon ? weapon.name : `Unknown Weapon (${item.blueprintFor})`;
+          newItem.blueprintFor = weaponName;
+          newItem.blueprintForName = weaponName;
+          newItem._blueprintForId = item.blueprintFor;
+        }
+
+        let canCraft = false;
+        if (playerItemQuantById && item.buildMaterials) {
+          const itemId = typeof item.id === 'number' ? item.id : null;
+          const hasBlueprint = itemId !== null && playerItemQuantById.has(itemId);
+          const hasMaterials = item.buildMaterials.every((mat: any) => {
+            const quant = playerItemQuantById.get(mat.id) ?? 0;
+            return quant >= mat.amount;
+          });
+          canCraft = hasBlueprint && hasMaterials;
+        }
+        newItem.canCraft = canCraft;
+      }
+
+      const isOwned = !!playerItemIds && typeof item.id === 'number' && playerItemIds.has(item.id);
+      if (isOwned) {
+        owned.push(newItem);
+      } else {
+        unowned.push(newItem);
+      }
+
+      processed++;
+      if (processed % 120 === 0) {
+        await new Promise<void>(resolve => setTimeout(resolve, 0));
+      }
+    }
+
+    return playerItemIds ? [...owned, ...unowned] : [...unowned];
+  }
+
+  private ensureActiveTabIsVisible(): void {
+    if (this.visibleTabKeys.has(this.activeTab)) {
+      return;
+    }
+
+    const firstVisibleTab = this.visibleTabs[0];
+    if (firstVisibleTab) {
+      this.activeTab = firstVisibleTab.key;
+    }
   }
 }

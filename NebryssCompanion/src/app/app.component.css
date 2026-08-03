@@ -29,12 +29,108 @@
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
+  min-width: 0;
+}
+
+.top-gm-toggle-btn {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: rgba(15, 23, 42, 0.85);
+  color: #94a3b8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.top-gm-toggle-btn .material-icons {
+  font-size: 14px;
+}
+
+.top-gm-toggle-btn:hover {
+  background: rgba(13, 148, 136, 0.2);
+  color: #2dd4bf;
+  border-color: rgba(45, 212, 191, 0.6);
+  transform: translateY(-1px);
+}
+
+.top-gm-toggle-btn.active {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #ffffff;
+  border-color: #2dd4bf;
+  box-shadow: 0 0 14px rgba(45, 212, 191, 0.55);
+}
+
+.top-gm-toggle-btn .material-icons {
+  font-size: 16px;
+}
+
+@media (max-width: 640px) {
+  .header-title {
+    font-size: 0.95rem;
+    padding: 0 4px;
+  }
+
+  .top-gm-toggle-btn {
+    position: static;
+    transform: none;
+    flex-shrink: 0;
+    margin: 0 4px;
+    padding: 3px 7px;
+    font-size: 0.68rem;
+  }
 }
 
 .header-actions {
   display: flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
+}
+
+.bestiary-loot-btn {
+  appearance: none;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  max-width: 150px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(25, 118, 210, 0.14);
+  color: var(--accent-color, #1976d2);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.bestiary-loot-btn.open,
+.bestiary-loot-btn:active {
+  background: rgba(25, 118, 210, 0.24);
+}
+
+.bestiary-loot-btn .material-icons {
+  font-size: 18px;
+}
+
+.bestiary-loot-btn-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .header-action-btn {
@@ -98,6 +194,16 @@ body.dark-theme .header-action-btn:active {
   text-overflow: ellipsis;
 }
 
+body.dark-theme .bestiary-loot-btn {
+  background: rgba(100, 181, 246, 0.18);
+  color: #90caf9;
+}
+
+body.dark-theme .bestiary-loot-btn.open,
+body.dark-theme .bestiary-loot-btn:active {
+  background: rgba(100, 181, 246, 0.3);
+}
+
 /* Main Content Area */
 .content-area {
   margin-left: 0;
@@ -110,6 +216,11 @@ body.dark-theme .header-action-btn:active {
   padding-left: 12px;
   padding-right: 12px;
   box-sizing: border-box;
+}
+
+.content-area-no-footer {
+  --footer-menu-height: 0px;
+  padding-bottom: calc(var(--safe-area-bottom, 0px) + 16px);
 }
 
 .loading-overlay {

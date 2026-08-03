@@ -1,5 +1,4 @@
 .lore-container {
-    padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
     color: #e0e0e0;
@@ -8,7 +7,6 @@
   .lore-section {
     margin-bottom: 40px;
     background: rgba(30, 30, 30, 0.6);
-    padding: 20px;
     border-radius: 8px;
   }
   
@@ -35,7 +33,7 @@
   .faction-card {
     background: rgba(40, 40, 40, 0.8);
     border-radius: 8px;
-    padding: 20px;
+    padding-top: 20px;
     border: 1px solid rgba(100, 181, 246, 0.2);
     transition: background-color 0.5s, box-shadow 0.5s;
   }
@@ -190,3 +188,55 @@
     background-color: rgba(255, 255, 255, 0.05);
     border-radius: 8px;
   }
+
+  /* Chronicles & Secrecy Styles */
+  .chronicles-container,
+  .hooks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .chronicle-card,
+  .hook-card {
+    background: rgba(30, 35, 41, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 16px 20px;
+  }
+
+  .chronicle-header,
+  .hook-header,
+  .faction-card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .faction-card-header-row h3 {
+    margin: 0;
+  }
+
+  .faction-control-badge {
+    font-size: 0.85em;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .chronicle-summary {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: #e2e8f0;
+    margin-bottom: 12px;
+  }
+
+  .lore-section-vault,
+  .lore-section-revealed {
+    max-width: 900px;
+    margin: 16px auto;
+  }
+

@@ -116,7 +116,7 @@ function createInsertRoute(path, options) {
       const db = usePlayersDb ? playersDb : mainDb;
       const collection = db.collection(collectionName);
 
-      if (typeof item.id === 'undefined') {
+      if (typeof item.id === 'undefined' || item.id === 0) {
         const lastItem = await collection.find().sort({ id: -1 }).limit(1).toArray();
         if (lastItem.length === 0) {
           item.id = 1;

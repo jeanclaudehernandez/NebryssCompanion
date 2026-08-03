@@ -1,7 +1,4 @@
 <div class="ship-navigation-container">
-  <h2>Ship Navigation</h2>
-
-  <div class="ship-selection">
     <div class="selection-row">
         <label>Select Ship:</label>
         <select [(ngModel)]="selectedShipId" (change)="resetMoves()">
@@ -10,9 +7,7 @@
         </select>
         <button *ngIf="selectedShipId" (click)="deleteShip(selectedShipId)" class="delete-btn">Delete Ship</button>
     </div>
-  </div>
 
-  <div class="add-ship">
     <h3>Add New Ship</h3>
     <div class="add-row">
         <input type="text" placeholder="Ship Name" [(ngModel)]="newShipName">
@@ -33,7 +28,6 @@
         </select>
         <button (click)="addShip()" [disabled]="!newShipName.trim()">Add Ship</button>
     </div>
-  </div>
 
   <div *ngIf="selectedShip" class="navigation-interface">
     <h3>Battle Navigation for {{ selectedShip.name }}</h3>

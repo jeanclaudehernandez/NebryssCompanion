@@ -7,11 +7,24 @@ import { ModalComponent } from './modal/modal.component';
 })
 export class ModalService {
   private modalComponentRef: ComponentRef<ModalComponent> | null = null;
+  private onCloseCallback: (() => void) | null = null;
 
   constructor(private injector: EnvironmentInjector, private appRef: ApplicationRef) {}
 
-  openFromTemplate(template: TemplateRef<any>, context?: any, options: { width?: string, height?: string } = {}) {
+  openFromTemplate(
+    template: TemplateRef<any>,
+    context?: any,
+    options: {
+      width?: string,
+      height?: string,
+      overlayClass?: string,
+      contentClass?: string,
+      showCloseButton?: boolean,
+      onClose?: () => void
+    } = {}
+  ) {
     this.close();
+    this.onCloseCallback = options.onClose || null;
   
     this.modalComponentRef = createComponent(ModalComponent, {
       environmentInjector: this.injector
@@ -26,12 +39,18 @@ export class ModalService {
     this.modalComponentRef.instance.setTemplate(template, context);
     if (options.width) this.modalComponentRef.instance.width = options.width;
     if (options.height) this.modalComponentRef.instance.height = options.height;
+    this.modalComponentRef.instance.overlayClass = options.overlayClass || '';
+    this.modalComponentRef.instance.contentClass = options.contentClass || '';
+    this.modalComponentRef.instance.showCloseButton = options.showCloseButton ?? true;
     
     this.modalComponentRef.instance.close = () => this.close();
     this.modalComponentRef.changeDetectorRef.detectChanges();
   }
 
   close() {
+    const callback = this.onCloseCallback;
+    this.onCloseCallback = null;
+
     if (this.modalComponentRef) {
       // Make sure the DOM element is removed properly
       const element = this.modalComponentRef.location.nativeElement;
@@ -43,5 +62,7 @@ export class ModalService {
       this.modalComponentRef.destroy();
       this.modalComponentRef = null;
     }
+
+    callback?.();
   }
 }

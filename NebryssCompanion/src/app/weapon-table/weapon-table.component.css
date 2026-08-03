@@ -59,10 +59,93 @@ body.dark-theme .table-header h3 {
   z-index: 10;
 }
 
+.body-editor {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.body-editor-trigger {
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #ffffff;
+  color: inherit;
+  padding: 8px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.body-editor-trigger-caret {
+  opacity: 0.85;
+}
+
+.body-selector-panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 60;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  max-height: 240px;
+  overflow: auto;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.18);
+}
+
+.body-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  cursor: pointer;
+}
+
+.body-option input {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.body-option-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.body-option-label {
+  text-transform: capitalize;
+}
+
+body.dark-theme .body-editor-trigger {
+  background: #2d2d2d;
+  color: #e0e0e0;
+  border-color: #555;
+}
+
+body.dark-theme .body-selector-panel {
+  background: #1f2937;
+  border-color: #334155;
+  color: #f8fafc;
+}
+
 .table-scroll-wrapper {
   overflow-x: auto;
+  overflow-y: visible;
   -webkit-overflow-scrolling: touch;
   border-radius: 4px;
+  position: relative;
+  z-index: 1;
 }
 
 body.dark-theme .table-header {
@@ -116,8 +199,6 @@ body.dark-theme .table-header h3 {
   max-width: 85px;
   width: 85px;
   white-space: normal;
-  word-break: break-word;
-  overflow-wrap: break-word;
   line-height: 1.25;
   font-weight: 500;
   display: flex;
@@ -126,7 +207,7 @@ body.dark-theme .table-header h3 {
   text-align: left;
   margin: auto 0;
 }
-  
+
 .weapons-table th {
   background-color: #f5f5f5;
   position: sticky;
@@ -167,7 +248,7 @@ body.dark-theme .weapons-table th.sortable:hover {
   border-bottom: 1px solid #eee;
   transition: background-color 0.3s;
 }
-  
+
 .weapons-table td {
   padding: 0.35rem 0.25rem;
   text-align: center;
@@ -179,44 +260,71 @@ body.dark-theme .weapons-table th.sortable:hover {
 .weapons-table td.col-name {
   text-align: left;
 }
-  
+
 /* Inventory Highlight */
 .weapons-table tbody.in-inventory {
-    background-color: #e8f5e9;
+  background-color: #e8f5e9;
 }
 
 /* Stats Row Styling */
 .stats-row td {
-    padding-bottom: 0.2rem;
-    vertical-align: middle;
-    border-bottom: none;
+  padding-bottom: 0.2rem;
+  vertical-align: middle;
+  border-bottom: none;
 }
 
 .weapon-row td:first-child {
-    font-weight: 500;
+  font-weight: 500;
 }
 
 /* Rules and Body Row Styling */
-.rules-row td, .body-row td {
-    padding-top: 0;
-    padding-bottom: 0.5rem;
-    border-top: none;
+.rules-row td,
+.body-row td {
+  padding-top: 0;
+  padding-bottom: 0.5rem;
+  border-top: none;
+  overflow: visible;
+  position: relative;
 }
 
-.rules-container, .body-cell {
-    /* padding-left: 2rem; Removed indentation as now aligned via columns */
-    font-size: 0.85rem;
-    color: #555;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem;
+.rules-container,
+.body-cell {
+  /* padding-left: 2rem; Removed indentation as now aligned via columns */
+  font-size: 0.85rem;
+  color: #555;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: visible;
+  position: relative;
+  z-index: 2;
 }
 
-.rules-label, .body-label {
-    font-weight: 500;
-    color: #777;
-    margin-right: 0.25rem;
+.body-tooltip-anchor {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+.rules-label,
+.body-label {
+  font-weight: 500;
+  color: #777;
+  margin-right: 0.25rem;
+}
+
+.rules-label-spacer {
+  visibility: hidden;
+  font-weight: 500;
+  margin-right: 0.25rem;
+}
+
+.body-label-spacer {
+  visibility: hidden;
+  font-weight: 500;
+  color: #777;
+  margin-right: 0.25rem;
 }
 
 .rule-text {
@@ -227,39 +335,64 @@ body.dark-theme .weapons-table th.sortable:hover {
   transition: all 0.2s ease;
   color: #007bff;
 }
-  
+
 .rule-text:hover {
   color: #0056b3;
   border-bottom-color: currentColor;
 }
 
 .rule-item {
-    display: inline-block;
+  display: inline-block;
 }
 
 /* Mod Description */
 .mod-description {
-    display: inline-block;
-    margin-left: 1rem;
-    font-style: italic;
-    color: #666;
+  display: inline-block;
+  margin-left: 1rem;
+  font-style: italic;
+  color: #666;
 }
 
 /* Buttons */
-.inventory-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: center;
+.weapons-table th.col-actions,
+.weapons-table td.col-actions {
+  width: 60px;
+  min-width: 56px;
+  max-width: 62px;
+  text-align: center;
+  vertical-align: middle;
+  padding: 4px 2px;
+  white-space: normal;
+  word-break: normal;
+  overflow: visible;
+  box-sizing: border-box;
 }
 
-.dice-suffix{
+.inventory-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+  align-items: center;
+  width: 54px;
+  max-width: 54px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.dice-suffix {
   font-size: 0.6rem;
   color: #636363;
-  position:relative;
+  position: relative;
   top: -1px;
 }
 
-.btn-add, .btn-remove, .btn-clone, .btn-delete, .btn-edit, .btn-cart {
+.btn-add,
+.btn-remove,
+.btn-clone,
+.btn-delete,
+.btn-edit,
+.btn-cart {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -275,23 +408,63 @@ body.dark-theme .weapons-table th.sortable:hover {
   transition: background-color 0.3s;
 }
 
-.btn-add { background-color: #4caf50; color: white; }
-.btn-add:hover { background-color: #388e3c; }
+.btn-add {
+  background-color: #4caf50;
+  color: white;
+}
 
-.btn-cart { background-color: #2196F3; color: white; font-size: 0.8rem; }
-.btn-cart:hover { background-color: #1976D2; }
+.btn-add:hover {
+  background-color: #388e3c;
+}
 
-.btn-remove { background-color: #f44336; color: white; }
-.btn-remove:hover { background-color: #d32f2f; }
+.btn-cart {
+  background-color: #2196F3;
+  color: white;
+  font-size: 0.8rem;
+}
 
-.btn-clone { background-color: #FFC107; color: black; font-size: 0.8rem; }
-.btn-clone:hover { background-color: #FFA000; }
+.btn-cart:hover {
+  background-color: #1976D2;
+}
 
-.btn-delete { background-color: #8B0000; color: white; font-size: 0.8rem; }
-.btn-delete:hover { background-color: #a50000; }
+.btn-remove {
+  background-color: #f44336;
+  color: white;
+}
 
-.btn-edit { background-color: #9C27B0; color: white; font-size: 0.8rem; }
-.btn-edit:hover { background-color: #7B1FA2; }
+.btn-remove:hover {
+  background-color: #d32f2f;
+}
+
+.btn-clone {
+  background-color: #FFC107;
+  color: black;
+  font-size: 0.8rem;
+}
+
+.btn-clone:hover {
+  background-color: #FFA000;
+}
+
+.btn-delete {
+  background-color: #8B0000;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.btn-delete:hover {
+  background-color: #a50000;
+}
+
+.btn-edit {
+  background-color: #9C27B0;
+  color: white;
+  font-size: 0.8rem;
+}
+
+.btn-edit:hover {
+  background-color: #7B1FA2;
+}
 
 /* Dark Theme Styles */
 body.dark-theme .table-container {
@@ -326,13 +499,80 @@ body.dark-theme .rule-text:hover {
   color: #90caf9;
 }
 
-body.dark-theme .rules-container, 
+body.dark-theme .rules-container,
 body.dark-theme .body-cell,
 body.dark-theme .mod-description {
-    color: #aaa;
+  color: #aaa;
 }
 
-body.dark-theme .rules-label, 
+body.dark-theme .rules-label,
 body.dark-theme .body-label {
-    color: #888;
+  color: #888;
+}
+
+@media (max-width: 720px) {
+  .weapons-table {
+    font-size: 0.76rem;
+  }
+
+  .weapons-table th.col-name,
+  .weapons-table td.col-name {
+    width: 76px;
+    padding-right: 6px;
+  }
+
+  .name-wrapper {
+    width: 68px;
+    max-width: 68px;
+    line-height: 1.15;
+  }
+
+  .weapons-table th.col-compact,
+  .weapons-table td.col-compact {
+    padding: 4px 2px;
+  }
+
+  .weapons-table th,
+  .weapons-table td {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .rules-container,
+  .body-cell {
+    font-size: 0.76rem;
+  }
+
+  .mod-description {
+    margin-left: 0.5rem;
+  }
+
+  .inventory-actions {
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .weapons-table {
+    font-size: 0.72rem;
+  }
+
+  .weapons-table th.col-name,
+  .weapons-table td.col-name {
+    width: 68px;
+  }
+
+  .name-wrapper {
+    width: 60px;
+    max-width: 60px;
+  }
+
+  .weapons-table th.col-compact,
+  .weapons-table td.col-compact {
+    padding: 3px 1px;
+  }
+
+  .dice-suffix {
+    font-size: 0.52rem;
+  }
 }

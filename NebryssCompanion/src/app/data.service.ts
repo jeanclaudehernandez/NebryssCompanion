@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, forkJoin, of, shareReplay, map, tap } from 'rxjs';
+import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap, catchError, of } from 'rxjs';
 import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
 import { WebSocketService, EntityUpdateEvent } from './websocket.service';
@@ -198,6 +198,7 @@ export class DataService {
   getAfflictions(): Observable<Affliction[]> {
     if (!this.afflictionsCache$) {
       this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+        catchError(() => this.http.get<Affliction[]>('assets/afflictions.json')),
         tap(afflictions => {
           this.afflictions = afflictions;
           this.afflictionsSubject.next([...this.afflictions]);
@@ -210,6 +211,7 @@ export class DataService {
 
   refreshAfflictions(): Observable<Affliction[]> {
     this.afflictionsCache$ = this.http.get<Affliction[]>(`${this.apiUrl}/afflictions`).pipe(
+      catchError(() => this.http.get<Affliction[]>('assets/afflictions.json')),
       tap(afflictions => {
         this.afflictions = afflictions;
         this.afflictionsSubject.next([...this.afflictions]);
@@ -253,6 +255,7 @@ export class DataService {
   getPlayers(): Observable<Player[]> {
     if (!this.playersCache$) {
       this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+        catchError(() => this.http.get<Player[]>('assets/players.json')),
         tap(players => {
           this.players = players;
           this.playersSubject.next([...this.players]);
@@ -265,6 +268,7 @@ export class DataService {
 
   refreshPlayers(): Observable<Player[]> {
     this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+      catchError(() => this.http.get<Player[]>('assets/players.json')),
       tap(players => {
         this.players = players;
         this.playersSubject.next([...this.players]);
@@ -278,6 +282,7 @@ export class DataService {
   getNpcs(): Observable<NPC[]> {
     if (!this.npcsCache$) {
       this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
+        catchError(() => this.http.get<NPC[]>('assets/npcs.json')),
         tap(npcs => {
           this.npcs = npcs;
           this.npcsSubject.next([...this.npcs]);
@@ -288,9 +293,82 @@ export class DataService {
     return this.npcsCache$;
   }
 
+  refreshNpcs(): Observable<NPC[]> {
+    this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
+      catchError(() => this.http.get<NPC[]>('assets/npcs.json')),
+      tap(npcs => {
+        this.npcs = npcs;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.npcsCache$;
+  }
+
+  createNpc(npc: NPC): Observable<NPC> {
+    if (!npc.id || npc.id === 0) {
+      const maxId = this.npcs.reduce((max, n) => (n.id > max ? n.id : max), 0);
+      npc.id = maxId + 1;
+    }
+    return this.http.post<NPC>(`${this.apiUrl}/npc`, npc).pipe(
+      catchError(() => {
+        const index = this.npcs.findIndex(n => n.id === npc.id);
+        if (index === -1) {
+          this.npcs.push(npc);
+        }
+        return of(npc);
+      }),
+      tap(created => {
+        const index = this.npcs.findIndex(n => n.id === created.id);
+        if (index !== -1) {
+          this.npcs[index] = created;
+        } else {
+          this.npcs.push(created);
+        }
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateNpc(npc: NPC): Observable<NPC> {
+    return this.http.put<NPC>(`${this.apiUrl}/npc`, npc).pipe(
+      catchError(() => {
+        const index = this.npcs.findIndex(n => n.id === npc.id);
+        if (index !== -1) {
+          this.npcs[index] = npc;
+        }
+        return of(npc);
+      }),
+      tap(updated => {
+        const index = this.npcs.findIndex(n => n.id === updated.id);
+        if (index !== -1) {
+          this.npcs[index] = updated;
+        }
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteNpc(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/npc/${id}`).pipe(
+      catchError(() => {
+        this.npcs = this.npcs.filter(n => n.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.npcs = this.npcs.filter(n => n.id !== id);
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   getitemCategories(): Observable<ItemCategory[]> {
     if (!this.itemCategories.length) {
       return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
+        catchError(() => this.http.get<ItemCategory[]>('assets/itemCategories.json')),
         tap(categories => {
           this.itemCategories = categories;
           this.itemCategoriesSubject.next([...this.itemCategories]);
@@ -299,6 +377,7 @@ export class DataService {
       );
     }
     return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
+      catchError(() => this.http.get<ItemCategory[]>('assets/itemCategories.json')),
       shareReplay(1)
     );
   }
@@ -306,6 +385,7 @@ export class DataService {
   getBestiary(): Observable<BestiaryEntry[]> {
     if (!this.bestiaryCache$) {
       this.bestiaryCache$ = this.http.get<BestiaryEntry[]>(`${this.apiUrl}/bestiary`).pipe(
+        catchError(() => this.http.get<BestiaryEntry[]>('assets/bestiary.json')),
         tap(bestiary => {
           this.bestiary = bestiary;
           this.bestiarySubject.next([...this.bestiary]);
@@ -316,6 +396,88 @@ export class DataService {
     return this.bestiaryCache$;
   }
 
+  refreshBestiary(): Observable<BestiaryEntry[]> {
+    this.bestiaryCache$ = this.http.get<BestiaryEntry[]>(`${this.apiUrl}/bestiary`).pipe(
+      catchError(() => this.http.get<BestiaryEntry[]>('assets/bestiary.json')),
+      tap(bestiary => {
+        this.bestiary = bestiary;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.bestiaryCache$;
+  }
+
+  saveBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    if (entry.id && entry.id > 0 && this.bestiary.some(b => b.id === entry.id)) {
+      return this.updateBestiary(entry);
+    } else {
+      return this.createBestiary(entry);
+    }
+  }
+
+  createBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    if (!entry.id || entry.id === 0) {
+      const maxId = this.bestiary.reduce((max, b) => (b.id > max ? b.id : max), 0);
+      entry.id = maxId + 1;
+    }
+    return this.http.post<BestiaryEntry>(`${this.apiUrl}/bestiary`, entry).pipe(
+      catchError(() => {
+        const index = this.bestiary.findIndex(b => b.id === entry.id);
+        if (index === -1) {
+          this.bestiary.push(entry);
+        } else {
+          this.bestiary[index] = entry;
+        }
+        return of(entry);
+      }),
+      tap(created => {
+        const index = this.bestiary.findIndex(b => b.id === created.id);
+        if (index !== -1) {
+          this.bestiary[index] = created;
+        } else {
+          this.bestiary.push(created);
+        }
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateBestiary(entry: BestiaryEntry): Observable<BestiaryEntry> {
+    return this.http.put<BestiaryEntry>(`${this.apiUrl}/bestiary`, entry).pipe(
+      catchError(() => {
+        const index = this.bestiary.findIndex(b => b.id === entry.id);
+        if (index !== -1) {
+          this.bestiary[index] = entry;
+        }
+        return of(entry);
+      }),
+      tap(updated => {
+        const index = this.bestiary.findIndex(b => b.id === updated.id);
+        if (index !== -1) {
+          this.bestiary[index] = updated;
+        }
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteBestiary(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/bestiary/${id}`).pipe(
+      catchError(() => {
+        this.bestiary = this.bestiary.filter(b => b.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.bestiary = this.bestiary.filter(b => b.id !== id);
+        this.bestiaryCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   refreshWeapons(): Observable<Weapon[]> {
     this.weaponsCache$ = null;
     return this.getWeapons();
@@ -324,6 +486,7 @@ export class DataService {
   getWeapons(): Observable<Weapon[]> {
     if (!this.weaponsCache$) {
       this.weaponsCache$ = this.http.get<Weapon[]>(`${this.apiUrl}/weapon`).pipe(
+        catchError(() => this.http.get<Weapon[]>('assets/weapons.json')),
         tap(weapons => {
           this.weapons = weapons;
           this.weaponsSubject.next([...this.weapons]);
@@ -341,8 +504,10 @@ export class DataService {
 
   getItems(): Observable<Items> {
     if (!this.itemsCache$) {
-      this.itemsCache$ = this.http.get<any[]>(`${this.apiUrl}/item`).pipe(
-        map(itemsArray => {
+      this.itemsCache$ = this.http.get<any>(`${this.apiUrl}/item`).pipe(
+        catchError(() => this.http.get<any>('assets/items.json')),
+        map(itemsResponse => {
+          const itemsArray = Array.isArray(itemsResponse) ? itemsResponse : (itemsResponse?.items || []);
           const wrapped: Items = { items: itemsArray };
           this.items = wrapped;
           this.itemsSubject.next({ ...this.items });
@@ -357,6 +522,7 @@ export class DataService {
   getWeaponRules(): Observable<WeaponRule[]> {
     if (!this.weaponRulesCache$) {
       this.weaponRulesCache$ = this.http.get<WeaponRule[]>(`${this.apiUrl}/weaponRule`).pipe(
+        catchError(() => this.http.get<WeaponRule[]>('assets/weaponRules.json')),
         tap(rules => {
           this.weaponsRules = rules;
           this.weaponRulesSubject.next([...this.weaponsRules]);
@@ -370,6 +536,7 @@ export class DataService {
   getShops(): Observable<Shop[]> {
     if (!this.shopsCache$) {
       this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
+        catchError(() => this.http.get<Shop[]>('assets/shops.json')),
         tap(shops => {
           this.shops = shops;
           this.shopsSubject.next([...this.shops]);
@@ -380,9 +547,79 @@ export class DataService {
     return this.shopsCache$;
   }
 
+  refreshShops(): Observable<Shop[]> {
+    this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
+      catchError(() => this.http.get<Shop[]>('assets/shops.json')),
+      tap(shops => {
+        this.shops = shops;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.shopsCache$;
+  }
+
+  updateShop(shop: Shop): Observable<Shop> {
+    return this.http.put<Shop>(`${this.apiUrl}/shop`, shop).pipe(
+      catchError(() => {
+        const index = this.shops.findIndex(s => s.id === shop.id);
+        if (index !== -1) {
+          this.shops[index] = shop;
+        }
+        return of(shop);
+      }),
+      tap(updatedShop => {
+        const index = this.shops.findIndex(s => s.id === updatedShop.id);
+        if (index !== -1) {
+          this.shops[index] = updatedShop;
+        }
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  createShop(shop: Shop): Observable<Shop> {
+    return this.http.post<Shop>(`${this.apiUrl}/shop`, shop).pipe(
+      catchError(() => {
+        if (!shop.id) {
+          const maxId = this.shops.reduce((max, s) => (s.id > max ? s.id : max), 0);
+          shop.id = maxId + 1;
+        }
+        this.shops.push(shop);
+        return of(shop);
+      }),
+      tap(created => {
+        const index = this.shops.findIndex(s => s.id === created.id);
+        if (index !== -1) {
+          this.shops[index] = created;
+        } else {
+          this.shops.push(created);
+        }
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteShop(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/shop/${id}`).pipe(
+      catchError(() => {
+        this.shops = this.shops.filter(s => s.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.shops = this.shops.filter(s => s.id !== id);
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   getLore(): Observable<Lore> {
     if (!this.loreCache$) {
       this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
+        catchError(() => this.http.get<any>('assets/lore.json')),
         map(response => {
           const lore = Array.isArray(response) ? response[0] : response;
           this.lore = lore as Lore;
@@ -395,11 +632,61 @@ export class DataService {
     return this.loreCache$ as Observable<Lore>;
   }
 
+  refreshLore(): Observable<Lore> {
+    this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
+      catchError(() => this.http.get<any>('assets/lore.json')),
+      map(response => {
+        const lore = Array.isArray(response) ? response[0] : response;
+        this.lore = lore as Lore;
+        return this.lore;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.loreCache$;
+  }
+
+  updateLore(lore: Lore): Observable<Lore> {
+    return this.http.put<Lore>(`${this.apiUrl}/lore`, lore).pipe(
+      catchError(() => {
+        this.lore = lore;
+        return of(lore);
+      }),
+      tap(saved => {
+        this.lore = saved;
+      })
+    );
+  }
+
   getLocations(): Observable<Locations> {
     if (!this.locationsCache$) {
-      this.locationsCache$ = this.http.get<Location[]>(`${this.apiUrl}/locations`).pipe(
-        map(locationsArray => {
-          const wrapped: Locations = { locations: locationsArray };
+      this.locationsCache$ = forkJoin({
+        remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+          catchError(() => this.http.get<any>('assets/locations.json'))
+        ),
+        localAssets: this.http.get<any>('assets/locations.json').pipe(
+          catchError(() => of([]))
+        )
+      }).pipe(
+        map(({ remote, localAssets }) => {
+          const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
+          const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
+
+          const mergedLocations = rawRemote.map((loc: any) => {
+            const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
+            const secrets = (loc.secrets && loc.secrets.length > 0)
+              ? loc.secrets
+              : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
+
+            return {
+              ...loc,
+              secrets,
+              rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
+              privateNotes: loc.privateNotes || matchLocal?.privateNotes
+            };
+          });
+
+          const wrapped: Locations = { locations: mergedLocations };
           this.locations = wrapped;
           this.locationsSubject.next({ ...this.locations });
           return wrapped;
@@ -407,6 +694,43 @@ export class DataService {
         shareReplay(1)
       );
     }
+    return this.locationsCache$;
+  }
+
+  refreshLocations(): Observable<Locations> {
+    this.locationsCache$ = forkJoin({
+      remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+        catchError(() => this.http.get<any>('assets/locations.json'))
+      ),
+      localAssets: this.http.get<any>('assets/locations.json').pipe(
+        catchError(() => of([]))
+      )
+    }).pipe(
+      map(({ remote, localAssets }) => {
+        const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
+        const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
+
+        const mergedLocations = rawRemote.map((loc: any) => {
+          const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
+          const secrets = (loc.secrets && loc.secrets.length > 0)
+            ? loc.secrets
+            : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
+
+          return {
+            ...loc,
+            secrets,
+            rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
+            privateNotes: loc.privateNotes || matchLocal?.privateNotes
+          };
+        });
+
+        const wrapped: Locations = { locations: mergedLocations };
+        this.locations = wrapped;
+        return wrapped;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
     return this.locationsCache$;
   }
 
@@ -423,6 +747,7 @@ export class DataService {
   getTalents(): Observable<TalentCategory[]> {
     if (!this.talentsCache$) {
       this.talentsCache$ = this.http.get<TalentCategory[]>(`${this.apiUrl}/talent`).pipe(
+        catchError(() => this.http.get<TalentCategory[]>('assets/talents.json')),
         map(categories => categories.map(category => ({
           ...category,
           talents: category.talents.map(t => ({
@@ -443,6 +768,7 @@ export class DataService {
   getAlteredStates(): Observable<AlteredState[]> {
     if (!this.alteredStatesCache$) {
       this.alteredStatesCache$ = this.http.get<AlteredState[]>(`${this.apiUrl}/status`).pipe(
+        catchError(() => this.http.get<AlteredState[]>('assets/alteredStates.json')),
         tap(states => {
           this.alteredStates = states;
           this.alteredStatesSubject.next([...this.alteredStates]);
@@ -456,6 +782,7 @@ export class DataService {
   getMistEffects(): Observable<MistEffect[]> {
     if (!this.mistEffectsCache$) {
       this.mistEffectsCache$ = this.http.get<MistEffect[]>(`${this.apiUrl}/mistEffect`).pipe(
+        catchError(() => this.http.get<MistEffect[]>('assets/mistEffects.json')),
         tap(effects => {
           this.mistEffects = effects;
           this.mistEffectsSubject.next([...this.mistEffects]);
@@ -469,6 +796,7 @@ export class DataService {
   getTerrains(): Observable<Terrain[]> {
     if (!this.terrainsCache$) {
       this.terrainsCache$ = this.http.get<Terrain[]>(`${this.apiUrl}/terrainRule`).pipe(
+        catchError(() => this.http.get<Terrain[]>('assets/terrainRules.json')),
         tap(terrains => {
           this.terrains = terrains;
           this.terrainsSubject.next([...this.terrains]);
@@ -482,6 +810,7 @@ export class DataService {
   getLetters(): Observable<Letter[]> {
     if (!this.lettersCache$) {
       this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+        catchError(() => this.http.get<Letter[]>('assets/letters.json')),
         tap(letters => {
           this.letters = letters.map(letter => this.normalizeLetter(letter));
           this.lettersSubject.next([...this.letters]);
@@ -494,6 +823,7 @@ export class DataService {
 
   refreshLetters(): Observable<Letter[]> {
     this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(
+      catchError(() => this.http.get<Letter[]>('assets/letters.json')),
       tap(letters => {
         this.letters = letters.map(letter => this.normalizeLetter(letter));
         this.lettersSubject.next([...this.letters]);
@@ -513,6 +843,7 @@ export class DataService {
     bestiary: BestiaryEntry[],
     shops: Shop[],
     itemCategories: ItemCategory[],
+    locations: Locations,
     alteredStates: AlteredState[],
     mistEffects: any[],
     terrains: Terrain[],
@@ -530,6 +861,7 @@ export class DataService {
         bestiary: this.getBestiary(),
         shops: this.getShops(),
         itemCategories: this.getitemCategories(),
+        locations: this.getLocations(),
         alteredStates: this.getAlteredStates(),
         mistEffects: this.getMistEffects(),
         terrains: this.getTerrains(),
@@ -647,7 +979,18 @@ export class DataService {
       headers: new HttpHeaders({
         [SKIP_LOADING_HEADER]: 'true'
       })
-    });
+    }).pipe(
+      tap(savedPlayer => {
+        const index = this.players.findIndex(existingPlayer => existingPlayer.id === savedPlayer.id);
+        if (index !== -1) {
+          this.players[index] = savedPlayer;
+        } else {
+          this.players.push(savedPlayer);
+        }
+        this.playersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
   }
 
   createItem(item: any): Observable<any> {
@@ -712,6 +1055,41 @@ export class DataService {
         this.updateArrayCollection(this.weapons, { id }, 'delete', w => w.id);
         this.weaponsSubject.next([...this.weapons]);
         this.weaponsCache$ = null;
+      })
+    );
+  }
+
+  createLocation(location: Partial<Location>): Observable<Location> {
+    return this.http.post<Location>(`${this.apiUrl}/locations`, location).pipe(
+      tap(newLocation => {
+        this.locations.locations.push(newLocation);
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateLocation(location: Location): Observable<Location> {
+    return this.http.put<Location>(`${this.apiUrl}/locations`, location).pipe(
+      tap(updatedLocation => {
+        const index = this.locations.locations.findIndex(existingLocation => existingLocation.id === updatedLocation.id);
+        if (index !== -1) {
+          this.locations.locations[index] = updatedLocation;
+        } else {
+          this.locations.locations.push(updatedLocation);
+        }
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteLocation(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/locations/${id}`).pipe(
+      tap(() => {
+        this.locations.locations = this.locations.locations.filter(location => location.id !== id);
+        this.locationsCache$ = null;
+        this.allDataCache$ = null;
       })
     );
   }

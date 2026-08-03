@@ -1,9 +1,8 @@
 .bestiary-select-container {
-    margin: 20px;
-    padding: 20px;
-    background: #f5f5f5;
+    border: 1px solid #ddd;
+    margin-bottom: 30px;
+    padding: 5px;
     border-radius: 8px;
-    transition: background-color 0.3s, color 0.3s;
 }
 
 select {
@@ -20,16 +19,16 @@ select {
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
-  }
-  
-  label {
+}
+
+label {
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
     color: #333;
     transition: color 0.3s;
-  }
-  
+}
+
 select {
     width: 100%;
     padding: 8px;
@@ -46,9 +45,8 @@ select {
 }
 
 .creature-detail-container {
-    margin: 20px;
-    border: 1px solid #ddd;
     border-radius: 8px;
+    border: 1px solid #ddd;
     overflow: hidden;
     background: white;
     margin-bottom: 30px;
@@ -66,6 +64,37 @@ select {
 
 .creature-header h3 {
     margin: 0;
+}
+
+.creature-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.view-npc-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: linear-gradient(135deg, #2b6cb0, #2c5282);
+    border: 1px solid #4299e1;
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.view-npc-btn:hover {
+    background: linear-gradient(135deg, #3182ce, #2b6cb0);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(49, 130, 206, 0.4);
+}
+
+.view-npc-btn .material-icons {
+    font-size: 16px;
 }
 
 .remove-creature-btn {
@@ -108,7 +137,7 @@ body.dark-theme select {
 }
 
 body.dark-theme .creature-detail-container {
-    background: #2d2d2d;
+    background: #121212;
     border-color: #444;
 }
 
@@ -119,32 +148,6 @@ body.dark-theme .creature-header {
 
 body.dark-theme .selected-creatures-info {
     color: #aaa;
-}
-
-/* Materials Sidebar */
-.materials-toggle-btn {
-    position: fixed;
-    right: 20px;
-    bottom: calc(var(--footer-menu-height, 60px) + var(--safe-area-bottom, 0px) + 16px);
-    z-index: 1000;
-    padding: 12px 20px;
-    background-color: #2196F3;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: bold;
-    transition: transform 0.2s, background-color 0.2s;
-}
-
-.materials-toggle-btn:hover {
-    background-color: #1976D2;
-    transform: translateY(-2px);
 }
 
 /* Sidebar Container */
