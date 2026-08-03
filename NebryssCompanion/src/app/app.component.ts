@@ -232,7 +232,7 @@ export class AppComponent {
   }
 
   get showHeaderPlayerTitle(): boolean {
-    return this.currentView !== 'bestiary';
+    return true;
   }
 
   get showBestiaryLootButton(): boolean {
