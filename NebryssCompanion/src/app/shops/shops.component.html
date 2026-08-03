@@ -33,7 +33,6 @@
               <h3 class="shop-title">{{ shop.name }}</h3>
               <button *ngIf="isAdmin" type="button" class="gm-discovered-btn" [class.is-discovered]="shop.discovered !== false" (click)="toggleShopDiscovered(shop, $event)" [title]="shop.discovered !== false ? 'Shop is Discovered by players. Click to mark Undiscovered.' : 'Shop is Undiscovered. Click to mark Discovered.'">
                 <span class="material-icons">{{ shop.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
-                <span>{{ shop.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
               </button>
               <button *ngIf="isAdmin" type="button" class="gm-discovered-btn" (click)="editShopInEditor(shop, $event)" title="Edit this shop in Shop Editor">
                 <span class="material-icons">edit</span>

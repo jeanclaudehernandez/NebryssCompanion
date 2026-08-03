@@ -85,7 +85,6 @@
           <h3>Description</h3>
           <button *ngIf="isAdmin" type="button" class="gm-discovered-btn" [class.is-discovered]="selectedLocation.discovered !== false" (click)="toggleLocationDiscovered(selectedLocation, $event)" [title]="selectedLocation.discovered !== false ? 'Location is Discovered by players. Click to mark Undiscovered.' : 'Location is Undiscovered. Click to mark Discovered.'">
             <span class="material-icons">{{ selectedLocation.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
-            <span>{{ selectedLocation.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
           </button>
         </div>
         <p>{{ selectedLocation.description }}</p>
