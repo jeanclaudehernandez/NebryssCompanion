@@ -175,47 +175,50 @@
           </ng-template>
         </section>
 
-        <!-- 5. Abilities Section (Player Editor style) -->
+        <!-- 5. Abilities Section -->
         <section class="admin-section">
-          <div class="section-header">
-            <div>
-              <h3>Abilities</h3>
+          <div class="section-header" (click)="isAbilitiesCollapsed = !isAbilitiesCollapsed" style="cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons">{{ isAbilitiesCollapsed ? 'chevron_right' : 'expand_more' }}</span>
+              <h3>Abilities ({{ creature.abilities?.length || 0 }})</h3>
             </div>
-            <button class="inline-btn" type="button" (click)="addAbility()">+ Ability</button>
+            <button class="inline-btn" type="button" (click)="$event.stopPropagation(); addAbility()">+ Ability</button>
           </div>
 
-          <div *ngIf="creature.abilities && creature.abilities.length; else emptyAbilities" class="abilities-list">
-            <div class="ability-card" *ngFor="let ability of creature.abilities; let i = index">
-              <div class="ability-card-header">
-                <h4>Ability {{ i + 1 }}</h4>
-                <button class="remove-btn" type="button" (click)="removeAbility(i)">Remove</button>
+          <div *ngIf="!isAbilitiesCollapsed">
+            <div *ngIf="creature.abilities && creature.abilities.length; else emptyAbilities" class="abilities-list">
+              <div class="ability-card" *ngFor="let ability of creature.abilities; let i = index">
+                <div class="ability-card-header">
+                  <h4>Ability {{ i + 1 }}</h4>
+                  <button class="remove-btn" type="button" (click)="removeAbility(i)">Remove</button>
+                </div>
+
+                <label class="field">
+                  <span>Name</span>
+                  <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text" placeholder="Ability name" />
+                </label>
+
+                <label class="field">
+                  <span>PR Modifier</span>
+                  <input [(ngModel)]="ability.prModifier" [name]="'ability-prmod-' + i" type="number"
+                    placeholder="Optional PR value" />
+                </label>
+
+                <label class="field">
+                  <span>Effect</span>
+                  <textarea [(ngModel)]="ability.effect" [name]="'ability-effect-' + i" rows="4"
+                    placeholder="Ability description"></textarea>
+                </label>
               </div>
-
-              <label class="field">
-                <span>Name</span>
-                <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text" placeholder="Ability name" />
-              </label>
-
-              <label class="field">
-                <span>PR Modifier</span>
-                <input [(ngModel)]="ability.prModifier" [name]="'ability-prmod-' + i" type="number"
-                  placeholder="Optional PR value" />
-              </label>
-
-              <label class="field">
-                <span>Effect</span>
-                <textarea [(ngModel)]="ability.effect" [name]="'ability-effect-' + i" rows="4"
-                  placeholder="Ability description"></textarea>
-              </label>
             </div>
+
+            <ng-template #emptyAbilities>
+              <div class="empty-state">
+                <p>No abilities yet.</p>
+                <button class="inline-btn" type="button" (click)="addAbility()">Add the first ability</button>
+              </div>
+            </ng-template>
           </div>
-
-          <ng-template #emptyAbilities>
-            <div class="empty-state">
-              <p>No abilities yet.</p>
-              <button class="inline-btn" type="button" (click)="addAbility()">Add the first ability</button>
-            </div>
-          </ng-template>
         </section>
 
         <!-- 6. Equipment / Items Section (Player Editor style) -->
@@ -241,46 +244,49 @@
         <!-- 7. Weapons & Items Catalog Picker (Add to Creature) -->
         <section class="admin-section"
           style="border: 1px solid rgba(229, 169, 60, 0.2); padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.15);">
-          <div class="section-header">
-            <div>
+          <div class="section-header" (click)="isCatalogCollapsed = !isCatalogCollapsed" style="cursor: pointer; margin-bottom: 0;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons">{{ isCatalogCollapsed ? 'chevron_right' : 'expand_more' }}</span>
               <h3>Add Weapons &amp; Items from Catalog</h3>
             </div>
           </div>
 
-          <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
-            <input type="text" [(ngModel)]="pickerSearchTerm" name="pickerSearchTerm" placeholder="Search catalog..."
-              style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;" />
-            <div style="display: flex; gap: 8px;">
-              <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'weapon'"
-                (click)="pickerTypeFilter = 'weapon'">
-                Weapons Catalog
-              </button>
-              <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'item'"
-                (click)="pickerTypeFilter = 'item'">
-                Items Catalog
-              </button>
-            </div>
-          </div>
-
-          <div *ngIf="pickerTypeFilter === 'weapon'">
-            <app-weapon-table *ngIf="catalogWeaponIds.length > 0; else noCatalogWeapons" [title]="''" [collapsible]="false"
-              [weaponIds]="catalogWeaponIds" [weaponsData]="weapons" [weaponRulesData]="weaponRules"
-              [alteredStates]="alteredStates" [characterBody]="creature.attributes.body" [displayBody]="true" [enableCloning]="true"
-              (clone)="onAddWeaponFromCatalog($event)"></app-weapon-table>
-            <ng-template #noCatalogWeapons>
-              <div class="empty-state">
-                <p>No weapons match the creature's body types ({{ creature.attributes.body.join(', ') || 'none' }}).</p>
+          <div *ngIf="!isCatalogCollapsed" style="margin-top: 12px;">
+            <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+              <input type="text" [(ngModel)]="pickerSearchTerm" name="pickerSearchTerm" placeholder="Search catalog..."
+                style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;" />
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'weapon'"
+                  (click)="pickerTypeFilter = 'weapon'">
+                  Weapons Catalog
+                </button>
+                <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'item'"
+                  (click)="pickerTypeFilter = 'item'">
+                  Items Catalog
+                </button>
               </div>
-            </ng-template>
-          </div>
+            </div>
 
-          <div *ngIf="pickerTypeFilter === 'item'">
-            <ng-container *ngFor="let catBlock of catalogItemCategories">
-              <app-generic-table [storageKey]="'creature-admin-picker-cat-' + catBlock.category.id"
-                [title]="catBlock.category.name" [collapsible]="true" [data]="catBlock.data"
-                [headers]="catBlock.category.headers" [headerKeys]="catBlock.category.keys" [enableCustomAdd]="true"
-                [renderHtml]="['description']" (customAdd)="onAddItemFromCatalog($event)"></app-generic-table>
-            </ng-container>
+            <div *ngIf="pickerTypeFilter === 'weapon'">
+              <app-weapon-table *ngIf="catalogWeaponIds.length > 0; else noCatalogWeapons" [title]="''" [collapsible]="false"
+                [weaponIds]="catalogWeaponIds" [weaponsData]="weapons" [weaponRulesData]="weaponRules"
+                [alteredStates]="alteredStates" [characterBody]="creature.attributes.body" [displayBody]="true" [enableCloning]="true"
+                (clone)="onAddWeaponFromCatalog($event)"></app-weapon-table>
+              <ng-template #noCatalogWeapons>
+                <div class="empty-state">
+                  <p>No weapons match the creature's body types ({{ creature.attributes.body.join(', ') || 'none' }}).</p>
+                </div>
+              </ng-template>
+            </div>
+
+            <div *ngIf="pickerTypeFilter === 'item'">
+              <ng-container *ngFor="let catBlock of catalogItemCategories">
+                <app-generic-table [storageKey]="'creature-admin-picker-cat-' + catBlock.category.id"
+                  [title]="catBlock.category.name" [collapsible]="true" [data]="catBlock.data"
+                  [headers]="catBlock.category.headers" [headerKeys]="catBlock.category.keys" [enableCustomAdd]="true"
+                  [renderHtml]="['description']" (customAdd)="onAddItemFromCatalog($event)"></app-generic-table>
+              </ng-container>
+            </div>
           </div>
         </section>
 

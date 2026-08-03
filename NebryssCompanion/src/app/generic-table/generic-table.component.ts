@@ -114,7 +114,7 @@ import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.compo
                           <line x1="4" y1="12" x2="20" y2="12"></line>
                         </svg>
                       </button>
-                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">
+                      <button *ngIf="!shoppingMode && isInInventory(item)" (click)="removeFromInventory(item)" class="btn-remove">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
                           <line x1="4" y1="12" x2="20" y2="12"></line>
                         </svg>
@@ -456,7 +456,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
     const player = this.activePlayerService.activePlayer;
     if (!player || !player.items) return false;
     
-    return player.items.some(inventoryItem => inventoryItem.id === item.id);
+    return player.items.some(inventoryItem => inventoryItem.id === item.id && (inventoryItem.quant === undefined || inventoryItem.quant > 0));
   }
 
   addToInventory(item: any) {

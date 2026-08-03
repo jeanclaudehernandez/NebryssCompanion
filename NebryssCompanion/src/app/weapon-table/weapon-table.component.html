@@ -81,7 +81,7 @@
                             <line x1="4" y1="12" x2="20" y2="12"></line>
                           </svg>
                         </button>
-                        <button *ngIf="inventoryManagement && !shoppingMode" (click)="removeFromInventory(entry.weapon.id)" class="btn-remove">
+                        <button *ngIf="inventoryManagement && !shoppingMode && isInInventory(entry.weapon.id)" (click)="removeFromInventory(entry.weapon.id)" class="btn-remove">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
                             <line x1="4" y1="12" x2="20" y2="12"></line>
                           </svg>

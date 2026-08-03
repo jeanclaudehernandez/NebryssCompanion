@@ -103,13 +103,16 @@ body.dark-theme .table-header h3 {
 
 .items-table th.col-actions,
 .items-table td.col-actions {
-    width: 65px;
-    min-width: 65px;
+    width: 60px;
+    min-width: 56px;
+    max-width: 62px;
     text-align: center;
     vertical-align: middle;
     padding: 4px 2px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: normal;
     overflow: visible;
+    box-sizing: border-box;
 }
 
 .items-table th.col-name,
@@ -224,9 +227,14 @@ h3 {
 /* Inventory management buttons */
 .inventory-actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 4px;
     justify-content: center;
     align-items: center;
+    width: 54px;
+    max-width: 54px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .btn-add, .btn-remove, .btn-craft, .btn-clone, .btn-delete, .btn-edit, .btn-cart, .btn-equip, .btn-unequip {

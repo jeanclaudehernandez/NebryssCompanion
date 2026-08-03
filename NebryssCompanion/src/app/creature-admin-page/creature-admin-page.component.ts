@@ -84,6 +84,10 @@ export class CreatureAdminPageComponent implements OnInit {
     'plant'
   ] as const;
 
+  // Collapsible Sections (Abilities & Catalog Picker collapsed by default)
+  isAbilitiesCollapsed = true;
+  isCatalogCollapsed = true;
+
   // Catalog Picker (Shop Editor style)
   pickerSearchTerm = '';
   pickerTypeFilter: 'weapon' | 'item' = 'weapon';
