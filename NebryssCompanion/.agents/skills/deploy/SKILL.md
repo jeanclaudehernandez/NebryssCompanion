@@ -10,8 +10,9 @@ When asked to deploy the frontend, backend, or the full application:
 1. **Check `deploy.bat`**: Always view `deploy.bat` in the repository root first to verify the latest environment variables (`GCLOUD_PROJECT`, `CLOUD_RUN_SERVICE`, `GCLOUD_REGION`, `IMAGE_NAME`) and script commands.
 
 2. **Frontend Deployment**:
+   - Do NOT run any `git` commands.
    - Run `npm run build` to build the Angular frontend distribution files.
-   - Run `firebase deploy` (or `firebase deploy --only hosting`) to publish the built frontend.
+   - Run `npx firebase deploy --only hosting` (or `firebase deploy`) to publish the built frontend.
 
 3. **Backend Deployment**:
    - Submit the Docker container build via Cloud Build:
