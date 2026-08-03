@@ -210,4 +210,20 @@
   "location": "Misthaven",
   "description": "A hulking Fellgor Shaman, his fur matted with ritualistic trinkets and warp-touched stones. He breathes the mist as if it were air, teaching those brave enough to harness its volatile power.",
   "personality": "Primal, cryptic, and deeply connected to the mist's whispers. He respects strength and the willingness to sacrifice for power."
+},
+{
+  "_id": {
+    "$oid": "69aa1f801d3387484b352150"
+  },
+  "id": 17,
+  "name": "Dr. Thaddeus Vance",
+  "faction": "Gilded Accord",
+  "subgroup": "Chief Chirurgeon & Bio-Researcher",
+  "role": "Chief Physician of the Vance Bio-Regenerative Clinic in Zephyria’s Upper Spires, renowned for his miraculous—and highly controversial—cellular reconstruction therapies.",
+  "location": "Zephyria (Upper Spires)",
+  "personality": "Sophisticated, impeccably mannered, intensely inquisitive, and unapologetically open-minded. He views traditional medical dogma and Imperial bio-ethics as primitive stiflers of true progress. He enjoys a lavish lifestyle, dining on fine cuisine while calmly discussing radical genetic splicing.",
+  "mission": "Unlock complete cellular immortality and organ renewal by pushing the frontiers of xenobiotic gene integration.",
+  "methods": "Bypasses standard medical norms and ethics. Secretly infuses engineered porcine (pig) DNA matrices into patient tissues to trigger hyper-accelerated regeneration.",
+  "backstory": "Earning a staggering salary from Zephyria's elite, Dr. Vance operates from an opulent clinic in the Upper Spires. While high-paying patrons celebrate his ability to regrow severed limbs and heal deadly organ failure, whispers persist about subtle porcine side effects among his long-term patients.",
+  "description": "Attired in tailored silk coats beneath a pristine chirurgeon apron, Dr. Vance blends high-society charm with unorthodox scientific ambition."
 }]

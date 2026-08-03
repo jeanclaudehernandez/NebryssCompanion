@@ -31,6 +31,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   npcs: NPC[] = [];
   searchTerm = '';
   selectedNpcId: number | null = null;
+  expandedFactions: Set<string> = new Set<string>();
 
   // Form Fields
   id: number | null = null;
@@ -38,14 +39,13 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   faction = '';
   subgroup = '';
   role = '';
+  description = '';
   personality = '';
   mission = '';
   methods = '';
   location = '';
-  reputation = '';
   backstory = '';
   bestiaryId: number | null = null;
-  wargear: Array<{ name: string; description: string }> = [];
 
   readonly defaultFactions: string[] = [
     'Gilded Accord',
@@ -66,6 +66,51 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
       (npc.subgroup && npc.subgroup.toLowerCase().includes(term)) ||
       (npc.role && npc.role.toLowerCase().includes(term))
     );
+  }
+
+  get groupedNpcs(): { faction: string; npcs: NPC[] }[] {
+    const filtered = this.filteredNpcs;
+    const map = new Map<string, NPC[]>();
+
+    for (const npc of filtered) {
+      const factionName = npc.faction?.trim() || 'Independent';
+      if (!map.has(factionName)) {
+        map.set(factionName, []);
+      }
+      map.get(factionName)!.push(npc);
+    }
+
+    const result: { faction: string; npcs: NPC[] }[] = [];
+    map.forEach((npcs, faction) => {
+      npcs.sort((a, b) => a.name.localeCompare(b.name));
+      result.push({ faction, npcs });
+    });
+
+    result.sort((a, b) => {
+      const indexA = this.defaultFactions.indexOf(a.faction);
+      const indexB = this.defaultFactions.indexOf(b.faction);
+      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+      if (indexA !== -1) return -1;
+      if (indexB !== -1) return 1;
+      return a.faction.localeCompare(b.faction);
+    });
+
+    return result;
+  }
+
+  toggleFactionCollapse(faction: string): void {
+    if (this.expandedFactions.has(faction)) {
+      this.expandedFactions.delete(faction);
+    } else {
+      this.expandedFactions.add(faction);
+    }
+  }
+
+  isFactionCollapsed(faction: string): boolean {
+    if (this.searchTerm.trim().length > 0) {
+      return false;
+    }
+    return !this.expandedFactions.has(faction);
   }
 
   get isEditing(): boolean {
@@ -122,14 +167,13 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.faction = 'Gilded Accord';
     this.subgroup = '';
     this.role = '';
+    this.description = '';
     this.personality = '';
     this.mission = '';
     this.methods = '';
     this.location = '';
-    this.reputation = '';
     this.backstory = '';
     this.bestiaryId = null;
-    this.wargear = [];
     this.selectedNpcId = null;
     this.showDeleteConfirm = false;
   }
@@ -141,23 +185,17 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.faction = npc.faction || 'Gilded Accord';
     this.subgroup = npc.subgroup || '';
     this.role = npc.role || '';
+    this.description = npc.description || '';
     this.personality = npc.personality || '';
     this.mission = npc.mission || '';
     this.methods = npc.methods || '';
     this.location = npc.location || '';
-    this.reputation = npc.reputation || '';
     this.backstory = npc.backstory || '';
     this.bestiaryId = typeof npc.bestiaryId === 'number' ? npc.bestiaryId : null;
-    this.wargear = (npc.wargear || []).map(w => ({ name: w.name || '', description: w.description || '' }));
+    if (this.faction) {
+      this.expandedFactions.add(this.faction.trim());
+    }
     this.showDeleteConfirm = false;
-  }
-
-  addWargear(): void {
-    this.wargear.push({ name: '', description: '' });
-  }
-
-  removeWargear(index: number): void {
-    this.wargear.splice(index, 1);
   }
 
   saveNpc(): void {
@@ -168,20 +206,25 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
 
     this.isSaving = true;
 
+    let targetId = this.id;
+    if (targetId === null || targetId === 0) {
+      const maxId = this.npcs.reduce((max, n) => (n.id > max ? n.id : max), 0);
+      targetId = maxId + 1;
+    }
+
     const npcData: NPC = {
-      id: this.id ?? 0,
+      id: targetId,
       name: this.name.trim(),
       faction: this.faction.trim() || 'Independent',
       subgroup: this.subgroup.trim(),
       role: this.role.trim() || undefined,
+      description: this.description.trim() || undefined,
       personality: this.personality.trim() || undefined,
       mission: this.mission.trim() || undefined,
       methods: this.methods.trim() || undefined,
       location: this.location.trim() || undefined,
-      reputation: this.reputation.trim() || undefined,
       backstory: this.backstory.trim() || undefined,
-      bestiaryId: this.bestiaryId !== null ? Number(this.bestiaryId) : undefined,
-      wargear: this.wargear.filter(w => w.name.trim().length > 0)
+      bestiaryId: this.bestiaryId !== null ? Number(this.bestiaryId) : undefined
     };
 
     if (this.isEditing) {

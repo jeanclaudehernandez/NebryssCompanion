@@ -412,4 +412,42 @@
       "type": "weapon"
     }
   ]
+},
+{
+  "_id": {
+    "$oid": "69aa1f801d3387484b352151"
+  },
+  "id": 8,
+  "name": "Vance Bio-Regenerative Clinic",
+  "owner": 17,
+  "locationId": 1,
+  "location": "Zephyria's Upper Spires",
+  "locationName": "Zephyria",
+  "description": "An opulent, state-of-the-art clinic in Zephyria’s Upper Spires featuring brass bio-vats, velvet chaises, and advanced cellular splicers. Elite clientele come here seeking Dr. Vance’s miracle tissue regeneration and illegal bio-spliced restoratives.",
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 17,
+      "price": 10,
+      "type": "item"
+    },
+    {
+      "id": 93,
+      "price": 25,
+      "type": "item"
+    },
+    {
+      "id": 94,
+      "price": 35,
+      "type": "item"
+    },
+    {
+      "id": 95,
+      "price": 60,
+      "type": "item"
+    }
+  ]
 }]

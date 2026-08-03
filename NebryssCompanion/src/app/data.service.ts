@@ -142,13 +142,16 @@ export class DataService {
   }
 
   createNpc(npc: NPC): Observable<NPC> {
+    if (!npc.id || npc.id === 0) {
+      const maxId = this.npcs.reduce((max, n) => (n.id > max ? n.id : max), 0);
+      npc.id = maxId + 1;
+    }
     return this.http.post<NPC>(`${this.apiUrl}/npc`, npc).pipe(
       catchError(() => {
-        if (!npc.id) {
-          const maxId = this.npcs.reduce((max, n) => (n.id > max ? n.id : max), 0);
-          npc.id = maxId + 1;
+        const index = this.npcs.findIndex(n => n.id === npc.id);
+        if (index === -1) {
+          this.npcs.push(npc);
         }
-        this.npcs.push(npc);
         return of(npc);
       }),
       tap(created => {

@@ -3,7 +3,7 @@
     <div class="header-left">
       <span class="material-icons header-icon">storefront</span>
       <div>
-        <h2>Shop Editor & Manager</h2>
+        <h2>Shop Editor &amp; Manager</h2>
         <p class="subtitle">Assign NPC owners, world map locations, catalog items, weapons, and shop-specific prices.</p>
       </div>
     </div>
@@ -14,7 +14,7 @@
   </header>
 
   <div class="shop-admin-layout">
-    <!-- Sidebar / Shops List -->
+    <!-- Sidebar / Shops List grouped by Location -->
     <aside class="shop-sidebar">
       <div class="search-box">
         <span class="material-icons">search</span>
@@ -27,17 +27,32 @@
       </div>
 
       <div class="shop-list" *ngIf="!isLoading; else loadingTpl">
-        <div
-          *ngFor="let shop of filteredShops"
-          class="shop-card-item"
-          [class.active]="shop.id === selectedShopId"
-          (click)="selectShop(shop)"
-        >
-          <div class="shop-item-main">
-            <span class="shop-item-name">{{ shop.name }}</span>
-            <span class="shop-item-items-count">{{ (shop.items || []).length }} items</span>
+        <div *ngFor="let group of groupedShops" class="location-group">
+          <div
+            class="location-group-header"
+            (click)="toggleLocationGroup(group.locationName)"
+          >
+            <span class="material-icons expand-icon">
+              {{ isLocationExpanded(group.locationName) ? 'expand_more' : 'chevron_right' }}
+            </span>
+            <span class="material-icons location-icon">place</span>
+            <span class="location-group-title">{{ group.locationName }}</span>
+            <span class="location-group-count">{{ group.shops.length }}</span>
           </div>
-          <span class="shop-item-location">{{ shop.locationName || shop.location }}</span>
+
+          <div class="location-group-content" *ngIf="isLocationExpanded(group.locationName)">
+            <div
+              *ngFor="let shop of group.shops"
+              class="shop-card-item"
+              [class.active]="shop.id === selectedShopId"
+              (click)="selectShop(shop)"
+            >
+              <div class="shop-item-main">
+                <span class="shop-item-name">{{ shop.name }}</span>
+                <span class="shop-item-items-count">{{ (shop.items || []).length }} items</span>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="empty-state" *ngIf="filteredShops.length === 0">
@@ -49,7 +64,7 @@
       <ng-template #loadingTpl>
         <div class="loading-state">
           <div class="spinner-small"></div>
-          <span>Loading Shops & Data...</span>
+          <span>Loading Shops &amp; Data...</span>
         </div>
       </ng-template>
     </aside>
@@ -77,7 +92,7 @@
             />
           </div>
 
-          <!-- NPC Owner Dropdown (REQUIREMENT: display NPC names + small description of who they are) -->
+          <!-- NPC Owner Dropdown -->
           <div class="form-group full-width">
             <label for="shop-owner">Shop Owner NPC <span class="required">*</span></label>
             <select id="shop-owner" [(ngModel)]="ownerId" required>
@@ -88,7 +103,7 @@
             </select>
           </div>
 
-          <!-- World Map Location Selection (REQUIREMENT: select location from world map) -->
+          <!-- World Map Location -->
           <div class="form-group">
             <label for="world-map-location">World Map Location <span class="required">*</span></label>
             <select
@@ -103,7 +118,7 @@
             </select>
           </div>
 
-          <!-- Specific Sub-location / District -->
+          <!-- Sub-Location -->
           <div class="form-group">
             <label for="shop-location-detail">Sub-Location / District Name</label>
             <input
@@ -152,12 +167,10 @@
               <input type="checkbox" [(ngModel)]="paymentDigital" />
               <span>Accepts Digital Payments (Mistrals)</span>
             </label>
-
             <label class="checkbox-label">
               <input type="checkbox" [(ngModel)]="paymentPhysical" />
               <span>Accepts Physical Payments (Coins)</span>
             </label>
-
             <label class="checkbox-label">
               <input type="checkbox" [(ngModel)]="discovered" />
               <span>Discovered (Visible to Players)</span>
@@ -165,85 +178,105 @@
           </div>
         </div>
 
-        <!-- ITEMS & WEAPONS SELECTION AND PRICE OVERRIDE SECTION -->
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION: Items & Weapons For Sale (current shop inventory)
+             Collapsible & Collapsed by Default
+             ═══════════════════════════════════════════════════════════════════ -->
         <div class="catalog-section">
-          <div class="catalog-header">
-            <div>
-              <h4>Items & Weapons For Sale</h4>
-              <p class="section-hint">Add items or weapons to this shop and override individual shop-specific prices.</p>
+          <div class="catalog-header collapsible-header" (click)="toggleInventoryCollapse()">
+            <div class="catalog-header-title">
+              <span class="material-icons expand-icon">
+                {{ !isInventoryCollapsed ? 'expand_more' : 'chevron_right' }}
+              </span>
+              <h4>Items &amp; Weapons For Sale</h4>
+              <span class="section-count-badge">
+                {{ (shopItems || []).length }} items
+              </span>
             </div>
+            <p class="section-hint" *ngIf="!isInventoryCollapsed">
+              Currently in this shop. Click ✏️ to set a custom shop price, 🗑️ to remove.
+            </p>
           </div>
 
-          <!-- Current Shop Inventory Table -->
-          <div class="inventory-table-wrapper" *ngIf="shopItems.length > 0; else emptyInventory">
-            <table class="inventory-table">
-              <thead>
-                <tr>
-                  <th>Item / Weapon</th>
-                  <th>Type</th>
-                  <th>Base Price</th>
-                  <th>Shop Specific Price <span class="required">*</span></th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of forSaleRows; let i = index">
-                  <td class="item-name-cell">
-                    <strong>{{ row.name }}</strong>
-                  </td>
-                  <td>
-                    <span class="type-badge" [class.weapon-badge]="row.shopItem.type === 'weapon'">
-                      {{ row.shopItem.type === 'weapon' ? 'Weapon' : 'Item' }}
-                    </span>
-                  </td>
-                  <td class="base-price-cell">
-                    {{ row.basePrice }}
-                  </td>
-                  <td class="price-input-cell">
-                    <div class="price-input-wrapper">
-                      <span class="currency-symbol">◈</span>
-                      <input
-                        type="number"
-                        [(ngModel)]="row.shopItem.price"
-                        step="0.5"
-                        min="0"
-                        class="price-override-input"
-                      />
-                    </div>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      class="btn-icon btn-danger"
-                      (click)="removeItemFromShop(i)"
-                      title="Remove from shop"
-                    >
-                      <span class="material-icons">delete</span>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <ng-template #emptyInventory>
-            <div class="empty-inventory-box">
+          <div class="catalog-content" *ngIf="!isInventoryCollapsed">
+            <!-- Empty state -->
+            <div *ngIf="shopWeaponIds.length === 0 && shopItemCategories.length === 0" class="empty-inventory-box">
               <span class="material-icons">remove_shopping_cart</span>
-              <p>No items or weapons added to this shop yet. Use the catalog picker below to add items.</p>
+              <p>No items or weapons in this shop yet. Use the catalog picker below to add.</p>
             </div>
-          </ng-template>
 
-          <!-- Catalog Item Picker Box -->
-          <div class="picker-box">
-            <h5>Add Items or Weapons to Shop</h5>
+            <!-- Weapons for sale -->
+            <div *ngIf="shopWeaponIds.length > 0" class="inventory-subsection">
+              <p class="subsection-label">
+                <span class="material-icons subsection-icon">swords</span>
+                Weapons
+                <span class="subsection-count">{{ shopWeaponIds.length }}</span>
+              </p>
+              <app-weapon-table
+                [title]="''"
+                [collapsible]="false"
+                [weaponIds]="shopWeaponIds"
+                [weaponsData]="shopWeaponsWithPrices"
+                [weaponRulesData]="weaponRules"
+                [alteredStates]="alteredStates"
+                [displayPrice]="true"
+                [displayBody]="true"
+                [enableEditing]="true"
+                [enableDeleting]="true"
+                (edit)="onEditWeaponPrice($event)"
+                (delete)="onRemoveWeaponFromShop($event)"
+              ></app-weapon-table>
+            </div>
 
+            <!-- Items for sale, per category -->
+            <ng-container *ngFor="let catBlock of shopItemCategories">
+              <div class="inventory-subsection">
+                <p class="subsection-label">
+                  <span class="material-icons subsection-icon">inventory_2</span>
+                  {{ catBlock.category.name }}
+                  <span class="subsection-count">{{ catBlock.data.length }}</span>
+                </p>
+                <app-generic-table
+                  [storageKey]="'shop-admin-sale-cat-' + catBlock.category.id"
+                  [title]="''"
+                  [collapsible]="false"
+                  [data]="catBlock.data"
+                  [headers]="catBlock.category.headers"
+                  [headerKeys]="catBlock.category.keys"
+                  [enableEditing]="true"
+                  [enableDeleting]="true"
+                  [renderHtml]="['description']"
+                  (edit)="onEditItemPrice($event)"
+                  (delete)="onRemoveItemFromShop($event)"
+                ></app-generic-table>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             SECTION: Catalog Picker (add new items/weapons to shop)
+             Collapsible & Collapsed by Default
+             ═══════════════════════════════════════════════════════════════════ -->
+        <div class="picker-section">
+          <div class="picker-section-header collapsible-header" (click)="togglePickerCollapse()">
+            <div class="catalog-header-title">
+              <span class="material-icons expand-icon">
+                {{ !isPickerCollapsed ? 'expand_more' : 'chevron_right' }}
+              </span>
+              <h4>Add to Shop</h4>
+            </div>
+            <p class="section-hint" *ngIf="!isPickerCollapsed">Browse the full catalog and add to this shop's inventory.</p>
+          </div>
+
+          <div class="picker-content" *ngIf="!isPickerCollapsed">
             <div class="picker-controls">
               <div class="picker-search">
                 <span class="material-icons">search</span>
                 <input
                   type="text"
                   [(ngModel)]="pickerSearchTerm"
-                  placeholder="Search catalog by name or type..."
+                  placeholder="Search catalog by name..."
                 />
               </div>
 
@@ -251,10 +284,10 @@
                 <button
                   type="button"
                   class="tab-btn"
-                  [class.active]="pickerTypeFilter === 'all'"
-                  (click)="pickerTypeFilter = 'all'"
+                  [class.active]="pickerTypeFilter === 'weapon'"
+                  (click)="pickerTypeFilter = 'weapon'"
                 >
-                  All
+                  Weapons
                 </button>
                 <button
                   type="button"
@@ -264,32 +297,53 @@
                 >
                   Items
                 </button>
-                <button
-                  type="button"
-                  class="tab-btn"
-                  [class.active]="pickerTypeFilter === 'weapon'"
-                  (click)="pickerTypeFilter = 'weapon'"
-                >
-                  Weapons
-                </button>
               </div>
             </div>
 
-            <div class="picker-results-grid">
-              <div
-                *ngFor="let catItem of availableCatalog"
-                class="picker-result-card"
-                (click)="addItemToShop(catItem)"
-              >
-                <div class="picker-card-info">
-                  <span class="picker-item-name">{{ catItem.name }}</span>
-                  <span class="picker-item-detail">{{ catItem.detail }} • Base: ◈{{ catItem.basePrice }}</span>
-                </div>
-                <button type="button" class="btn btn-secondary btn-sm">
-                  <span class="material-icons">add</span>
-                  <span>Add</span>
-                </button>
+            <!-- Weapons catalog -->
+            <div *ngIf="pickerTypeFilter === 'weapon'" class="catalog-table-wrapper">
+              <app-weapon-table
+                *ngIf="catalogWeaponIds.length > 0"
+                [title]="''"
+                [collapsible]="false"
+                [weaponIds]="catalogWeaponIds"
+                [weaponsData]="weaponsList"
+                [weaponRulesData]="weaponRules"
+                [alteredStates]="alteredStates"
+                [displayPrice]="true"
+                [displayBody]="true"
+                [enableCloning]="true"
+                (clone)="onAddWeaponFromCatalog($event)"
+              ></app-weapon-table>
+              <div *ngIf="catalogWeaponIds.length === 0" class="catalog-empty-msg">
+                <span class="material-icons">inventory_2</span>
+                <p>All weapons are already in this shop, or none match your search.</p>
               </div>
+            </div>
+
+            <!-- Items catalog per category -->
+            <div *ngIf="pickerTypeFilter === 'item'" class="catalog-table-wrapper">
+              <ng-container *ngIf="catalogItemCategories.length > 0; else noItemsMsg">
+                <ng-container *ngFor="let catBlock of catalogItemCategories">
+                  <app-generic-table
+                    [storageKey]="'shop-admin-picker-cat-' + catBlock.category.id"
+                    [title]="catBlock.category.name"
+                    [collapsible]="true"
+                    [data]="catBlock.data"
+                    [headers]="catBlock.category.headers"
+                    [headerKeys]="catBlock.category.keys"
+                    [enableCustomAdd]="true"
+                    [renderHtml]="['description']"
+                    (customAdd)="onAddItemFromCatalog($event)"
+                  ></app-generic-table>
+                </ng-container>
+              </ng-container>
+              <ng-template #noItemsMsg>
+                <div class="catalog-empty-msg">
+                  <span class="material-icons">inventory_2</span>
+                  <p>All items are already in this shop, or none match your search.</p>
+                </div>
+              </ng-template>
             </div>
           </div>
         </div>
@@ -334,7 +388,57 @@
     </main>
   </div>
 
-  <!-- Delete Modal Confirmation -->
+  <!-- Price Edit Modal -->
+  <div class="modal-overlay" *ngIf="priceEdit" (click)="cancelPriceEdit()">
+    <div class="modal-card price-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <span class="material-icons icon-price">attach_money</span>
+        <div>
+          <h3>Set Custom Price</h3>
+          <p class="modal-item-name">{{ priceEdit.name }}</p>
+        </div>
+      </div>
+
+      <div class="price-modal-body">
+        <div class="price-row">
+          <span class="price-label">Base Price:</span>
+          <span class="price-base">◈ {{ priceEdit.basePrice }}</span>
+        </div>
+        <div class="price-row price-row-input">
+          <label for="modal-price-input" class="price-label">Shop Price:</label>
+          <div class="price-input-wrapper">
+            <span class="currency-symbol">◈</span>
+            <input
+              id="modal-price-input"
+              type="number"
+              [(ngModel)]="priceEdit.tempPrice"
+              step="0.5"
+              min="0"
+              class="price-override-input"
+            />
+          </div>
+        </div>
+        <button
+          type="button"
+          class="btn-reset-price"
+          *ngIf="priceEdit.tempPrice !== priceEdit.basePrice"
+          (click)="resetToBasePrice()"
+        >
+          Reset to base price (◈ {{ priceEdit.basePrice }})
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelPriceEdit()">Cancel</button>
+        <button type="button" class="btn btn-primary" (click)="confirmPriceEdit()">
+          <span class="material-icons">check</span>
+          Set Price
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
   <div class="modal-overlay" *ngIf="showDeleteConfirm">
     <div class="modal-card">
       <div class="modal-header">

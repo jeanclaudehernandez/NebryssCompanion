@@ -4,7 +4,7 @@
       <span class="material-icons header-icon">badge</span>
       <div>
         <h2>NPC Editor & Creator</h2>
-        <p class="subtitle">Manage non-player characters, faction affiliations, roles, and wargear.</p>
+        <p class="subtitle">Manage non-player characters, faction affiliations, roles, and backstory.</p>
       </div>
     </div>
     <button type="button" class="btn btn-primary" (click)="startNewNpc()">
@@ -27,20 +27,36 @@
       </div>
 
       <div class="npc-list" *ngIf="!isLoading; else loadingTpl">
-        <div
-          *ngFor="let npc of filteredNpcs"
-          class="npc-card-item"
-          [class.active]="npc.id === selectedNpcId"
-          (click)="selectNpc(npc)"
-        >
-          <div class="npc-item-main">
-            <span class="npc-item-name">{{ npc.name }}</span>
-            <span class="npc-item-faction" *ngIf="npc.faction">{{ npc.faction }}</span>
+        <div *ngFor="let group of groupedNpcs" class="faction-group">
+          <div
+            class="faction-group-header"
+            (click)="toggleFactionCollapse(group.faction)"
+          >
+            <div class="faction-header-left">
+              <span class="material-icons collapse-icon">
+                {{ isFactionCollapsed(group.faction) ? 'chevron_right' : 'expand_more' }}
+              </span>
+              <span class="faction-group-title">{{ group.faction }}</span>
+            </div>
+            <span class="faction-group-count">{{ group.npcs.length }}</span>
           </div>
-          <span class="npc-item-subgroup" *ngIf="npc.subgroup">{{ npc.subgroup }}</span>
+
+          <div class="faction-group-content" *ngIf="!isFactionCollapsed(group.faction)">
+            <div
+              *ngFor="let npc of group.npcs"
+              class="npc-card-item"
+              [class.active]="npc.id === selectedNpcId"
+              (click)="selectNpc(npc)"
+            >
+              <div class="npc-item-main">
+                <span class="npc-item-name">{{ npc.name }}</span>
+              </div>
+              <span class="npc-item-subgroup" *ngIf="npc.subgroup">{{ npc.subgroup }}</span>
+            </div>
+          </div>
         </div>
 
-        <div class="empty-state" *ngIf="filteredNpcs.length === 0">
+        <div class="empty-state" *ngIf="groupedNpcs.length === 0">
           <span class="material-icons">person_off</span>
           <p>No NPCs found.</p>
         </div>
@@ -105,13 +121,24 @@
 
           <!-- Role -->
           <div class="form-group full-width">
-            <label for="npc-role">Role / Short Description</label>
+            <label for="npc-role">Role / Short Title</label>
             <input
               id="npc-role"
               type="text"
               [(ngModel)]="role"
               placeholder="e.g. Owner of Herbwhisper's Apothecary in Zephyria Sky Bazaar"
             />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group full-width">
+            <label for="npc-description">Description</label>
+            <textarea
+              id="npc-description"
+              rows="2"
+              [(ngModel)]="description"
+              placeholder="e.g. A detailed physical description or overview of the NPC..."
+            ></textarea>
           </div>
 
           <!-- Location -->
@@ -169,66 +196,16 @@
             ></textarea>
           </div>
 
-          <!-- Reputation / Backstory -->
-          <div class="form-group">
-            <label for="npc-reputation">Reputation</label>
-            <textarea
-              id="npc-reputation"
-              rows="2"
-              [(ngModel)]="reputation"
-              placeholder="e.g. Feared by pirates, respected by merchants..."
-            ></textarea>
-          </div>
-
-          <div class="form-group">
+          <!-- Backstory -->
+          <div class="form-group full-width">
             <label for="npc-backstory">Backstory</label>
             <textarea
               id="npc-backstory"
-              rows="2"
+              rows="3"
               [(ngModel)]="backstory"
-              placeholder="e.g. Former Rogue Trader who fled to Nebryss..."
+              placeholder="e.g. Former Rogue Trader who fled to Nebryss to evade persecution..."
             ></textarea>
           </div>
-        </div>
-
-        <!-- Wargear Section -->
-        <div class="wargear-section">
-          <div class="wargear-header">
-            <h4>Wargear & Signature Items</h4>
-            <button type="button" class="btn btn-secondary btn-sm" (click)="addWargear()">
-              <span class="material-icons">add</span>
-              <span>Add Wargear</span>
-            </button>
-          </div>
-
-          <div class="wargear-list" *ngIf="wargear.length > 0; else noWargear">
-            <div *ngFor="let item of wargear; let i = index" class="wargear-row">
-              <input
-                type="text"
-                [(ngModel)]="item.name"
-                placeholder="Wargear Name (e.g. The Lance of Sabatine)"
-                class="wargear-name-input"
-              />
-              <input
-                type="text"
-                [(ngModel)]="item.description"
-                placeholder="Description / Effect"
-                class="wargear-desc-input"
-              />
-              <button
-                type="button"
-                class="btn-icon btn-danger"
-                (click)="removeWargear(i)"
-                title="Remove item"
-              >
-                <span class="material-icons">delete</span>
-              </button>
-            </div>
-          </div>
-
-          <ng-template #noWargear>
-            <p class="hint-text">No custom wargear added to this NPC.</p>
-          </ng-template>
         </div>
 
         <!-- Form Footer Actions -->

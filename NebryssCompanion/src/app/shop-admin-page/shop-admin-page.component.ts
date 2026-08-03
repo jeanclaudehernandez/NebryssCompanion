@@ -5,20 +5,28 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
 import { ToastService } from '../toast.service';
-import { Item, Location, NPC, Shop, ShopItem, Weapon } from '../model';
+import { Item, ItemCategory, Location, NPC, Shop, ShopItem, Weapon, WeaponRule, AlteredState } from '../model';
 import { forkJoin } from 'rxjs';
+import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
+import { GenericTableComponent } from '../generic-table/generic-table.component';
 
-export interface ShopForSaleRow {
+export interface LocationShopGroup {
+  locationName: string;
+  shops: Shop[];
+}
+
+/** Price-edit modal state */
+export interface PriceEditTarget {
   shopItem: ShopItem;
   name: string;
   basePrice: number;
-  categoryOrType: string;
+  tempPrice: number;
 }
 
 @Component({
   selector: 'app-shop-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent],
   templateUrl: './shop-admin-page.component.html',
   styleUrls: ['./shop-admin-page.component.css']
 })
@@ -36,18 +44,31 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   isDeleting = false;
   showDeleteConfirm = false;
 
+  // Collapsible state (sections collapsed by default)
+  isInventoryCollapsed = true;
+  isPickerCollapsed = true;
+
+  // Location group collapse state (collapsed by default)
+  expandedLocations = new Set<string>();
+
   shops: Shop[] = [];
   npcs: NPC[] = [];
   locations: Location[] = [];
   itemsList: Item[] = [];
   weaponsList: Weapon[] = [];
+  itemCategories: ItemCategory[] = [];
+  weaponRules: WeaponRule[] = [];
+  alteredStates: AlteredState[] = [];
 
   searchTerm = '';
   selectedShopId: number | null = null;
 
   // Picker & Item Adding State
   pickerSearchTerm = '';
-  pickerTypeFilter: 'all' | 'item' | 'weapon' = 'all';
+  pickerTypeFilter: 'item' | 'weapon' = 'weapon';
+
+  // Price-edit modal
+  priceEdit: PriceEditTarget | null = null;
 
   // Form Fields
   id: number | null = null;
@@ -63,13 +84,11 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   paymentDigital = true;
   paymentPhysical = true;
 
-  // Items for sale in this shop
+  // Items for sale in this shop (source of truth)
   shopItems: ShopItem[] = [];
 
   get filteredShops(): Shop[] {
-    if (!this.searchTerm.trim()) {
-      return this.shops;
-    }
+    if (!this.searchTerm.trim()) return this.shops;
     const term = this.searchTerm.toLowerCase();
     return this.shops.filter(s =>
       s.name.toLowerCase().includes(term) ||
@@ -78,70 +97,136 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     );
   }
 
+  /**
+   * Group shops by location (locationName || location || 'Unassigned Location')
+   */
+  get groupedShops(): LocationShopGroup[] {
+    const map = new Map<string, Shop[]>();
+    for (const shop of this.filteredShops) {
+      const loc = (shop.locationName || shop.location || 'Unassigned Location').trim();
+      if (!map.has(loc)) {
+        map.set(loc, []);
+      }
+      map.get(loc)!.push(shop);
+    }
+
+    const result: LocationShopGroup[] = [];
+    map.forEach((shops, locationName) => {
+      result.push({ locationName, shops });
+    });
+
+    // Sort location groups alphabetically
+    result.sort((a, b) => a.locationName.localeCompare(b.locationName));
+    return result;
+  }
+
+  isLocationExpanded(locName: string): boolean {
+    // If user is searching, auto-expand so they can see results instantly
+    if (this.searchTerm.trim().length > 0) return true;
+    return this.expandedLocations.has(locName);
+  }
+
+  toggleLocationGroup(locName: string): void {
+    if (this.expandedLocations.has(locName)) {
+      this.expandedLocations.delete(locName);
+    } else {
+      this.expandedLocations.add(locName);
+    }
+  }
+
+  toggleInventoryCollapse(): void {
+    this.isInventoryCollapsed = !this.isInventoryCollapsed;
+  }
+
+  togglePickerCollapse(): void {
+    this.isPickerCollapsed = !this.isPickerCollapsed;
+  }
+
   get isEditing(): boolean {
     return this.id !== null;
   }
 
-  get forSaleRows(): ShopForSaleRow[] {
-    return this.shopItems.map(si => {
-      if (si.type === 'weapon') {
-        const w = this.weaponsList.find(weapon => weapon.id === si.id);
-        return {
-          shopItem: si,
-          name: w ? w.name : `Weapon #${si.id}`,
-          basePrice: w?.price ?? 0,
-          categoryOrType: 'Weapon'
-        };
-      } else {
-        const item = this.itemsList.find(i => i.id === si.id);
-        return {
-          shopItem: si,
-          name: item?.name || `Item #${si.id}`,
-          basePrice: item?.price ?? 0,
-          categoryOrType: item?.type || 'Item'
-        };
+  // ── For Sale: weapons with shop prices applied ──────────────────────────────
+
+  /** IDs of weapons currently in shop */
+  get shopWeaponIds(): number[] {
+    return this.shopItems.filter(si => si.type === 'weapon').map(si => si.id);
+  }
+
+  /**
+   * Weapons for the "for sale" table, with shop-specific prices applied.
+   * WeaponTableComponent shows price from weapon.price, so we override it here.
+   */
+  get shopWeaponsWithPrices(): Weapon[] {
+    return this.shopItems
+      .filter(si => si.type === 'weapon')
+      .map(si => {
+        const base = this.weaponsList.find(w => w.id === si.id);
+        if (!base) return null;
+        return { ...base, price: si.price };
+      })
+      .filter((w): w is Weapon => w !== null);
+  }
+
+  // ── For Sale: items by category with shop prices applied ─────────────────────
+
+  /** Item categories that have at least one item currently in shop */
+  get shopItemCategories(): Array<{ category: ItemCategory; data: any[] }> {
+    const shopNonWeapons = this.shopItems.filter(si => si.type !== 'weapon');
+
+    return this.itemCategories.map(cat => {
+      const data = shopNonWeapons
+        .filter(si => {
+          const itemDef = this.itemsList.find(i => i.id === si.id);
+          return itemDef?.type === cat.key;
+        })
+        .map(si => {
+          const itemDef = this.itemsList.find(i => i.id === si.id);
+          if (!itemDef) return null;
+          // Override price with shop-specific price
+          return { ...itemDef, price: si.price };
+        })
+        .filter((x): x is any => x !== null);
+
+      return { category: cat, data };
+    }).filter(c => c.data.length > 0);
+  }
+
+  // ── Catalog picker ──────────────────────────────────────────────────────────
+
+  get catalogWeaponIds(): number[] {
+    const addedWeaponIds = new Set(
+      this.shopItems.filter(si => si.type === 'weapon').map(si => si.id)
+    );
+    const filtered = this.weaponsList.filter(w => {
+      if (addedWeaponIds.has(w.id)) return false;
+      if (this.pickerSearchTerm.trim()) {
+        return w.name?.toLowerCase().includes(this.pickerSearchTerm.toLowerCase());
       }
+      return true;
     });
+    return filtered.map(w => w.id);
   }
 
-  get availableCatalog(): Array<{ id: number; name: string; basePrice: number; type: 'item' | 'weapon'; detail: string }> {
-    const list: Array<{ id: number; name: string; basePrice: number; type: 'item' | 'weapon'; detail: string }> = [];
+  get catalogItemCategories(): Array<{ category: ItemCategory; data: any[] }> {
+    const addedItemIds = new Set(
+      this.shopItems.filter(si => si.type !== 'weapon').map(si => si.id)
+    );
+    const term = this.pickerSearchTerm.toLowerCase().trim();
 
-    if (this.pickerTypeFilter === 'all' || this.pickerTypeFilter === 'item') {
-      this.itemsList.forEach(item => {
-        if (typeof item.id === 'number') {
-          list.push({
-            id: item.id,
-            name: item.name || `Item #${item.id}`,
-            basePrice: item.price ?? 0,
-            type: 'item',
-            detail: item.type || 'Item'
-          });
-        }
-      });
-    }
-
-    if (this.pickerTypeFilter === 'all' || this.pickerTypeFilter === 'weapon') {
-      this.weaponsList.forEach(w => {
-        if (typeof w.id === 'number') {
-          list.push({
-            id: w.id,
-            name: w.name || `Weapon #${w.id}`,
-            basePrice: w.price ?? 0,
-            type: 'weapon',
-            detail: 'Weapon'
-          });
-        }
-      });
-    }
-
-    if (!this.pickerSearchTerm.trim()) {
-      return list;
-    }
-
-    const term = this.pickerSearchTerm.toLowerCase();
-    return list.filter(c => c.name.toLowerCase().includes(term) || c.detail.toLowerCase().includes(term));
+    return this.itemCategories.map(cat => {
+      const data = this.itemsList
+        .filter(item => {
+          if (item.type !== cat.key) return false;
+          if (typeof item.id === 'number' && addedItemIds.has(item.id)) return false;
+          if (term && !item.name?.toLowerCase().includes(term)) return false;
+          return true;
+        });
+      return { category: cat, data };
+    }).filter(c => c.data.length > 0);
   }
+
+  // ── Lifecycle ───────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
     this.adminService.isAdmin$
@@ -149,7 +234,6 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
       .subscribe(isAdmin => {
         this.isAdmin = isAdmin;
       });
-
     this.loadAllData();
   }
 
@@ -166,7 +250,10 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
       npcs: this.dataService.getNpcs(),
       locations: this.dataService.getLocations(),
       items: this.dataService.getItems(),
-      weapons: this.dataService.getWeapons()
+      weapons: this.dataService.getWeapons(),
+      itemCategories: this.dataService.getitemCategories(),
+      weaponRules: this.dataService.getWeaponRules(),
+      alteredStates: this.dataService.getAlteredStates()
     }).subscribe({
       next: res => {
         this.shops = res.shops || [];
@@ -174,6 +261,9 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
         this.locations = res.locations?.locations || [];
         this.itemsList = res.items?.items || [];
         this.weaponsList = res.weapons || [];
+        this.itemCategories = res.itemCategories || [];
+        this.weaponRules = res.weaponRules || [];
+        this.alteredStates = res.alteredStates || [];
         this.isLoading = false;
 
         if (this.initialShop) {
@@ -231,6 +321,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     this.paymentDigital = true;
     this.paymentPhysical = true;
     this.shopItems = [];
+    this.priceEdit = null;
     this.selectedShopId = null;
     this.showDeleteConfirm = false;
   }
@@ -250,34 +341,105 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     this.paymentDigital = shop.paymentMethod?.digital ?? true;
     this.paymentPhysical = shop.paymentMethod?.physical ?? true;
     this.shopItems = (shop.items || []).map(i => ({ ...i }));
+    this.priceEdit = null;
     this.showDeleteConfirm = false;
+
+    // Expand location group of selected shop
+    const loc = (shop.locationName || shop.location || 'Unassigned Location').trim();
+    this.expandedLocations.add(loc);
   }
 
-  addItemToShop(catalogItem: { id: number; basePrice: number; type: 'item' | 'weapon' }): void {
-    const existingIndex = this.shopItems.findIndex(si => si.id === catalogItem.id && si.type === catalogItem.type);
-    if (existingIndex !== -1) {
+  // ── Catalog: Add items to shop ───────────────────────────────────────────────
+
+  /** WeaponTable clone button → add weapon to shop */
+  onAddWeaponFromCatalog(weapon: Weapon): void {
+    if (this.shopItems.some(si => si.id === weapon.id && si.type === 'weapon')) {
+      this.toastService.show('Weapon is already in this shop!', 'info');
+      return;
+    }
+    this.shopItems = [...this.shopItems, { id: weapon.id, price: weapon.price ?? 0, type: 'weapon' }];
+    this.toastService.show(`${weapon.name} added to shop!`, 'success');
+  }
+
+  /** GenericTable customAdd button → add item to shop */
+  onAddItemFromCatalog(item: any): void {
+    const itemId = item.id;
+    if (typeof itemId !== 'number') return;
+    if (this.shopItems.some(si => si.id === itemId && si.type !== 'weapon')) {
       this.toastService.show('Item is already in this shop!', 'info');
       return;
     }
-
-    this.shopItems.push({
-      id: catalogItem.id,
-      price: catalogItem.basePrice,
-      type: catalogItem.type
-    });
-    this.toastService.show(`Added to shop for sale!`, 'success');
+    this.shopItems = [...this.shopItems, { id: itemId, price: item.price ?? 0, type: item.type || 'item' }];
+    this.toastService.show(`${item.name} added to shop!`, 'success');
   }
 
-  removeItemFromShop(index: number): void {
-    this.shopItems.splice(index, 1);
+  // ── For-sale table: Remove ────────────────────────────────────────────────────
+
+  /** WeaponTable delete button → remove weapon from shop */
+  onRemoveWeaponFromShop(weapon: Weapon): void {
+    this.shopItems = this.shopItems.filter(si => !(si.id === weapon.id && si.type === 'weapon'));
+    this.toastService.show(`${weapon.name} removed from shop.`, 'info');
   }
+
+  /** GenericTable delete button → remove item from shop */
+  onRemoveItemFromShop(item: any): void {
+    this.shopItems = this.shopItems.filter(si => !(si.id === item.id && si.type !== 'weapon'));
+    this.toastService.show(`${item.name} removed from shop.`, 'info');
+  }
+
+  // ── For-sale table: Price editing ───────────────────────────────────────────
+
+  /** WeaponTable edit button → open price modal for that weapon */
+  onEditWeaponPrice(weapon: Weapon): void {
+    const shopItem = this.shopItems.find(si => si.id === weapon.id && si.type === 'weapon');
+    if (!shopItem) return;
+    const baseWeapon = this.weaponsList.find(w => w.id === weapon.id);
+    this.priceEdit = {
+      shopItem,
+      name: weapon.name,
+      basePrice: baseWeapon?.price ?? 0,
+      tempPrice: shopItem.price
+    };
+  }
+
+  /** GenericTable edit button → open price modal for that item */
+  onEditItemPrice(item: any): void {
+    const shopItem = this.shopItems.find(si => si.id === item.id && si.type !== 'weapon');
+    if (!shopItem) return;
+    const baseItem = this.itemsList.find(i => i.id === item.id);
+    this.priceEdit = {
+      shopItem,
+      name: item.name,
+      basePrice: baseItem?.price ?? 0,
+      tempPrice: shopItem.price
+    };
+  }
+
+  confirmPriceEdit(): void {
+    if (!this.priceEdit) return;
+    this.priceEdit.shopItem.price = Number(this.priceEdit.tempPrice);
+    // Force re-evaluation of computed getters by creating a new array reference
+    this.shopItems = [...this.shopItems];
+    this.toastService.show(`Price for "${this.priceEdit.name}" set to ◈${this.priceEdit.tempPrice}`, 'success');
+    this.priceEdit = null;
+  }
+
+  cancelPriceEdit(): void {
+    this.priceEdit = null;
+  }
+
+  resetToBasePrice(): void {
+    if (!this.priceEdit) return;
+    this.priceEdit.tempPrice = this.priceEdit.basePrice;
+  }
+
+  // ── Save / Delete ─────────────────────────────────────────────────────────────
 
   saveShop(): void {
     if (!this.name.trim()) {
       this.toastService.show('Shop Name is required.', 'info');
       return;
     }
-
     if (!this.ownerId) {
       this.toastService.show('Owner NPC must be selected.', 'info');
       return;
@@ -350,7 +512,6 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
 
   confirmDelete(): void {
     if (this.id === null) return;
-
     this.isDeleting = true;
     const deletedId = this.id;
     const deletedName = this.name;
