@@ -39,7 +39,7 @@
               (ngModelChange)="onCreatureSelectDropdown($event)">
               <option [ngValue]="null">Select a creature</option>
               <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
-                {{ creature.name }} ({{ creature.subgroup }})
+                {{ creature.name }}
               </option>
             </select>
           </div>
@@ -165,8 +165,9 @@
           </div>
 
           <app-weapon-table *ngIf="assignedWeaponIds.length; else emptyWeapons" [weaponIds]="assignedWeaponIds"
-            [weaponsData]="weapons" [weaponRulesData]="weaponRules" [alteredStates]="alteredStates" [characterBody]="creature.attributes.body" [title]="'Weapons'"
-            [collapsible]="false" [enableDeleting]="true" (delete)="onRemoveWeapon($event)"></app-weapon-table>
+            [weaponsData]="weapons" [weaponRulesData]="weaponRules" [alteredStates]="alteredStates"
+            [characterBody]="creature.attributes.body" [title]="'Weapons'" [collapsible]="false" [enableDeleting]="true"
+            (delete)="onRemoveWeapon($event)"></app-weapon-table>
 
           <ng-template #emptyWeapons>
             <div class="empty-state">
@@ -195,7 +196,8 @@
 
                 <label class="field">
                   <span>Name</span>
-                  <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text" placeholder="Ability name" />
+                  <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text"
+                    placeholder="Ability name" />
                 </label>
 
                 <label class="field">
@@ -244,7 +246,8 @@
         <!-- 7. Weapons & Items Catalog Picker (Add to Creature) -->
         <section class="admin-section"
           style="border: 1px solid rgba(229, 169, 60, 0.2); padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.15);">
-          <div class="section-header" (click)="isCatalogCollapsed = !isCatalogCollapsed" style="cursor: pointer; margin-bottom: 0;">
+          <div class="section-header" (click)="isCatalogCollapsed = !isCatalogCollapsed"
+            style="cursor: pointer; margin-bottom: 0;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <span class="material-icons">{{ isCatalogCollapsed ? 'chevron_right' : 'expand_more' }}</span>
               <h3>Add Weapons &amp; Items from Catalog</h3>
@@ -268,13 +271,15 @@
             </div>
 
             <div *ngIf="pickerTypeFilter === 'weapon'">
-              <app-weapon-table *ngIf="catalogWeaponIds.length > 0; else noCatalogWeapons" [title]="''" [collapsible]="false"
-                [weaponIds]="catalogWeaponIds" [weaponsData]="weapons" [weaponRulesData]="weaponRules"
-                [alteredStates]="alteredStates" [characterBody]="creature.attributes.body" [displayBody]="true" [enableCloning]="true"
+              <app-weapon-table *ngIf="catalogWeaponIds.length > 0; else noCatalogWeapons" [title]="''"
+                [collapsible]="false" [weaponIds]="catalogWeaponIds" [weaponsData]="weapons"
+                [weaponRulesData]="weaponRules" [alteredStates]="alteredStates"
+                [characterBody]="creature.attributes.body" [displayBody]="true" [enableCloning]="true"
                 (clone)="onAddWeaponFromCatalog($event)"></app-weapon-table>
               <ng-template #noCatalogWeapons>
                 <div class="empty-state">
-                  <p>No weapons match the creature's body types ({{ creature.attributes.body.join(', ') || 'none' }}).</p>
+                  <p>No weapons match the creature's body types ({{ creature.attributes.body.join(', ') || 'none' }}).
+                  </p>
                 </div>
               </ng-template>
             </div>

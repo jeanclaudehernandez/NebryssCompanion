@@ -25,7 +25,7 @@
         <select [(ngModel)]="selectedCreatureId" (change)="onCreatureSelected()">
             <option [value]="null">Select a creature</option>
             <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
-                {{ creature.name }} ({{ creature.subgroup }})
+                {{ creature.name }}
             </option>
         </select>
         <div class="selected-creatures-info">
