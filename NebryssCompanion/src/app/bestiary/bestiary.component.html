@@ -25,7 +25,7 @@
         <select [(ngModel)]="selectedCreatureId" (change)="onCreatureSelected()">
             <option [value]="null">Select a creature</option>
             <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
-                {{ creature.name }}{{ isAdmin && creature.isDiscovered === false ? ' (Undiscovered)' : '' }}
+                {{ creature.name }}
             </option>
         </select>
         <div class="selected-creatures-info">
@@ -37,10 +37,7 @@
 <div #mobDetailContainer>
     <div *ngFor="let creature of selectedCreatures" class="creature-detail-container" [id]="'creature-' + creature.id">
         <div class="creature-header">
-            <h3>
-                {{ creature.name }}
-                <span *ngIf="isAdmin && creature.isDiscovered === false" class="undiscovered-badge">Undiscovered</span>
-            </h3>
+            <h3>{{ creature.name }}</h3>
             <div class="creature-header-actions">
                 <button *ngIf="getNpcForCreature(creature.id) as npc" type="button" class="view-npc-btn"
                     (click)="goToNpc(npc)" title="View NPC profile for {{ npc.name }}">
