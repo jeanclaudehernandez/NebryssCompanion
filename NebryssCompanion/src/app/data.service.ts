@@ -161,7 +161,7 @@ export class DataService {
       this.updateArrayCollection(this.mistEffects, data, action, m => m.id || m.effectName);
       this.mistEffectsSubject.next([...this.mistEffects]);
       this.mistEffectsCache$ = of(this.mistEffects);
-    } else if (normalizedEntity === 'terrainrule' || normalizedEntity === 'terrain' || normalizedEntity === 'terrains' || normalizedEntity === 'location') {
+    } else if (normalizedEntity === 'terrainrule' || normalizedEntity === 'terrain' || normalizedEntity === 'terrains') {
       this.updateArrayCollection(this.terrains, data, action, t => t.id);
       this.terrainsSubject.next([...this.terrains]);
       this.terrainsCache$ = of(this.terrains);
@@ -169,6 +169,13 @@ export class DataService {
       this.updateArrayCollection(this.talents, data, action, t => t.id);
       this.talentsSubject.next([...this.talents]);
       this.talentsCache$ = of(this.talents);
+    } else if (normalizedEntity === 'location' || normalizedEntity === 'locations') {
+      if (!this.locations || !this.locations.locations) {
+        this.locations = { locations: [] };
+      }
+      this.updateArrayCollection(this.locations.locations, data, action, l => l.id);
+      this.locationsSubject.next({ ...this.locations });
+      this.locationsCache$ = of(this.locations);
     }
 
     this.allDataCache$ = null;
@@ -325,6 +332,7 @@ export class DataService {
         } else {
           this.npcs.push(created);
         }
+        this.npcsSubject.next([...this.npcs]);
         this.npcsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -345,6 +353,7 @@ export class DataService {
         if (index !== -1) {
           this.npcs[index] = updated;
         }
+        this.npcsSubject.next([...this.npcs]);
         this.npcsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -359,6 +368,7 @@ export class DataService {
       }),
       tap(() => {
         this.npcs = this.npcs.filter(n => n.id !== id);
+        this.npcsSubject.next([...this.npcs]);
         this.npcsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -573,6 +583,7 @@ export class DataService {
         if (index !== -1) {
           this.shops[index] = updatedShop;
         }
+        this.shopsSubject.next([...this.shops]);
         this.shopsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -596,6 +607,7 @@ export class DataService {
         } else {
           this.shops.push(created);
         }
+        this.shopsSubject.next([...this.shops]);
         this.shopsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -610,6 +622,7 @@ export class DataService {
       }),
       tap(() => {
         this.shops = this.shops.filter(s => s.id !== id);
+        this.shopsSubject.next([...this.shops]);
         this.shopsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -1063,6 +1076,7 @@ export class DataService {
     return this.http.post<Location>(`${this.apiUrl}/locations`, location).pipe(
       tap(newLocation => {
         this.locations.locations.push(newLocation);
+        this.locationsSubject.next({ ...this.locations });
         this.locationsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -1078,6 +1092,7 @@ export class DataService {
         } else {
           this.locations.locations.push(updatedLocation);
         }
+        this.locationsSubject.next({ ...this.locations });
         this.locationsCache$ = null;
         this.allDataCache$ = null;
       })
@@ -1088,6 +1103,7 @@ export class DataService {
     return this.http.delete<any>(`${this.apiUrl}/locations/${id}`).pipe(
       tap(() => {
         this.locations.locations = this.locations.locations.filter(location => location.id !== id);
+        this.locationsSubject.next({ ...this.locations });
         this.locationsCache$ = null;
         this.allDataCache$ = null;
       })

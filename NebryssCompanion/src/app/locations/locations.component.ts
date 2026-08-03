@@ -224,6 +224,22 @@ export class LocationsComponent implements OnInit {
       this.cdr.markForCheck();
     });
 
+    this.dataService.locations$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data && data.locations && data.locations.length > 0) {
+          this.locations = data.locations;
+          this.uniqueFactions = this.getUniqueFactions();
+          if (this.selectedLocation) {
+            const updatedSelected = this.locations.find(l => l.id === this.selectedLocation?.id || l.name === this.selectedLocation?.name);
+            if (updatedSelected) {
+              this.selectedLocation = updatedSelected;
+            }
+          }
+          this.cdr.markForCheck();
+        }
+      });
+
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;
       this.cdr.markForCheck();

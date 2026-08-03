@@ -224,7 +224,7 @@
               type="button"
               class="btn btn-danger"
               (click)="promptDelete()"
-              [disabled]="isSaving || isDeleting"
+              [disabled]="!canDelete"
             >
               <span class="material-icons">delete</span>
               <span>Delete NPC</span>
@@ -244,7 +244,7 @@
               type="button"
               class="btn btn-primary"
               (click)="saveNpc()"
-              [disabled]="isSaving"
+              [disabled]="!canSubmit"
             >
               <span class="material-icons" *ngIf="!isSaving">save</span>
               <span class="spinner-small" *ngIf="isSaving"></span>

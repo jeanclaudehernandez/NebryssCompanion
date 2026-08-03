@@ -126,16 +126,30 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     this.validateBodyFilterSelection();
     this.updateSortedProfiles();
 
-    this.dataService.getItems().subscribe(() => {
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+        this.updateSortedProfiles();
+      }
+    });
+
+    this.dataService.items$?.subscribe(() => {
       this.updateSortedProfiles();
     });
 
-    this.dataService.getTalents().subscribe(talents => {
+    this.dataService.weaponRules$?.subscribe(rules => {
+      if (rules && rules.length > 0) {
+        this.weaponRulesData = [...rules];
+        this.updateSortedProfiles();
+      }
+    });
+
+    this.dataService.talents$?.subscribe(talents => {
       this.talentsData = talents;
       this.updateSortedProfiles();
     });
 
-    this.dataService.getAfflictions().subscribe(afflictions => {
+    this.dataService.afflictions$?.subscribe(afflictions => {
       this.afflictionsData = afflictions;
       this.updateSortedProfiles();
     });
@@ -590,7 +604,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
   
   getWeaponById(id: number): Weapon | null {
-    return this.weaponsData.find(w => w.id === id) || null;
+    return (this.weaponsData && this.weaponsData.find(w => w.id === id)) || this.dataService.getWeaponById(id);
   }
 
   filterByBody(weaponProfile: any): boolean {

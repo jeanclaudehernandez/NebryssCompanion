@@ -106,6 +106,21 @@ export class NpcsComponent implements OnInit {
 
         this.cdr.markForCheck();
       });
+
+    this.dataService.npcs$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(npcs => {
+        if (npcs && npcs.length > 0) {
+          this.npcs = npcs;
+          if (this.selectedNpc) {
+            const updated = this.npcs.find(n => n.id === this.selectedNpc?.id || n.name === this.selectedNpc?.name);
+            if (updated) {
+              this.selectedNpc = updated;
+            }
+          }
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   setGroupBy(mode: NpcGroupBy): void {

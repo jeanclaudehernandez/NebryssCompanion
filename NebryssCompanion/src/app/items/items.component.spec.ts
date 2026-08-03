@@ -11,36 +11,40 @@ describe('ItemsComponent', () => {
 
   beforeEach(async () => {
     mockDataService = jasmine.createSpyObj('DataService', ['getAllData', 'getPlayers', 'getItems', 'getTalents', 'getAfflictions', 'getItemById']);
+    const mockWeapons = [
+      {
+        id: 1,
+        name: 'Sword',
+        price: 10,
+        profiles: [{ profileName: '', rng: 0, attacks: 4, ws: 3, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
+      },
+      {
+        id: 2,
+        name: 'Rifle',
+        price: 15,
+        profiles: [{ profileName: '', rng: 8, attacks: 4, ws: 4, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
+      }
+    ];
+    const mockItems = {
+      items: [
+        { id: 10, name: 'Chainmail', type: 'armor', raceReq: 'human', description: 'Heavy armor' },
+        { id: 11, name: 'Bolt Rounds', type: 'ammo', subtype: 'rifle', description: 'Standard rounds' }
+      ]
+    };
+    const mockCategories = [
+      { id: 1, name: 'Armor', key: 'armor', headers: ['Name', 'Body', 'Description'], keys: ['name', 'raceReq', 'description'] },
+      { id: 2, name: 'Ammo', key: 'ammo', headers: ['Name', 'Type', 'Description'], keys: ['name', 'subtype', 'description'] }
+    ];
+
     mockDataService.getAllData.and.returnValue(of({
       players: [],
       npcs: [],
-      weapons: [
-        {
-          id: 1,
-          name: 'Sword',
-          price: 10,
-          profiles: [{ profileName: '', rng: 0, attacks: 4, ws: 3, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
-        },
-        {
-          id: 2,
-          name: 'Rifle',
-          price: 15,
-          profiles: [{ profileName: '', rng: 8, attacks: 4, ws: 4, damage: { min: 3, max: 4 }, specialRules: [], body: 'human' }]
-        }
-      ],
-      items: {
-        items: [
-          { id: 10, name: 'Chainmail', type: 'armor', raceReq: 'human', description: 'Heavy armor' },
-          { id: 11, name: 'Bolt Rounds', type: 'ammo', subtype: 'rifle', description: 'Standard rounds' }
-        ]
-      },
+      weapons: mockWeapons,
+      items: mockItems,
       weaponRules: [],
       bestiary: [],
       shops: [],
-      itemCategories: [
-        { id: 1, name: 'Armor', key: 'armor', headers: ['Name', 'Body', 'Description'], keys: ['name', 'raceReq', 'description'] },
-        { id: 2, name: 'Ammo', key: 'ammo', headers: ['Name', 'Type', 'Description'], keys: ['name', 'subtype', 'description'] }
-      ],
+      itemCategories: mockCategories,
       alteredStates: [],
       mistEffects: [],
       terrains: [],
@@ -49,6 +53,9 @@ describe('ItemsComponent', () => {
       locations: { locations: [] } as any,
       letters: [] as any
     }));
+    (mockDataService as any).items$ = of(mockItems);
+    (mockDataService as any).weapons$ = of(mockWeapons);
+    (mockDataService as any).itemCategories$ = of(mockCategories);
     mockDataService.getPlayers.and.returnValue(of([]));
     mockDataService.getItems.and.returnValue(of({ items: [] } as any));
     mockDataService.getTalents.and.returnValue(of([]));

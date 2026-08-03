@@ -5,11 +5,14 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  // hasAdminAccess is session-only: always starts false, requires re-authentication each page load
-  private hasAdminAccessSubject = new BehaviorSubject<boolean>(false);
+  private hasAdminAccessSubject = new BehaviorSubject<boolean>(
+    localStorage.getItem('hasAdminAccess') === 'true'
+  );
   hasAdminAccess$ = this.hasAdminAccessSubject.asObservable();
 
-  private isAdminSubject = new BehaviorSubject<boolean>(false);
+  private isAdminSubject = new BehaviorSubject<boolean>(
+    localStorage.getItem('isAdmin') === 'true'
+  );
   isAdmin$ = this.isAdminSubject.asObservable();
 
   constructor() {}

@@ -160,6 +160,38 @@ export class ShopsComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    this.dataService.shops$?.subscribe(shops => {
+      if (shops && shops.length > 0) {
+        this.shops = [...shops];
+        this.processShops();
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.dataService.locations$?.subscribe(data => {
+      if (data && data.locations) {
+        this.locations = data.locations;
+        this.processShops();
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.dataService.items$?.subscribe(items => {
+      if (items && items.items) {
+        this.itemsData = { ...items };
+        this.processShops();
+        this.cdr.markForCheck();
+      }
+    });
+
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+        this.processShops();
+        this.cdr.markForCheck();
+      }
+    });
   }
 
   ngOnDestroy() {

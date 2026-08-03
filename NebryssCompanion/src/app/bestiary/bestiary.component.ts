@@ -119,6 +119,25 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
         this.selectAndScrollToCreature(this.initialBestiaryId);
       }
     });
+
+    this.dataService.bestiary$?.subscribe(bestiary => {
+      if (bestiary && bestiary.length > 0) {
+        this.bestiary = bestiary;
+        this.applyFilters();
+      }
+    });
+
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+      }
+    });
+
+    this.dataService.items$?.subscribe(items => {
+      if (items && items.items) {
+        this.itemsData = { ...items };
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -112,6 +112,29 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       this.applyRequestedFocus();
       this.cdr.markForCheck();
     });
+
+    this.dataService.locations$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data && data.locations && data.locations.length > 0) {
+          const locations = data.locations;
+          this.worldMapLocation =
+            locations.find(l => l.isWorldMap || (l as any).isworldMap) ??
+            locations.find(l => l.faction === 'Planet') ??
+            locations[locations.length - 1] ??
+            null;
+
+          this.locationsData = locations;
+          if (this.selectedPin) {
+            const updated = this.locationsData.find(l => l.id === this.selectedPin?.id || l.name === this.selectedPin?.name);
+            if (updated) {
+              this.selectedPin = updated;
+            }
+          }
+          this.rebuildPins();
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {

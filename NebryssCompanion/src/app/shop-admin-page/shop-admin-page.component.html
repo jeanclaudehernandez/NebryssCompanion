@@ -356,7 +356,7 @@
               type="button"
               class="btn btn-danger"
               (click)="promptDelete()"
-              [disabled]="isSaving || isDeleting"
+              [disabled]="!canDelete"
             >
               <span class="material-icons">delete</span>
               <span>Delete Shop</span>
@@ -376,7 +376,7 @@
               type="button"
               class="btn btn-primary"
               (click)="saveShop()"
-              [disabled]="isSaving"
+              [disabled]="!canSubmit"
             >
               <span class="material-icons" *ngIf="!isSaving">save</span>
               <span class="spinner-small" *ngIf="isSaving"></span>

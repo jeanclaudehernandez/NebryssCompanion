@@ -386,6 +386,31 @@ createCollectionRoute('/api/lore', {
   collectionName: 'lore',
 });
 
+createCollectionRoute('/api/npcs', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
+createCollectionRoute('/api/npc', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
+createUpdateRoute('/api/npc', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
+createInsertRoute('/api/npc', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
+createDeleteRoute('/api/npc', {
+  usePlayersDb: false,
+  collectionName: 'npc',
+});
+
 createUpdateRoute('/api/lore', {
   usePlayersDb: false,
   collectionName: 'lore',
@@ -399,6 +424,31 @@ createInsertRoute('/api/lore', {
 createDeleteRoute('/api/lore', {
   usePlayersDb: false,
   collectionName: 'lore',
+});
+
+createCollectionRoute('/api/shops', {
+  usePlayersDb: false,
+  collectionName: 'shop',
+});
+
+createCollectionRoute('/api/shop', {
+  usePlayersDb: false,
+  collectionName: 'shop',
+});
+
+createUpdateRoute('/api/shop', {
+  usePlayersDb: false,
+  collectionName: 'shop',
+});
+
+createInsertRoute('/api/shop', {
+  usePlayersDb: false,
+  collectionName: 'shop',
+});
+
+createDeleteRoute('/api/shop', {
+  usePlayersDb: false,
+  collectionName: 'shop',
 });
 
 createCollectionRoute('/api/locations', {
@@ -519,6 +569,26 @@ createInsertRoute('/api/afflictions', {
 createDeleteRoute('/api/afflictions', {
   usePlayersDb: false,
   collectionName: 'affliction',
+});
+
+createCollectionRoute('/api/locations', {
+  usePlayersDb: false,
+  collectionName: 'locations',
+});
+
+createUpdateRoute('/api/locations', {
+  usePlayersDb: false,
+  collectionName: 'locations',
+});
+
+createInsertRoute('/api/locations', {
+  usePlayersDb: false,
+  collectionName: 'locations',
+});
+
+createDeleteRoute('/api/locations', {
+  usePlayersDb: false,
+  collectionName: 'locations',
 });
 
 createCollectionRoute('/api/letter', {

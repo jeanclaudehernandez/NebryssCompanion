@@ -271,6 +271,50 @@ export class ItemsComponent implements OnInit {
       this.refreshCategoryData();
     });
 
+    this.dataService.items$?.subscribe(items => {
+      if (items && items.items && items.items.length > 0 && this.itemCategories && this.itemCategories.length > 0) {
+        this.itemsData = { ...items };
+        this.rebuildLookups();
+        this.categoryDataBuiltKeys.clear();
+        this.refreshCategoryData();
+      }
+    });
+
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0 && this.itemCategories && this.itemCategories.length > 0) {
+        this.weaponsData = [...weapons];
+        this.allWeaponIds = this.weaponsData.map(w => w.id);
+        this.rebuildLookups();
+        this.categoryDataBuiltKeys.clear();
+        this.refreshCategoryData();
+      }
+    });
+
+    this.dataService.itemCategories$?.subscribe(categories => {
+      if (categories && categories.length > 0) {
+        this.itemCategories = categories;
+        this.scrollSections = [
+          {
+            id: 'weapon-melee',
+            title: 'Melee Weapons',
+          },
+          {
+            id: 'weapon-ranged',
+            title: 'Ranged Weapons',
+          },
+          ...this.itemCategories.map((category: ItemCategory) => {
+            return {
+              id: category.key,
+              title: category.name
+            };
+          })
+        ];
+        this.rebuildLookups();
+        this.categoryDataBuiltKeys.clear();
+        this.refreshCategoryData();
+      }
+    });
+
     this.activePlayerService.activePlayer$.subscribe(player => {
       if (player) {
         this.activePlayerBodyTypes = player.attributes?.body || [];
@@ -739,31 +783,16 @@ export class ItemsComponent implements OnInit {
     if (this.categoryDataBuiltKeys.has(key)) {
       return;
     }
-    if (this.categoryBuildInProgress.has(key)) {
-      return;
-    }
 
-    const buildToken = this.categoryBuildToken;
-    this.categoryBuildInProgress.add(key);
-    this.categoryDataMap[key] = [];
-
-    this.buildCategoryDataChunked(key).then(data => {
-      if (buildToken !== this.categoryBuildToken) {
-        return;
-      }
-      this.categoryDataMap[key] = data;
-      this.categoryDataBuiltKeys.add(key);
-      this.onSearchChange();
-    }).finally(() => {
-      this.categoryBuildInProgress.delete(key);
-    });
+    this.categoryDataMap[key] = this.buildCategoryDataSync(key);
+    this.categoryDataBuiltKeys.add(key);
   }
 
   private ensureAllCategoryDataBuilt(): void {
     (this.itemCategories || []).forEach(c => this.ensureCategoryDataBuilt(c.key));
   }
 
-  private async buildCategoryDataChunked(key: string): Promise<any[]> {
+  private buildCategoryDataSync(key: string): any[] {
     if (!this.itemsData || !(this.itemsData as any).items) {
       return [];
     }
@@ -839,9 +868,6 @@ export class ItemsComponent implements OnInit {
       }
 
       processed++;
-      if (processed % 120 === 0) {
-        await new Promise<void>(resolve => setTimeout(resolve, 0));
-      }
     }
 
     return playerItemIds ? [...owned, ...unowned] : [...unowned];
