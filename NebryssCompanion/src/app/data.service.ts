@@ -129,6 +129,75 @@ export class DataService {
     return this.npcsCache$;
   }
 
+  refreshNpcs(): Observable<NPC[]> {
+    this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
+      catchError(() => this.http.get<NPC[]>('assets/npcs.json')),
+      tap(npcs => {
+        this.npcs = npcs;
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.npcsCache$;
+  }
+
+  createNpc(npc: NPC): Observable<NPC> {
+    return this.http.post<NPC>(`${this.apiUrl}/npc`, npc).pipe(
+      catchError(() => {
+        if (!npc.id) {
+          const maxId = this.npcs.reduce((max, n) => (n.id > max ? n.id : max), 0);
+          npc.id = maxId + 1;
+        }
+        this.npcs.push(npc);
+        return of(npc);
+      }),
+      tap(created => {
+        const index = this.npcs.findIndex(n => n.id === created.id);
+        if (index !== -1) {
+          this.npcs[index] = created;
+        } else {
+          this.npcs.push(created);
+        }
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateNpc(npc: NPC): Observable<NPC> {
+    return this.http.put<NPC>(`${this.apiUrl}/npc`, npc).pipe(
+      catchError(() => {
+        const index = this.npcs.findIndex(n => n.id === npc.id);
+        if (index !== -1) {
+          this.npcs[index] = npc;
+        }
+        return of(npc);
+      }),
+      tap(updated => {
+        const index = this.npcs.findIndex(n => n.id === updated.id);
+        if (index !== -1) {
+          this.npcs[index] = updated;
+        }
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteNpc(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/npc/${id}`).pipe(
+      catchError(() => {
+        this.npcs = this.npcs.filter(n => n.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.npcs = this.npcs.filter(n => n.id !== id);
+        this.npcsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   getitemCategories(): Observable<ItemCategory[]> {
     if (!this.itemCategories.length) {
       return this.http.get<ItemCategory[]>(`${this.apiUrl}/itemCategory`).pipe(
@@ -249,6 +318,43 @@ export class DataService {
         if (index !== -1) {
           this.shops[index] = updatedShop;
         }
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  createShop(shop: Shop): Observable<Shop> {
+    return this.http.post<Shop>(`${this.apiUrl}/shop`, shop).pipe(
+      catchError(() => {
+        if (!shop.id) {
+          const maxId = this.shops.reduce((max, s) => (s.id > max ? s.id : max), 0);
+          shop.id = maxId + 1;
+        }
+        this.shops.push(shop);
+        return of(shop);
+      }),
+      tap(created => {
+        const index = this.shops.findIndex(s => s.id === created.id);
+        if (index !== -1) {
+          this.shops[index] = created;
+        } else {
+          this.shops.push(created);
+        }
+        this.shopsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteShop(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/shop/${id}`).pipe(
+      catchError(() => {
+        this.shops = this.shops.filter(s => s.id !== id);
+        return of({ success: true, id });
+      }),
+      tap(() => {
+        this.shops = this.shops.filter(s => s.id !== id);
         this.shopsCache$ = null;
         this.allDataCache$ = null;
       })

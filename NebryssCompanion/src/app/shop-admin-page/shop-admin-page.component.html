@@ -1,0 +1,353 @@
+<div class="shop-admin-container">
+  <header class="shop-admin-header">
+    <div class="header-left">
+      <span class="material-icons header-icon">storefront</span>
+      <div>
+        <h2>Shop Editor & Manager</h2>
+        <p class="subtitle">Assign NPC owners, world map locations, catalog items, weapons, and shop-specific prices.</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="startNewShop()">
+      <span class="material-icons">add_business</span>
+      <span>Create New Shop</span>
+    </button>
+  </header>
+
+  <div class="shop-admin-layout">
+    <!-- Sidebar / Shops List -->
+    <aside class="shop-sidebar">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search shops by name, location..."
+          aria-label="Search shops"
+        />
+      </div>
+
+      <div class="shop-list" *ngIf="!isLoading; else loadingTpl">
+        <div
+          *ngFor="let shop of filteredShops"
+          class="shop-card-item"
+          [class.active]="shop.id === selectedShopId"
+          (click)="selectShop(shop)"
+        >
+          <div class="shop-item-main">
+            <span class="shop-item-name">{{ shop.name }}</span>
+            <span class="shop-item-items-count">{{ (shop.items || []).length }} items</span>
+          </div>
+          <span class="shop-item-location">{{ shop.locationName || shop.location }}</span>
+        </div>
+
+        <div class="empty-state" *ngIf="filteredShops.length === 0">
+          <span class="material-icons">store_mall_directory</span>
+          <p>No shops found.</p>
+        </div>
+      </div>
+
+      <ng-template #loadingTpl>
+        <div class="loading-state">
+          <div class="spinner-small"></div>
+          <span>Loading Shops & Data...</span>
+        </div>
+      </ng-template>
+    </aside>
+
+    <!-- Main Editor Pane -->
+    <main class="shop-editor-pane">
+      <div class="form-card">
+        <div class="form-card-header">
+          <h3>{{ isEditing ? 'Edit Shop: ' + name : 'Create New Shop' }}</h3>
+          <span class="badge" [class.badge-edit]="isEditing" [class.badge-new]="!isEditing">
+            {{ isEditing ? 'ID: ' + id : 'New Shop' }}
+          </span>
+        </div>
+
+        <div class="form-grid">
+          <!-- Shop Name -->
+          <div class="form-group full-width">
+            <label for="shop-name">Shop Name <span class="required">*</span></label>
+            <input
+              id="shop-name"
+              type="text"
+              [(ngModel)]="name"
+              placeholder="e.g. Herbwhisper's Apothecary"
+              required
+            />
+          </div>
+
+          <!-- NPC Owner Dropdown (REQUIREMENT: display NPC names + small description of who they are) -->
+          <div class="form-group full-width">
+            <label for="shop-owner">Shop Owner NPC <span class="required">*</span></label>
+            <select id="shop-owner" [(ngModel)]="ownerId" required>
+              <option [ngValue]="null" disabled>Select NPC Owner...</option>
+              <option *ngFor="let npc of npcs" [ngValue]="npc.id">
+                {{ npc.name }} ({{ getNpcOwnerDescription(npc) }})
+              </option>
+            </select>
+          </div>
+
+          <!-- World Map Location Selection (REQUIREMENT: select location from world map) -->
+          <div class="form-group">
+            <label for="world-map-location">World Map Location <span class="required">*</span></label>
+            <select
+              id="world-map-location"
+              [ngModel]="locationId"
+              (ngModelChange)="onWorldMapLocationSelect($event)"
+            >
+              <option [ngValue]="null">Custom / No Pin</option>
+              <option *ngFor="let loc of locations" [ngValue]="loc.id">
+                {{ loc.name }} {{ loc.faction ? '(' + loc.faction + ')' : '' }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Specific Sub-location / District -->
+          <div class="form-group">
+            <label for="shop-location-detail">Sub-Location / District Name</label>
+            <input
+              id="shop-location-detail"
+              type="text"
+              [(ngModel)]="location"
+              placeholder="e.g. Zephyria's Sky Bazaar"
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group full-width">
+            <label for="shop-description">Shop Description</label>
+            <textarea
+              id="shop-description"
+              rows="3"
+              [(ngModel)]="description"
+              placeholder="Describe the shop's ambiance, wares, and atmosphere..."
+            ></textarea>
+          </div>
+
+          <!-- Image & Thumbnail URLs -->
+          <div class="form-group">
+            <label for="shop-img">Image URL</label>
+            <input
+              id="shop-img"
+              type="text"
+              [(ngModel)]="imgUrl"
+              placeholder="https://iili.io/..."
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="shop-thumbnail">Thumbnail URL</label>
+            <input
+              id="shop-thumbnail"
+              type="text"
+              [(ngModel)]="thumbnail"
+              placeholder="https://iili.io/...th.png"
+            />
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="form-group full-width checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="paymentDigital" />
+              <span>Accepts Digital Payments (Mistrals)</span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="paymentPhysical" />
+              <span>Accepts Physical Payments (Coins)</span>
+            </label>
+
+            <label class="checkbox-label">
+              <input type="checkbox" [(ngModel)]="discovered" />
+              <span>Discovered (Visible to Players)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ITEMS & WEAPONS SELECTION AND PRICE OVERRIDE SECTION -->
+        <div class="catalog-section">
+          <div class="catalog-header">
+            <div>
+              <h4>Items & Weapons For Sale</h4>
+              <p class="section-hint">Add items or weapons to this shop and override individual shop-specific prices.</p>
+            </div>
+          </div>
+
+          <!-- Current Shop Inventory Table -->
+          <div class="inventory-table-wrapper" *ngIf="shopItems.length > 0; else emptyInventory">
+            <table class="inventory-table">
+              <thead>
+                <tr>
+                  <th>Item / Weapon</th>
+                  <th>Type</th>
+                  <th>Base Price</th>
+                  <th>Shop Specific Price <span class="required">*</span></th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let row of forSaleRows; let i = index">
+                  <td class="item-name-cell">
+                    <strong>{{ row.name }}</strong>
+                  </td>
+                  <td>
+                    <span class="type-badge" [class.weapon-badge]="row.shopItem.type === 'weapon'">
+                      {{ row.shopItem.type === 'weapon' ? 'Weapon' : 'Item' }}
+                    </span>
+                  </td>
+                  <td class="base-price-cell">
+                    {{ row.basePrice }}
+                  </td>
+                  <td class="price-input-cell">
+                    <div class="price-input-wrapper">
+                      <span class="currency-symbol">◈</span>
+                      <input
+                        type="number"
+                        [(ngModel)]="row.shopItem.price"
+                        step="0.5"
+                        min="0"
+                        class="price-override-input"
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn-icon btn-danger"
+                      (click)="removeItemFromShop(i)"
+                      title="Remove from shop"
+                    >
+                      <span class="material-icons">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <ng-template #emptyInventory>
+            <div class="empty-inventory-box">
+              <span class="material-icons">remove_shopping_cart</span>
+              <p>No items or weapons added to this shop yet. Use the catalog picker below to add items.</p>
+            </div>
+          </ng-template>
+
+          <!-- Catalog Item Picker Box -->
+          <div class="picker-box">
+            <h5>Add Items or Weapons to Shop</h5>
+
+            <div class="picker-controls">
+              <div class="picker-search">
+                <span class="material-icons">search</span>
+                <input
+                  type="text"
+                  [(ngModel)]="pickerSearchTerm"
+                  placeholder="Search catalog by name or type..."
+                />
+              </div>
+
+              <div class="picker-type-tabs">
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="pickerTypeFilter === 'all'"
+                  (click)="pickerTypeFilter = 'all'"
+                >
+                  All
+                </button>
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="pickerTypeFilter === 'item'"
+                  (click)="pickerTypeFilter = 'item'"
+                >
+                  Items
+                </button>
+                <button
+                  type="button"
+                  class="tab-btn"
+                  [class.active]="pickerTypeFilter === 'weapon'"
+                  (click)="pickerTypeFilter = 'weapon'"
+                >
+                  Weapons
+                </button>
+              </div>
+            </div>
+
+            <div class="picker-results-grid">
+              <div
+                *ngFor="let catItem of availableCatalog"
+                class="picker-result-card"
+                (click)="addItemToShop(catItem)"
+              >
+                <div class="picker-card-info">
+                  <span class="picker-item-name">{{ catItem.name }}</span>
+                  <span class="picker-item-detail">{{ catItem.detail }} • Base: ◈{{ catItem.basePrice }}</span>
+                </div>
+                <button type="button" class="btn btn-secondary btn-sm">
+                  <span class="material-icons">add</span>
+                  <span>Add</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <div class="actions-left">
+            <button
+              *ngIf="isEditing"
+              type="button"
+              class="btn btn-danger"
+              (click)="promptDelete()"
+              [disabled]="isSaving || isDeleting"
+            >
+              <span class="material-icons">delete</span>
+              <span>Delete Shop</span>
+            </button>
+          </div>
+
+          <div class="actions-right">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="startNewShop()"
+              [disabled]="isSaving"
+            >
+              Clear / New
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="saveShop()"
+              [disabled]="isSaving"
+            >
+              <span class="material-icons" *ngIf="!isSaving">save</span>
+              <span class="spinner-small" *ngIf="isSaving"></span>
+              <span>{{ isSaving ? 'Saving...' : (isEditing ? 'Update Shop' : 'Create Shop') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Modal Confirmation -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="material-icons icon-warning">warning</span>
+        <h3>Confirm Shop Deletion</h3>
+      </div>
+      <p>Are you sure you want to delete shop <strong>"{{ name }}"</strong>? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Deleting...' : 'Delete Permanently' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

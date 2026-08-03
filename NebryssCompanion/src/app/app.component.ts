@@ -492,7 +492,13 @@ export class AppComponent {
 
   onOpenAdminEditor(session: AdminEditorSession) {
     this.adminEditSession = session;
-    this.currentView = 'adminItemCreator';
+    if (session.mode === 'shop') {
+      this.currentView = 'adminShopEditor';
+    } else if (session.mode === 'npc') {
+      this.currentView = 'adminNpcEditor';
+    } else {
+      this.currentView = 'adminItemCreator';
+    }
     this.adminLocationDraft = null;
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
@@ -500,7 +506,7 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
-    localStorage.setItem('lastView', 'adminItemCreator');
+    localStorage.setItem('lastView', this.currentView);
     window.scrollTo({ top: 0 });
   }
 

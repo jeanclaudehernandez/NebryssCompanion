@@ -17,7 +17,9 @@ export const APP_VIEWS = [
   'shipNavigation',
   'adminItemCreator',
   'adminLocationCreator',
-  'adminPlayerEditor'
+  'adminPlayerEditor',
+  'adminNpcEditor',
+  'adminShopEditor'
 ] as const;
 
 export type AppView = typeof APP_VIEWS[number];

@@ -15,6 +15,8 @@ import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
 import { AdminService } from '../admin.service';
 
+import { AdminEditorSession } from '../admin-editor.models';
+
 interface ShopCategoryData {
   category: ItemCategory;
   items: any[];
@@ -53,6 +55,7 @@ interface ShopLocationGroup {
 })
 export class ShopsComponent implements OnInit, OnDestroy {
   @Output() navigateToLocation = new EventEmitter<string>();
+  @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
@@ -189,6 +192,13 @@ export class ShopsComponent implements OnInit, OnDestroy {
         this.toastService.show(`Failed to update shop discovery status: ${err?.message || err}`, 'error');
       }
     });
+  }
+
+  editShopInEditor(shop: Shop, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.openAdminEditor.emit({ mode: 'shop', shop });
   }
 
   processShops() {

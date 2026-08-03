@@ -68,7 +68,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     shipNavigation: () => import('./ship-navigation/ship-navigation.component').then(m => m.ShipNavigationComponent),
     adminItemCreator: () => import('./item-admin-page/item-admin-page.component').then(m => m.ItemAdminPageComponent),
     adminLocationCreator: () => import('./location-admin-page/location-admin-page.component').then(m => m.LocationAdminPageComponent),
-    adminPlayerEditor: () => import('./player-admin-page/player-admin-page.component').then(m => m.PlayerAdminPageComponent)
+    adminPlayerEditor: () => import('./player-admin-page/player-admin-page.component').then(m => m.PlayerAdminPageComponent),
+    adminNpcEditor: () => import('./npc-admin-page/npc-admin-page.component').then(m => m.NpcAdminPageComponent),
+    adminShopEditor: () => import('./shop-admin-page/shop-admin-page.component').then(m => m.ShopAdminPageComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -187,6 +189,16 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         this.componentRef.setInput('initialMapX', this.adminLocationDraft?.mapX ?? null);
         this.componentRef.setInput('initialMapY', this.adminLocationDraft?.mapY ?? null);
         this.componentRef.setInput('initialLocation', this.adminLocationDraft?.location ?? null);
+        break;
+      case 'adminNpcEditor':
+        if (this.adminEditSession?.mode === 'npc') {
+          this.componentRef.setInput('initialNpc', this.adminEditSession.npc);
+        }
+        break;
+      case 'adminShopEditor':
+        if (this.adminEditSession?.mode === 'shop') {
+          this.componentRef.setInput('initialShop', this.adminEditSession.shop);
+        }
         break;
     }
   }

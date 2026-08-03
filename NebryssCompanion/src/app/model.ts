@@ -286,11 +286,19 @@ export interface AlteredState {
     location?: string;
     bestiaryId?: number;
     role?: string;
+    reputation?: string;
+    backstory?: string;
+    description?: string;
+    imgUrl?: string;
+    thumbnail?: string;
+    fleetSize?: string;
+    flagship?: string;
+    tactics?: string;
+    motivations?: string;
     wargear?: Array<{
       name: string;
       description: string;
     }>;
-    // ... other NPC-specific properties
   }
   
   // players.ts

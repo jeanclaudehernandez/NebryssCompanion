@@ -730,7 +730,9 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.loadWeaponIntoForm(this.pendingEditSession.weapon);
+    if (this.pendingEditSession.mode === 'weapon') {
+      this.loadWeaponIntoForm(this.pendingEditSession.weapon);
+    }
   }
 
   private startCreateMode(): void {

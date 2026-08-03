@@ -101,6 +101,14 @@
       <span class="material-icons">add_location_alt</span>
       <span>Location Creator</span>
     </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminNpcEditor()">
+      <span class="material-icons">badge</span>
+      <span>NPC Editor</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminShopEditor()">
+      <span class="material-icons">storefront</span>
+      <span>Shop Editor</span>
+    </div>
 
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
