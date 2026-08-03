@@ -242,24 +242,50 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
     const groupsMap = new Map<string, ShopLocationGroup>();
 
+    const worldMapLoc = this.locations.find(l => l.isWorldMap || (l as any).isworldMap || l.id === 0);
+    const defaultWorldMapImage = 'https://iili.io/3R2Be6u.png';
+    const worldMapImageUrl = worldMapLoc?.imgUrl || defaultWorldMapImage;
+    const worldMapThumbnail = worldMapLoc?.thumbnail || worldMapLoc?.imgUrl || defaultWorldMapImage;
+
     processedShops.forEach(shop => {
       const matchedLocation = this.findShopLocation(shop);
-      const locationId = typeof matchedLocation?.id === 'number'
-        ? matchedLocation.id
-        : (typeof shop.locationId === 'number' ? shop.locationId : null);
-      const locationName = matchedLocation?.name || shop.locationName || shop.location || 'Unknown Location';
-      const groupKey = locationId !== null
-        ? `location-${locationId}`
-        : `location-name-${locationName.toLowerCase()}`;
+      const isUnbound = !matchedLocation;
+
+      let groupKey: string;
+      let locationId: number | null;
+      let locationName: string;
+      let locationImageUrl: string | undefined;
+      let locationThumbnail: string | undefined;
+      let locationDescription: string | undefined;
+
+      if (isUnbound) {
+        groupKey = 'unbound';
+        locationId = 0;
+        locationName = 'Unbound';
+        locationImageUrl = worldMapImageUrl;
+        locationThumbnail = worldMapThumbnail;
+        locationDescription = 'Wandering merchants, traveling traders, and elusive sanctuaries with no fixed location across Nebryss.';
+      } else {
+        locationId = typeof matchedLocation?.id === 'number'
+          ? matchedLocation.id
+          : (typeof shop.locationId === 'number' ? shop.locationId : null);
+        locationName = matchedLocation?.name || shop.locationName || shop.location || 'Unknown Location';
+        groupKey = locationId !== null
+          ? `location-${locationId}`
+          : `location-name-${locationName.toLowerCase()}`;
+        locationImageUrl = matchedLocation?.imgUrl;
+        locationThumbnail = matchedLocation?.thumbnail;
+        locationDescription = matchedLocation?.description;
+      }
 
       if (!groupsMap.has(groupKey)) {
         groupsMap.set(groupKey, {
           key: groupKey,
           locationId,
           locationName,
-          locationImageUrl: matchedLocation?.imgUrl,
-          locationThumbnail: matchedLocation?.thumbnail,
-          locationDescription: matchedLocation?.description,
+          locationImageUrl,
+          locationThumbnail,
+          locationDescription,
           shops: []
         });
       }
@@ -268,6 +294,12 @@ export class ShopsComponent implements OnInit, OnDestroy {
     });
 
     this.processedShopGroups = Array.from(groupsMap.values());
+    this.processedShopGroups.sort((a, b) => {
+      if (a.key === 'unbound') return 1;
+      if (b.key === 'unbound') return -1;
+      return 0;
+    });
+
     this.scrollSections = this.processedShopGroups.map(group => ({
       title: group.locationName,
       id: this.getLocationGroupElementId(group)
@@ -288,6 +320,9 @@ export class ShopsComponent implements OnInit, OnDestroy {
   }
 
   getLocationGroupElementId(group: ShopLocationGroup): string {
+    if (group.key === 'unbound') {
+      return 'shop-location-unbound';
+    }
     return group.locationId !== null ? `shop-location-${group.locationId}` : group.key;
   }
 
@@ -483,19 +518,33 @@ export class ShopsComponent implements OnInit, OnDestroy {
   }
 
   private findShopLocation(shop: Shop): Location | undefined {
+    if (shop.locationName && shop.locationName.trim().toLowerCase() === 'unbound') {
+      return undefined;
+    }
+    if (shop.location && shop.location.trim().toLowerCase() === 'unbound') {
+      return undefined;
+    }
     if (typeof shop.locationId === 'number') {
+      if (shop.locationId === 0) {
+        return undefined;
+      }
       const locationById = this.locations.find(location => location.id === shop.locationId);
-      if (locationById) {
+      if (locationById && !locationById.isWorldMap && !(locationById as any).isworldMap && locationById.id !== 0) {
         return locationById;
       }
     }
 
     const normalizedLocationName = this.normalizeText(shop.locationName || shop.location);
-    if (!normalizedLocationName) {
+    if (!normalizedLocationName || normalizedLocationName === 'unbound') {
       return undefined;
     }
 
-    return this.locations.find(location => this.normalizeText(location.name) === normalizedLocationName);
+    return this.locations.find(location =>
+      !location.isWorldMap &&
+      !(location as any).isworldMap &&
+      location.id !== 0 &&
+      this.normalizeText(location.name) === normalizedLocationName
+    );
   }
 
   private normalizeText(value?: string): string {

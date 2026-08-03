@@ -30,7 +30,7 @@
             </div>
           </div>
         </div>
-        <p class="location" (click)="onLocationClick(shop.locationName || shop.location)" style="cursor: pointer;" title="Go to location">{{ shop.location }}</p>
+        <p class="location" (click)="onLocationClick(shop.locationName || shop.location || 'Unbound')" style="cursor: pointer;" title="Go to location">{{ shop.location || shop.locationName || 'Unbound' }}</p>
         <p class="owner">Owner: {{ getOwnerName(shop.owner) }}</p>
         <em class="owner" *ngIf="shop.description"> {{shop.description}}</em>
 
