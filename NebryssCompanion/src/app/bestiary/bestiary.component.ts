@@ -123,7 +123,15 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.dataService.bestiary$?.subscribe(bestiary => {
       if (bestiary && bestiary.length > 0) {
         this.bestiary = bestiary;
+        this.factions = this.getUniqueValues(this.bestiary, 'faction');
         this.applyFilters();
+        this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
+
+        this.selectedCreatures = this.selectedCreatures
+          .map(selected => this.bestiary.find(c => c.id === selected.id))
+          .filter((c): c is BestiaryEntry => c !== undefined);
+        this.syncCreatureScrollSections();
+        this.updateDroppedMaterials();
       }
     });
 

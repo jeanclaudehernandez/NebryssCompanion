@@ -411,6 +411,7 @@ export class DataService {
       catchError(() => this.http.get<BestiaryEntry[]>('assets/bestiary.json')),
       tap(bestiary => {
         this.bestiary = bestiary;
+        this.bestiarySubject.next([...this.bestiary]);
       }),
       shareReplay(1)
     );
@@ -448,6 +449,7 @@ export class DataService {
         } else {
           this.bestiary.push(created);
         }
+        this.bestiarySubject.next([...this.bestiary]);
         this.bestiaryCache$ = null;
         this.allDataCache$ = null;
       })
@@ -468,6 +470,7 @@ export class DataService {
         if (index !== -1) {
           this.bestiary[index] = updated;
         }
+        this.bestiarySubject.next([...this.bestiary]);
         this.bestiaryCache$ = null;
         this.allDataCache$ = null;
       })
@@ -482,6 +485,7 @@ export class DataService {
       }),
       tap(() => {
         this.bestiary = this.bestiary.filter(b => b.id !== id);
+        this.bestiarySubject.next([...this.bestiary]);
         this.bestiaryCache$ = null;
         this.allDataCache$ = null;
       })
