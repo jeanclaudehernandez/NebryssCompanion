@@ -38,6 +38,7 @@ import { ToastService } from './toast.service';
       <h1 class="header-title">{{ currentViewTitle }}</h1>
 
       <button
+        *ngIf="hasAdminAccess$ | async"
         type="button"
         class="top-gm-toggle-btn"
         [class.active]="isAdmin$ | async"

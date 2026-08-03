@@ -117,6 +117,9 @@
         <span class="material-icons">refresh</span> Refresh Data
       </button>
     </div>
+    <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
+      <span class="material-icons">lock</span> Admin Access
+    </button>
   </div>
 </nav>
 
