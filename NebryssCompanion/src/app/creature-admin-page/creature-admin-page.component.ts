@@ -193,7 +193,9 @@ export class CreatureAdminPageComponent implements OnInit {
     this.selectedCreatureId = creature.id;
     this.isEditing = true;
     this.editableCreature = this.cloneCreature(creature);
-    this.editableCreature.weapons = [...(this.editableCreature.weapons ?? [])];
+    this.editableCreature.weapons = [...(this.editableCreature.weapons ?? [])]
+      .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
+      .filter((id): id is number => typeof id === 'number' && !isNaN(id));
     this.editableCreature.abilities = (this.editableCreature.abilities ?? []).map(a => ({ ...a }));
     this.editableCreature.items = (this.editableCreature.items ?? []).map(i => ({ ...i }));
     this.editableCreature.attributes = {
@@ -343,27 +345,50 @@ export class CreatureAdminPageComponent implements OnInit {
     return this.editableCreature?.weapons ?? [];
   }
 
-  onAddWeaponFromCatalog(weaponId: number): void {
+  onAddWeaponFromCatalog(weaponArg: any): void {
     if (!this.editableCreature) {
       return;
     }
+
+    let targetId: number | null = null;
+    if (typeof weaponArg === 'number') {
+      targetId = weaponArg;
+    } else if (weaponArg && typeof weaponArg.id === 'number') {
+      targetId = weaponArg.id;
+    } else if (weaponArg && weaponArg.weapon && typeof weaponArg.weapon.id === 'number') {
+      targetId = weaponArg.weapon.id;
+    }
+
+    if (targetId === null || isNaN(targetId)) {
+      return;
+    }
+
     if (!this.editableCreature.weapons) {
       this.editableCreature.weapons = [];
     }
-    if (!this.editableCreature.weapons.includes(weaponId)) {
-      this.editableCreature.weapons = [...this.editableCreature.weapons, weaponId];
-      const weapon = this.weapons.find(w => w.id === weaponId);
-      this.toastService.show(`Added weapon "${weapon?.name || weaponId}" to creature`, 'success');
+
+    // Clean any non-number entries
+    this.editableCreature.weapons = this.editableCreature.weapons
+      .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
+      .filter((id): id is number => typeof id === 'number' && !isNaN(id));
+
+    if (!this.editableCreature.weapons.includes(targetId)) {
+      this.editableCreature.weapons = [...this.editableCreature.weapons, targetId];
+      const weaponObj = this.weapons.find(w => w.id === targetId);
+      this.toastService.show(`Added weapon "${weaponObj?.name || targetId}" to creature`, 'success');
     } else {
       this.toastService.show('Creature already has this weapon assigned', 'info');
     }
   }
 
-  onRemoveWeapon(weaponId: number): void {
+  onRemoveWeapon(weaponArg: any): void {
     if (!this.editableCreature || !this.editableCreature.weapons) {
       return;
     }
-    this.editableCreature.weapons = this.editableCreature.weapons.filter(id => id !== weaponId);
+    const targetId = typeof weaponArg === 'number' ? weaponArg : (weaponArg?.id || weaponArg?.weapon?.id || weaponArg);
+    this.editableCreature.weapons = this.editableCreature.weapons
+      .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
+      .filter(id => id !== targetId);
     this.toastService.show('Removed weapon from creature', 'info');
   }
 
@@ -428,8 +453,24 @@ export class CreatureAdminPageComponent implements OnInit {
   // Catalog Picker Filtering (Shop Editor style)
   get catalogWeaponIds(): number[] {
     const term = this.pickerSearchTerm.trim().toLowerCase();
+    const creatureBodies = this.editableCreature?.attributes?.body ?? [];
+
     return this.weapons
-      .filter(w => !term || w.name.toLowerCase().includes(term))
+      .filter(w => {
+        const matchesSearch = !term || w.name.toLowerCase().includes(term);
+
+        let matchesBody = true;
+        if (creatureBodies.length > 0) {
+          matchesBody = w.profiles.length > 0 && w.profiles.every(profile => {
+            if (!profile.body || profile.body === 'universal' || profile.body === 'all') {
+              return true;
+            }
+            return creatureBodies.includes(profile.body);
+          });
+        }
+
+        return matchesSearch && matchesBody;
+      })
       .map(w => w.id);
   }
 
@@ -528,7 +569,9 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.editableCreature.faction.trim() || 'Neutral',
       subgroup: this.editableCreature.subgroup.trim() || 'General',
       pr: Number(this.editableCreature.pr) || 10,
-      weapons: [...(this.editableCreature.weapons ?? [])],
+      weapons: [...(this.editableCreature.weapons ?? [])]
+        .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
+        .filter((id): id is number => typeof id === 'number' && !isNaN(id)),
       abilities: (this.editableCreature.abilities ?? []).filter(a => a.name.trim() || a.effect.trim()),
       items: (this.editableCreature.items ?? []).filter(i => i.id && i.quant > 0)
     };

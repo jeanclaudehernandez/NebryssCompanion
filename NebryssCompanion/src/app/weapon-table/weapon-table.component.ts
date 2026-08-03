@@ -304,6 +304,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       const weapon = this.getWeaponById(weaponId);
       if (weapon) {
         weapon.profiles.forEach(profile => {
+          if (this.characterBody && this.characterBody.length > 0) {
+            const isBodyMatch = !profile.body || profile.body === 'universal' || profile.body === 'all' || this.characterBody.includes(profile.body);
+            if (!isBodyMatch) {
+              return;
+            }
+          }
+
           if (this.enableBodyFilter && this.selectedBodyType && profile.body !== this.selectedBodyType) {
             return;
           }
