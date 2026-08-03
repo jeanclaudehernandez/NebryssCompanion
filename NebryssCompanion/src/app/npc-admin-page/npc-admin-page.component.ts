@@ -100,18 +100,27 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   }
 
   toggleFactionCollapse(faction: string): void {
-    if (this.expandedFactions.has(faction)) {
+    const currentlyCollapsed = this.isFactionCollapsed(faction);
+    const newState = !currentlyCollapsed;
+    if (newState) {
       this.expandedFactions.delete(faction);
     } else {
       this.expandedFactions.add(faction);
     }
+    try {
+      localStorage.setItem(`npc-admin-faction-${faction}-collapsed`, JSON.stringify(newState));
+    } catch {}
   }
 
   isFactionCollapsed(faction: string): boolean {
     if (this.searchTerm.trim().length > 0) {
       return false;
     }
-    return !this.expandedFactions.has(faction);
+    const saved = localStorage.getItem(`npc-admin-faction-${faction}-collapsed`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return true;
   }
 
   get isEditing(): boolean {

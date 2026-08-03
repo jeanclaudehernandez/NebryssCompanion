@@ -387,7 +387,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   isLocationGroupCollapsed(group: ShopLocationGroup): boolean {
     const saved = localStorage.getItem(`${group.key}-collapsed`);
-    return saved ? JSON.parse(saved) : false;
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   toggleLocationGroup(group: ShopLocationGroup): void {

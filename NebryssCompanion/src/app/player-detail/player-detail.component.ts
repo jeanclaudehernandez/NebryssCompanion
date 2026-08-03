@@ -61,26 +61,41 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
   // Process abilities for display
   processedAbilities: {name: string, effect: string}[] = [];
   
-  // Section collapse states
-  isAbilitiesCollapsed = false;
-  isModsCollapsed = false;
-  isAfflictionsCollapsed = false;
-  isDeployablesCollapsed = false;
-
+  // Section collapse states (default true = collapsed)
+  get isAbilitiesCollapsed(): boolean {
+    const saved = localStorage.getItem('player-abilities-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleAbilitiesCollapse() {
-    this.isAbilitiesCollapsed = !this.isAbilitiesCollapsed;
+    const newState = !this.isAbilitiesCollapsed;
+    localStorage.setItem('player-abilities-collapsed', JSON.stringify(newState));
   }
 
+  get isModsCollapsed(): boolean {
+    const saved = localStorage.getItem('player-mods-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleModsCollapse() {
-    this.isModsCollapsed = !this.isModsCollapsed;
+    const newState = !this.isModsCollapsed;
+    localStorage.setItem('player-mods-collapsed', JSON.stringify(newState));
   }
 
+  get isAfflictionsCollapsed(): boolean {
+    const saved = localStorage.getItem('player-afflictions-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleAfflictionsCollapse() {
-    this.isAfflictionsCollapsed = !this.isAfflictionsCollapsed;
+    const newState = !this.isAfflictionsCollapsed;
+    localStorage.setItem('player-afflictions-collapsed', JSON.stringify(newState));
   }
 
+  get isDeployablesCollapsed(): boolean {
+    const saved = localStorage.getItem('player-deployables-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleDeployablesCollapse() {
-    this.isDeployablesCollapsed = !this.isDeployablesCollapsed;
+    const newState = !this.isDeployablesCollapsed;
+    localStorage.setItem('player-deployables-collapsed', JSON.stringify(newState));
   }
 
   @ViewChild('mistralDialog', { read: TemplateRef }) mistralDialogTemplate!: TemplateRef<any>;

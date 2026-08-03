@@ -44,10 +44,6 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   isDeleting = false;
   showDeleteConfirm = false;
 
-  // Collapsible state (sections collapsed by default)
-  isInventoryCollapsed = true;
-  isPickerCollapsed = true;
-
   // Location group collapse state (collapsed by default)
   expandedLocations = new Set<string>();
 
@@ -123,23 +119,44 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   isLocationExpanded(locName: string): boolean {
     // If user is searching, auto-expand so they can see results instantly
     if (this.searchTerm.trim().length > 0) return true;
-    return this.expandedLocations.has(locName);
+    const saved = localStorage.getItem(`shop-admin-loc-${locName}-expanded`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return false;
   }
 
   toggleLocationGroup(locName: string): void {
-    if (this.expandedLocations.has(locName)) {
-      this.expandedLocations.delete(locName);
-    } else {
+    const currentlyExpanded = this.isLocationExpanded(locName);
+    const newState = !currentlyExpanded;
+    if (newState) {
       this.expandedLocations.add(locName);
+    } else {
+      this.expandedLocations.delete(locName);
     }
+    try {
+      localStorage.setItem(`shop-admin-loc-${locName}-expanded`, JSON.stringify(newState));
+    } catch {}
+  }
+
+  get isInventoryCollapsed(): boolean {
+    const saved = localStorage.getItem('shop-admin-inv-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   toggleInventoryCollapse(): void {
-    this.isInventoryCollapsed = !this.isInventoryCollapsed;
+    const newState = !this.isInventoryCollapsed;
+    localStorage.setItem('shop-admin-inv-collapsed', JSON.stringify(newState));
+  }
+
+  get isPickerCollapsed(): boolean {
+    const saved = localStorage.getItem('shop-admin-picker-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   togglePickerCollapse(): void {
-    this.isPickerCollapsed = !this.isPickerCollapsed;
+    const newState = !this.isPickerCollapsed;
+    localStorage.setItem('shop-admin-picker-collapsed', JSON.stringify(newState));
   }
 
   get isEditing(): boolean {

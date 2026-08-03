@@ -56,7 +56,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() shoppingMode: boolean = false;
   @Input() title: string = '';
   @Input() collapsible: boolean = false;
-  @Input() isCollapsed: boolean = false;
+  @Input() isCollapsed: boolean = true;
   @Input() enableBodyFilter: boolean = false;
   @Input() filterStorageKey: string = '';
 
@@ -66,9 +66,21 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Output() addToCart = new EventEmitter<any>();
   @Output() toggleCollapse = new EventEmitter<void>();
 
+  private getCollapseStorageKey(): string | null {
+    if (this.filterStorageKey) return `wptable-${this.filterStorageKey}-collapsed`;
+    if (this.title) return `wptable-${this.title.replace(/\s+/g, '-').toLowerCase()}-collapsed`;
+    return null;
+  }
+
   onToggleCollapse(): void {
     if (this.collapsible) {
       this.isCollapsed = !this.isCollapsed;
+      const key = this.getCollapseStorageKey();
+      if (key) {
+        try {
+          localStorage.setItem(key, JSON.stringify(this.isCollapsed));
+        } catch {}
+      }
       this.toggleCollapse.emit();
     }
   }
@@ -122,6 +134,19 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    if (this.collapsible) {
+      const key = this.getCollapseStorageKey();
+      if (key) {
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+          this.isCollapsed = JSON.parse(saved);
+        } else {
+          this.isCollapsed = true;
+        }
+      } else {
+        this.isCollapsed = true;
+      }
+    }
     this.restoreBodyFilterSelection();
     this.validateBodyFilterSelection();
     this.updateSortedProfiles();
