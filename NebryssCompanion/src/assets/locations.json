@@ -77,7 +77,7 @@
   "categorySize": 3,
   "mapX": 69.7,
   "mapY": 9.57,
-  "discovered": true
+  "discovered": false
 },
 {
   "_id": {
@@ -117,7 +117,7 @@
   "categorySize": 3,
   "mapX": 20.43,
   "mapY": 41.91,
-  "discovered": true
+  "discovered": false
 },
 {
   "_id": {
@@ -278,7 +278,7 @@
   "categorySize": 3,
   "mapX": 36.35,
   "mapY": 57.23,
-  "discovered": true
+  "discovered": false
 },
 {
   "_id": {
@@ -326,7 +326,7 @@
     }
   ],
   "rpgMapLayout": "SECTOR 1: NEBRYSSIAN RESERVE CRYSTAL GEODE VAULT (NORTH)\nA crystalline fortress built into a glowing geode structure, guarded by automated light-sentinels, optical warding fields, and vault gates.\n\nSECTOR 2: ARTISAN & GLASSWORKERS' PLAZA (EAST)\nPedestrian plazas paved with polished light-stone, lined with art studios, glowstone workshops, and outdoor glass galleries.\n\nSECTOR 3: LUMINOS CENTRAL BIOLUMINESCENT PROMENADE (CENTER)\nWide tree-lined boulevard featuring bioluminescent flora, crystal fountains, and holographic market boards displaying live exchange rates.\n\nSECTOR 4: MERCHANTS' HEIGHTS VILLA TERRACES (WEST)\nTerraced luxury villas overlooking crystal bays, with private airship moorings and manicured glowing gardens.\n\nSECTOR 5: GLOWSTONE TAPESTRY GALLERIES (SOUTH)\nGrand exhibition halls displaying mist-reactive tapestries, rare artifacts, and luxury trade goods.\n\nSECTOR 6: SUBTERRANEAN CHROMATIC LOCK SANCTUARY (BELOW RESERVE)\nDeep geode vault level beneath Sector 1 requiring chromatic bioluminescent flower light sequences to open bullion vaults.\n\nSECTOR 7: LIGHT-SENTINEL COMMAND TOWER (NORTH-EAST)\nA glass spire housing security operators, optical sensor arrays, and vault defense controls.\n\nVISUAL PROMPT NOTES:\nHigh-fantasy/scifi isometric city map of a glowing crystal-studded island metropolis with bioluminescent trees, polished light-stone plazas, geode bank vaults, and glass arcades.",
-  "discovered": true
+  "discovered": false
 },
 {
   "_id": {
@@ -401,7 +401,7 @@
   "categorySize": 1,
   "mapX": 11.79,
   "mapY": 19.6,
-  "discovered": true
+  "discovered": false
 },
 {
   "_id": {

@@ -507,7 +507,7 @@
     }
   ],
   "locationId": 6,
-  "discovered": true,
+  "discovered": false,
   "categoriesData": [],
   "weaponsData": [
     {
@@ -592,7 +592,7 @@
   "locationName": "Unbound",
   "location": "Unbound",
   "description": "A secluded, shifting sanctuary veiled in thick purple-tinted mist. Shelves carved from petrified wood hold grim scrolls, grimoires, and glowing spell-shards. Mother Morvath offers her ancient forbidden spells to anyone who dares to seek out her dark wisdom.",
-  "discovered": true,
+  "discovered": false,
   "paymentMethod": {
     "digital": true,
     "physical": true
@@ -623,5 +623,182 @@
       "price": 30,
       "type": "weapon"
     }
-  ]
+  ],
+  "categoriesData": [],
+  "weaponsData": [
+    {
+      "_id": "69ac39b03b7e32e8c2926a8c",
+      "id": 45,
+      "name": "Psychic Shriek",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 2,
+          "ws": 4,
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 18,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a8d",
+      "id": 46,
+      "name": "Balefire Bolt",
+      "price": 45,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 30,
+              "modValue": 2
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926ac9",
+      "id": 106,
+      "name": "Warp Tear",
+      "price": 70,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 5,
+            "max": 7
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 15,
+              "modValue": null
+            },
+            {
+              "ruleId": 34,
+              "modValue": 2
+            },
+            {
+              "ruleId": 35,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352158",
+      "id": 112,
+      "name": "Maledictum Hex",
+      "price": 65,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 10,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 51,
+              "modValue": null
+            },
+            {
+              "ruleId": 58,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352159",
+      "id": 113,
+      "name": "Siphon Soul",
+      "price": 75,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 3,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 39,
+              "modValue": null
+            },
+            {
+              "ruleId": 53,
+              "modValue": 1
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    }
+  ],
+  "weaponIds": [
+    45,
+    46,
+    106,
+    112,
+    113
+  ],
+  "hasWeapons": true
 }]

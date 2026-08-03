@@ -10,7 +10,8 @@
   "methods": "Works with radical Magi of the Adeptus Mechanicus and sanctioned psykers; conducts clandestine experiments.",
   "personality": "Pragmatic, methodical, and controversial.",
   "location": "Stormwatch",
-  "bestiaryId": 35
+  "bestiaryId": 35,
+  "discovered": false
 },
 {
   "_id": {
@@ -22,7 +23,8 @@
   "subgroup": "Shipwright",
   "role": "Owner of *Anchorforge’s Drydock*, a bustling shipyard in Zephyria’s Sky Bazaar known for crafting vessels that can withstand the harshest mist storms.",
   "personality": "Grizzled, experienced, and deeply loyal to his clients. He has a wealth of tales from his own voyages.",
-  "location": "Zephyria’s Sky Bazaar"
+  "location": "Zephyria",
+  "discovered": true
 },
 {
   "_id": {
@@ -37,7 +39,8 @@
   "fleetSize": "4 ships (small and stealthy)",
   "flagship": "The Crimson Siren – A luxurious but deadly vessel disguised as a trading ship, equipped with hidden weaponry and a cloaking device.",
   "tactics": "Relies on deception, often posing as a merchant or ally before revealing her true intentions and attacking.",
-  "motivations": "Seeks to rebuild her power and wealth while evading her relatives and the Inquisition."
+  "motivations": "Seeks to rebuild her power and wealth while evading her relatives and the Inquisition.",
+  "discovered": false
 },
 {
   "_id": {
@@ -61,7 +64,8 @@
     }
   ],
   "personality": "Diplomatic, honorable, and compassionate, with a focus on strategic thinking and alliance-building.",
-  "location": "Fortress Sanctus, frequently travels to Stormwatch"
+  "location": "Fortress Sanctus, frequently travels to Stormwatch",
+  "discovered": false
 },
 {
   "_id": {
@@ -73,7 +77,8 @@
   "subgroup": "Nebryssian Reserve",
   "role": "The head of the Nebryssian Reserve, overseeing the minting and distribution of Mistral coins and managing the Accord’s digital financial systems.",
   "personality": "Meticulous, cautious, and highly intelligent. He is a master of finance but struggles with interpersonal relationships.",
-  "location": "Luminos"
+  "location": "Luminos",
+  "discovered": false
 },
 {
   "_id": {
@@ -86,18 +91,20 @@
   "role": "The charismatic leader of the NLR, personally overseeing high-risk operations like Mistweaver neophyte transports to Verdant Veil. She coordinates stealth convoys through Cabal-patrolled mist zones, often piloting the lead ship herself.",
   "mission": "Ensure Mistweaver trainees survive the perilous journey to Verdant Veil’s Grove of Echoes, where they undergo grueling rituals. She views these transports as critical to replenishing the NLR’s dwindling Mistweaver ranks amid Imperial purges.",
   "personality": "Inspiring, resourceful, and fiercely protective of her people. She carries a shard of the Whispering Stones as a reminder of the costs of mist-weaving.",
-  "location": "Veiled Citadel in Misthaven (or escorting convoys to Verdant Veil)"
+  "location": "Veiled Citadel in Misthaven (or escorting convoys to Verdant Veil)",
+  "discovered": false
 },
 {
   "_id": {
     "$oid": "6999dc12f7703abfb2c0881c"
   },
   "id": 5,
-  "name": "Kael <Stormchaser> Draven",
+  "name": "Kael \"Stormchaser\" Draven",
   "faction": "Gilded Accord",
   "subgroup": "Fogbound Cartographers",
   "role": "A legendary navigator and one of the most skilled members of the Fogbound Cartographers. Known for his daring rescues and ability to deliver VIPs through the most perilous mist zones.",
-  "location": "Zephyria and other key locations along mist trade routes"
+  "location": "Zephyria",
+  "discovered": true
 },
 {
   "_id": {
@@ -109,7 +116,8 @@
   "subgroup": "Apothecary",
   "role": "Owner of *Herbwhisper’s Apothecary*, a renowned shop in Zephyria’s Sky Bazaar specializing in rare herbs, potions, and remedies.",
   "personality": "Cheerful, knowledgeable, and deeply passionate about alchemy and healing.",
-  "location": "Zephyria’s Sky Bazaar"
+  "location": "Zephyria",
+  "discovered": true
 },
 {
   "_id": {
@@ -121,7 +129,8 @@
   "subgroup": "Armorsmith",
   "role": "Owner of *Ironveil’s Ward*, a prestigious armor shop in Zephyria’s Sky Bazaar known for its masterfully crafted protective gear.",
   "personality": "Elegant, meticulous, and fiercely protective of her craft. She refuses to sell to those she deems unworthy.",
-  "location": "Zephyria’s Sky Bazaar"
+  "location": "Zephyria",
+  "discovered": true
 },
 {
   "_id": {
@@ -135,7 +144,8 @@
   "fleetSize": "2 ships (one medium-sized raider and one large flagship)",
   "flagship": "The Bloodied Cutlass – A massive, heavily armored raider with reinforced hulls and a ramming prow designed to tear through enemy ships.",
   "tactics": "Prefers direct assaults, using his flagship’s surprising speed and firepower to overwhelm his targets.",
-  "motivations": "Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality."
+  "motivations": "Thrives on violence and plunder, seeking to amass wealth and infamy through sheer brutality.",
+  "discovered": false
 },
 {
   "_id": {
@@ -148,7 +158,8 @@
   "mission": "Purge all knowledge of the mist’s true nature and eliminate heretical elements.",
   "methods": "Works with Adeptus Sororitas and Imperial Navy forces; employs infiltrators and sanctioned purges.",
   "personality": "Fanatical, brutal, and uncompromising.",
-  "location": "Fortress Sanctus"
+  "location": "Fortress Sanctus",
+  "discovered": false
 },
 {
   "_id": {
@@ -160,7 +171,8 @@
   "subgroup": "Weaponsmith",
   "role": "Owner of *Blackhammer’s Arsenal*, a bustling forge in Zephyria’s Sky Bazaar specializing in deadly and durable weapons.",
   "personality": "Gruff and burly, with a soft spot for those who respect the art of war.",
-  "location": "Zephyria’s Sky Bazaar"
+  "location": "Zephyria",
+  "discovered": true
 },
 {
   "_id": {
@@ -196,7 +208,8 @@
   "subgroup": "Mistweaver",
   "role": "A revered Mistweaver who has survived multiple rituals, earning him the title “The Unbroken.”",
   "personality": "Wise, enigmatic, and deeply spiritual.",
-  "location": "Mistweaver’s Grove"
+  "location": "Mistweaver’s Grove",
+  "discovered": false
 },
 {
   "_id": {
@@ -209,7 +222,8 @@
   "role": "Fellgor Shaman & Shopkeeper",
   "location": "Misthaven",
   "description": "A hulking Fellgor Shaman, his fur matted with ritualistic trinkets and warp-touched stones. He breathes the mist as if it were air, teaching those brave enough to harness its volatile power.",
-  "personality": "Primal, cryptic, and deeply connected to the mist's whispers. He respects strength and the willingness to sacrifice for power."
+  "personality": "Primal, cryptic, and deeply connected to the mist's whispers. He respects strength and the willingness to sacrifice for power.",
+  "discovered": false
 },
 {
   "_id": {
@@ -257,5 +271,6 @@
   "mission": "Unravel the warp-threads of Maledictum Prime and exact cold vengeance upon both Imperial inquisitors and Liberation warlords who sought to control her.",
   "methods": "Employs ancient mist-curses, soul-siphoning incantations, and cryptic bargains to manipulate wanderers into doing her bidding.",
   "backstory": "Once known as the Terror of Maledictum Prime, Mother Morvath was an ancient witch whose curses decimated Nebryssian Liberation Republic garrisons for decades. Recognized as an unsanctioned alpha-level threat, she was hunted down by an Ordo Hereticus strike team, bound in null-field stasis chains, and dragged to an Imperial black site. Decades later, a cataclysmic mist-surge shattered the black vault, allowing her to break her stasis locks. Now unbound and unaligned, she wanders the fog-choked wastes, selling forbidden spell-craft to those bold enough to pay her price.",
-  "description": "A withered hag cloaked in tattered, mist-stained robes interwoven with runic bones and silver null-chain links. Her eyes glow with pale ethereal flame, and her hands end in blackened, sigil-carved claws."
+  "description": "A withered hag cloaked in tattered, mist-stained robes interwoven with runic bones and silver null-chain links. Her eyes glow with pale ethereal flame, and her hands end in blackened, sigil-carved claws.",
+  "discovered": false
 }]
