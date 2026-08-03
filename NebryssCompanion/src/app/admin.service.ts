@@ -5,19 +5,32 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class AdminService {
-  private isAdminSubject = new BehaviorSubject<boolean>(this.getInitialAdminValue());
+  // hasAdminAccess is session-only: always starts false, requires re-authentication each page load
+  private hasAdminAccessSubject = new BehaviorSubject<boolean>(false);
+  hasAdminAccess$ = this.hasAdminAccessSubject.asObservable();
+
+  private isAdminSubject = new BehaviorSubject<boolean>(false);
   isAdmin$ = this.isAdminSubject.asObservable();
 
   constructor() {}
 
-  private getInitialAdminValue(): boolean {
-    const adminStored = localStorage.getItem('isAdmin');
-    return adminStored === 'true';
+  setAdminAuthenticated(authenticated: boolean): void {
+    this.hasAdminAccessSubject.next(authenticated);
+    localStorage.setItem('hasAdminAccess', String(authenticated));
+    if (authenticated) {
+      this.setAdminStatus(true);
+    } else {
+      this.setAdminStatus(false);
+    }
   }
 
   setAdminStatus(isAdmin: boolean): void {
     this.isAdminSubject.next(isAdmin);
     localStorage.setItem('isAdmin', String(isAdmin));
+  }
+
+  get hasAdminAccess(): boolean {
+    return this.hasAdminAccessSubject.value;
   }
   
   get isAdmin(): boolean {

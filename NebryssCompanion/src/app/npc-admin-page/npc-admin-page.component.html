@@ -1,0 +1,275 @@
+<div class="npc-admin-container">
+  <header class="npc-admin-header">
+    <div class="header-left">
+      <span class="material-icons header-icon">badge</span>
+      <div>
+        <h2>NPC Editor & Creator</h2>
+        <p class="subtitle">Manage non-player characters, faction affiliations, roles, and backstory.</p>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="startNewNpc()">
+      <span class="material-icons">person_add</span>
+      <span>Create New NPC</span>
+    </button>
+  </header>
+
+  <div class="npc-admin-layout">
+    <!-- Sidebar / List Pane -->
+    <aside class="npc-sidebar">
+      <div class="search-box">
+        <span class="material-icons">search</span>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Search NPCs by name, faction..."
+          aria-label="Search NPCs"
+        />
+      </div>
+
+      <div class="npc-list" *ngIf="!isLoading; else loadingTpl">
+        <div *ngFor="let group of groupedNpcs" class="faction-group">
+          <div
+            class="faction-group-header"
+            (click)="toggleFactionCollapse(group.faction)"
+          >
+            <div class="faction-header-left">
+              <span class="material-icons collapse-icon">
+                {{ isFactionCollapsed(group.faction) ? 'chevron_right' : 'expand_more' }}
+              </span>
+              <span class="faction-group-title">{{ group.faction }}</span>
+            </div>
+            <span class="faction-group-count">{{ group.npcs.length }}</span>
+          </div>
+
+          <div class="faction-group-content" *ngIf="!isFactionCollapsed(group.faction)">
+            <div
+              *ngFor="let npc of group.npcs"
+              class="npc-card-item"
+              [class.active]="npc.id === selectedNpcId"
+              (click)="selectNpc(npc)"
+            >
+              <div class="npc-item-main">
+                <span class="npc-item-name">{{ npc.name }}</span>
+              </div>
+              <span class="npc-item-subgroup" *ngIf="npc.subgroup">{{ npc.subgroup }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="groupedNpcs.length === 0">
+          <span class="material-icons">person_off</span>
+          <p>No NPCs found.</p>
+        </div>
+      </div>
+
+      <ng-template #loadingTpl>
+        <div class="loading-state">
+          <div class="spinner-small"></div>
+          <span>Loading NPCs...</span>
+        </div>
+      </ng-template>
+    </aside>
+
+    <!-- Main Editor Form -->
+    <main class="npc-editor-pane">
+      <div class="form-card">
+        <div class="form-card-header">
+          <h3>{{ isEditing ? 'Edit NPC: ' + name : 'Create New NPC' }}</h3>
+          <span class="badge" [class.badge-edit]="isEditing" [class.badge-new]="!isEditing">
+            {{ isEditing ? 'ID: ' + id : 'New NPC' }}
+          </span>
+        </div>
+
+        <div class="form-grid">
+          <!-- Name -->
+          <div class="form-group full-width">
+            <label for="npc-name">NPC Name <span class="required">*</span></label>
+            <input
+              id="npc-name"
+              type="text"
+              [(ngModel)]="name"
+              placeholder="e.g. Tessa Herbwhisper"
+              required
+            />
+          </div>
+
+          <!-- Discovered Toggle -->
+          <div class="form-group full-width" style="margin-bottom: 8px;">
+            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+              <input type="checkbox" [(ngModel)]="discovered" style="width: auto; cursor: pointer;" />
+              <span><strong>Discovered by Players</strong> (Checked = Visible to players in campaign companion)</span>
+            </label>
+          </div>
+
+          <!-- Faction -->
+          <div class="form-group">
+            <label for="npc-faction">Faction</label>
+            <input
+              id="npc-faction"
+              type="text"
+              [(ngModel)]="faction"
+              list="faction-list"
+              placeholder="e.g. Gilded Accord"
+            />
+            <datalist id="faction-list">
+              <option *ngFor="let opt of factionOptions" [value]="opt"></option>
+            </datalist>
+          </div>
+
+          <!-- Subgroup -->
+          <div class="form-group">
+            <label for="npc-subgroup">Subgroup / Title</label>
+            <input
+              id="npc-subgroup"
+              type="text"
+              [(ngModel)]="subgroup"
+              placeholder="e.g. Apothecary, Armorsmith, Ordo Hereticus"
+            />
+          </div>
+
+          <!-- Role -->
+          <div class="form-group full-width">
+            <label for="npc-role">Role / Short Title</label>
+            <input
+              id="npc-role"
+              type="text"
+              [(ngModel)]="role"
+              placeholder="e.g. Owner of Herbwhisper's Apothecary in Zephyria Sky Bazaar"
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group full-width">
+            <label for="npc-description">Description</label>
+            <textarea
+              id="npc-description"
+              rows="2"
+              [(ngModel)]="description"
+              placeholder="e.g. A detailed physical description or overview of the NPC..."
+            ></textarea>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group">
+            <label for="npc-location">Primary Location</label>
+            <input
+              id="npc-location"
+              type="text"
+              [(ngModel)]="location"
+              placeholder="e.g. Zephyria's Sky Bazaar"
+            />
+          </div>
+
+          <!-- Bestiary ID Link -->
+          <div class="form-group">
+            <label for="npc-bestiary-id">Bestiary Creature ID (Optional)</label>
+            <input
+              id="npc-bestiary-id"
+              type="number"
+              [(ngModel)]="bestiaryId"
+              placeholder="e.g. 35"
+            />
+          </div>
+
+          <!-- Personality -->
+          <div class="form-group full-width">
+            <label for="npc-personality">Personality</label>
+            <textarea
+              id="npc-personality"
+              rows="2"
+              [(ngModel)]="personality"
+              placeholder="e.g. Cheerful, knowledgeable, and deeply passionate about alchemy..."
+            ></textarea>
+          </div>
+
+          <!-- Mission -->
+          <div class="form-group full-width">
+            <label for="npc-mission">Mission / Goals</label>
+            <textarea
+              id="npc-mission"
+              rows="2"
+              [(ngModel)]="mission"
+              placeholder="e.g. Supply healers and adventurers with remedies to fight mist corruption..."
+            ></textarea>
+          </div>
+
+          <!-- Methods -->
+          <div class="form-group full-width">
+            <label for="npc-methods">Methods / Operations</label>
+            <textarea
+              id="npc-methods"
+              rows="2"
+              [(ngModel)]="methods"
+              placeholder="e.g. Forages in dangerous mist zones and experiments with rare herbs..."
+            ></textarea>
+          </div>
+
+          <!-- Backstory -->
+          <div class="form-group full-width">
+            <label for="npc-backstory">Backstory</label>
+            <textarea
+              id="npc-backstory"
+              rows="3"
+              [(ngModel)]="backstory"
+              placeholder="e.g. Former Rogue Trader who fled to Nebryss to evade persecution..."
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Form Footer Actions -->
+        <div class="form-actions">
+          <div class="actions-left">
+            <button
+              *ngIf="isEditing"
+              type="button"
+              class="btn btn-danger"
+              (click)="promptDelete()"
+              [disabled]="isSaving || isDeleting"
+            >
+              <span class="material-icons">delete</span>
+              <span>Delete NPC</span>
+            </button>
+          </div>
+
+          <div class="actions-right">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="startNewNpc()"
+              [disabled]="isSaving"
+            >
+              Clear / New
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              (click)="saveNpc()"
+              [disabled]="isSaving"
+            >
+              <span class="material-icons" *ngIf="!isSaving">save</span>
+              <span class="spinner-small" *ngIf="isSaving"></span>
+              <span>{{ isSaving ? 'Saving...' : (isEditing ? 'Update NPC' : 'Create NPC') }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Delete Modal Confirmation -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="material-icons icon-warning">warning</span>
+        <h3>Confirm NPC Deletion</h3>
+      </div>
+      <p>Are you sure you want to delete NPC <strong>"{{ name }}"</strong>? This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Deleting...' : 'Delete Permanently' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,343 @@
+<div class="admin-page">
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+  </div>
+
+  <div *ngIf="isAdmin" class="layout">
+    <form class="player-detail-container" (ngSubmit)="saveCreature()">
+
+      <!-- 1. Creature Selector (Bestiary style cascading filters + dropdown + New Creature button) -->
+      <section class="admin-section">
+        <div class="section-header">
+          <button class="inline-btn" type="button" (click)="startNewCreature()">+ New Creature</button>
+        </div>
+
+        <div class="bestiary-select-container">
+          <div class="filter-group">
+            <label>Faction:</label>
+            <select [(ngModel)]="selectedFaction" name="selectedFaction" (change)="onFactionSelected()">
+              <option [ngValue]="null">All Factions</option>
+              <option *ngFor="let faction of factions" [value]="faction">
+                {{ faction }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Sub Group:</label>
+            <select [(ngModel)]="selectedSubGroup" name="selectedSubGroup" (change)="onSubGroupSelected()">
+              <option [ngValue]="null">All Sub Groups</option>
+              <option *ngFor="let subgroup of subgroups" [value]="subgroup">
+                {{ subgroup }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Creature:</label>
+            <select [(ngModel)]="selectedCreatureId" name="selectedCreatureId"
+              (ngModelChange)="onCreatureSelectDropdown($event)">
+              <option [ngValue]="null">Select a creature</option>
+              <option *ngFor="let creature of filteredCreatures" [value]="creature.id">
+                {{ creature.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <ng-container *ngIf="editableCreature as creature">
+        <!-- 2. Basic Metadata -->
+        <section class="admin-section">
+          <div class="section-header">
+            <h3>Basic Information</h3>
+          </div>
+          <div class="field-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px;">
+            <label class="field">
+              <span>Name *</span>
+              <input [(ngModel)]="creature.name" name="creatureName" type="text" placeholder="Creature name" required />
+            </label>
+            <label class="field">
+              <span>Faction</span>
+              <input [(ngModel)]="creature.faction" name="creatureFaction" type="text" placeholder="Faction" />
+            </label>
+            <label class="field">
+              <span>Subgroup</span>
+              <input [(ngModel)]="creature.subgroup" name="creatureSubgroup" type="text" placeholder="Subgroup" />
+            </label>
+            <label class="field">
+              <span>Power Rating (PR)</span>
+              <div style="display: flex; gap: 8px;">
+                <input [(ngModel)]="creature.pr" name="creaturePR" type="number" min="0" style="width: 80px;" />
+                <button type="button" class="inline-btn" (click)="recalculatePR()" style="white-space: nowrap;">⚡ Auto
+                  PR</button>
+              </div>
+            </label>
+          </div>
+        </section>
+
+        <!-- 3. Stats Section (Player Editor style table with SVG icons) -->
+        <section class="admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Stats</h3>
+            </div>
+          </div>
+          <table class="attributes-table">
+            <tr>
+              <th title="Movement">
+                <div class="attr-header-cell">
+                  <svg class="attr-icon attr-mov" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7">
+                    </path>
+                  </svg>
+                </div>
+              </th>
+              <th title="Wounds">
+                <div class="attr-header-cell">
+                  <svg class="attr-icon attr-wnd" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path
+                      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                    </path>
+                  </svg>
+                </div>
+              </th>
+              <th title="Save">
+                <div class="attr-header-cell">
+                  <svg class="attr-icon attr-sv" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l8 3v6c0 6-8 11-8 11S4 17 4 11V5l8-3z"></path>
+                  </svg>
+                </div>
+              </th>
+              <th title="Action Point Limit">
+                <div class="attr-header-cell">
+                  <svg class="attr-icon attr-apl" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                  </svg>
+                </div>
+              </th>
+            </tr>
+            <tr>
+              <td class="editable-stat" (click)="startStatEdit('Movement')">
+                <ng-container *ngIf="editingStat === 'Movement'; else movementDisplay">
+                  <input [(ngModel)]="statEditValue" name="movementStat" type="number" min="0" step="1"
+                    class="stat-input" (click)="$event.stopPropagation()" (blur)="commitStatEdit()"
+                    (keydown.enter)="commitStatEdit()" (keydown.escape)="cancelStatEdit()" />
+                </ng-container>
+                <ng-template #movementDisplay>{{ creature.attributes.Movement }}"</ng-template>
+              </td>
+              <td class="editable-stat" (click)="startStatEdit('Wounds')">
+                <ng-container *ngIf="editingStat === 'Wounds'; else woundsDisplay">
+                  <input [(ngModel)]="statEditValue" name="woundsStat" type="number" min="0" step="1" class="stat-input"
+                    (click)="$event.stopPropagation()" (blur)="commitStatEdit()" (keydown.enter)="commitStatEdit()"
+                    (keydown.escape)="cancelStatEdit()" />
+                </ng-container>
+                <ng-template #woundsDisplay>{{ creature.attributes.Wounds }}</ng-template>
+              </td>
+              <td class="editable-stat" (click)="startStatEdit('Save')">
+                <ng-container *ngIf="editingStat === 'Save'; else saveDisplay">
+                  <input [(ngModel)]="statEditValue" name="saveStat" type="number" min="0" step="1" class="stat-input"
+                    (click)="$event.stopPropagation()" (blur)="commitStatEdit()" (keydown.enter)="commitStatEdit()"
+                    (keydown.escape)="cancelStatEdit()" />
+                </ng-container>
+                <ng-template #saveDisplay>{{ creature.attributes.Save }}+</ng-template>
+              </td>
+              <td class="editable-stat" (click)="startStatEdit('APL')">
+                <ng-container *ngIf="editingStat === 'APL'; else aplDisplay">
+                  <input [(ngModel)]="statEditValue" name="aplStat" type="number" min="0" step="1" class="stat-input"
+                    (click)="$event.stopPropagation()" (blur)="commitStatEdit()" (keydown.enter)="commitStatEdit()"
+                    (keydown.escape)="cancelStatEdit()" />
+                </ng-container>
+                <ng-template #aplDisplay>{{ creature.attributes.APL }}</ng-template>
+              </td>
+            </tr>
+          </table>
+        </section>
+
+        <!-- 4. Weapons Section -->
+        <section class="admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Assigned Weapons</h3>
+            </div>
+          </div>
+
+          <app-weapon-table *ngIf="assignedWeaponIds.length; else emptyWeapons" [weaponIds]="assignedWeaponIds"
+            [weaponsData]="weapons" [weaponRulesData]="weaponRules" [alteredStates]="alteredStates"
+            [characterBody]="creature.attributes.body" [title]="'Weapons'" [collapsible]="false" [enableDeleting]="true"
+            (delete)="onRemoveWeapon($event)"></app-weapon-table>
+
+          <ng-template #emptyWeapons>
+            <div class="empty-state">
+              <p>No weapons assigned to this creature.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <!-- 5. Abilities Section -->
+        <section class="admin-section">
+          <div class="section-header" (click)="isAbilitiesCollapsed = !isAbilitiesCollapsed" style="cursor: pointer;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons">{{ isAbilitiesCollapsed ? 'chevron_right' : 'expand_more' }}</span>
+              <h3>Abilities ({{ creature.abilities?.length || 0 }})</h3>
+            </div>
+            <button class="inline-btn" type="button" (click)="$event.stopPropagation(); addAbility()">+ Ability</button>
+          </div>
+
+          <div *ngIf="!isAbilitiesCollapsed">
+            <div *ngIf="creature.abilities && creature.abilities.length; else emptyAbilities" class="abilities-list">
+              <div class="ability-card" *ngFor="let ability of creature.abilities; let i = index">
+                <div class="ability-card-header">
+                  <h4>Ability {{ i + 1 }}</h4>
+                  <button class="remove-btn" type="button" (click)="removeAbility(i)">Remove</button>
+                </div>
+
+                <label class="field">
+                  <span>Name</span>
+                  <input [(ngModel)]="ability.name" [name]="'ability-name-' + i" type="text"
+                    placeholder="Ability name" />
+                </label>
+
+                <label class="field">
+                  <span>PR Modifier</span>
+                  <input [(ngModel)]="ability.prModifier" [name]="'ability-prmod-' + i" type="number"
+                    placeholder="Optional PR value" />
+                </label>
+
+                <label class="field">
+                  <span>Effect</span>
+                  <textarea [(ngModel)]="ability.effect" [name]="'ability-effect-' + i" rows="4"
+                    placeholder="Ability description"></textarea>
+                </label>
+              </div>
+            </div>
+
+            <ng-template #emptyAbilities>
+              <div class="empty-state">
+                <p>No abilities yet.</p>
+                <button class="inline-btn" type="button" (click)="addAbility()">Add the first ability</button>
+              </div>
+            </ng-template>
+          </div>
+        </section>
+
+        <!-- 6. Equipment / Items Section (Player Editor style) -->
+        <section class="admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Items &amp; Equipment</h3>
+            </div>
+          </div>
+
+          <app-generic-table *ngIf="assignedItemsTableData.length; else emptyEquipment"
+            [storageKey]="'creature-admin-equipment-' + creature.id" [title]="''" [collapsible]="false"
+            [data]="assignedItemsTableData" [headers]="itemTableHeaders" [headerKeys]="itemTableHeaderKeys"
+            [renderHtml]="['description']" [enableDeleting]="true" (delete)="onRemoveItem($event)"></app-generic-table>
+
+          <ng-template #emptyEquipment>
+            <div class="empty-state">
+              <p>No equipment assigned.</p>
+            </div>
+          </ng-template>
+        </section>
+
+        <!-- 7. Weapons & Items Catalog Picker (Add to Creature) -->
+        <section class="admin-section"
+          style="border: 1px solid rgba(229, 169, 60, 0.2); padding: 16px; border-radius: 8px; background: rgba(0,0,0,0.15);">
+          <div class="section-header" (click)="isCatalogCollapsed = !isCatalogCollapsed"
+            style="cursor: pointer; margin-bottom: 0;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="material-icons">{{ isCatalogCollapsed ? 'chevron_right' : 'expand_more' }}</span>
+              <h3>Add Weapons &amp; Items from Catalog</h3>
+            </div>
+          </div>
+
+          <div *ngIf="!isCatalogCollapsed" style="margin-top: 12px;">
+            <div style="display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap;">
+              <input type="text" [(ngModel)]="pickerSearchTerm" name="pickerSearchTerm" placeholder="Search catalog..."
+                style="flex: 1; padding: 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 14px;" />
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'weapon'"
+                  (click)="pickerTypeFilter = 'weapon'">
+                  Weapons Catalog
+                </button>
+                <button type="button" class="inline-btn" [class.active-mode]="pickerTypeFilter === 'item'"
+                  (click)="pickerTypeFilter = 'item'">
+                  Items Catalog
+                </button>
+              </div>
+            </div>
+
+            <div *ngIf="pickerTypeFilter === 'weapon'">
+              <app-weapon-table *ngIf="catalogWeaponIds.length > 0; else noCatalogWeapons" [title]="''"
+                [collapsible]="false" [weaponIds]="catalogWeaponIds" [weaponsData]="weapons"
+                [weaponRulesData]="weaponRules" [alteredStates]="alteredStates"
+                [characterBody]="creature.attributes.body" [displayBody]="true" [enableCloning]="true"
+                (clone)="onAddWeaponFromCatalog($event)"></app-weapon-table>
+              <ng-template #noCatalogWeapons>
+                <div class="empty-state">
+                  <p>No weapons match the creature's body types ({{ creature.attributes.body.join(', ') || 'none' }}).
+                  </p>
+                </div>
+              </ng-template>
+            </div>
+
+            <div *ngIf="pickerTypeFilter === 'item'">
+              <ng-container *ngFor="let catBlock of catalogItemCategories">
+                <app-generic-table [storageKey]="'creature-admin-picker-cat-' + catBlock.category.id"
+                  [title]="catBlock.category.name" [collapsible]="true" [data]="catBlock.data"
+                  [headers]="catBlock.category.headers" [headerKeys]="catBlock.category.keys" [enableCustomAdd]="true"
+                  [renderHtml]="['description']" (customAdd)="onAddItemFromCatalog($event)"></app-generic-table>
+              </ng-container>
+            </div>
+          </div>
+        </section>
+
+        <div class="actions dialog-buttons" style="display: flex; gap: 12px; justify-content: flex-end;">
+          <button *ngIf="isEditing" class="remove-btn" type="button" (click)="promptDelete()"
+            [disabled]="isSaving || isDeleting">
+            Delete Creature
+          </button>
+          <button class="btn-confirm" type="submit" [disabled]="!canSave">
+            {{ isSaving ? 'Saving...' : (isEditing ? 'Update Creature' : 'Create Creature') }}
+          </button>
+        </div>
+      </ng-container>
+    </form>
+
+    <aside class="player-detail-container">
+      <section class="admin-section">
+        <h3>Creature JSON Preview</h3>
+        <pre class="admin-preview-json">{{ previewJson }}</pre>
+      </section>
+
+      <section class="item admin-section" *ngIf="lastSavedCreature">
+        <h3>Last Saved Creature</h3>
+        <div class="summary-list">
+          <div><strong>ID:</strong> {{ lastSavedCreature.id }}</div>
+          <div><strong>Name:</strong> {{ lastSavedCreature.name }}</div>
+          <div><strong>Faction:</strong> {{ lastSavedCreature.faction }}</div>
+          <div><strong>PR:</strong> {{ lastSavedCreature.pr }}</div>
+          <div><strong>Weapons:</strong> {{ lastSavedCreature.weapons?.length || 0 }}</div>
+          <div><strong>Abilities:</strong> {{ lastSavedCreature.abilities?.length || 0 }}</div>
+          <div><strong>Items:</strong> {{ lastSavedCreature.items?.length || 0 }}</div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <div class="modal-overlay" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>Confirm Deletion</h3>
+      <p>Are you sure you want to delete creature <strong>"{{ editableCreature?.name }}"</strong>?</p>
+      <div class="dialog-buttons" style="display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="inline-btn" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="remove-btn" (click)="confirmDelete()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Deleting...' : 'Delete Permanently' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

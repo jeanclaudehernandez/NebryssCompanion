@@ -58,3 +58,4 @@ NebryssCompanion is a responsive companion Progressive Web Application (PWA) bui
 3. **Dark Theme Support**: Ensure all newly added UI elements support `body.dark-theme` styling variables.
 4. **Clickable References**: Include `file:///` markdown links for any referenced code files in final responses.
 5. **English Language UI**: All user-facing UI text, headers, menu titles, category names, dialogs, tooltips, and aria attributes MUST be strictly in English.
+6. **No Automatic Builds**: Do NOT run build commands (`ng build`, `npm run build`, `npm run build:prod`, etc.) after making changes unless explicitly requested by the user.

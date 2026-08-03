@@ -1,5 +1,4 @@
 <div class="player-detail-container" style="max-width: 1000px; margin: 20px auto;">
-  <h2>Letters</h2>
   <p *ngIf="!activePlayer">Select an active player to view their letters and recovered documents.</p>
   <p *ngIf="activePlayer && !visibleLetters.length">No letters or documents are available for {{ activePlayer.name }}.</p>
 

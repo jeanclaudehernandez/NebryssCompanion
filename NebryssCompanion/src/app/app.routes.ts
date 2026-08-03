@@ -1,10 +1,16 @@
 import { Routes } from '@angular/router';
-import { LoreComponent } from './lore/lore.component';
-import { LocationsComponent } from './locations/locations.component';
-import { TerrainsComponent } from './terrains/terrains.component';
 
 export const routes: Routes = [
-  { path: 'lore', component: LoreComponent },
-  { path: 'locations', component: LocationsComponent },
-  { path: 'terrains', component: TerrainsComponent },
+  {
+    path: 'lore',
+    loadComponent: () => import('./lore/lore.component').then(m => m.LoreComponent)
+  },
+  {
+    path: 'locations',
+    loadComponent: () => import('./locations/locations.component').then(m => m.LocationsComponent)
+  },
+  {
+    path: 'terrains',
+    loadComponent: () => import('./terrains/terrains.component').then(m => m.TerrainsComponent)
+  },
 ];

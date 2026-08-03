@@ -1,0 +1,208 @@
+<div class="world-map-page">
+  <div class="map-toolbar">
+    <button type="button" class="map-tool-btn" (click)="zoomOut()" aria-label="Zoom out" title="Zoom out">
+      <span class="material-icons">remove</span>
+    </button>
+    <button type="button" class="map-tool-btn" (click)="resetView()" aria-label="Reset view" title="Reset view">
+      <span class="material-icons">center_focus_strong</span>
+    </button>
+    <button type="button" class="map-tool-btn" (click)="zoomIn()" aria-label="Zoom in" title="Zoom in">
+      <span class="material-icons">add</span>
+    </button>
+
+    <ng-container *ngIf="isAdmin">
+      <div class="toolbar-divider"></div>
+      <button
+        type="button"
+        class="map-tool-btn admin-tool-btn"
+        [class.active]="isDragMode"
+        (click)="toggleDragMode()"
+        aria-label="Toggle pin dragging mode"
+        title="Toggle Pin Dragging Mode"
+      >
+        <span class="material-icons">open_with</span>
+      </button>
+      <button
+        type="button"
+        class="map-tool-btn admin-tool-btn"
+        (click)="openMapCalibrationModal()"
+        aria-label="Map calibration and tools"
+        title="Map Calibration & World Map Tools"
+      >
+        <span class="material-icons">tune</span>
+      </button>
+    </ng-container>
+  </div>
+
+  <div
+    #mapViewport
+    class="map-viewport"
+    (wheel)="onWheel($event)"
+    (pointerdown)="onPointerDown($event)"
+    (pointermove)="onPointerMove($event)"
+    (pointerup)="onPointerUp($event)"
+    (pointercancel)="onPointerUp($event)"
+  >
+    <div #mapSurface class="map-surface" *ngIf="worldMapLocation" [style.transform]="mapTransform">
+      <img class="map-image" [src]="worldMapLocation.imgUrl" [alt]="worldMapLocation.name" draggable="false" (load)="onMapImageLoad()">
+      <div class="map-border-mask map-border-mask-left"></div>
+      <div class="map-border-mask map-border-mask-right"></div>
+
+      <button
+        *ngFor="let pin of pins; trackBy: trackByPin"
+        type="button"
+        class="map-pin"
+        [class.active]="selectedPin === pin.location"
+        [class.is-capital]="pin.location.isCapital"
+        [class.no-faction]="!pin.hasFaction"
+        [class.is-dragging]="draggingPin === pin"
+        [class.admin-drag-enabled]="isAdmin && isDragMode"
+        [class.is-secret-pin]="pin.location.isSecret"
+        [class.is-revealed-pin]="pin.location.isSecretRevealed"
+        [style.left.%]="pin.x"
+        [style.top.%]="pin.y"
+        [style.animation-delay]="pin.animationDelay"
+        [style.--faction-color]="pin.factionColor"
+        (pointerdown)="onPinPointerDown($event, pin)"
+        (click)="selectPin(pin.location)"
+        [attr.aria-label]="'View ' + pin.location.name"
+      >
+        <span class="pin-marker">
+          <span class="pin-label">{{ pin.location.name }}</span>
+          <span class="pin-badge">
+            <img
+              [src]="pin.locationIconSrc"
+              [alt]="pin.location.category || 'Location'"
+              class="pin-location-icon"
+              loading="lazy"
+            >
+          </span>
+          <span *ngIf="pin.location.isCapital" class="material-icons pin-capital-star">star</span>
+          <span *ngIf="isAdmin && pin.location.isSecret" class="material-icons pin-secret-lock" [title]="pin.location.isSecretRevealed ? 'Revealed Secret' : 'Hidden Secret'">
+            {{ pin.location.isSecretRevealed ? 'lock_open' : 'lock' }}
+          </span>
+        </span>
+      </button>
+    </div>
+
+    <div class="map-empty-state" *ngIf="!worldMapLocation">
+      <p>No world map image is set up yet. Mark a location with <code>"isWorldMap": true</code> in locations.json.</p>
+    </div>
+  </div>
+
+  <!-- Location detail popup -->
+  <div class="map-popup-backdrop" *ngIf="selectedPin" (click)="closePopup()"></div>
+  <div class="map-popup" *ngIf="selectedPin">
+    <button type="button" class="close-btn" (click)="closePopup()" aria-label="Close">×</button>
+
+    <div class="map-popup-header">
+      <h3>{{ selectedPin.name }}</h3>
+      <span *ngIf="selectedPin.isCapital" class="capital-badge">Capital</span>
+      <span *ngIf="isAdmin && selectedPin.discovered === false" class="undiscovered-badge">Undiscovered</span>
+      <span *ngIf="isAdmin && selectedPin.isSecret && !selectedPin.isSecretRevealed" class="secret-badge">Secret</span>
+      <span *ngIf="isAdmin && selectedPin.isSecret && selectedPin.isSecretRevealed" class="revealed-badge">Revealed</span>
+      
+      <button *ngIf="isAdmin" type="button" class="map-popup-edit-btn" (click)="editLocation(selectedPin)" title="Edit Location" aria-label="Edit Location">
+        <span class="material-icons">edit</span>
+      </button>
+    </div>
+
+    <div class="map-popup-thumb" *ngIf="selectedPin.thumbnail || selectedPin.imgUrl">
+      <img [src]="selectedPin.thumbnail || selectedPin.imgUrl" [alt]="selectedPin.name" loading="lazy">
+    </div>
+
+    <p *ngIf="selectedPin.faction?.trim()" class="map-popup-faction" (click)="onFactionClick(selectedPin.faction)" title="Click to view in Lore">
+      {{ selectedPin.faction }}
+    </p>
+    <p class="map-popup-description">{{ selectedPin.description }}</p>
+
+    <!-- Public Revealed Lore Banner in Map Popup -->
+    <div class="map-popup-revealed-banner" *ngIf="selectedPin.isSecretRevealed && selectedPin.privateNotes">
+      <span class="material-icons">auto_awesome</span>
+      <div>
+        <strong>Campaign Discovery:</strong>
+        <p>{{ selectedPin.privateNotes }}</p>
+      </div>
+    </div>
+
+    <!-- GM Quick Actions in Map Popup -->
+    <div class="map-popup-gm-actions" *ngIf="isAdmin">
+      <button
+        type="button"
+        class="gm-discovered-btn popup-reveal-btn"
+        [class.is-discovered]="selectedPin.discovered !== false"
+        (click)="toggleLocationDiscovered(selectedPin, $event)"
+        [title]="selectedPin.discovered !== false ? 'Location is Discovered on Player Map. Click to hide.' : 'Location is Undiscovered. Click to reveal on Player Map.'"
+      >
+        <span class="material-icons">{{ selectedPin.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+        <span>{{ selectedPin.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
+      </button>
+    </div>
+
+    <button type="button" class="view-details-btn" (click)="goToFullDetails(selectedPin)">
+      View Full Details
+    </button>
+  </div>
+</div>
+
+<!-- Create location dialog -->
+<ng-template #createLocationConfirmDialog let-coords="coords" let-confirm="confirm" let-cancel="cancel">
+  <div class="confirmation-dialog map-create-dialog">
+    <h3>Create Location</h3>
+    <p>Create a new location at <strong>{{ coords.x }}%</strong>, <strong>{{ coords.y }}%</strong> on the world map?</p>
+    <div class="dialog-buttons">
+      <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
+      <button class="btn-confirm" type="button" (click)="confirm()">Create</button>
+    </div>
+  </div>
+</ng-template>
+
+<!-- Map Calibration & Tools Dialog -->
+<ng-template #mapCalibrationDialog let-cancel="cancel">
+  <div class="confirmation-dialog map-calibration-modal">
+    <div class="modal-header">
+      <h3>World Map Calibration & Tools</h3>
+    </div>
+
+    <div class="calib-section">
+      <label class="calib-field">
+        <span>World Map Image URL</span>
+        <input [(ngModel)]="calibMapImgUrl" type="url" placeholder="https://..." />
+      </label>
+    </div>
+
+    <div class="calib-section">
+      <h4>Batch Coordinate Transformer</h4>
+      <p class="calib-hint">Use this when replacing the background map with a larger or offset map image.</p>
+
+      <div class="calib-grid">
+        <label class="calib-field">
+          <span>Scale X (%)</span>
+          <input [(ngModel)]="calibScaleX" type="number" step="1" min="1" max="500" />
+        </label>
+        <label class="calib-field">
+          <span>Scale Y (%)</span>
+          <input [(ngModel)]="calibScaleY" type="number" step="1" min="1" max="500" />
+        </label>
+        <label class="calib-field">
+          <span>Offset X (%)</span>
+          <input [(ngModel)]="calibOffsetX" type="number" step="0.5" />
+        </label>
+        <label class="calib-field">
+          <span>Offset Y (%)</span>
+          <input [(ngModel)]="calibOffsetY" type="number" step="0.5" />
+        </label>
+      </div>
+    </div>
+
+    <div class="dialog-buttons modal-actions">
+      <button class="btn-secondary" type="button" (click)="copyLocationsJson()">
+        <span class="material-icons">content_copy</span> Copy locations.json
+      </button>
+      <button class="btn-cancel" type="button" (click)="cancel()">Close</button>
+      <button class="btn-confirm" type="button" (click)="applyMapCalibration()" [disabled]="isCalibrating">
+        {{ isCalibrating ? 'Applying...' : 'Apply Calibration' }}
+      </button>
+    </div>
+  </div>
+</ng-template>

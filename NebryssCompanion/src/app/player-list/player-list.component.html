@@ -1,6 +1,5 @@
 <div class="player-list-container">
   <div class="player-dropdown-container" [style.z-index]="dropdown.isOpen ? 1002 : 'auto'">
-    <label class="section-label">Choose your character</label>
     <app-custom-dropdown #dropdown
       [options]="players"
       [selectedOption]="selectedPlayer"

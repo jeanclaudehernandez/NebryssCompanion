@@ -5,6 +5,7 @@ import { UpdateService } from '../update.service';
 import { ModalService } from '../modal.service';
 import { ThemeService } from '../theme.service';
 import { AdminService } from '../admin.service';
+import { AppView } from '../app-view.types';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +19,7 @@ export class SidebarComponent {
   @ViewChild('burger') burgerElement!: ElementRef;
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
-  @Output() viewChange = new EventEmitter<'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator'>();
+  @Output() viewChange = new EventEmitter<AppView>();
   isOpen = false;
   isAdmin = false;
 
@@ -36,22 +37,15 @@ export class SidebarComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    // Handle sidebar closing
     if (this.isOpen && !this.isClickInside(event)) {
       this.isOpen = false;
     }
     
-    // Close MatDialog dialogs
     this.matDialog.openDialogs.forEach((dialog) => {
       if(!dialog.disableClose) {
         dialog.close();
       }
     });
-    
-    // Close the modal if user clicked on the overlay or outside of any modal content
-    /*if (!this.isModalClick(event)) {
-      this.modalService.close();
-    }*/
   }
 
   private isClickInside(event: MouseEvent): boolean {
@@ -62,17 +56,11 @@ export class SidebarComponent {
     return !!(clickedInsideSidebar || clickedInsideBurger || clickedHeaderBtn);
   }
 
-  private isModalClick(event: MouseEvent): boolean {
-    // Check if click was inside modal content (not on the overlay)
-    const modalContent = document.querySelector('.modal-content');
-    return modalContent?.contains(event.target as Node) || false;
-  }
-
   toggleMenu() {
     this.isOpen = !this.isOpen;
   }
 
-  changeView(view: 'players' | 'bestiary' | 'letters' | 'items' | 'shops' | 'lore' | 'locations' | 'talents' | 'mistEffects' | 'terrains' | 'mistEngineBattles' | 'weaponRules' | 'alteredStates' | 'afflictions' | 'shipNavigation' | 'adminItemCreator') {
+  changeView(view: AppView) {
     this.viewChange.emit(view);
     this.toggleMenu();
   }
@@ -85,6 +73,61 @@ export class SidebarComponent {
 
     this.openAdminDialog(this.adminDialogTemplate, () => {
       this.changeView('adminItemCreator');
+    });
+  }
+
+  openAdminLocationCreator(): void {
+    if (this.isAdmin) {
+      this.changeView('adminLocationCreator');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminLocationCreator');
+    });
+  }
+
+  openAdminPlayerEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminPlayerEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminPlayerEditor');
+    });
+  }
+
+  openAdminNpcEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminNpcEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminNpcEditor');
+    });
+  }
+
+  openAdminShopEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminShopEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminShopEditor');
+    });
+  }
+
+  openAdminCreatureEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminCreatureEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminCreatureEditor');
     });
   }
 
@@ -110,7 +153,7 @@ export class SidebarComponent {
     const dialogContext = {
       check: (password: string) => {
         if (password === '2602') {
-          this.adminService.setAdminStatus(true);
+          this.adminService.setAdminAuthenticated(true);
           this.modalService.close();
           onSuccess?.();
         } else {
@@ -125,6 +168,6 @@ export class SidebarComponent {
   }
 
   logoutAdmin() {
-    this.adminService.setAdminStatus(false);
+    this.adminService.setAdminAuthenticated(false);
   }
 }

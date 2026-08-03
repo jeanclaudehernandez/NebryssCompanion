@@ -1,16 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivePlayerService } from '../active-player.service';
 import { Inventory, Player } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { ToastService } from '../toast.service';
 import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.component';
+import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.component';
 
 @Component({
   selector: 'app-generic-table',
   standalone: true,
-  imports: [CommonModule, SanitizeHtmlPipe, FormsModule, CustomDropdownComponent],
+  imports: [CommonModule, SanitizeHtmlPipe, FormsModule, CustomDropdownComponent, BodyTypeIconsComponent],
   template: `
     <div class="category-block">
       <div class="table-header" *ngIf="collapsible || title" (click)="collapsible ? toggleCollapse() : null" [style.cursor]="collapsible ? 'pointer' : 'default'">
@@ -19,14 +20,31 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
       <div *ngIf="!isCollapsed || !collapsible" class="table-body-content">
         <div *ngIf="enableBodyFilter" class="filter-container">
           <label style="margin-bottom: 5px; font-size: 0.9em; display: block; font-weight: 600;">Filter by Body:</label>
-          <app-custom-dropdown
-              [options]="availableBodyTypes"
-              [selectedOption]="selectedBodyType"
-              [placeholder]="'All Body Types'"
-              [showClearOption]="true"
-              [type]="'simple'"
-              (selectionChange)="onBodyTypeChange($event)">
-          </app-custom-dropdown>
+          <div class="body-editor" #bodyEditor>
+            <button
+              type="button"
+              class="body-editor-trigger"
+              (click)="toggleBodySelector($event)">
+              <app-body-type-icons [value]="selectedBodyTypes" [emptyText]="'All Body Types'"></app-body-type-icons>
+              <span class="body-editor-trigger-caret">{{ isBodySelectorOpen ? '▲' : '▼' }}</span>
+            </button>
+
+            <div
+              class="body-selector-panel"
+              *ngIf="isBodySelectorOpen"
+              (click)="$event.stopPropagation()">
+              <label class="body-option" *ngFor="let option of availableBodyTypes">
+                <input
+                  type="checkbox"
+                  [checked]="selectedBodyTypes.includes(option)"
+                  (change)="onBodyTypeToggle(option, $any($event.target).checked)" />
+                <span class="body-option-content">
+                  <app-body-type-icons [value]="option" [size]="14"></app-body-type-icons>
+                  <span class="body-option-label">{{ option }}</span>
+                </span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="table-scroll-wrapper">
           <table class="items-table">
@@ -37,9 +55,11 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                   (click)="onSort(headerKeys[i])"
                   class="sortable-header"
                   [class.col-compact]="isCompactColumn(headerKeys[i])"
+                  [class.col-density-level]="headerKeys[i] === 'densityLevel'"
                   [class.col-description]="isDescriptionColumn(headerKeys[i])"
-                  [class.col-name]="headerKeys[i] === 'name'"
-                  [style.width]="headerKeys[i] === 'name' ? nameColumnWidth : null"
+                  [class.col-part]="headerKeys[i] === 'part'"
+                  [class.col-name]="isNameColumn(headerKeys[i])"
+                  [style.width]="isNameColumn(headerKeys[i]) ? nameColumnWidth : null"
                   [title]="getHeaderTooltip(header)">
                   {{ getShortHeader(header) }}
                   <span *ngIf="sortKey === headerKeys[i]">
@@ -54,18 +74,23 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                 <td 
                   *ngFor="let header of headerKeys"
                   [class.col-compact]="isCompactColumn(header)"
+                  [class.col-density-level]="header === 'densityLevel'"
                   [class.col-description]="isDescriptionColumn(header)"
-                  [class.col-name]="header === 'name'"
-                  [style.width]="header === 'name' ? nameColumnWidth : null">
-                  <ng-container *ngIf="header === 'name'">
+                  [class.col-part]="header === 'part'"
+                  [class.col-name]="isNameColumn(header)"
+                  [style.width]="isNameColumn(header) ? nameColumnWidth : null">
+                  <ng-container *ngIf="isNameColumn(header)">
                     <div class="name-wrapper" [style.max-width]="nameColumnWidth" [style.width]="nameColumnWidth">
                       <span *ngIf="!renderHtml?.includes('name')">{{ item[header] }}</span>
                       <span *ngIf="renderHtml?.includes('name')" [innerHtml]="item[header] | sanitizeHtml"></span>
                     </div>
                   </ng-container>
-                  <ng-container *ngIf="header !== 'name'">
-                    <span *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [innerHtml]="formatBodyIcons(item[header]) | sanitizeHtml"></span>
-                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq'">{{ item[header] }}</span>
+                  <ng-container *ngIf="!isNameColumn(header)">
+                    <app-body-type-icons *ngIf="!renderHtml?.includes(header) && (header === 'body' || header === 'raceReq')" [value]="item[header]"></app-body-type-icons>
+                    <div *ngIf="!renderHtml?.includes(header) && header === 'subtype'" class="multiline-cell">
+                      <div *ngFor="let line of splitLines(item[header])" class="cell-line">{{ line }}</div>
+                    </div>
+                    <span *ngIf="!renderHtml?.includes(header) && header !== 'price' && header !== 'body' && header !== 'raceReq' && header !== 'subtype'">{{ item[header] }}</span>
                     <span *ngIf="!renderHtml?.includes(header) && header === 'price'">{{ item[header] ? item[header] + '₥' : '' }}</span>
                     <span *ngIf="renderHtml?.includes(header)" [innerHtml]="item[header] | sanitizeHtml"></span>
                   </ng-container>
@@ -106,7 +131,7 @@ import { CustomDropdownComponent } from '../custom-dropdown/custom-dropdown.comp
                           <line x1="4" y1="12" x2="20" y2="12"></line>
                         </svg>
                       </button>
-                      <button *ngIf="!shoppingMode" (click)="removeFromInventory(item)" class="btn-remove">
+                      <button *ngIf="!shoppingMode && isInInventory(item)" (click)="removeFromInventory(item)" class="btn-remove">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
                           <line x1="4" y1="12" x2="20" y2="12"></line>
                         </svg>
@@ -161,7 +186,10 @@ export class GenericTableComponent implements OnInit, OnChanges {
   sortDirection: 'asc' | 'desc' = 'asc';
   
   availableBodyTypes: string[] = [];
-  selectedBodyType: string | null = null;
+  selectedBodyTypes: string[] = [];
+  isBodySelectorOpen = false;
+  @ViewChild('bodyEditor') bodyEditorRef?: ElementRef;
+  private bodyFilterRestored = false;
 
   getShortHeader(header: string): string {
     if (!header) return '';
@@ -182,7 +210,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
       case 'density level': return 'Lvl';
       case 'treatment': return 'Treat';
       case 'to heal': return 'Heal';
-      case 'subtype': return 'Subtype';
+      case 'subtype': return 'Type';
       default: return header;
     }
   }
@@ -191,8 +219,20 @@ export class GenericTableComponent implements OnInit, OnChanges {
     return header;
   }
 
+  isNameColumn(key: string): boolean {
+    return ['name', 'effectName'].includes(key);
+  }
+
   isCompactColumn(key: string): boolean {
-    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'part', 'raceReq', 'subType', 'bestiaryId', 'type', 'densityLevel'].includes(key);
+    return ['price', 'quantity', 'quant', 'qty', 'weight', 'maxSpeed', 'maxWeight', 'shipWounds', 'defense', 'maxCargo', 'ammoType', 'damage', 'raceReq', 'subtype', 'bestiaryId', 'type', 'toHeal'].includes(key);
+  }
+
+  // ammo subtype values like "Pistol/Rifle" are stacked one-per-line instead of squeezed onto a single line
+  splitLines(value: string): string[] {
+    if (!value) {
+      return [];
+    }
+    return String(value).split('/').map(part => part.trim()).filter(part => part.length > 0);
   }
 
   isDescriptionColumn(key: string): boolean {
@@ -208,96 +248,18 @@ export class GenericTableComponent implements OnInit, OnChanges {
     const savedState = localStorage.getItem(this.storageKey);
     this.isCollapsed = savedState ? JSON.parse(savedState) : true;
     this.extractBodyTypes();
+    this.restoreBodyFilterSelection();
+    this.validateBodyFilterSelection();
     this.initializeSortedData();
-  }
-
-  formatBodyIcons(val: any): string {
-    if (!val) return '-';
-    const str = String(val).toLowerCase();
-    let html = '';
-    
-    if (str.includes('universal')) {
-      html += `<span class="body-icon-badge universal" title="Universal">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="2" y1="12" x2="22" y2="12"></line>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('human')) {
-      html += `<span class="body-icon-badge human" title="Human">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('astartes')) {
-      html += `<span class="body-icon-badge astartes" title="Astartes">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          <path d="M12 8v8M8 12h8"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('spell')) {
-      html += `<span class="body-icon-badge spell" title="Spell">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
-          <path d="M8 2v20"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('fellgor')) {
-      html += `<span class="body-icon-badge fellgor" title="Fellgor">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
-          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
-          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
-          <path d="M10 14h.01M14 14h.01"></path>
-          <path d="M11 17c.6.5 1.4.5 2 0"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('ork')) {
-      html += `<span class="body-icon-badge ork" title="Ork">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
-          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
-          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
-          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
-          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
-          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('aetherwing') || str.includes('aethering')) {
-      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="10" cy="12" r="5"></circle>
-          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
-          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('plant')) {
-      html += `<span class="body-icon-badge plant" title="Plant">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20v-8"></path>
-          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
-          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
-        </svg>
-      </span>`;
-    }
-
-    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
   }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['data'] || changes['headerKeys'] || changes['characterBody']) {
       this.extractBodyTypes();
+      if (!this.bodyFilterRestored) {
+        this.restoreBodyFilterSelection();
+      }
+      this.validateBodyFilterSelection();
       this.initializeSortedData();
     }
   }
@@ -337,8 +299,43 @@ export class GenericTableComponent implements OnInit, OnChanges {
     this.availableBodyTypes = validTypes.sort();
   }
 
-  onBodyTypeChange(selected: any) {
-    this.selectedBodyType = selected;
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isBodySelectorOpen) {
+      return;
+    }
+    const editor = this.bodyEditorRef?.nativeElement;
+    if (editor && event.target instanceof Node && !editor.contains(event.target)) {
+      this.isBodySelectorOpen = false;
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isBodySelectorOpen = false;
+  }
+
+  toggleBodySelector(event?: Event): void {
+    event?.stopPropagation();
+    this.isBodySelectorOpen = !this.isBodySelectorOpen;
+  }
+
+  onBodyTypeToggle(bodyType: string, checked: boolean): void {
+    const current = [...this.selectedBodyTypes];
+    if (checked) {
+      if (!current.includes(bodyType)) {
+        current.push(bodyType);
+      }
+    } else {
+      const idx = current.indexOf(bodyType);
+      if (idx >= 0) {
+        current.splice(idx, 1);
+      }
+    }
+    const order = new Map<string, number>(this.availableBodyTypes.map((k, i) => [k, i]));
+    current.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+    this.selectedBodyTypes = current;
+    this.persistBodyFilterSelection();
     this.applySort();
   }
 
@@ -403,25 +400,91 @@ export class GenericTableComponent implements OnInit, OnChanges {
     this.applySort();
   }
 
+  private getBodyFilterStorageKey(): string | null {
+    if (!this.storageKey) {
+      return null;
+    }
+    return `${this.storageKey}-body-filter`;
+  }
+
+  private restoreBodyFilterSelection(): void {
+    if (!this.enableBodyFilter) {
+      return;
+    }
+
+    const key = this.getBodyFilterStorageKey();
+    if (!key) {
+      return;
+    }
+
+    const savedFilter = localStorage.getItem(key);
+    if (savedFilter) {
+      try {
+        if (savedFilter.startsWith('[')) {
+          const parsed = JSON.parse(savedFilter);
+          if (Array.isArray(parsed)) {
+            this.selectedBodyTypes = parsed;
+          }
+        } else {
+          this.selectedBodyTypes = savedFilter.split(',').map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
+        this.selectedBodyTypes = [];
+      }
+    } else {
+      this.selectedBodyTypes = [];
+    }
+    this.bodyFilterRestored = true;
+
+    if (this.availableBodyTypes.length > 0) {
+      this.selectedBodyTypes = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    }
+  }
+
+  private persistBodyFilterSelection(): void {
+    const key = this.getBodyFilterStorageKey();
+    if (!key) {
+      return;
+    }
+
+    if (this.selectedBodyTypes.length > 0) {
+      localStorage.setItem(key, JSON.stringify(this.selectedBodyTypes));
+    } else {
+      localStorage.removeItem(key);
+    }
+  }
+
+  private validateBodyFilterSelection(): void {
+    if (this.selectedBodyTypes.length === 0 || this.availableBodyTypes.length === 0) {
+      return;
+    }
+
+    const valid = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    if (valid.length !== this.selectedBodyTypes.length) {
+      this.selectedBodyTypes = valid;
+      this.persistBodyFilterSelection();
+    }
+  }
+
   private applySort() {
     let filteredData = [...(this.data || [])];
 
-    if (this.enableBodyFilter && this.selectedBodyType) {
+    if (this.enableBodyFilter && this.selectedBodyTypes.length > 0) {
         filteredData = filteredData.filter(item => {
             // Check raceReq (items/armor)
             if (item.raceReq) {
                 if (Array.isArray(item.raceReq)) {
-                    return item.raceReq.includes(this.selectedBodyType);
+                    return (item.raceReq as string[]).some(req => this.selectedBodyTypes.includes(req));
                 }
-                return item.raceReq === this.selectedBodyType;
+                return this.selectedBodyTypes.includes(item.raceReq);
             }
 
             // Check body (weapons/other)
             if (item.body) {
                 if (Array.isArray(item.body)) {
-                    return item.body.includes(this.selectedBodyType);
+                    return (item.body as string[]).some(b => this.selectedBodyTypes.includes(b));
                 }
-                return item.body === this.selectedBodyType;
+                return this.selectedBodyTypes.includes(item.body);
             }
             
             // If neither property exists, keep item (e.g. other categories without restriction)
@@ -461,7 +524,7 @@ export class GenericTableComponent implements OnInit, OnChanges {
     const player = this.activePlayerService.activePlayer;
     if (!player || !player.items) return false;
     
-    return player.items.some(inventoryItem => inventoryItem.id === item.id);
+    return player.items.some(inventoryItem => inventoryItem.id === item.id && (inventoryItem.quant === undefined || inventoryItem.quant > 0));
   }
 
   addToInventory(item: any) {

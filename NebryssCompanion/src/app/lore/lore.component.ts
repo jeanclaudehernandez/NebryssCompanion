@@ -1,6 +1,9 @@
-import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef } from '@angular/core';
-import { DataService } from '../data.service';
+import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { DataService } from '../data.service';
+import { AdminService } from '../admin.service';
+import { ToastService } from '../toast.service';
 import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
@@ -19,11 +22,16 @@ import { Lore, ScrollSection, Locations, Location } from '../model';
   styleUrls: ['./lore.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class LoreComponent {
+export class LoreComponent implements OnInit {
   @Input() initialFactionName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
+
+  private readonly destroyRef = inject(DestroyRef);
+
   loreData!: Lore;
   locationsData!: Locations;
+  isAdmin = false;
+
   loreSections: {
     title: string,
     content: any,
@@ -31,6 +39,7 @@ export class LoreComponent {
     imgUrl?: string,
     thumbnail?: string
   }[] = [];
+
   public Array = Array;
   public Object = Object;
   public standardFactionSections = [
@@ -43,21 +52,35 @@ export class LoreComponent {
     'role',
     'notableOrganizations',
     'image',
-    'thumbnail'
+    'thumbnail',
+    'privateNotes',
+    'isSecretRevealed'
   ];
+
   public prohibitedSections = [
     'storyHooks',
     'potentialEndgameScenarios',
     'mistBasedGameplayMechanics',
+    'chroniclesOfNebryss'
   ];
+
   scrollSections: ScrollSection[] = [];
 
   constructor(
     private dataService: DataService,
+    private adminService: AdminService,
+    private toastService: ToastService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
+    this.adminService.isAdmin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+        this.cdr.markForCheck();
+      });
+
     this.dataService.getLore().subscribe({
       next: (data) => {
         this.loreData = data;
@@ -65,7 +88,6 @@ export class LoreComponent {
         this.cdr.markForCheck();
         
         if (this.initialFactionName) {
-          // Allow time for view to render
           setTimeout(() => {
             this.scrollToFaction(this.initialFactionName!);
           }, 100);
@@ -88,7 +110,6 @@ export class LoreComponent {
     const element = document.getElementById(factionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Add a highlight effect
       element.classList.add('highlight-faction');
       setTimeout(() => {
         element.classList.remove('highlight-faction');
@@ -96,30 +117,27 @@ export class LoreComponent {
     }
   }
 
-  isStandardSection(section: string) {
-    return !!this.standardFactionSections.find((standard) => standard == section )
+  isStandardSection(section: string): boolean {
+    return !!this.standardFactionSections.find((standard) => standard === section);
   }
 
-  isProhibitedSection(section: string) {
-    return !!this.prohibitedSections.find((prohibited) => prohibited == section);
+  isProhibitedSection(section: string): boolean {
+    return !!this.prohibitedSections.find((prohibited) => prohibited === section);
   }
 
   getLocationsByFaction(factionName: string): Location[] {
     if (!this.locationsData?.locations) return [];
-    return this.locationsData.locations.filter(location => location.faction === factionName);
+    return this.locationsData.locations.filter(location =>
+      location.faction === factionName &&
+      (this.isAdmin || !location.isSecret || location.isSecretRevealed)
+    );
   }
 
   getFactionCapital(factionName: string): Location | undefined {
     if (!this.locationsData?.locations) return undefined;
     return this.locationsData.locations.find(location => 
-      location.faction === factionName && location.isCapital
-    );
-  }
-
-  getFactionIslands(factionName: string): Location[] {
-    if (!this.locationsData?.locations) return [];
-    return this.locationsData.locations.filter(location => 
-      location.faction === factionName && !location.isCapital
+      location.faction === factionName && location.isCapital &&
+      (this.isAdmin || !location.isSecret || location.isSecretRevealed)
     );
   }
 
@@ -127,18 +145,47 @@ export class LoreComponent {
     this.navigateToLocation.emit(locationName);
   }
 
+  toggleSecrecy(item: any, titleName: string): void {
+    if (!this.isAdmin || !item) {
+      return;
+    }
+
+    item.isSecretRevealed = !item.isSecretRevealed;
+
+    this.dataService.updateLore(this.loreData).subscribe({
+      next: () => {
+        this.toastService.show(
+          item.isSecretRevealed
+            ? `Secret lore for ${titleName} is now REVEALED to players!`
+            : `Secret lore for ${titleName} is now HIDDEN from players (GM only).`,
+          'info'
+        );
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to save lore secrecy: ${err?.message || err}`, 'error');
+      }
+    });
+  }
+
   prepareLoreSections() {
-    if (!this.loreData?.planet) {
-      return
-    };
+    const worldData = this.loreData?.world || (this.loreData as any)?.planet;
+    if (!worldData) {
+      return;
+    }
     
     this.loreSections = [
       {
-        title: 'Planet',
-        content: this.loreData.planet,
-        key: 'planet',
-        imgUrl: this.loreData.planet.imgUrl,
-        thumbnail: this.loreData.planet.thumbnail
+        title: 'World',
+        content: worldData,
+        key: 'world',
+        imgUrl: worldData.imgUrl,
+        thumbnail: worldData.thumbnail
+      },
+      {
+        title: 'Chronicles of Nebryss',
+        content: { chronicles: this.loreData.chroniclesOfNebryss || [] },
+        key: 'chroniclesOfNebryss'
       },
       {
         title: 'Currency',
@@ -162,50 +209,45 @@ export class LoreComponent {
       },
       {
         title: 'Factions',
-        content: {factions: this.loreData.factions},
+        content: { factions: this.loreData.factions },
         key: 'factions'
       },
       {
         title: 'Struggle for Nebryss',
-        content: {struggle: this.loreData.struggleForNebryss},
+        content: { struggle: this.loreData.struggleForNebryss },
         key: 'struggleForNebryss'
       },
       {
         title: 'Story Hooks',
-        content: {hooks: this.loreData.storyHooks},
+        content: { hooks: this.loreData.storyHooks },
         key: 'storyHooks'
       },
       {
         title: 'Potential Endgame Scenarios',
-        content: {endgames: this.loreData.potentialEndgameScenarios},
+        content: { endgames: this.loreData.potentialEndgameScenarios },
         key: 'potentialEndgameScenarios'
       }
     ];
+
     this.scrollSections = [
-      {
-        title: 'Planet', id: 'planet'
-      },{
-        title: 'Currency', id: 'currency'
-      },{
-        title: 'Mist Effects', id: 'mistEffects'
-      },{
-        title: 'Technology and Infrastructure', id: 'technologyAndInfrastructure'
-      },
-      {
-        title: 'Factions', id: 'factions'
-      },
+      { title: 'World', id: 'world' },
+      { title: 'Chronicles of Nebryss', id: 'chroniclesOfNebryss' },
+      { title: 'Currency', id: 'currency' },
+      { title: 'Mist Effects', id: 'mistEffects' },
+      { title: 'Technology and Infrastructure', id: 'technologyAndInfrastructure' },
+      { title: 'Factions', id: 'factions' },
       ...this.loreData.factions.map((faction: any) => ({
-      title: faction.name,
-      id: `faction-${faction.name.toLowerCase().replace(/\s+/g, '-')}`
-    })),
-    {
-      title: 'Struggle for Nebryss', id: 'struggleForNebryss'
-    },
-  ];
+        title: faction.name,
+        id: `faction-${faction.name.toLowerCase().replace(/\s+/g, '-')}`
+      })),
+      { title: 'Struggle for Nebryss', id: 'struggleForNebryss' },
+      { title: 'Story Hooks', id: 'storyHooks' },
+      { title: 'Potential Endgame Scenarios', id: 'potentialEndgameScenarios' }
+    ];
   }
 
-  factionScrollId(faction: any): string{
-    return 'faction-' + faction.name.toLowerCase().replace(/\s+/g, '-')
+  factionScrollId(faction: any): string {
+    return 'faction-' + faction.name.toLowerCase().replace(/\s+/g, '-');
   }
 
   formatLoreContent(content: any): string {
@@ -231,7 +273,11 @@ export class LoreComponent {
   formatObjectContent(obj: any): string {
     let html = '';
     for (const key in obj) {
-      if (typeof obj[key] === 'string' && key != 'imgUrl' && key != 'thumbnail') {
+      if (key === 'privateNotes' || key === 'isSecretRevealed') {
+        continue;
+      }
+
+      if (typeof obj[key] === 'string' && key !== 'imgUrl' && key !== 'thumbnail') {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3><p>${obj[key]}</p></div>`;
       } else if (Array.isArray(obj[key])) {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3>`;

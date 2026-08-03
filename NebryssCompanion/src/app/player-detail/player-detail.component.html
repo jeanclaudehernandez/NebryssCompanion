@@ -57,7 +57,6 @@
   </div>
 
   <div [id]="'attributes-' + character.id" class="attributes sticky-attributes">
-    <h3>Attributes</h3>
     <table class="attributes-table">
       <tr>
         <th title="Movement">
@@ -102,7 +101,7 @@
         <td>{{ calculatedAttributes.Wounds }}</td>
         <td>{{ calculatedAttributes.Save }}+</td>
         <td>{{ calculatedAttributes.APL }}</td>
-        <td><span [innerHtml]="formatBodyIcons(bodyString) | sanitizeHtml"></span></td>
+        <td><app-body-type-icons [value]="bodyString"></app-body-type-icons></td>
       </tr>
     </table>
   </div>
@@ -373,5 +372,3 @@
     </div>
   </div>
 </ng-template>
-
-<app-scroll-nav *ngIf="!hideScrollNav" [sections]="scrollSections"></app-scroll-nav>

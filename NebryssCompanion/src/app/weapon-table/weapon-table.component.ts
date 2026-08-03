@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, SimpleChanges, OnChanges, ViewEncapsulation, OnDestroy, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { WeaponRangePipe } from '../weapon-range.pipe';
@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { getEffectiveTalentApplications } from '../talent-stacks';
 
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
+import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.component';
 
 interface ruleDisplay {
   name: string,
@@ -31,7 +32,8 @@ type WeaponSortKey = 'name' | 'rng' | 'atk' | 'hit' | 'dmg' | 'price';
     MatTooltipModule,
     WeaponRangePipe,
     CustomDropdownComponent,
-    SanitizeHtmlPipe
+    SanitizeHtmlPipe,
+    BodyTypeIconsComponent
   ],
   templateUrl: './weapon-table.component.html',
   styleUrls: ['./weapon-table.component.css'],
@@ -56,6 +58,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() collapsible: boolean = false;
   @Input() isCollapsed: boolean = false;
   @Input() enableBodyFilter: boolean = false;
+  @Input() filterStorageKey: string = '';
 
   @Output() clone = new EventEmitter<any>();
   @Output() delete = new EventEmitter<any>();
@@ -98,10 +101,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   sortedProfiles: { weapon: Weapon, profile: WeaponProfile }[] = [];
   attachedModDescriptions: { [weaponId: number]: string[] } = {};
   availableBodyTypes: string[] = [];
-  selectedBodyType: string = '';
+  selectedBodyTypes: string[] = [];
+  isBodySelectorOpen = false;
+  @ViewChild('bodyEditor') bodyEditorRef?: ElementRef;
   sortKey: WeaponSortKey | null = null;
   sortDir: 'asc' | 'desc' = 'asc';
   private playerSubscription: Subscription | null = null;
+  private bodyFilterRestored = false;
 
   constructor(
     private dialog: MatDialog, 
@@ -116,6 +122,10 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    this.restoreBodyFilterSelection();
+    this.validateBodyFilterSelection();
+    this.updateSortedProfiles();
+
     this.dataService.getItems().subscribe(() => {
       this.updateSortedProfiles();
     });
@@ -134,8 +144,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['weaponsData'] || changes['characterBody']) {
       this.extractBodyTypes();
+      this.validateBodyFilterSelection();
     }
-    if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange']) {
+    if ((changes['filterStorageKey'] || !this.bodyFilterRestored) && this.enableBodyFilter) {
+      this.restoreBodyFilterSelection();
+      this.validateBodyFilterSelection();
+    }
+    if (changes['weaponIds'] || changes['weaponsData'] || changes['sortByRange'] || changes['characterBody'] || changes['filterStorageKey']) {
       this.updateSortedProfiles();
     }
     this.updateAttachedMods();
@@ -160,93 +175,44 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
     this.availableBodyTypes = Array.from(types).sort();
   }
 
-  onBodyTypeChange(selected: any) {
-    this.selectedBodyType = selected;
-    this.updateSortedProfiles();
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.isBodySelectorOpen) {
+      return;
+    }
+    const editor = this.bodyEditorRef?.nativeElement;
+    if (editor && event.target instanceof Node && !editor.contains(event.target)) {
+      this.isBodySelectorOpen = false;
+    }
   }
 
-  formatBodyIcons(val: any): string {
-    if (!val) return '-';
-    const str = String(val).toLowerCase();
-    let html = '';
-    
-    if (str.includes('universal')) {
-      html += `<span class="body-icon-badge universal" title="Universal">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"></circle>
-          <line x1="2" y1="12" x2="22" y2="12"></line>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('human')) {
-      html += `<span class="body-icon-badge human" title="Human">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-          <circle cx="12" cy="7" r="4"></circle>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('astartes')) {
-      html += `<span class="body-icon-badge astartes" title="Astartes">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-          <path d="M12 8v8M8 12h8"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('spell')) {
-      html += `<span class="body-icon-badge spell" title="Spell">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
-          <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5A2.5 2.5 0 0 0 4 19.5z"></path>
-          <path d="M8 2v20"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('fellgor')) {
-      html += `<span class="body-icon-badge fellgor" title="Fellgor">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 10c-1.5-1-3.5-3.5-3-6 2.5.5 4.5 2 5 4"></path>
-          <path d="M17 10c1.5-1 3.5-3.5 3-6-2.5.5-4.5 2-5 4"></path>
-          <path d="M7 10c0-2 1.5-4 5-4s5 2 5 4v3c0 4-2.5 7-5 7s-5-3-5-7v-3z"></path>
-          <path d="M10 14h.01M14 14h.01"></path>
-          <path d="M11 17c.6.5 1.4.5 2 0"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('ork')) {
-      html += `<span class="body-icon-badge ork" title="Ork">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M7 11c-2.3-1.7-3.8-3.8-3.5-6 2.8.1 4.8 1.4 6 3.3"></path>
-          <path d="M17 11c2.3-1.7 3.8-3.8 3.5-6-2.8.1-4.8 1.4-6 3.3"></path>
-          <path d="M7 11c0-2.6 2.2-4.6 5-4.6s5 2 5 4.6v3.2c0 3.6-2.2 6.3-5 6.3s-5-2.7-5-6.3V11z"></path>
-          <path d="M9.2 14.2h.01M14.8 14.2h.01"></path>
-          <path d="M10 16.8c1.2.9 2.8.9 4 0"></path>
-          <path d="M8.4 12.4l-1.3 1.1M15.6 12.4l1.3 1.1"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('aetherwing') || str.includes('aethering')) {
-      html += `<span class="body-icon-badge aetherwing" title="Aetherwing">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="10" cy="12" r="5"></circle>
-          <circle cx="11.5" cy="10.7" r="0.7" fill="currentColor" stroke="none"></circle>
-          <path d="M14.6 11l6-1.8-5.4 4.6z"></path>
-        </svg>
-      </span>`;
-    }
-    if (str.includes('plant')) {
-      html += `<span class="body-icon-badge plant" title="Plant">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20v-8"></path>
-          <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
-          <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
-        </svg>
-      </span>`;
-    }
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.isBodySelectorOpen = false;
+  }
 
-    return html ? `<div class="body-icons-container">${html}</div>` : String(val);
+  toggleBodySelector(event?: Event): void {
+    event?.stopPropagation();
+    this.isBodySelectorOpen = !this.isBodySelectorOpen;
+  }
+
+  onBodyTypeToggle(bodyType: string, checked: boolean): void {
+    const current = [...this.selectedBodyTypes];
+    if (checked) {
+      if (!current.includes(bodyType)) {
+        current.push(bodyType);
+      }
+    } else {
+      const idx = current.indexOf(bodyType);
+      if (idx >= 0) {
+        current.splice(idx, 1);
+      }
+    }
+    const order = new Map<string, number>(this.availableBodyTypes.map((k, i) => [k, i]));
+    current.sort((a, b) => (order.get(a) ?? 999) - (order.get(b) ?? 999));
+    this.selectedBodyTypes = current;
+    this.persistBodyFilterSelection();
+    this.updateSortedProfiles();
   }
 
   isInInventory(weaponId: number): boolean {
@@ -374,8 +340,25 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       const weapon = this.getWeaponById(weaponId);
       if (weapon) {
         weapon.profiles.forEach(profile => {
-          if (this.enableBodyFilter && this.selectedBodyType && profile.body !== this.selectedBodyType) {
-            return;
+          if (this.isCharacterDisplayPage && this.characterBody && this.characterBody.length > 0) {
+            const isBodyMatch = !profile.body || profile.body === 'universal' || profile.body === 'all' || this.characterBody.includes(profile.body);
+            if (!isBodyMatch) {
+              return;
+            }
+          }
+
+          if (this.enableBodyFilter && this.selectedBodyTypes.length > 0) {
+            if (!profile.body) {
+              return;
+            }
+            if (Array.isArray(profile.body)) {
+              const hasMatch = (profile.body as string[]).some(b => this.selectedBodyTypes.includes(b));
+              if (!hasMatch) return;
+            } else {
+              if (!this.selectedBodyTypes.includes(profile.body)) {
+                return;
+              }
+            }
           }
           
           const modifiedProfile = this.applyStatModifications(profile, activeModifiers);
@@ -391,6 +374,59 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
       this.sortedProfiles = this.sortProfiles(allProfiles);
     } else {
       this.sortedProfiles = allProfiles;
+    }
+  }
+
+  private restoreBodyFilterSelection(): void {
+    if (!this.enableBodyFilter || !this.filterStorageKey) {
+      return;
+    }
+
+    const savedFilter = localStorage.getItem(this.filterStorageKey);
+    if (savedFilter) {
+      try {
+        if (savedFilter.startsWith('[')) {
+          const parsed = JSON.parse(savedFilter);
+          if (Array.isArray(parsed)) {
+            this.selectedBodyTypes = parsed;
+          }
+        } else {
+          this.selectedBodyTypes = savedFilter.split(',').map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
+        this.selectedBodyTypes = [];
+      }
+    } else {
+      this.selectedBodyTypes = [];
+    }
+    this.bodyFilterRestored = true;
+
+    if (this.availableBodyTypes.length > 0) {
+      this.selectedBodyTypes = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    }
+  }
+
+  private persistBodyFilterSelection(): void {
+    if (!this.filterStorageKey) {
+      return;
+    }
+
+    if (this.selectedBodyTypes.length > 0) {
+      localStorage.setItem(this.filterStorageKey, JSON.stringify(this.selectedBodyTypes));
+    } else {
+      localStorage.removeItem(this.filterStorageKey);
+    }
+  }
+
+  private validateBodyFilterSelection(): void {
+    if (this.selectedBodyTypes.length === 0 || this.availableBodyTypes.length === 0) {
+      return;
+    }
+
+    const valid = this.selectedBodyTypes.filter(b => this.availableBodyTypes.includes(b));
+    if (valid.length !== this.selectedBodyTypes.length) {
+      this.selectedBodyTypes = valid;
+      this.persistBodyFilterSelection();
     }
   }
 
@@ -559,6 +595,13 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
 
   filterByBody(weaponProfile: any): boolean {
     return !!this.characterBody.filter((body) => body == weaponProfile.body).length;
+  }
+
+  getBodyTooltip(body: string | string[] | null | undefined): string {
+    if (Array.isArray(body)) {
+      return body.join(', ');
+    }
+    return String(body ?? '').trim();
   }
 
   getRuleDisplay(rule: SpecialRule): ruleDisplay {

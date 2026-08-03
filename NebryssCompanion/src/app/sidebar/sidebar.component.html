@@ -2,19 +2,9 @@
 <div class="sidebar-backdrop" [class.open]="isOpen" (click)="toggleMenu()"></div>
 
 <nav #sidebar class="sidebar" [class.open]="isOpen" aria-label="Main navigation">
-  <!-- Drawer Header -->
-  <div class="drawer-header">
-    <div class="drawer-title">
-      <span class="material-icons drawer-logo">shield</span>
-      <span class="drawer-app-name">Nebryss Companion</span>
-    </div>
-    <button type="button" class="drawer-close-btn" (click)="toggleMenu()" aria-label="Close menu">
-      <span class="material-icons">close</span>
-    </button>
-  </div>
 
   <div class="menu-content">
-    <!-- Category: Player & Equipment -->
+    <!-- Category: Player & Equipment 
     <div class="menu-category-title">Player & Equipment</div>
     <div class="menu-item" (click)="changeView('players')">
       <span class="material-icons">person</span>
@@ -28,17 +18,21 @@
       <span class="material-icons">coronavirus</span>
       <span>Afflictions</span>
     </div>
+    <div class="menu-item" (click)="changeView('shops')">
+      <span class="material-icons">storefront</span>
+      <span>Shops</span>
+    </div>-->
+
+    <!-- Category: Rules Compendium -->
+    <div class="menu-category-title">Rules Compendium</div>
     <div class="menu-item" (click)="changeView('items')">
       <span class="material-icons">inventory_2</span>
       <span>Items</span>
     </div>
-    <div class="menu-item" (click)="changeView('shops')">
-      <span class="material-icons">storefront</span>
-      <span>Shops</span>
+    <div class="menu-item" (click)="changeView('afflictions')">
+      <span class="material-icons">coronavirus</span>
+      <span>Afflictions</span>
     </div>
-
-    <!-- Category: Rules Compendium -->
-    <div class="menu-category-title">Rules Compendium</div>
     <div class="menu-item" (click)="changeView('weaponRules')">
       <span class="material-icons">gavel</span>
       <span>Weapon Rules</span>
@@ -55,16 +49,20 @@
       <span class="material-icons">cloud</span>
       <span>Mist Effects</span>
     </div>
-    <div class="menu-item" (click)="changeView('mistEngineBattles')">
+    <!--<div class="menu-item" (click)="changeView('mistEngineBattles')">
       <span class="material-icons">sports_kabaddi</span>
       <span>Mist Engine Battles</span>
-    </div>
+    </div>-->
 
     <!-- Category: World & Exploration -->
     <div class="menu-category-title">World & Exploration</div>
     <div class="menu-item" (click)="changeView('bestiary')">
       <span class="material-icons">pets</span>
       <span>Bestiary</span>
+    </div>
+    <div class="menu-item" (click)="changeView('npcs')">
+      <span class="material-icons">badge</span>
+      <span>NPCs</span>
     </div>
     <div class="menu-item" (click)="changeView('lore')">
       <span class="material-icons">auto_stories</span>
@@ -74,33 +72,54 @@
       <span class="material-icons">place</span>
       <span>Locations</span>
     </div>
-    <div class="menu-item" (click)="changeView('shipNavigation')">
+    <div class="menu-item" (click)="changeView('worldMap')">
+      <span class="material-icons">map</span>
+      <span>World Map</span>
+    </div>
+    <!--<div class="menu-item" (click)="changeView('shipNavigation')">
       <span class="material-icons">directions_boat</span>
       <span>Ship Navigation</span>
     </div>
     <div class="menu-item" (click)="changeView('letters')">
       <span class="material-icons">mail</span>
       <span>Letters</span>
-    </div>
+    </div>-->
 
     <!-- Category: Administration -->
     <div class="menu-category-title" *ngIf="isAdmin">Administration</div>
     <div class="menu-item" *ngIf="isAdmin" (click)="openAdminItemCreator()">
       <span class="material-icons">admin_panel_settings</span>
-      <span>Item Creator</span>
+      <span>Item</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminPlayerEditor()">
+      <span class="material-icons">manage_accounts</span>
+      <span>Player</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminLocationCreator()">
+      <span class="material-icons">add_location_alt</span>
+      <span>Location</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminNpcEditor()">
+      <span class="material-icons">badge</span>
+      <span>NPC</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminShopEditor()">
+      <span class="material-icons">storefront</span>
+      <span>Shop</span>
+    </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminCreatureEditor()">
+      <span class="material-icons">pets</span>
+      <span>Creature</span>
     </div>
 
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
         <span class="material-icons">refresh</span> Refresh Data
       </button>
-      <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
-        <span class="material-icons">lock</span> Admin Access
-      </button>
-      <button *ngIf="isAdmin" type="button" class="update-button admin-btn" (click)="logoutAdmin()">
-        <span class="material-icons">lock_open</span> Logout Admin
-      </button>
     </div>
+    <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
+      <span class="material-icons">lock</span> Admin Access
+    </button>
   </div>
 </nav>
 
@@ -119,7 +138,9 @@
   <div class="confirmation-dialog">
     <h3>Admin Access</h3>
     <p>Enter admin password:</p>
-    <input #passwordInput type="password" style="margin-bottom: 10px; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;" (keyup.enter)="check(passwordInput.value)">
+    <input #passwordInput type="password"
+      style="margin-bottom: 10px; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;"
+      (keyup.enter)="check(passwordInput.value)">
     <div class="dialog-buttons">
       <button class="btn-cancel" (click)="cancel()">Cancel</button>
       <button class="btn-confirm" (click)="check(passwordInput.value)">Submit</button>

@@ -1,28 +1,15 @@
 <div class="admin-page">
-  <div class="player-detail-container admin-header">
-    <div>
-      <h2>{{ headerTitle }}</h2>
-      <p>{{ headerDescription }}</p>
-    </div>
-  </div>
 
   <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
     <h3>Admin Access Required</h3>
-    <p>This page is only available after logging in with the admin password from the sidebar.</p>
   </div>
 
   <div *ngIf="isAdmin" class="layout">
     <div class="player-detail-container admin-mode-panel">
-      <div class="item admin-section">
-        <h3>Creator Type</h3>
+      <div class="admin-section">
         <div class="creator-mode-buttons">
-          <button
-            *ngFor="let mode of creatorModes"
-            type="button"
-            class="inline-btn"
-            [class.active-mode]="creatorMode === mode.value"
-            (click)="setCreatorMode(mode.value)"
-          >
+          <button *ngFor="let mode of creatorModes" type="button" class="inline-btn"
+            [class.active-mode]="creatorMode === mode.value" (click)="setCreatorMode(mode.value)">
             {{ mode.label }}
           </button>
         </div>
@@ -30,7 +17,7 @@
     </div>
 
     <form class="player-detail-container" (ngSubmit)="submit()">
-      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+      <section class="admin-section" *ngIf="creatorMode === 'item'">
         <h3>Basic Details</h3>
 
         <label class="field">
@@ -57,7 +44,8 @@
 
         <label class="field">
           <span>Description</span>
-          <textarea [(ngModel)]="description" name="description" rows="4" placeholder="Item effect or flavor text"></textarea>
+          <textarea [(ngModel)]="description" name="description" rows="4"
+            placeholder="Item effect or flavor text"></textarea>
         </label>
 
         <div class="field-grid">
@@ -78,7 +66,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'armor'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'armor'">
         <h3>Armor Options</h3>
         <label class="field">
           <span>Body Type</span>
@@ -88,7 +76,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'ammunition'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'ammunition'">
         <h3>Ammunition Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -106,7 +94,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'mistEngine'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'mistEngine'">
         <h3>Mist Engine Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -126,7 +114,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'shipHull'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'shipHull'">
         <h3>Ship Hull Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -151,7 +139,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannon'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannon'">
         <h3>Cannon Options</h3>
         <div class="field-grid">
           <label class="field">
@@ -166,7 +154,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannonball'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'cannonball'">
         <h3>Cannonball Options</h3>
         <label class="field">
           <span>Damage</span>
@@ -174,7 +162,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'modification'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'modification'">
         <h3>Modification Options</h3>
         <label class="field">
           <span>Part</span>
@@ -184,7 +172,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'material'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'material'">
         <h3>Material Options</h3>
         <label class="field">
           <span>Dropped By</span>
@@ -195,7 +183,7 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'blueprint'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'blueprint'">
         <h3>Blueprint Options</h3>
 
         <label class="field">
@@ -231,7 +219,7 @@
         </ul>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'deployable'">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && selectedCategoryKey === 'deployable'">
         <h3>Deployable Options</h3>
 
         <label class="field">
@@ -272,13 +260,11 @@
         </label>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item'">
+      <section class="admin-section" *ngIf="creatorMode === 'item'">
         <div class="section-header">
           <h3>Stat Modifications</h3>
           <button class="inline-btn" type="button" (click)="addStatModification()">Add Modification</button>
         </div>
-
-        <p class="hint">Use this for direct stat changes such as wounds, save, hit, damage, attacks, or crit effects.</p>
 
         <div class="profile admin-subsection" *ngFor="let modification of statModifications; let i = index">
           <div class="field-grid">
@@ -304,7 +290,8 @@
 
             <label class="field">
               <span>Apply To Value</span>
-              <input [(ngModel)]="modification.applyToValue" [name]="'applyToValue-' + i" type="text" placeholder="human, rifle, 0..." />
+              <input [(ngModel)]="modification.applyToValue" [name]="'applyToValue-' + i" type="text"
+                placeholder="human, rifle, 0..." />
             </label>
           </div>
 
@@ -312,11 +299,10 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+      <section class="admin-section" *ngIf="creatorMode === 'letter'">
         <div class="section-header">
           <div>
             <h3>Letter Details</h3>
-            <p class="hint">Create letters, dossiers, and picked-up documents for selected players.</p>
           </div>
           <button class="remove-btn" type="button" *ngIf="editingLetterId !== null" (click)="deleteSelectedLetter()">
             Delete Selected Letter
@@ -327,12 +313,8 @@
           <label class="field">
             <span>Recipients</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                multiple
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="letterRecipientIds"
-                name="letterRecipientIds"
-              >
+              <mat-select multiple panelClass="weapon-rules-panel" [(ngModel)]="letterRecipientIds"
+                name="letterRecipientIds">
                 <mat-option *ngFor="let player of players" [value]="player.id">
                   {{ player.name }}
                 </mat-option>
@@ -343,12 +325,8 @@
           <label class="field">
             <span>Sender NPC</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="letterSenderId"
-                name="letterSenderId"
-                (selectionChange)="onLetterSenderIdChange()"
-              >
+              <mat-select panelClass="weapon-rules-panel" [(ngModel)]="letterSenderId" name="letterSenderId"
+                (selectionChange)="onLetterSenderIdChange()">
                 <mat-option [value]="null">None</mat-option>
                 <mat-option *ngFor="let npc of npcs" [value]="npc.id">
                   {{ npc.name }}
@@ -366,29 +344,21 @@
 
           <label class="field">
             <span>Date</span>
-            <input
-              [(ngModel)]="letterDate"
-              name="letterDate"
-              type="text"
-              placeholder="Start typing an Imperial date"
-            />
+            <input [(ngModel)]="letterDate" name="letterDate" type="text" placeholder="Start typing an Imperial date" />
             <small class="hint">{{ letterDateHelper }}</small>
           </label>
         </div>
 
         <label class="field">
           <span>Sender Name</span>
-          <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text" placeholder="NPC name or custom sender" />
+          <input [(ngModel)]="letterSenderName" name="letterSenderName" type="text"
+            placeholder="NPC name or custom sender" />
         </label>
 
         <label class="field">
           <span>Intended Targets</span>
-          <input
-            [(ngModel)]="letterTargetNamesInput"
-            name="letterTargetNamesInput"
-            type="text"
-            placeholder="Comma-separated names shown in the To: field"
-          />
+          <input [(ngModel)]="letterTargetNamesInput" name="letterTargetNamesInput" type="text"
+            placeholder="Comma-separated names shown in the To: field" />
         </label>
 
         <div class="field">
@@ -396,37 +366,30 @@
           <div class="creator-mode-buttons editor-toolbar">
             <button class="inline-btn" type="button" (click)="applyLetterFormatting('bold')">Bold</button>
             <button class="inline-btn" type="button" (click)="applyLetterFormatting('italic')">Italic</button>
-            <button class="inline-btn" type="button" (click)="applyLetterFormatting('insertUnorderedList')">Bullet List</button>
+            <button class="inline-btn" type="button" (click)="applyLetterFormatting('insertUnorderedList')">Bullet
+              List</button>
           </div>
-          <div
-            #letterMessageEditor
-            class="rich-editor"
-            contenteditable="true"
+          <div #letterMessageEditor class="rich-editor" contenteditable="true"
             data-placeholder="Write the letter here. Use Enter for new lines and the toolbar for formatting."
-            (input)="onLetterMessageInput($event)"
-          ></div>
+            (input)="onLetterMessageInput($event)"></div>
           <p class="hint">Supports bold, italic, new lines, and bullet points.</p>
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter'">
+      <section class="admin-section" *ngIf="creatorMode === 'letter'">
         <div class="section-header">
           <h3>Existing Letters</h3>
-          <button class="inline-btn" type="button" [disabled]="editingLetterId === null" (click)="clearLetterSelection()">
+          <button class="inline-btn" type="button" [disabled]="editingLetterId === null"
+            (click)="clearLetterSelection()">
             Deselect Letter
           </button>
         </div>
 
-        <p class="hint">Select a letter to edit it. Select it again or use the button above to clear the form.</p>
 
         <div class="admin-selection-list" *ngIf="letterSummaryOptions.length; else noLettersState">
-          <button
-            *ngFor="let letter of letterSummaryOptions"
-            type="button"
-            class="item admin-selection-item"
+          <button *ngFor="let letter of letterSummaryOptions" type="button" class="item admin-selection-item"
             [class.admin-selection-item-active]="editingLetterId === letter.id"
-            (click)="toggleLetterSelection(letter.id)"
-          >
+            (click)="toggleLetterSelection(letter.id)">
             <div class="selection-item-header">
               <strong>{{ letter.subject }}</strong>
               <span>{{ letter.date }}</span>
@@ -442,7 +405,7 @@
         </ng-template>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon'">
         <h3>Weapon Details</h3>
 
         <div class="field-grid">
@@ -458,7 +421,7 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon'">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon'">
         <div class="section-header">
           <h3>Profiles</h3>
           <button class="inline-btn" type="button" (click)="addWeaponProfile()">Add Profile</button>
@@ -473,7 +436,8 @@
           <div class="field-grid">
             <label class="field">
               <span>Profile Name</span>
-              <input [(ngModel)]="profile.profileName" [name]="'weapon-profile-name-' + i" type="text" placeholder='Leave empty for default "" profile' />
+              <input [(ngModel)]="profile.profileName" [name]="'weapon-profile-name-' + i" type="text"
+                placeholder='Leave empty for default "" profile' />
             </label>
 
             <label class="field">
@@ -485,12 +449,14 @@
 
             <label class="field">
               <span>Type</span>
-              <input [(ngModel)]="profile.type" [name]="'weapon-type-' + i" type="text" placeholder="rifle, sword, staff..." />
+              <input [(ngModel)]="profile.type" [name]="'weapon-type-' + i" type="text"
+                placeholder="rifle, sword, staff..." />
             </label>
 
             <label class="field">
               <span>Range</span>
-              <input [(ngModel)]="profile.rngInput" [name]="'weapon-range-' + i" type="text" placeholder='Use 0 for melee, blank for null/infinite' />
+              <input [(ngModel)]="profile.rngInput" [name]="'weapon-range-' + i" type="text"
+                placeholder='Use 0 for melee, blank for null/infinite' />
             </label>
 
             <label class="field">
@@ -517,13 +483,8 @@
           <div class="field">
             <span>Weapon Rules</span>
             <mat-form-field appearance="outline" class="weapon-rules-field">
-              <mat-select
-                multiple
-                panelClass="weapon-rules-panel"
-                [(ngModel)]="profile.selectedRuleIds"
-                [name]="'weapon-rules-' + i"
-                (selectionChange)="onWeaponRuleSelectionChange(profile)"
-              >
+              <mat-select multiple panelClass="weapon-rules-panel" [(ngModel)]="profile.selectedRuleIds"
+                [name]="'weapon-rules-' + i" (selectionChange)="onWeaponRuleSelectionChange(profile)">
                 <mat-option *ngFor="let rule of weaponRules" [value]="rule.id">
                   {{ rule.name }}
                 </mat-option>
@@ -534,13 +495,8 @@
           <div class="field-grid" *ngIf="profile.specialRules.length">
             <label class="field" *ngFor="let rule of profile.specialRules; let ruleIndex = index">
               <span>{{ getRuleName(rule.ruleId) }} Value</span>
-              <input
-                [(ngModel)]="rule.modValue"
-                [name]="'weapon-rule-value-' + i + '-' + ruleIndex"
-                [disabled]="!ruleNeedsValue(rule.ruleId)"
-                type="number"
-                placeholder="Optional"
-              />
+              <input [(ngModel)]="rule.modValue" [name]="'weapon-rule-value-' + i + '-' + ruleIndex"
+                [disabled]="!ruleNeedsValue(rule.ruleId)" type="number" placeholder="Optional" />
             </label>
           </div>
         </div>
@@ -554,24 +510,27 @@
     </form>
 
     <aside class="player-detail-container">
-      <section class="item admin-section">
+      <section class="admin-section">
         <h3>{{ creatorMode === 'item' ? 'Item' : creatorMode === 'weapon' ? 'Weapon' : 'Letter' }} JSON Preview</h3>
         <pre class="admin-preview-json">{{ previewJson }}</pre>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
+      <section class="admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
         <h3>{{ editingItemId !== null ? 'Last Saved Item' : 'Last Created Item' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedItem.name }}</div>
           <div><strong>Type:</strong> {{ lastCreatedItem.type }}</div>
           <div><strong>ID:</strong> {{ lastCreatedItem.id }}</div>
-          <div *ngIf="lastCreatedItem.talentId"><strong>Talent:</strong> {{ getTalentLabel(lastCreatedItem.talentId) }}</div>
-          <div *ngIf="lastCreatedDeployableSubtype"><strong>Deployable Subtype:</strong> {{ lastCreatedDeployableSubtype }}</div>
-          <div *ngIf="lastCreatedItem.bestiaryId"><strong>Creature:</strong> {{ getCreatureName(lastCreatedItem.bestiaryId) }}</div>
+          <div *ngIf="lastCreatedItem.talentId"><strong>Talent:</strong> {{ getTalentLabel(lastCreatedItem.talentId) }}
+          </div>
+          <div *ngIf="lastCreatedDeployableSubtype"><strong>Deployable Subtype:</strong> {{ lastCreatedDeployableSubtype
+            }}</div>
+          <div *ngIf="lastCreatedItem.bestiaryId"><strong>Creature:</strong> {{
+            getCreatureName(lastCreatedItem.bestiaryId) }}</div>
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
+      <section class="admin-section" *ngIf="creatorMode === 'weapon' && lastCreatedWeapon">
         <h3>{{ editingWeaponId !== null ? 'Last Saved Weapon' : 'Last Created Weapon' }}</h3>
         <div class="summary-list">
           <div><strong>Name:</strong> {{ lastCreatedWeapon.name }}</div>
@@ -581,12 +540,13 @@
         </div>
       </section>
 
-      <section class="item admin-section" *ngIf="creatorMode === 'letter' && lastCreatedLetter">
+      <section class="admin-section" *ngIf="creatorMode === 'letter' && lastCreatedLetter">
         <h3>{{ editingLetterId !== null ? 'Last Saved Letter' : 'Last Created Letter' }}</h3>
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastCreatedLetter.id }}</div>
           <div><strong>Subject:</strong> {{ lastCreatedLetter.subject || '(No subject)' }}</div>
-          <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}</div>
+          <div><strong>Sender:</strong> {{ lastCreatedLetter.senderName || getNpcName(lastCreatedLetter.senderId) }}
+          </div>
           <div><strong>Recipients:</strong> {{ lastCreatedLetter.recipientIds.length }}</div>
           <div><strong>Date:</strong> {{ lastCreatedLetter.date }}</div>
         </div>

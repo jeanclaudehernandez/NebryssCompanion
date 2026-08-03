@@ -1,11 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
-import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
-import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState, CartItem } from '../model';
+import { BestiaryEntry, ItemCategory, Items, NPC, Player, ScrollSection, Shop, Weapon, WeaponRule, AlteredState, CartItem, Location } from '../model';
 import { ActivePlayerService } from '../active-player.service';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
@@ -14,6 +13,9 @@ import { CartService } from '../cart.service';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
+import { AdminService } from '../admin.service';
+
+import { AdminEditorSession } from '../admin-editor.models';
 
 interface ShopCategoryData {
   category: ItemCategory;
@@ -27,6 +29,16 @@ interface ProcessedShop extends Shop {
   hasWeapons: boolean;
 }
 
+interface ShopLocationGroup {
+  key: string;
+  locationId: number | null;
+  locationName: string;
+  locationImageUrl?: string;
+  locationThumbnail?: string;
+  locationDescription?: string;
+  shops: ProcessedShop[];
+}
+
 @Component({
   selector: 'app-shops',
   standalone: true,
@@ -35,7 +47,6 @@ interface ProcessedShop extends Shop {
     WeaponTableComponent,
     GenericTableComponent,
     ScrollNavComponent,
-    ImageViewerComponent,
     MatTooltipModule
   ],
   templateUrl: './shops.component.html',
@@ -43,7 +54,10 @@ interface ProcessedShop extends Shop {
   encapsulation: ViewEncapsulation.None
 })
 export class ShopsComponent implements OnInit, OnDestroy {
+  @Input() initialShopName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
+  @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
+  @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
@@ -53,22 +67,35 @@ export class ShopsComponent implements OnInit, OnDestroy {
   weaponRulesData: WeaponRule[] = [];
   alteredStates: AlteredState[] = [];
   itemsCategories: ItemCategory[] = [];
+  locations: Location[] = [];
   shops: Shop[] = [];
-  processedShops: ProcessedShop[] = [];
+  processedShopGroups: ShopLocationGroup[] = [];
+  shopDisplayImages: { [shopId: number]: string } = {};
+  locationGroupColors: { [groupKey: string]: string } = {};
+  private readonly shopImageMaxWidth = 640;
+  private readonly shopImageAspectRatio = 21 / 9;
   npcs: NPC[] = [];
   isLoading = true;
   scrollSections: ScrollSection[] = [];
   isDarkMode: boolean = false;
+  isAdmin: boolean = false;
   activePlayerBodyTypes: string[] = [];
   private themeSubscription: Subscription = new Subscription();
   private cartSubscription: Subscription = new Subscription();
+  private adminSubscription: Subscription = new Subscription();
 
   // Shopping Cart
   cart: { [shopId: number]: CartItem[] } = {};
   showCartSidebar: boolean = false;
   
   @ViewChild('confirmPurchaseModal') confirmPurchaseModal!: TemplateRef<any>;
+  @ViewChild('shopImageModal') shopImageModal!: TemplateRef<any>;
   pendingTransaction: { shopId: number, method: 'digital' | 'physical' } | null = null;
+  selectedShopImageUrl: string | null = null;
+  selectedShopImageAlt = '';
+  shopImageLandscapeMode = false;
+  selectedShopImageNaturalWidth = 0;
+  selectedShopImageNaturalHeight = 0;
 
   constructor(
     private dataService: DataService,
@@ -77,12 +104,18 @@ export class ShopsComponent implements OnInit, OnDestroy {
     private toastService: ToastService,
     private modalService: ModalService,
     private cartService: CartService,
+    public adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
+    });
+
+    this.adminSubscription = this.adminService.isAdmin$.subscribe(isAdmin => {
+      this.isAdmin = isAdmin;
+      this.processShops();
     });
     
     this.activePlayerService.activePlayer$.subscribe(player => {
@@ -105,23 +138,108 @@ export class ShopsComponent implements OnInit, OnDestroy {
       this.alteredStates = response.alteredStates;
       this.shops = response.shops;
       this.itemsCategories = response.itemCategories;
-      this.scrollSections = this.shops.map(shop => ({
-        title: shop.name,
-        id: `shop-${shop.id}`
-      }));
+      this.locations = response.locations.locations;
+      this.npcs = response.npcs || [];
       this.processShops();
+
+      if (this.initialShopName) {
+        const targetShop = this.shops.find(s => s.name.toLowerCase() === this.initialShopName?.toLowerCase());
+        if (targetShop) {
+          const matchedGroup = this.processedShopGroups.find(g => g.shops.some(s => s.id === targetShop.id));
+          if (matchedGroup) {
+            localStorage.setItem(`${matchedGroup.key}-collapsed`, 'false');
+          }
+          setTimeout(() => {
+            const el = document.getElementById(`shop-${targetShop.id}`);
+            if (el) {
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              el.classList.add('highlight-shop');
+              setTimeout(() => el.classList.remove('highlight-shop'), 2500);
+            }
+          }, 200);
+        }
+      }
     });
   }
 
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
     this.cartSubscription.unsubscribe();
+    this.adminSubscription.unsubscribe();
+  }
+
+  toggleShopDiscovered(shop: Shop, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (!this.isAdmin || !shop) {
+      return;
+    }
+
+    const nextDiscovered = shop.discovered === false ? true : false;
+    const updatedShop: Shop = {
+      ...shop,
+      discovered: nextDiscovered
+    };
+
+    this.dataService.updateShop(updatedShop).subscribe({
+      next: saved => {
+        const index = this.shops.findIndex(s => s.id === saved.id);
+        if (index !== -1) {
+          this.shops[index] = { ...saved };
+        } else {
+          this.shops.push({ ...saved });
+        }
+        this.processShops();
+
+        this.toastService.show(
+          saved.discovered !== false
+            ? `Shop "${saved.name}" is now DISCOVERED (Visible to Players).`
+            : `Shop "${saved.name}" is now UNDISCOVERED (Hidden from Players).`,
+          'info'
+        );
+
+        this.dataService.refreshShops().subscribe({
+          next: refreshedShops => {
+            if (refreshedShops) {
+              this.shops = refreshedShops;
+              this.processShops();
+            }
+          }
+        });
+        this.cdr.markForCheck();
+      },
+      error: err => {
+        this.toastService.show(`Failed to update shop discovery status: ${err?.message || err}`, 'error');
+      }
+    });
+  }
+
+  editShopInEditor(shop: Shop, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.openAdminEditor.emit({ mode: 'shop', shop });
   }
 
   processShops() {
-    if (!this.shops || !this.itemsCategories) return;
+    if (!this.shops || !this.itemsCategories || !this.locations) return;
 
-    this.processedShops = this.shops.map(shop => {
+    const visibleShops = this.shops.filter(shop => {
+      if (this.isAdmin) {
+        return true;
+      }
+      if (shop.discovered === false) {
+        return false;
+      }
+      const matchedLocation = this.findShopLocation(shop);
+      if (matchedLocation && matchedLocation.discovered === false) {
+        return false;
+      }
+      return true;
+    });
+
+    const processedShops = visibleShops.map(shop => {
       const categoriesData: ShopCategoryData[] = (shop.categories || []).map(catId => {
         const category = this.findCategory(catId);
         if (!category) return null;
@@ -142,7 +260,76 @@ export class ShopsComponent implements OnInit, OnDestroy {
         hasWeapons: weaponsData.length > 0
       };
     });
+
+    const groupsMap = new Map<string, ShopLocationGroup>();
+
+    const worldMapLoc = this.locations.find(l => l.isWorldMap || (l as any).isworldMap || l.id === 0);
+    const defaultWorldMapImage = 'https://iili.io/3R2Be6u.png';
+    const worldMapImageUrl = worldMapLoc?.imgUrl || defaultWorldMapImage;
+    const worldMapThumbnail = worldMapLoc?.thumbnail || worldMapLoc?.imgUrl || defaultWorldMapImage;
+
+    processedShops.forEach(shop => {
+      const matchedLocation = this.findShopLocation(shop);
+      const isUnbound = !matchedLocation;
+
+      let groupKey: string;
+      let locationId: number | null;
+      let locationName: string;
+      let locationImageUrl: string | undefined;
+      let locationThumbnail: string | undefined;
+      let locationDescription: string | undefined;
+
+      if (isUnbound) {
+        groupKey = 'unbound';
+        locationId = 0;
+        locationName = 'Unbound';
+        locationImageUrl = worldMapImageUrl;
+        locationThumbnail = worldMapThumbnail;
+        locationDescription = 'Wandering merchants, traveling traders, and elusive sanctuaries with no fixed location across Nebryss.';
+      } else {
+        locationId = typeof matchedLocation?.id === 'number'
+          ? matchedLocation.id
+          : (typeof shop.locationId === 'number' ? shop.locationId : null);
+        locationName = matchedLocation?.name || shop.locationName || shop.location || 'Unknown Location';
+        groupKey = locationId !== null
+          ? `location-${locationId}`
+          : `location-name-${locationName.toLowerCase()}`;
+        locationImageUrl = matchedLocation?.imgUrl;
+        locationThumbnail = matchedLocation?.thumbnail;
+        locationDescription = matchedLocation?.description;
+      }
+
+      if (!groupsMap.has(groupKey)) {
+        groupsMap.set(groupKey, {
+          key: groupKey,
+          locationId,
+          locationName,
+          locationImageUrl,
+          locationThumbnail,
+          locationDescription,
+          shops: []
+        });
+      }
+
+      groupsMap.get(groupKey)!.shops.push(shop);
+    });
+
+    this.processedShopGroups = Array.from(groupsMap.values());
+    this.processedShopGroups.sort((a, b) => {
+      if (a.key === 'unbound') return 1;
+      if (b.key === 'unbound') return -1;
+      return 0;
+    });
+
+    this.scrollSections = this.processedShopGroups.map(group => ({
+      title: group.locationName,
+      id: this.getLocationGroupElementId(group)
+    }));
     this.cdr.markForCheck();
+  }
+
+  trackByLocationGroup(index: number, group: ShopLocationGroup): string {
+    return group.key;
   }
 
   trackByShop(index: number, shop: ProcessedShop): number {
@@ -151,6 +338,184 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   trackByCategory(index: number, item: ShopCategoryData): number {
     return item.category.id;
+  }
+
+  getLocationGroupElementId(group: ShopLocationGroup): string {
+    if (group.key === 'unbound') {
+      return 'shop-location-unbound';
+    }
+    return group.locationId !== null ? `shop-location-${group.locationId}` : group.key;
+  }
+
+  getLocationGroupStyles(group: ShopLocationGroup): Record<string, string> {
+    return {
+      '--shop-group-color-rgb': this.locationGroupColors[group.key] || '27, 42, 51'
+    };
+  }
+
+  isLocationGroupCollapsed(group: ShopLocationGroup): boolean {
+    const saved = localStorage.getItem(`${group.key}-collapsed`);
+    return saved ? JSON.parse(saved) : false;
+  }
+
+  toggleLocationGroup(group: ShopLocationGroup): void {
+    const newState = !this.isLocationGroupCollapsed(group);
+    localStorage.setItem(`${group.key}-collapsed`, JSON.stringify(newState));
+  }
+
+  onLocationGroupImageLoad(event: Event, group: ShopLocationGroup) {
+    if (this.locationGroupColors[group.key]) return;
+
+    const img = event.target as HTMLImageElement;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
+    try {
+      const targetWidth = Math.min(72, img.naturalWidth);
+      const targetHeight = Math.max(1, Math.round((img.naturalHeight / img.naturalWidth) * targetWidth));
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) return;
+
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      const { data } = ctx.getImageData(0, 0, targetWidth, targetHeight);
+      const buckets = new Map<string, { score: number; r: number; g: number; b: number }>();
+
+      for (let y = 0; y < targetHeight; y += 2) {
+        for (let x = 0; x < targetWidth; x += 2) {
+          const pixelIndex = (y * targetWidth + x) * 4;
+          const alpha = data[pixelIndex + 3];
+          if (alpha < 200) continue;
+
+          const r = data[pixelIndex];
+          const g = data[pixelIndex + 1];
+          const b = data[pixelIndex + 2];
+          const { saturation, lightness } = this.getRgbStats(r, g, b);
+
+          if (lightness < 0.08 || lightness > 0.9) continue;
+
+          const bucketR = Math.round(r / 24) * 24;
+          const bucketG = Math.round(g / 24) * 24;
+          const bucketB = Math.round(b / 24) * 24;
+          const key = `${bucketR},${bucketG},${bucketB}`;
+          const current = buckets.get(key) || { score: 0, r: 0, g: 0, b: 0 };
+
+          const centerBiasX = 1 - Math.abs((x / Math.max(targetWidth - 1, 1)) - 0.5) * 0.55;
+          const centerBiasY = 1 - Math.abs((y / Math.max(targetHeight - 1, 1)) - 0.5) * 0.35;
+          const vividnessWeight = 0.45 + (saturation * 1.25);
+          const lightnessWeight = 1 - Math.min(Math.abs(lightness - 0.52), 0.52);
+          const weight = centerBiasX * centerBiasY * vividnessWeight * lightnessWeight;
+
+          current.score += weight;
+          current.r += r * weight;
+          current.g += g * weight;
+          current.b += b * weight;
+          buckets.set(key, current);
+        }
+      }
+
+      const topBuckets = Array.from(buckets.values())
+        .filter(bucket => bucket.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
+
+      if (!topBuckets.length) return;
+
+      let totalScore = 0;
+      let totalR = 0;
+      let totalG = 0;
+      let totalB = 0;
+
+      topBuckets.forEach(bucket => {
+        const avgR = bucket.r / bucket.score;
+        const avgG = bucket.g / bucket.score;
+        const avgB = bucket.b / bucket.score;
+
+        totalScore += bucket.score;
+        totalR += avgR * bucket.score;
+        totalG += avgG * bucket.score;
+        totalB += avgB * bucket.score;
+      });
+
+      if (!totalScore) return;
+
+      const softened = this.softenGroupColor(
+        Math.round(totalR / totalScore),
+        Math.round(totalG / totalScore),
+        Math.round(totalB / totalScore)
+      );
+
+      this.locationGroupColors[group.key] = `${softened.r}, ${softened.g}, ${softened.b}`;
+      this.cdr.markForCheck();
+    } catch {
+      // Cross-origin or decode failure: keep the default group tint.
+    }
+  }
+
+  private getRgbStats(r: number, g: number, b: number): { saturation: number; lightness: number } {
+    const red = r / 255;
+    const green = g / 255;
+    const blue = b / 255;
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+    const lightness = (max + min) / 2;
+
+    if (max === min) {
+      return { saturation: 0, lightness };
+    }
+
+    const delta = max - min;
+    const saturation = lightness > 0.5
+      ? delta / (2 - max - min)
+      : delta / (max + min);
+
+    return { saturation, lightness };
+  }
+
+  private softenGroupColor(r: number, g: number, b: number): { r: number; g: number; b: number } {
+    const mix = 0.18;
+    return {
+      r: Math.round(r * (1 - mix) + 27 * mix),
+      g: Math.round(g * (1 - mix) + 42 * mix),
+      b: Math.round(b * (1 - mix) + 51 * mix)
+    };
+  }
+
+  // Re-encodes the loaded photo at a lower resolution so the wide banner isn't served at full source size.
+  onShopImageLoad(event: Event, shopId: number) {
+    if (this.shopDisplayImages[shopId]) return;
+    const img = event.target as HTMLImageElement;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
+    try {
+      const targetWidth = Math.min(this.shopImageMaxWidth, img.naturalWidth);
+      const targetHeight = Math.round(targetWidth / this.shopImageAspectRatio);
+
+      const srcRatio = img.naturalWidth / img.naturalHeight;
+      let sx = 0, sy = 0, sw = img.naturalWidth, sh = img.naturalHeight;
+      if (srcRatio > this.shopImageAspectRatio) {
+        sw = img.naturalHeight * this.shopImageAspectRatio;
+        sx = (img.naturalWidth - sw) / 2;
+      } else {
+        sh = img.naturalWidth / this.shopImageAspectRatio;
+        sy = (img.naturalHeight - sh) / 2;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, targetWidth, targetHeight);
+
+      this.shopDisplayImages[shopId] = canvas.toDataURL('image/jpeg', 0.75);
+    } catch {
+      // Cross-origin or decode failure: keep showing the original source image.
+    }
   }
 
   getOwnerName(owner: number) {
@@ -171,6 +536,45 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   findCategory(categoryId: number) {
     return this.itemsCategories.filter((category) => category.id === categoryId)[0];
+  }
+
+  private findShopLocation(shop: Shop): Location | undefined {
+    if (shop.locationName && shop.locationName.trim().toLowerCase() === 'unbound') {
+      return undefined;
+    }
+    if (shop.location && shop.location.trim().toLowerCase() === 'unbound') {
+      return undefined;
+    }
+    if (typeof shop.locationId === 'number') {
+      if (shop.locationId === 0) {
+        return undefined;
+      }
+      const locationById = this.locations.find(location => location.id === shop.locationId);
+      if (locationById && !locationById.isWorldMap && !(locationById as any).isworldMap && locationById.id !== 0) {
+        return locationById;
+      }
+    }
+
+    const normalizedLocationName = this.normalizeText(shop.locationName || shop.location);
+    if (!normalizedLocationName || normalizedLocationName === 'unbound') {
+      return undefined;
+    }
+
+    return this.locations.find(location =>
+      !location.isWorldMap &&
+      !(location as any).isworldMap &&
+      location.id !== 0 &&
+      this.normalizeText(location.name) === normalizedLocationName
+    );
+  }
+
+  private normalizeText(value?: string): string {
+    return (value || '')
+      .normalize('NFKD')
+      .replace(/[’']/g, "'")
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase();
   }
 
   getShopItemsWithPrices(shop: Shop, categoryKey: string) {
@@ -228,6 +632,112 @@ export class ShopsComponent implements OnInit, OnDestroy {
 
   onLocationClick(locationName: string) {
     this.navigateToLocation.emit(locationName);
+  }
+
+  getOwnerNpc(ownerId: number | null): NPC | null {
+    if (!ownerId) return null;
+    return this.npcs.find(n => n.id === ownerId) || null;
+  }
+
+  onNpcOwnerClick(ownerId: number | null, event?: Event): void {
+    if (event) event.stopPropagation();
+    if (!ownerId) return;
+    const npc = this.npcs.find(n => n.id === ownerId);
+    if (npc) {
+      this.navigateToNpc.emit({ npcId: npc.id, npcName: npc.name });
+    }
+  }
+
+  openShopImageModal(shop: Shop) {
+    if (!shop.imgUrl) return;
+
+    this.selectedShopImageUrl = shop.imgUrl;
+    this.selectedShopImageAlt = shop.name;
+    this.shopImageLandscapeMode = false;
+    this.selectedShopImageNaturalWidth = 0;
+    this.selectedShopImageNaturalHeight = 0;
+
+    this.modalService.openFromTemplate(this.shopImageModal, null, {
+      width: 'auto',
+      height: 'auto',
+      overlayClass: 'shop-image-overlay',
+      contentClass: 'shop-image-content',
+      showCloseButton: false,
+      onClose: () => this.resetShopImageModalState()
+    });
+  }
+
+  toggleShopImageOrientation() {
+    this.shopImageLandscapeMode = !this.shopImageLandscapeMode;
+  }
+
+  onShopImageModalLoad(event: Event) {
+    const img = event.target as HTMLImageElement;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+
+    this.selectedShopImageNaturalWidth = img.naturalWidth;
+    this.selectedShopImageNaturalHeight = img.naturalHeight;
+    this.cdr.markForCheck();
+  }
+
+  getShopImageViewportStyles(): Record<string, string> {
+    const size = this.getShopImageRenderSize();
+    return {
+      width: `${Math.round(size.viewportWidth)}px`,
+      height: `${Math.round(size.viewportHeight)}px`
+    };
+  }
+
+  getShopImageStyles(): Record<string, string> {
+    const size = this.getShopImageRenderSize();
+    return {
+      width: `${Math.round(size.imageWidth)}px`,
+      height: `${Math.round(size.imageHeight)}px`
+    };
+  }
+
+  private getShopImageRenderSize() {
+    if (!this.selectedShopImageNaturalWidth || !this.selectedShopImageNaturalHeight) {
+      return {
+        viewportWidth: 0,
+        viewportHeight: 0,
+        imageWidth: 0,
+        imageHeight: 0
+      };
+    }
+
+    const compactLayout = window.innerWidth <= 640;
+    const framePadding = compactLayout ? 16 : 24;
+    const controlReserve = compactLayout ? 60 : 68;
+    const maxWidth = Math.max(
+      window.innerWidth - framePadding - (this.shopImageLandscapeMode ? controlReserve : 0),
+      120
+    );
+    const maxHeight = Math.max(
+      window.innerHeight - framePadding - (this.shopImageLandscapeMode ? 0 : controlReserve),
+      120
+    );
+
+    const sourceWidth = this.shopImageLandscapeMode ? this.selectedShopImageNaturalHeight : this.selectedShopImageNaturalWidth;
+    const sourceHeight = this.shopImageLandscapeMode ? this.selectedShopImageNaturalWidth : this.selectedShopImageNaturalHeight;
+    const scale = Math.min(maxWidth / sourceWidth, maxHeight / sourceHeight, 1);
+    const viewportWidth = sourceWidth * scale;
+    const viewportHeight = sourceHeight * scale;
+
+    return {
+      viewportWidth,
+      viewportHeight,
+      imageWidth: this.selectedShopImageNaturalWidth * scale,
+      imageHeight: this.selectedShopImageNaturalHeight * scale
+    };
+  }
+
+  private resetShopImageModalState() {
+    this.selectedShopImageUrl = null;
+    this.selectedShopImageAlt = '';
+    this.shopImageLandscapeMode = false;
+    this.selectedShopImageNaturalWidth = 0;
+    this.selectedShopImageNaturalHeight = 0;
   }
 
   hasActivePlayer(): boolean {

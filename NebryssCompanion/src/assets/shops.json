@@ -1,167 +1,804 @@
-[
-  {
-    "id": 1,
-    "name": "Herbwhisper's Apothecary",
-    "owner": 6,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-    "imgUrl": "https://iili.io/fv04hIj.jpg",
-    "thumbnail": "https://iili.io/fv04hIj.th.jpg",
-    "categories": [2],
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      { "id": 16, "price": 5, "type": "item" },
-      { "id": 17, "price": 3, "type": "item" },
-      { "id": 18, "price": 6, "type": "item" },
-      { "id": 19, "price": 7, "type": "item" },
-      { "id": 20, "price": 2, "type": "item" },
-      { "id": 21, "price": 9, "type": "item" },
-      { "id": 22, "price": 3.5, "type": "item" },
-      { "id": 24, "price": 2, "type": "item" }
-    ]
+[{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae1"
   },
-  {
-    "id": 2,
-    "name": "Ironveil’s Ward",
-    "owner": 7,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
-    "imgUrl": "https://iili.io/fv04Wmb.jpg",
-    "thumbnail": "https://iili.io/fv04Wmb.th.jpg",
-    "categories": [1],
-    "paymentMethod": {
-      "digital": true,
-      "physical": true
-    },
-    "items": [
-      { "id": 1, "price": 8, "type": "item" },
-      { "id": 2, "price": 18, "type": "item" },
-      { "id": 3, "price": 22, "type": "item" },
-      { "id": 4, "price": 25, "type": "item" },
-      { "id": 5, "price": 30, "type": "item" },
-      { "id": 6, "price": 25, "type": "item" },
-      { "id": 7, "price": 50, "type": "item" }
-    ]
+  "id": 1,
+  "name": "Herbwhisper's Apothecary",
+  "owner": 6,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+  "imgUrl": "https://iili.io/CSTieSe.png",
+  "thumbnail": "https://iili.io/CSTieSe.th.png",
+  "categories": [
+    2
+  ],
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
   },
-  {
-    "id": 3,
-    "name": "Blackhammer’s Arsenal",
-    "owner": 8,
-    "location": "Zephyria’s Sky Bazaar",
-    "locationName": "Zephyria",
-    "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
-    "imgUrl": "https://iili.io/fv04jhx.jpg",
-    "thumbnail": "https://iili.io/fv04jhx.th.jpg",
-    "paymentMethod": {
-      "digital": true,
-      "physical": true
+  "items": [
+    {
+      "id": 16,
+      "price": 5,
+      "type": "item"
     },
-    "items": [
-      { "id": 25, "price": 15, "type": "weapon" },
-      { "id": 2, "price": 12, "type": "weapon" }, 
-      { "id": 29, "price": 20, "type": "weapon" },
-      { "id": 26, "price": 17, "type": "weapon" },
-      { "id": 37, "price": 35, "type": "weapon" },
-      { "id": 28, "price": 25, "type": "weapon" },
-      { "id": 36, "price": 50, "type": "weapon" },
-      { "id": 35, "price": 30, "type": "weapon" } 
-    ]
+    {
+      "id": 17,
+      "price": 3,
+      "type": "item"
+    },
+    {
+      "id": 18,
+      "price": 6,
+      "type": "item"
+    },
+    {
+      "id": 19,
+      "price": 7,
+      "type": "item"
+    },
+    {
+      "id": 20,
+      "price": 2,
+      "type": "item"
+    },
+    {
+      "id": 21,
+      "price": 9,
+      "type": "item"
+    },
+    {
+      "id": 22,
+      "price": 3.5,
+      "type": "item"
+    },
+    {
+      "id": 24,
+      "price": 2,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true,
+  "categoriesData": [
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08834",
+        "id": 2,
+        "name": "Consumables",
+        "key": "consumable",
+        "headers": [
+          "Name",
+          "Price",
+          "Description"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "description"
+        ]
+      },
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69df",
+          "id": 21,
+          "name": "Medkit",
+          "price": 9,
+          "description": "Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e2",
+          "id": 24,
+          "name": "Medical Supplies",
+          "price": 2,
+          "description": "A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69da",
+          "id": 16,
+          "name": "Mist Compass",
+          "price": 5,
+          "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69db",
+          "name": "Stimpack",
+          "type": "consumable",
+          "id": 17,
+          "description": "Single-use injector, restores 1D3+1 wounds to the user or target within control range. Combat: 0AP (once per activation), cannot be used within Control Range of enemy operatives and cannot be used to heal allies.",
+          "price": 3
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69dc",
+          "id": 18,
+          "name": "Mist Grenade",
+          "price": 6,
+          "description": "A: 1 -- RNG: 6 inches -- WS: - -- DMG: -/- -- SR: Blast (3 inches), Mist Dispersal.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69dd",
+          "id": 19,
+          "name": "Mist Lantern",
+          "price": 7,
+          "description": "A portable light source that pierces through dense mist, illuminating a 6 inches radius.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69de",
+          "id": 20,
+          "name": "Rations Pack",
+          "price": 2,
+          "description": "A week's worth of preserved food and water, essential for long journeys.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e0",
+          "id": 22,
+          "name": "Mist-Repellent Spray",
+          "price": 3.5,
+          "description": "Single-use spray that clears mist in a 1 inch radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+          "type": "consumable"
+        }
+      ]
+    }
+  ],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae2"
   },
-  {
-    "id": 4,
-    "name": "Anchorforge's Drydock",
-    "owner": 9,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers",
-    "imgUrl": "https://iili.io/fv04wLQ.jpg",
-    "thumbnail": "https://iili.io/fv04wLQ.th.jpg",
-    "categories": [4, 5, 6, 7],
-    "paymentMethod": {
-      "digital": true,
-      "physical": false
-    },
-    "items": [
-      { "id": 40, "price": 500, "type": "item" },
-      { "id": 41, "price": 450, "type": "item" },
-      { "id": 42, "price": 400, "type": "item" },
-      { "id": 43, "price": 850, "type": "item" },
-      { "id": 45, "price": 800, "type": "item" },
-      { "id": 46, "price": 750, "type": "item" },
-      { "id": 47, "price": 700, "type": "item" },
-      { "id": 48, "price": 900, "type": "item" },
-      { "id": 49, "price": 30, "type": "item" }, 
-      { "id": 50, "price": 50, "type": "item" }, 
-      { "id": 51, "price": 60, "type": "item" }, 
-      { "id": 52, "price": 700, "type": "item" },
-      { "id": 53, "price": 50, "type": "item" }, 
-      { "id": 54, "price": 100, "type": "item" },
-      { "id": 55, "price": 150, "type": "item" },
-      { "id": 56, "price": 200, "type": "item" } 
-    ]
+  "id": 2,
+  "name": "Ironveil’s Ward",
+  "owner": 7,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+  "imgUrl": "https://iili.io/CSTiNK7.png",
+  "thumbnail": "https://iili.io/CSTiNK7.th.png",
+  "categories": [
+    1
+  ],
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
   },
-  {
-    "id": 5,
-    "name": "The Stoutbarrel Tavern",
-    "owner": 10,
-    "location": "Zephyria",
-    "locationName": "Zephyria",
-    "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
-    "imgUrl": "https://iili.io/fv04eEB.jpg",
-    "thumbnail": "https://iili.io/fv04eEB.th.jpg",
-    "categories": [2],
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
+  "items": [
+    {
+      "id": 1,
+      "price": 8,
+      "type": "item"
     },
-    "items": [
-      { "id": 20, "price": 2, "type": "item" },
-      { "id": 17, "price": 3, "type": "item" },
-      { "id": 22, "price": 3.5, "type": "item" },
-      { "id": 23, "price": 2.5, "type": "item" },
-      { "id": 26, "price": 1, "type": "item" }
-    ]
+    {
+      "id": 2,
+      "price": 18,
+      "type": "item"
+    },
+    {
+      "id": 3,
+      "price": 22,
+      "type": "item"
+    },
+    {
+      "id": 4,
+      "price": 25,
+      "type": "item"
+    },
+    {
+      "id": 5,
+      "price": 30,
+      "type": "item"
+    },
+    {
+      "id": 6,
+      "price": 25,
+      "type": "item"
+    },
+    {
+      "id": 7,
+      "price": 50,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  " discovered": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae3"
   },
-  {
-    "id": 6,
-    "name": "Skyguide’s Emporium",
-    "owner": 11,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "categories": [2],
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      { "id": 16, "price": 4, "type": "item" },
-      { "id": 8, "price": 12, "type": "item" },
-      { "id": 25, "price": 10, "type": "item" },
-      { "id": 19, "price": 7, "type": "item" },
-      { "id": 27, "price": 20, "type": "item" }
-    ]
+  "id": 3,
+  "name": "Blackhammer’s Arsenal",
+  "owner": 8,
+  "location": "Zephyria’s Sky Bazaar",
+  "locationName": "Zephyria",
+  "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+  "imgUrl": "https://iili.io/CSTiUDx.png",
+  "thumbnail": "https://iili.io/CSTiUDx.th.png",
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
   },
-  {
-    "id": 7,
-    "name": "The Shaman's Circle",
-    "owner": 16,
-    "location": "Misthaven",
-    "locationName": "Misthaven",
-    "imgUrl": "https://iili.io/qngopF1.jpg",
-    "thumbnail": "https://iili.io/qngopF1.th.jpg",
-    "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
+  "items": [
+    {
+      "id": 25,
+      "price": 15,
+      "type": "weapon"
     },
-    "items": [
-      { "id": 102, "price": 50, "type": "weapon" },
-      { "id": 105, "price": 40, "type": "weapon" }
-    ]
-  }
-]
+    {
+      "id": 2,
+      "price": 12,
+      "type": "weapon"
+    },
+    {
+      "id": 29,
+      "price": 20,
+      "type": "weapon"
+    },
+    {
+      "id": 26,
+      "price": 17,
+      "type": "weapon"
+    },
+    {
+      "id": 37,
+      "price": 35,
+      "type": "weapon"
+    },
+    {
+      "id": 28,
+      "price": 25,
+      "type": "weapon"
+    },
+    {
+      "id": 36,
+      "price": 50,
+      "type": "weapon"
+    },
+    {
+      "id": 35,
+      "price": 30,
+      "type": "weapon"
+    },
+    {
+      "id": 107,
+      "price": 2,
+      "type": "weapon"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae4"
+  },
+  "id": 4,
+  "name": "Anchorforge's Drydock",
+  "owner": 9,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers",
+  "imgUrl": "https://iili.io/CSTiXol.png",
+  "thumbnail": "https://iili.io/CSTiXol.th.png",
+  "categories": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "paymentMethod": {
+    "digital": true,
+    "physical": false
+  },
+  "items": [
+    {
+      "id": 40,
+      "price": 500,
+      "type": "item"
+    },
+    {
+      "id": 41,
+      "price": 450,
+      "type": "item"
+    },
+    {
+      "id": 42,
+      "price": 400,
+      "type": "item"
+    },
+    {
+      "id": 43,
+      "price": 850,
+      "type": "item"
+    },
+    {
+      "id": 45,
+      "price": 800,
+      "type": "item"
+    },
+    {
+      "id": 46,
+      "price": 750,
+      "type": "item"
+    },
+    {
+      "id": 47,
+      "price": 700,
+      "type": "item"
+    },
+    {
+      "id": 48,
+      "price": 900,
+      "type": "item"
+    },
+    {
+      "id": 49,
+      "price": 30,
+      "type": "item"
+    },
+    {
+      "id": 50,
+      "price": 50,
+      "type": "item"
+    },
+    {
+      "id": 51,
+      "price": 60,
+      "type": "item"
+    },
+    {
+      "id": 52,
+      "price": 700,
+      "type": "item"
+    },
+    {
+      "id": 53,
+      "price": 50,
+      "type": "item"
+    },
+    {
+      "id": 54,
+      "price": 100,
+      "type": "item"
+    },
+    {
+      "id": 55,
+      "price": 150,
+      "type": "item"
+    },
+    {
+      "id": 56,
+      "price": 200,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discvored": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae5"
+  },
+  "id": 5,
+  "name": "The Stoutbarrel Tavern",
+  "owner": 10,
+  "location": "Zephyria",
+  "locationName": "Zephyria",
+  "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
+  "imgUrl": "https://iili.io/CSTi8Ab.png",
+  "thumbnail": "https://iili.io/CSTi8Ab.th.png",
+  "categories": [
+    2
+  ],
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 20,
+      "price": 2,
+      "type": "item"
+    },
+    {
+      "id": 17,
+      "price": 3,
+      "type": "item"
+    },
+    {
+      "id": 22,
+      "price": 3.5,
+      "type": "item"
+    },
+    {
+      "id": 23,
+      "price": 2.5,
+      "type": "item"
+    },
+    {
+      "id": 26,
+      "price": 1,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae6"
+  },
+  "id": 6,
+  "name": "Skyguide’s Emporium",
+  "owner": 11,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "categories": [
+    2
+  ],
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 16,
+      "price": 4,
+      "type": "item"
+    },
+    {
+      "id": 8,
+      "price": 12,
+      "type": "item"
+    },
+    {
+      "id": 25,
+      "price": 10,
+      "type": "item"
+    },
+    {
+      "id": 19,
+      "price": 7,
+      "type": "item"
+    },
+    {
+      "id": 27,
+      "price": 20,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "69aa0d0b1d3387484b352149"
+  },
+  "id": 7,
+  "name": "The Shaman's Circle",
+  "owner": 16,
+  "location": "Misthaven",
+  "locationName": "Misthaven",
+  "imgUrl": "https://iili.io/CSTijPS.png",
+  "thumbnail": "https://iili.io/CSTijPS.th.png",
+  "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 102,
+      "price": 50,
+      "type": "weapon"
+    },
+    {
+      "id": 105,
+      "price": 40,
+      "type": "weapon"
+    }
+  ],
+  "locationId": 6,
+  "discovered": false,
+  "categoriesData": [],
+  "weaponsData": [
+    {
+      "_id": "69ac39b03b7e32e8c2926ac5",
+      "id": 102,
+      "name": "Fireball",
+      "price": 50,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 8,
+          "attacks": 4,
+          "ws": 4,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 30,
+              "modValue": 2
+            },
+            {
+              "ruleId": 6,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926ac8",
+      "id": 105,
+      "name": "Arcane Missiles",
+      "price": 40,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 5,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 3
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 18,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    }
+  ],
+  "weaponIds": [
+    102,
+    105
+  ],
+  "hasWeapons": true
+},
+{
+  "_id": {
+    "$oid": "69aa31f11d3387484b352162"
+  },
+  "id": 8,
+  "name": "The Gloom-Weaver's Sanctuary",
+  "owner": 18,
+  "locationId": 0,
+  "locationName": "Unbound",
+  "location": "Unbound",
+  "description": "A secluded, shifting sanctuary veiled in thick purple-tinted mist. Shelves carved from petrified wood hold grim scrolls, grimoires, and glowing spell-shards. Mother Morvath offers her ancient forbidden spells to anyone who dares to seek out her dark wisdom.",
+  "discovered": false,
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 112,
+      "price": 65,
+      "type": "weapon"
+    },
+    {
+      "id": 113,
+      "price": 75,
+      "type": "weapon"
+    },
+    {
+      "id": 46,
+      "price": 45,
+      "type": "weapon"
+    },
+    {
+      "id": 106,
+      "price": 70,
+      "type": "weapon"
+    },
+    {
+      "id": 45,
+      "price": 30,
+      "type": "weapon"
+    }
+  ],
+  "categoriesData": [],
+  "weaponsData": [
+    {
+      "_id": "69ac39b03b7e32e8c2926a8c",
+      "id": 45,
+      "name": "Psychic Shriek",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 2,
+          "ws": 4,
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 18,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a8d",
+      "id": 46,
+      "name": "Balefire Bolt",
+      "price": 45,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 30,
+              "modValue": 2
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926ac9",
+      "id": 106,
+      "name": "Warp Tear",
+      "price": 70,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 5,
+            "max": 7
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 15,
+              "modValue": null
+            },
+            {
+              "ruleId": 34,
+              "modValue": 2
+            },
+            {
+              "ruleId": 35,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352158",
+      "id": 112,
+      "name": "Maledictum Hex",
+      "price": 65,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 10,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 51,
+              "modValue": null
+            },
+            {
+              "ruleId": 58,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352159",
+      "id": 113,
+      "name": "Siphon Soul",
+      "price": 75,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 3,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 39,
+              "modValue": null
+            },
+            {
+              "ruleId": 53,
+              "modValue": 1
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    }
+  ],
+  "weaponIds": [
+    45,
+    46,
+    106,
+    112,
+    113
+  ],
+  "hasWeapons": true
+}]

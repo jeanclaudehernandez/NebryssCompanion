@@ -41,9 +41,4 @@ export class CustomDropdownComponent {
   onClick(event: MouseEvent) {
     this.closeIfClickedOutside(event.target);
   }
-
-  @HostListener('document:touchstart', ['$event'])
-  onTouchStart(event: TouchEvent) {
-    this.closeIfClickedOutside(event.target);
-  }
 }

@@ -1,5 +1,4 @@
 .talents-container {
-    padding: 10px;
     position: relative;
 }
 
@@ -158,6 +157,10 @@ body.dark-theme .talent-points-pill {
     border-left: 4px solid #2ecc71;
 }
 
+.talent-card.removal-locked {
+    cursor: not-allowed;
+}
+
 .requirements {
     color: #666;
     font-style: italic;
@@ -256,6 +259,10 @@ body.dark-theme .talent-card:hover {
 body.dark-theme .talent-card.selected {
     background-color: #14532d;
     border-left: 4px solid #22c55e;
+}
+
+body.dark-theme .talent-card.removal-locked {
+    cursor: not-allowed;
 }
 
 body.dark-theme .requirements {

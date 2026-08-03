@@ -1,59 +1,137 @@
 .locations-page {
   display: flex;
-  height: calc(100vh - 100px);
-  max-width: 1200px;
-  margin: 0 auto;
-  background-color: rgba(20, 20, 20, 0.8);
+  height: calc(100vh - 60px);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  background-color: transparent;
   color: #e0e0e0;
   overflow: hidden;
 }
 
+/* Full screen view when a location is selected */
+.locations-page.has-selected-location .locations-sidebar {
+  display: none !important;
+}
+
+.locations-page.has-selected-location .location-details-container {
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+}
+
+.locations-page.has-selected-location .location-details {
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* When no location is selected, sidebar/directory fills the view cleanly */
+.locations-page.no-location-selected .locations-sidebar {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-width: 0;
+  border-right: none;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.locations-page.no-location-selected .location-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
 /* Sidebar Styles */
 .locations-sidebar {
-  width: 300px;
-  min-width: 300px;
+  width: 320px;
+  min-width: 320px;
   overflow-y: auto;
-  padding: 20px;
-  background-color: rgba(30, 30, 30, 0.9);
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(18, 18, 20, 0.85);
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .locations-sidebar h2 {
   text-align: center;
   color: #f0f0f0;
   margin-bottom: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   padding-bottom: 10px;
 }
 
 .faction-section {
-  margin-bottom: 25px;
+  --faction-color-rgb: 27, 42, 51;
+  margin-bottom: 24px;
+  border-radius: 18px;
+  background: linear-gradient(180deg,
+      rgba(var(--faction-color-rgb), 0.25) 0%,
+      rgba(var(--faction-color-rgb), 0.12) 100%);
+  border: 1px solid rgba(var(--faction-color-rgb), 0.35);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.25);
+  transition: all 0.3s ease;
 }
 
 .faction-header {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: space-between;
+  margin-bottom: 12px;
   cursor: pointer;
-  padding: 5px;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgb(var(--faction-color-rgb));
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  user-select: none;
 }
 
 .faction-header:hover {
-  background-color: rgba(100, 181, 246, 0.15);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.38);
+}
+
+.faction-header-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
 }
 
 .faction-header h3 {
-  color: #afd5fe;
+  color: #f4f8fb;
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.faction-collapse-btn {
+  background: transparent;
+  border: none;
+  color: rgba(244, 248, 251, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.faction-header:hover .faction-collapse-btn {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
 }
 
 .sidebar-emblem {
-  width: 18px;
-  height: 18px;
-  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  margin-right: 0;
+  flex-shrink: 0;
 }
 
 .location-cards {
@@ -63,24 +141,26 @@
 }
 
 .location-card {
-  background-color: rgba(50, 50, 50, 0.8);
+  background-color: rgba(30, 30, 32, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 12px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.2s;
+  transition: background-color 0.2s, transform 0.2s, border-color 0.2s;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   position: relative;
   overflow: hidden;
 }
 
 .location-card:hover {
-  background-color: rgba(70, 70, 70, 0.9);
+  background-color: rgba(45, 45, 50, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
   transform: translateY(-2px);
 }
 
 .location-card.selected {
-  background-color: rgba(85, 119, 153, 0.6);
-  border: 1px solid rgba(150, 180, 220, 0.4);
+  background-color: rgba(55, 65, 81, 0.75);
+  border: 1px solid rgba(156, 163, 175, 0.6);
 }
 
 .location-card-header {
@@ -108,6 +188,48 @@
   letter-spacing: 0.5px;
 }
 
+.undiscovered-badge {
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.gm-discovered-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  transition: all 0.2s ease;
+}
+
+.gm-discovered-btn .material-icons {
+  font-size: 18px;
+}
+
+.gm-discovered-btn.is-discovered {
+  border-color: rgba(52, 211, 153, 0.4);
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+}
+
+.gm-discovered-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+}
+
 .location-thumb {
   height: 80px;
   overflow: hidden;
@@ -130,16 +252,14 @@
 .location-details-container {
   flex: 1;
   overflow-y: auto;
-  background-color: rgba(20, 20, 20, 0.8);
+  background-color: transparent;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
 .location-details {
-  padding: 30px;
-  max-width: 900px;
-  margin: 0 auto;
+  max-width: 100%;
   width: 100%;
   box-sizing: border-box;
 }
@@ -148,21 +268,31 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 16px;
   margin-bottom: 25px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 15px;
 }
 
-.location-title h2 {
-  font-size: 2rem;
-  color: #64b5f6;
-  margin: 0 0 10px 0;
+.location-title {
+  flex: 1;
+  min-width: 0;
 }
 
-.location-badges {
+.location-title-row {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.location-title h2 {
+  flex: 1;
+  min-width: 0;
+  font-size: 2rem;
+  line-height: 1.2;
+  color: #f8fafc;
+  margin: 0;
 }
 
 .faction-emblem {
@@ -200,6 +330,37 @@
   object-fit: cover;
 }
 
+.location-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.world-map-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(100, 181, 246, 0.35);
+  border-radius: 999px;
+  padding: 8px 14px;
+  background-color: rgba(100, 181, 246, 0.15);
+  color: #afd5fe;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+}
+
+.world-map-btn:hover {
+  background-color: rgba(100, 181, 246, 0.25);
+  border-color: rgba(144, 202, 249, 0.55);
+  color: #d7ebff;
+}
+
+.world-map-btn .material-icons {
+  font-size: 1.1rem;
+}
+
 .close-btn {
   background: none;
   border: none;
@@ -224,53 +385,86 @@
 
 .location-image {
   width: 100%;
-  max-height: 300px;
   margin-bottom: 20px;
   display: flex;
   justify-content: center;
+  align-items: center;
+}
+
+.location-image app-image-viewer {
+  display: block;
+  width: 100%;
+}
+
+.description-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 24px 0 12px 0;
+  flex-wrap: wrap;
+}
+
+.description-header-row h3 {
+  margin: 0;
 }
 
 .location-description h3,
 .notable-features h3 {
-  color: #afd5fe;
-  margin: 20px 0 10px 0;
+  color: #e2e8f0;
+  margin: 24px 0 12px 0;
   font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .location-description p {
-  line-height: 1.6;
-  margin-bottom: 20px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  font-size: 1.05rem;
+  color: #cbd5e1;
 }
 
 .features-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-top: 15px;
+  width: 100%;
 }
 
 .feature-item {
-  background-color: rgba(60, 60, 60, 0.7);
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgba(30, 30, 35, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  padding: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  padding: 18px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .feature-item h4 {
-  color: #c0d1e5;
+  color: #f1f5f9;
   margin-top: 0;
   margin-bottom: 10px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
 }
 
 .feature-item p {
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .feature-owner {
   margin-top: 10px;
   font-style: italic;
   color: #aaa;
+}
+
+.revealed-secrets-section h3,
+.gm-vault-section-wrapper h3 {
+  color: #e2e8f0;
+  margin: 28px 0 16px 0;
+  font-size: 1.3rem;
+  font-weight: 700;
 }
 
 .location-empty-state {
@@ -288,7 +482,7 @@
     flex-direction: column;
     height: auto;
   }
-  
+
   .locations-sidebar {
     width: 100%;
     max-height: 300px;
@@ -296,24 +490,312 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
   }
-  
+
   /* When no location is selected, make sidebar take full height */
   .no-location-selected .locations-sidebar {
     max-height: none;
     border-bottom: none;
   }
-  
-  .location-details {
-    padding: 20px;
+
+
+  .location-title-row {
+    gap: 10px;
+  }
+
+  .location-header-actions {
+    gap: 8px;
+  }
+
+  .world-map-btn {
+    padding: 8px 12px;
   }
 
   /* Hide the empty state text on mobile */
   .location-empty-state {
     display: none;
   }
-  
+
   /* Hide the location details container when no location is selected */
   .location-details-container:not(.has-selected-location) {
     display: none;
   }
+}
+
+/* Secret & Revealed Badges */
+.secret-badge {
+  background: rgba(239, 68, 68, 0.25);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.revealed-badge {
+  background: rgba(16, 185, 129, 0.25);
+  color: #6ee7b7;
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Revealed Campaign Discovery Banner (Player View) */
+.revealed-lore-banner {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(13, 148, 136, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.1);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.revealed-lore-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #34d399;
+  margin-bottom: 8px;
+}
+
+.revealed-lore-header h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.revealed-lore-body p {
+  margin: 0;
+  line-height: 1.6;
+  color: #e2e8f0;
+}
+
+/* GM Private Campaign Vault Card (Admin View) */
+.gm-vault-card {
+  background: rgba(15, 23, 42, 0.95);
+  border: 1px dashed rgba(45, 212, 191, 0.4);
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.gm-vault-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.gm-vault-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #2dd4bf;
+}
+
+.gm-vault-title h4 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.gm-reveal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(45, 212, 191, 0.5);
+  background: rgba(45, 212, 191, 0.1);
+  color: #2dd4bf;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gm-reveal-btn:hover {
+  background: rgba(45, 212, 191, 0.25);
+}
+
+.gm-reveal-btn.active {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.6);
+  color: #6ee7b7;
+}
+
+.gm-vault-content {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+.gm-vault-field {
+  margin-bottom: 14px;
+}
+
+.gm-vault-field:last-child {
+  margin-bottom: 0;
+}
+
+.gm-vault-field h5 {
+  margin: 0 0 6px 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.gm-vault-field p,
+.gm-vault-content p,
+pre.rpg-layout-text,
+.rpg-layout-text {
+  margin: 0;
+  line-height: 1.6;
+  color: #cbd5e1;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+  overflow-wrap: anywhere !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.rpg-layout-text {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 13px;
+}
+
+/* Associated NPCs & Shops in Location Details */
+.location-associated-section {
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.location-associated-section h3 {
+  margin: 0 0 14px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #63b3ed;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 6px;
+}
+
+.associated-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.associated-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.associated-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(99, 179, 237, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.assoc-thumb {
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.assoc-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.assoc-thumb.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #a0aec0;
+}
+
+.assoc-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.assoc-info h4 {
+  margin: 0 0 2px 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assoc-info p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #a0aec0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.assoc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  cursor: pointer;
+  flex-shrink: 0;
+
+}
+
+.assoc-btn .material-icons {
+  font-size: 14px;
+}
+
+.npc-btn {
+  background: linear-gradient(135deg, #2b6cb0, #2c5282);
+}
+
+.shop-btn {
+  background: linear-gradient(135deg, #2f855a, #22543d);
 }

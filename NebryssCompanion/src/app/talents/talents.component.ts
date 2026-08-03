@@ -127,6 +127,37 @@ export class TalentsComponent implements OnInit, OnDestroy {
     );
   }
 
+  getSelectedDependentTalents(talent: Talent): Talent[] {
+    if (!this.activePlayer?.progression.talents?.length) {
+      return [];
+    }
+
+    const selectedTalentIds = new Set(this.activePlayer.progression.talents);
+    const allTalents = this.talentCategories.flatMap(category => category.talents);
+
+    return allTalents.filter(candidate =>
+      selectedTalentIds.has(candidate.id) &&
+      !!candidate.requirements?.includes(talent.id)
+    );
+  }
+
+  getMinimumRequiredTalentCount(talent: Talent): number {
+    return this.getSelectedDependentTalents(talent).length > 0 ? 1 : 0;
+  }
+
+  canRemoveTalent(talent: Talent): boolean {
+    return this.getTalentSelectedCount(talent) > this.getMinimumRequiredTalentCount(talent);
+  }
+
+  getTalentRemovalBlockedMessage(talent: Talent): string {
+    const dependentTalents = this.getSelectedDependentTalents(talent);
+    if (!dependentTalents.length) {
+      return '';
+    }
+
+    return `Remove ${dependentTalents.map(entry => entry.name).join(', ')} first`;
+  }
+
   toggleTalent(talent: Talent): void {
     if (!this.activePlayer) return;
     
@@ -173,6 +204,10 @@ export class TalentsComponent implements OnInit, OnDestroy {
         this.activePlayer.progression.talentPoints -= talent.cost;
       }
     } else {
+      if (!this.canRemoveTalent(talent)) {
+        return;
+      }
+
       // Removing talent
       if (talent.maxStacks) {
         // Remove one instance of the talent (the last one)
@@ -259,6 +294,17 @@ export class TalentsComponent implements OnInit, OnDestroy {
     );
   }
 
+  getInvestedPointsForCategory(category: TalentCategory): number {
+    if (!this.activePlayer?.progression.talents?.length) {
+      return 0;
+    }
+
+    return category.talents.reduce((total, talent) => {
+      const selectedCount = this.getTalentSelectedCount(talent);
+      return total + (selectedCount * talent.cost);
+    }, 0);
+  }
+
   incrementTalent(talent: Talent, event: Event): void {
     event.stopPropagation(); // Prevent the parent toggle from firing
     if (!this.activePlayer) return;
@@ -297,6 +343,10 @@ export class TalentsComponent implements OnInit, OnDestroy {
     if (!this.activePlayer) return;
     
     if (!this.activePlayer.progression.talents) {
+      return;
+    }
+
+    if (!this.canRemoveTalent(talent)) {
       return;
     }
     

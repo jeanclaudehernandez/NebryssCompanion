@@ -20,7 +20,7 @@
     <div *ngFor="let category of talentCategories" class="talent-category-block" [id]="category.id">
       <div class="sticky-category-header" (click)="toggleCategory(category.id)">
         <h3>
-          <span>{{ category.name }}</span>
+          <span>{{ category.name }} ({{ getInvestedPointsForCategory(category) }} pts)</span>
           <span class="collapse-icon">{{ isCategoryCollapsed(category.id) ? '▶' : '▼' }}</span>
         </h3>
       </div>
@@ -29,6 +29,8 @@
         <div *ngFor="let talent of category.talents" 
              class="talent-card"
              [class.selected]="isTalentSelected(talent)"
+             [class.removal-locked]="isTalentSelected(talent) && !canRemoveTalent(talent)"
+             [attr.title]="isTalentSelected(talent) && !canRemoveTalent(talent) ? getTalentRemovalBlockedMessage(talent) : null"
              (click)="toggleTalent(talent)">
           <div class="talent-header">
             <h4>{{talent.name}} (Cost: {{talent.cost}})</h4>
@@ -43,7 +45,7 @@
           </div>
           <div *ngIf="talent.maxStacks && isTalentSelected(talent)" class="stack-controls">
             <button class="stack-btn decrement" (click)="decrementTalent(talent, $event)" 
-                    [disabled]="getTalentSelectedCount(talent) <= 0">
+                    [disabled]="!canRemoveTalent(talent)">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round">
                 <line x1="4" y1="12" x2="20" y2="12"></line>
               </svg>
