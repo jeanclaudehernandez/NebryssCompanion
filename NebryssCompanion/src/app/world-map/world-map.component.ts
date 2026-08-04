@@ -789,7 +789,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     const formattedJson = JSON.stringify(this.locationsData, null, 2);
     if (navigator.clipboard) {
       navigator.clipboard.writeText(formattedJson).then(() => {
-        this.toastService.show('locations.json copied to clipboard!', 'success');
+        this.toastService.show('Locations JSON copied to clipboard!', 'success');
       });
     } else {
       this.toastService.show('Clipboard API not available.', 'error');

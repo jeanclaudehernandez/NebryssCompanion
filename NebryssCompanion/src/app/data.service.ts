@@ -753,12 +753,17 @@ export class DataService {
   getLore(): Observable<Lore> {
     if (!this.loreCache$) {
       this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
-        catchError(() => this.http.get<any>('assets/lore.json')),
         map(response => {
           const lore = Array.isArray(response) ? response[0] : response;
-          this.lore = lore as Lore;
+          this.lore = (lore || {}) as Lore;
           this.loreSubject.next(this.lore);
           return this.lore;
+        }),
+        catchError(err => {
+          console.error('Error fetching lore from API:', err);
+          this.lore = {} as Lore;
+          this.loreSubject.next(this.lore);
+          return of(this.lore);
         }),
         shareReplay(1)
       );
@@ -768,11 +773,17 @@ export class DataService {
 
   refreshLore(): Observable<Lore> {
     this.loreCache$ = this.http.get<any>(`${this.apiUrl}/lore`).pipe(
-      catchError(() => this.http.get<any>('assets/lore.json')),
       map(response => {
         const lore = Array.isArray(response) ? response[0] : response;
-        this.lore = lore as Lore;
+        this.lore = (lore || {}) as Lore;
+        this.loreSubject.next(this.lore);
         return this.lore;
+      }),
+      catchError(err => {
+        console.error('Error refreshing lore from API:', err);
+        this.lore = {} as Lore;
+        this.loreSubject.next(this.lore);
+        return of(this.lore);
       }),
       shareReplay(1)
     );
@@ -794,36 +805,26 @@ export class DataService {
 
   getLocations(): Observable<Locations> {
     if (!this.locationsCache$) {
-      this.locationsCache$ = forkJoin({
-        remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
-          catchError(() => this.http.get<any>('assets/locations.json'))
-        ),
-        localAssets: this.http.get<any>('assets/locations.json').pipe(
-          catchError(() => of([]))
-        )
-      }).pipe(
-        map(({ remote, localAssets }) => {
-          const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
-          const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
-
-          const mergedLocations = rawRemote.map((loc: any) => {
-            const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
-            const secrets = (loc.secrets && loc.secrets.length > 0)
+      this.locationsCache$ = this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+        map(remote => {
+          const rawLocations = Array.isArray(remote) ? remote : (remote?.locations || []);
+          const locationsList = rawLocations.map((loc: any) => ({
+            ...loc,
+            secrets: (loc.secrets && loc.secrets.length > 0)
               ? loc.secrets
-              : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
-
-            return {
-              ...loc,
-              secrets,
-              rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
-              privateNotes: loc.privateNotes || matchLocal?.privateNotes
-            };
-          });
-
-          const wrapped: Locations = { locations: mergedLocations };
+              : (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : [])
+          }));
+          const wrapped: Locations = { locations: locationsList };
           this.locations = wrapped;
           this.locationsSubject.next({ ...this.locations });
           return wrapped;
+        }),
+        catchError(err => {
+          console.error('Error loading locations from API:', err);
+          const empty: Locations = { locations: [] };
+          this.locations = empty;
+          this.locationsSubject.next({ ...this.locations });
+          return of(empty);
         }),
         shareReplay(1)
       );
@@ -832,36 +833,26 @@ export class DataService {
   }
 
   refreshLocations(): Observable<Locations> {
-    this.locationsCache$ = forkJoin({
-      remote: this.http.get<any>(`${this.apiUrl}/locations`).pipe(
-        catchError(() => this.http.get<any>('assets/locations.json'))
-      ),
-      localAssets: this.http.get<any>('assets/locations.json').pipe(
-        catchError(() => of([]))
-      )
-    }).pipe(
-      map(({ remote, localAssets }) => {
-        const rawRemote = Array.isArray(remote) ? remote : (remote?.locations || []);
-        const rawLocal = Array.isArray(localAssets) ? localAssets : (localAssets?.locations || []);
-
-        const mergedLocations = rawRemote.map((loc: any) => {
-          const matchLocal = rawLocal.find((l: any) => l.id === loc.id || l.name === loc.name);
-          const secrets = (loc.secrets && loc.secrets.length > 0)
+    this.locationsCache$ = this.http.get<any>(`${this.apiUrl}/locations`).pipe(
+      map(remote => {
+        const rawLocations = Array.isArray(remote) ? remote : (remote?.locations || []);
+        const locationsList = rawLocations.map((loc: any) => ({
+          ...loc,
+          secrets: (loc.secrets && loc.secrets.length > 0)
             ? loc.secrets
-            : (matchLocal?.secrets || (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : (matchLocal?.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: matchLocal.privateNotes, isRevealed: matchLocal.isSecretRevealed }] : [])));
-
-          return {
-            ...loc,
-            secrets,
-            rpgMapLayout: loc.rpgMapLayout || matchLocal?.rpgMapLayout,
-            privateNotes: loc.privateNotes || matchLocal?.privateNotes
-          };
-        });
-
-        const wrapped: Locations = { locations: mergedLocations };
+            : (loc.privateNotes ? [{ id: 'sec-1', title: 'GM Secret Notes', content: loc.privateNotes, isRevealed: loc.isSecretRevealed }] : [])
+        }));
+        const wrapped: Locations = { locations: locationsList };
         this.locations = wrapped;
         this.locationsSubject.next({ ...this.locations });
         return wrapped;
+      }),
+      catchError(err => {
+        console.error('Error refreshing locations from API:', err);
+        const empty: Locations = { locations: [] };
+        this.locations = empty;
+        this.locationsSubject.next({ ...this.locations });
+        return of(empty);
       }),
       shareReplay(1)
     );

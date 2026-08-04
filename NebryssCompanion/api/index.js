@@ -522,6 +522,11 @@ createDeleteRoute('/api/npc', {
   collectionName: 'npc',
 });
 
+createCollectionRoute('/api/lore', {
+  usePlayersDb: false,
+  collectionName: 'lore',
+});
+
 createUpdateRoute('/api/lore', {
   usePlayersDb: false,
   collectionName: 'lore',
