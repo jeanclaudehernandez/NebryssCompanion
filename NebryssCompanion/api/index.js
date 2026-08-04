@@ -121,18 +121,21 @@ function createUpdateRoute(path, options) {
         delete item._id;
       }
 
-      const result = await collection.replaceOne(
-        { id: item.id },
-        item
-      );
-
-      if (result.matchedCount === 0) {
-        return res.status(404).json({ error: 'Item not found' });
+      let query = { id: item.id };
+      if (!isNaN(Number(item.id))) {
+        query = { id: { $in: [item.id, Number(item.id), String(item.id)] } };
       }
+
+      await collection.replaceOne(
+        query,
+        item,
+        { upsert: true }
+      );
 
       notifyChange(collectionName, 'update', item, campaign);
       res.json(item);
     } catch (error) {
+      console.error(`[API] Error updating ${collectionName}:`, error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -327,27 +330,31 @@ app.put('/api/player', async (req, res) => {
     return res.status(400).json({ error: 'Player id is required in request body' });
   }
 
+  const targetCollection = getPlayerCollectionName(campaign);
+
   try {
     const { playersDb } = await getDatabases();
-    const targetCollection = (campaign && campaign.playersCollectionName) ? campaign.playersCollectionName : 'player';
     const collection = playersDb.collection(targetCollection);
 
     if (player._id) {
       delete player._id;
     }
 
-    const result = await collection.replaceOne(
-      { id: player.id },
-      player
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Player not found' });
+    let query = { id: player.id };
+    if (!isNaN(Number(player.id))) {
+      query = { id: { $in: [player.id, Number(player.id), String(player.id)] } };
     }
+
+    await collection.replaceOne(
+      query,
+      player,
+      { upsert: true }
+    );
 
     notifyChange('player', 'update', player, campaign);
     res.json(player);
   } catch (error) {
+    console.error(`[API] Error updating player in collection '${targetCollection}':`, error);
     res.status(500).json({ error: error.message || error });
   }
 });
