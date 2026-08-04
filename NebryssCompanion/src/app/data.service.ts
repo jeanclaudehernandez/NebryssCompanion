@@ -10,7 +10,13 @@ import { CampaignService } from './campaign.service';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly apiUrl = 'https://nebryss-companion-api-771693340084.us-east4.run.app/api';
+  private get apiUrl(): string {
+    const win = window as any;
+    if (win.API_URL) {
+      return win.API_URL;
+    }
+    return `${window.location.origin}/api`;
+  }
 
   private campaigns: Campaign[] = [];
   private players: Player[] = [];

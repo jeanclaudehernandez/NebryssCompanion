@@ -227,6 +227,9 @@
     "discovered": false
   },
   {
+    "_id": {
+      "$oid": "6a6fdeb982914f49f3897036"
+    },
     "id": 19,
     "name": "Seneschal Lucren Vale",
     "faction": "Crimson Corsairs",
@@ -254,6 +257,9 @@
     "backstory": "Earning a staggering salary from Zephyria's elite, Dr. Vance operates from an opulent clinic in the Upper Spires. While high-paying patrons celebrate his ability to regrow severed limbs and heal deadly organ failure, whispers persist about subtle porcine side effects among his long-term patients."
   },
   {
+    "_id": {
+      "$oid": "69aa31f11d3387484b352161"
+    },
     "id": 18,
     "name": "Mother Morvath",
     "faction": "Abyssal Cabal",

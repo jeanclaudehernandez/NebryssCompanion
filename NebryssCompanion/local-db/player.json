@@ -193,13 +193,12 @@
     ],
     "progression": {
       "talentPoints": 0,
+      "talents": [],
       "mistrals": {
         "digital": 0,
-        "physical": 20
+        "physical": 0
       },
-      "talents": [],
-      "afflictions": [],
-      "equipment": []
+      "afflictions": []
     },
     "items": [
       {

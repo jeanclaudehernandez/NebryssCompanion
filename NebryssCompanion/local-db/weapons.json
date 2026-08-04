@@ -1816,6 +1816,9 @@
     ]
   },
   {
+    "_id": {
+      "$oid": "69ac39b03b7e32e8c2926a60"
+    },
     "name": "Bayonet",
     "profiles": [
       {
@@ -3598,6 +3601,39 @@
         "type": "grenade"
       }
     ]
+  },
+  {
+    "_id": {
+      "$oid": "6a2a0fa983c40d884823798c"
+    },
+    "name": "test weapon",
+    "profiles": [
+      {
+        "profileName": "",
+        "rng": 0,
+        "attacks": 4,
+        "ws": 4,
+        "damage": {
+          "min": 3,
+          "max": 4
+        },
+        "specialRules": [
+          {
+            "ruleId": 44,
+            "modValue": 1
+          },
+          {
+            "ruleId": 30,
+            "modValue": 1
+          }
+        ],
+        "body": "universal",
+        "type": "sword"
+      }
+    ],
+    "price": 0,
+    "id": 110,
+    "isDeleted": true
   },
   {
     "_id": {

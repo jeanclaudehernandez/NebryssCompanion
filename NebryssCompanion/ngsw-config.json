@@ -33,7 +33,7 @@
     {
       "name": "api",
       "urls": [
-        "https://nebryss-companion-api-771693340084.us-east4.run.app/api/**"
+        "/api/**"
       ],
       "cacheConfig": {
         "maxSize": 100,

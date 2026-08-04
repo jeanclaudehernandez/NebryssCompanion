@@ -1,15 +1,19 @@
 [
   {
+    "_id": {
+      "$oid": "69a62fd33b9695542bb77ae1"
+    },
     "id": 1,
     "name": "Herbwhisper's Apothecary",
     "owner": 6,
-    "locationId": 1,
-    "locationName": "Zephyria",
     "location": "Zephyria's Sky Bazaar",
+    "locationName": "Zephyria",
     "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-    "discovered": true,
     "imgUrl": "https://iili.io/CSTieSe.png",
     "thumbnail": "https://iili.io/CSTieSe.th.png",
+    "categories": [
+      2
+    ],
     "paymentMethod": {
       "digital": false,
       "physical": true
@@ -56,7 +60,94 @@
         "type": "item"
       }
     ],
-    "categoriesData": [],
+    "locationId": 1,
+    "discovered": true,
+    "categoriesData": [
+      {
+        "category": {
+          "_id": "6999dc58f7703abfb2c08834",
+          "id": 2,
+          "name": "Consumables",
+          "key": "consumable",
+          "headers": [
+            "Name",
+            "Price",
+            "Description"
+          ],
+          "keys": [
+            "name",
+            "price",
+            "description"
+          ]
+        },
+        "items": [
+          {
+            "_id": "69ac2f7d2618b8cf122c69df",
+            "id": 21,
+            "name": "Medkit",
+            "price": 9,
+            "description": "Allows the user to stabilize wounded allies and restore 2D3 + 2 wounds. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69e2",
+            "id": 24,
+            "name": "Medical Supplies",
+            "price": 2,
+            "description": "A basic kit containing bandages, antiseptics, and other first-aid materials. Consumed when using healing abilities.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69da",
+            "id": 16,
+            "name": "Mist Compass",
+            "price": 5,
+            "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69db",
+            "name": "Stimpack",
+            "type": "consumable",
+            "id": 17,
+            "description": "Single-use injector, restores 1D3+1 wounds to the user or target within control range. Combat: 0AP (once per activation), cannot be used within Control Range of enemy operatives and cannot be used to heal allies.",
+            "price": 3
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69dc",
+            "id": 18,
+            "name": "Mist Grenade",
+            "price": 6,
+            "description": "A: 1 -- RNG: 6 inches -- WS: - -- DMG: -/- -- SR: Blast (3 inches), Mist Dispersal.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69dd",
+            "id": 19,
+            "name": "Mist Lantern",
+            "price": 7,
+            "description": "A portable light source that pierces through dense mist, illuminating a 6 inches radius.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69de",
+            "id": 20,
+            "name": "Rations Pack",
+            "price": 2,
+            "description": "A week's worth of preserved food and water, essential for long journeys.",
+            "type": "consumable"
+          },
+          {
+            "_id": "69ac2f7d2618b8cf122c69e0",
+            "id": 22,
+            "name": "Mist-Repellent Spray",
+            "price": 3.5,
+            "description": "Single-use spray that clears mist in a 1 inch radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+            "type": "consumable"
+          }
+        ]
+      }
+    ],
     "weaponsData": [],
     "weaponIds": [],
     "hasWeapons": false

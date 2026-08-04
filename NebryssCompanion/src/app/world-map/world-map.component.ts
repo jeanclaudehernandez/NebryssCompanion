@@ -68,6 +68,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   private readonly activePointers = new Map<number, { x: number; y: number }>();
   private pinchStartDistance = 0;
   private pinchStartScale = 1;
+  private lastPinchCenter: { x: number; y: number } | null = null;
   private pendingCreateCoords: { x: number; y: number } | null = null;
   private longPressTimer: number | null = null;
   private longPressPointerId: number | null = null;
@@ -423,11 +424,11 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   }
 
   zoomIn(): void {
-    this.setScale(this.scale + 0.25);
+    this.setScaleAtPoint(this.scale + 0.25);
   }
 
   zoomOut(): void {
-    this.setScale(this.scale - 0.25);
+    this.setScaleAtPoint(this.scale - 0.25);
   }
 
   resetView(): void {
@@ -439,7 +440,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
 
   onWheel(event: WheelEvent): void {
     event.preventDefault();
-    this.setScale(this.scale + (event.deltaY > 0 ? -0.15 : 0.15));
+    this.setScaleAtPoint(this.scale + (event.deltaY > 0 ? -0.15 : 0.15), { x: event.clientX, y: event.clientY });
   }
 
   onPinPointerDown(event: PointerEvent, pin: MapPin): void {
@@ -469,6 +470,11 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       this.startLongPress(event);
     } else if (this.activePointers.size === 2) {
       this.isPanning = false;
+      const points = Array.from(this.activePointers.values());
+      this.lastPinchCenter = {
+        x: (points[0].x + points[1].x) / 2,
+        y: (points[0].y + points[1].y) / 2
+      };
       this.pinchStartDistance = this.getPointersDistance();
       this.pinchStartScale = this.scale;
       this.cancelLongPress();
@@ -503,8 +509,20 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
 
     if (this.activePointers.size === 2) {
       const distance = this.getPointersDistance();
+      const points = Array.from(this.activePointers.values());
+      const currentCenter = {
+        x: (points[0].x + points[1].x) / 2,
+        y: (points[0].y + points[1].y) / 2
+      };
+
       if (this.pinchStartDistance > 0) {
-        this.setScale(this.pinchStartScale * (distance / this.pinchStartDistance));
+        if (this.lastPinchCenter) {
+          this.translateX += currentCenter.x - this.lastPinchCenter.x;
+          this.translateY += currentCenter.y - this.lastPinchCenter.y;
+        }
+        const newScale = this.pinchStartScale * (distance / this.pinchStartDistance);
+        this.setScaleAtPoint(newScale, currentCenter);
+        this.lastPinchCenter = currentCenter;
       }
       return;
     }
@@ -544,6 +562,9 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     }
 
     this.activePointers.delete(event.pointerId);
+    if (this.activePointers.size < 2) {
+      this.lastPinchCenter = null;
+    }
     this.pinchStartDistance = 0;
     if (this.longPressPointerId === event.pointerId || this.longPressTriggered) {
       this.cancelLongPress();
@@ -567,7 +588,36 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   }
 
   private setScale(next: number): void {
-    this.scale = Math.min(this.maxScale, Math.max(this.minScale, next));
+    this.setScaleAtPoint(next);
+  }
+
+  private setScaleAtPoint(nextScale: number, focalPoint?: { x: number; y: number }): void {
+    const clampedScale = Math.min(this.maxScale, Math.max(this.minScale, nextScale));
+
+    const viewport = this.mapViewportRef?.nativeElement;
+    if (!viewport) {
+      this.scale = clampedScale;
+      this.clampPan();
+      return;
+    }
+
+    const rect = viewport.getBoundingClientRect();
+    let fx = rect.left + rect.width / 2;
+    let fy = rect.top + rect.height / 2;
+
+    if (focalPoint) {
+      fx = focalPoint.x;
+      fy = focalPoint.y;
+    }
+
+    const px = fx - rect.left;
+    const py = fy - rect.top;
+
+    const ratio = clampedScale / this.scale;
+    this.translateX = px - (px - this.translateX) * ratio;
+    this.translateY = py - (py - this.translateY) * ratio;
+
+    this.scale = clampedScale;
     this.clampPan();
   }
 
