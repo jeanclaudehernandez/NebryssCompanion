@@ -510,4 +510,22 @@
   "name": "Fate Seal",
   "effect": "The target of this fight, retaliation or shoot cannot re-roll dices during this action.",
   "prModifier": 8
+},
+{
+  "_id": {
+    "$oid": "699fa9dcac9c1cc3b21d8394"
+  },
+  "id": 59,
+  "name": "Dragoon Reach",
+  "effect": "Melee fight range is extended to 2 inches instead of standard contact range.",
+  "prModifier": 3
+},
+{
+  "_id": {
+    "$oid": "699fa9dcac9c1cc3b21d8395"
+  },
+  "id": 60,
+  "name": "Trance Resonance",
+  "effect": "When executing a fight or shoot action while Trance state is active, add 1 to the weapon's Attack characteristic.",
+  "prModifier": 5
 }]

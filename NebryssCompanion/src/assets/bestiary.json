@@ -236,7 +236,7 @@
     "name": "NLR Field Medic",
     "faction": "Nebryssian Liberation Republic",
     "subgroup": "Human",
-    "pr": 83,
+    "pr": 89,
     "attributes": {
       "Movement": 6,
       "Wounds": 6,
@@ -724,7 +724,7 @@
     "name": "Khorne Berzerker",
     "faction": "Abyssal Cabal",
     "subgroup": "Chaos Space Marine",
-    "pr": 159,
+    "pr": 187,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -1224,7 +1224,7 @@
     "name": "Intercessor Warrior",
     "faction": "Imperium",
     "subgroup": "Space Marine",
-    "pr": 158,
+    "pr": 187,
     "attributes": {
       "Movement": 6,
       "Wounds": 14,
@@ -1900,7 +1900,7 @@
     "name": "Kommando Dakka Boy",
     "faction": "Crimson Corsairs",
     "subgroup": "Ork Kommandos",
-    "pr": 110,
+    "pr": 108,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
@@ -1937,7 +1937,7 @@
     "name": "Kommando Burna Boy",
     "faction": "Crimson Corsairs",
     "subgroup": "Ork Kommandos",
-    "pr": 118,
+    "pr": 103,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
@@ -2043,7 +2043,7 @@
     "name": "Kommando Rokkit Boy",
     "faction": "Crimson Corsairs",
     "subgroup": "Ork Kommandos",
-    "pr": 120,
+    "pr": 116,
     "attributes": {
       "Movement": 6,
       "Wounds": 10,
@@ -2112,7 +2112,7 @@
     "name": "Bomb Squig",
     "faction": "Crimson Corsairs",
     "subgroup": "Ork Kommandos",
-    "pr": 123,
+    "pr": 43,
     "attributes": {
       "Movement": 6,
       "Wounds": 4,
@@ -2143,7 +2143,7 @@
     "name": "Mother Morvath, the Maledictum Hag",
     "faction": "Abyssal Cabal",
     "subgroup": "Witch",
-    "pr": 165,
+    "pr": 174,
     "attributes": {
       "Movement": 5,
       "Wounds": 14,
@@ -2189,7 +2189,7 @@
     "name": "Vale Seneschal",
     "faction": "Crimson Corsairs",
     "subgroup": "Human",
-    "pr": 120,
+    "pr": 136,
     "attributes": {
       "Movement": 6,
       "Wounds": 9,
@@ -2226,7 +2226,7 @@
     "name": "Seneschal Enforcer",
     "faction": "Crimson Corsairs",
     "subgroup": "Human",
-    "pr": 110,
+    "pr": 234,
     "attributes": {
       "Movement": 6,
       "Wounds": 8,
@@ -2263,7 +2263,7 @@
     "name": "Seneschal Cipher Agent",
     "faction": "Crimson Corsairs",
     "subgroup": "Human",
-    "pr": 110,
+    "pr": 122,
     "attributes": {
       "Movement": 6,
       "Wounds": 7,
@@ -2300,7 +2300,7 @@
     "name": "Seneschal Quartermaster",
     "faction": "Crimson Corsairs",
     "subgroup": "Human",
-    "pr": 110,
+    "pr": 106,
     "attributes": {
       "Movement": 6,
       "Wounds": 8,
@@ -2320,6 +2320,340 @@
         "name": "Supply Coordinator",
         "effect": "1AP: Friendly operative within 3 inches gains Ceaseless on its ranged attacks until the end of the Turning Point.",
         "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897070"
+    },
+    "id": 64,
+    "name": "Zidane Tribal",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 168,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 11,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      114
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Grand Lethal",
+        "effect": "1AP: Gain +1 APL, +2 Movement, and all melee attacks gain Relentless until the end of the Turning Point.",
+        "prModifier": 15
+      },
+      {
+        "name": "Steal & Shift",
+        "effect": "1AP: Target enemy operative within 3 inches loses 1 APL and Zidane dashes up to 3 inches without provoking retaliation.",
+        "prModifier": 8
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897071"
+    },
+    "id": 65,
+    "name": "Vivi Ornitier",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 172,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 9,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "spell",
+        "automata",
+        "universal"
+      ]
+    },
+    "weapons": [
+      115,
+      116
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Double Black Magic",
+        "effect": "1AP: Perform two offensive spell weapon attacks during this activation without paying additional APL.",
+        "prModifier": 16
+      },
+      {
+        "name": "Focus Arcana",
+        "effect": "1AP: Next spell attack gains +1 WS and Lethal 5+ until the end of the activation.",
+        "prModifier": 8
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897072"
+    },
+    "id": 66,
+    "name": "Adelbert Steiner",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 190,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      117
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Iron Will & Stock Break",
+        "effect": "1AP: Gain +2 Save (to a maximum of 2+) and Retaliation against all incoming melee attacks until the end of the Turning Point.",
+        "prModifier": 14
+      },
+      {
+        "name": "Sworn Protector",
+        "effect": "Friendly Tantalus operatives within 3 inches gain Light Cover bonuses even when positioned in open ground.",
+        "prModifier": 8
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897073"
+    },
+    "id": 67,
+    "name": "Garnet Til Alexandros XVII",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 177,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      118,
+      119
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Eidolon Trance",
+        "effect": "1AP: Offensive spell attacks gain Lethal 4+ and Relentless until the end of the Turning Point.",
+        "prModifier": 14
+      },
+      {
+        "name": "Curaga Light",
+        "effect": "1AP: Restore 6 Wounds to a friendly operative within 6 inches.",
+        "prModifier": 9
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897074"
+    },
+    "id": 68,
+    "name": "Eiko Carol",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 157,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      120,
+      121
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Double White Arcana",
+        "effect": "1AP: Activate two support or healing abilities during a single activation.",
+        "prModifier": 14
+      },
+      {
+        "name": "Phoenix Blessing",
+        "effect": "1AP: Restore 5 Wounds to target friendly operative and grant them +1 Save for 1 Turning Point.",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897075"
+    },
+    "id": 69,
+    "name": "Freya Crescent",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 175,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 11,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "fellgor",
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      122
+    ],
+    "abilities": [
+      {
+        "name": "Trance: High Dragon Jump",
+        "effect": "1AP: Leap over terrain up to 8 inches, execute an immediate melee fight with +2 damage, and gain Concealed status until next turn.",
+        "prModifier": 14
+      },
+      {
+        "name": "Reis's Wind",
+        "effect": "1AP: Grant regeneration to all friendly Tantalus operatives within 4 inches (restore 2 Wounds at start of their activation).",
+        "prModifier": 8
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897076"
+    },
+    "id": 70,
+    "name": "General Beatrix",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 248,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 13,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      123
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Seiken Absolute",
+        "effect": "1AP: Save the Queen gains Critical Strike & Executioner for the remainder of the battle.",
+        "prModifier": 16
+      },
+      {
+        "name": "Climhazzard Shock",
+        "effect": "1AP: Deal 4 mortal wounds to all enemy operatives within 3 inches.",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897077"
+    },
+    "id": 71,
+    "name": "Quina Quen",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 172,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 14,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "abhuman",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      124,
+      125
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Devour & Cook",
+        "effect": "1AP: Instantly devour an enemy operative under 6 Wounds or restore 8 Wounds to self and gain Stun Immunity.",
+        "prModifier": 15
+      },
+      {
+        "name": "Mighty Guard",
+        "effect": "1AP: All friendly operatives within 3 inches gain +1 Save until the end of the Turning Point.",
+        "prModifier": 8
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6a7fdeb982914f49f3897078"
+    },
+    "id": 72,
+    "name": "Amarant Coral",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Tantalus Crew",
+    "pr": 187,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      126,
+      127
+    ],
+    "abilities": [
+      {
+        "name": "Trance: Elan Unleashed",
+        "effect": "1AP: Gain +1 APL, +2 Movement, and Relentless on all attacks until the end of the Turning Point.",
+        "prModifier": 14
+      },
+      {
+        "name": "Curative Chakra",
+        "effect": "1AP: Restore 4 Wounds to self or an adjacent ally and remove all negative status conditions.",
+        "prModifier": 8
       }
     ],
     "isDiscovered": true

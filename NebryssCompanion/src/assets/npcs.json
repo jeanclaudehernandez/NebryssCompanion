@@ -272,4 +272,149 @@
   "backstory": "Once known as the Terror of Maledictum Prime, Mother Morvath was an ancient witch whose curses decimated Nebryssian Liberation Republic garrisons for decades. Recognized as an unsanctioned alpha-level threat, she was hunted down by an Ordo Hereticus strike team, bound in null-field stasis chains, and dragged to an Imperial black site. Decades later, a cataclysmic mist-surge shattered the black vault, allowing her to break her stasis locks. Now unbound and unaligned, she wanders the fog-choked wastes, selling forbidden spell-craft to those bold enough to pay her price.",
   "description": "A withered hag cloaked in tattered, mist-stained robes interwoven with runic bones and silver null-chain links. Her eyes glow with pale ethereal flame, and her hands end in blackened, sigil-carved claws.",
   "discovered": false
-}]
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897080"
+  },
+  "id": 20,
+  "name": "Zidane Tribal",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 64,
+  "role": "Leader of the Tantalus Privateers",
+  "personality": "Witty, flirtatious, optimistic, and fiercely protective of his comrades.",
+  "mission": "Steal high-value Imperial cargo, defend Aurelia Nexus's free trade, and uncover secrets of the mist.",
+  "backstory": "A nimble rogue hailing from distant skyways who founded the Tantalus Crew under the Crimson Corsairs banner. He treats every heist as a grand theatrical production.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897081"
+  },
+  "id": 21,
+  "name": "Vivi Ornitier",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 65,
+  "role": "Tantalus Spellweaver & Mist Arcane Engineer",
+  "personality": "Gentle, inquisitive, self-doubting, yet possessive of immense courage and destructive arcane power.",
+  "mission": "Understand his mist-automata origins and protect his adoptive Tantalus family.",
+  "backstory": "Constructed in a clandestine mist refinery as an arcana-war automaton, Vivi awakened to true sentience and fled his creators before being taken in by Zidane and the Tantalus Crew.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897082"
+  },
+  "id": 22,
+  "name": "Adelbert Steiner",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 66,
+  "role": "Sworn Vanguard & Heavy Guard of Princess Garnet",
+  "personality": "Rigidly dutiful, loud, honorable to a fault, but intensely loyal.",
+  "mission": "Guard Princess Garnet from Imperial pursuers and maintain honor among pirate rogues.",
+  "backstory": "Former commander of Alexandrian elite knights, Steiner reluctantly aligned with the Crimson Corsairs to protect Garnet during her escape from Imperial warlords.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897083"
+  },
+  "id": 23,
+  "name": "Garnet Til Alexandros XVII",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 67,
+  "role": "High Summoner & Diplomatic Figurehead",
+  "personality": "Regal, compassionate, determined, and deeply empathetic.",
+  "mission": "Forge alliances between free ports of Nebryss to overthrow tyrannical mist harvesters.",
+  "backstory": "Fleeing her corrupted royal court, Princess Garnet assumed the alias 'Dagger' and joined Tantalus at Aurelia Nexus, using her eidolon-summoning lineage to aid their cause.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897084"
+  },
+  "id": 24,
+  "name": "Eiko Carol",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 68,
+  "role": "Mist Guardian & Arcane Scout",
+  "personality": "Precocious, outspoken, competitive, and fiercely affectionate.",
+  "mission": "Preserve ancient summoner traditions and outshine Garnet in white magic.",
+  "backstory": "The last surviving child of Madain Sari's summoner enclave, Eiko joined Tantalus bringing her horn-carved flutes and ancient mist guardian spirits.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897085"
+  },
+  "id": 25,
+  "name": "Freya Crescent",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 69,
+  "role": "Burmecian Dragon Knight & Chief Scout",
+  "personality": "Melancholic, honorable, stoic, and devastating in battle.",
+  "mission": "Track down her missing comrades across the Nebryss mist zones and defend Aurelia Nexus.",
+  "backstory": "A legendary lancer of Burmecian bloodline who roamed Nebryss in search of her lost love before uniting her spear with Zidane's privateers.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897086"
+  },
+  "id": 26,
+  "name": "General Beatrix",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 70,
+  "role": "Supreme Swordmaster & Vanguard Commander",
+  "personality": "Disciplined, stern, unyielding in combat, yet bound by a strict personal code.",
+  "mission": "Atone for past Imperial campaigns by turning her blade against corrupt mist tyrants.",
+  "backstory": "Undefeated in a hundred duels, Beatrix broke her oath to the Imperial court after discovering their atrocities, joining Tantalus alongside Steiner to safeguard Garnet.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897087"
+  },
+  "id": 27,
+  "name": "Quina Quen",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 71,
+  "role": "Gourmand Explorer & Ship Chef",
+  "personality": "Obsessed with food, eccentric, literal-minded, and surprisingly resilient.",
+  "mission": "Taste every rare beast and mist creature across Nebryss to perfect the ultimate recipe.",
+  "backstory": "A member of the enigmatic Qu race who joined Tantalus believing that traveling with privateers would provide endless opportunities to sample exotic mist fauna.",
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "6a6fe30782914f49f3897088"
+  },
+  "id": 28,
+  "name": "Amarant Coral",
+  "faction": "Crimson Corsairs",
+  "subgroup": "Tantalus Crew",
+  "location": "Aurelia Nexus",
+  "bestiaryId": 72,
+  "role": "Bounty Hunter & Enforcer",
+  "personality": "Taciturn, cynical, pragmatic, believing solely in individual strength.",
+  "mission": "Understand Zidane's philosophy of fighting for others while earning his keep.",
+  "backstory": "A feared solitary mercenary known as the Red Rose, Amarant challenged Zidane after a failed bounty hunt and joined Tantalus to witness the strength of teamwork firsthand.",
+  "discovered": true
+}
+]
