@@ -1,5 +1,6 @@
-import { Component, Input, OnChanges, Output, EventEmitter, TemplateRef, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, OnDestroy, Output, EventEmitter, TemplateRef, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Subject, takeUntil } from 'rxjs';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
 import { AlteredState, BestiaryEntry, Character, Inventory, Items, Player, Talent, Weapon, WeaponRule } from '../model';
@@ -25,7 +26,7 @@ type TalentTableRow = {
   templateUrl: './player-detail.component.html',
   styleUrls: ['./player-detail.component.css']
 })
-export class PlayerDetailComponent implements OnChanges {
+export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
   @Input() character!: Character;
   @Input() weaponsData: Weapon[] = [];
   @Input() weaponRulesData: WeaponRule[] = [];
@@ -60,26 +61,41 @@ export class PlayerDetailComponent implements OnChanges {
   // Process abilities for display
   processedAbilities: {name: string, effect: string}[] = [];
   
-  // Section collapse states
-  isAbilitiesCollapsed = false;
-  isModsCollapsed = false;
-  isAfflictionsCollapsed = false;
-  isDeployablesCollapsed = false;
-
+  // Section collapse states (default true = collapsed)
+  get isAbilitiesCollapsed(): boolean {
+    const saved = localStorage.getItem('player-abilities-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleAbilitiesCollapse() {
-    this.isAbilitiesCollapsed = !this.isAbilitiesCollapsed;
+    const newState = !this.isAbilitiesCollapsed;
+    localStorage.setItem('player-abilities-collapsed', JSON.stringify(newState));
   }
 
+  get isModsCollapsed(): boolean {
+    const saved = localStorage.getItem('player-mods-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleModsCollapse() {
-    this.isModsCollapsed = !this.isModsCollapsed;
+    const newState = !this.isModsCollapsed;
+    localStorage.setItem('player-mods-collapsed', JSON.stringify(newState));
   }
 
+  get isAfflictionsCollapsed(): boolean {
+    const saved = localStorage.getItem('player-afflictions-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleAfflictionsCollapse() {
-    this.isAfflictionsCollapsed = !this.isAfflictionsCollapsed;
+    const newState = !this.isAfflictionsCollapsed;
+    localStorage.setItem('player-afflictions-collapsed', JSON.stringify(newState));
   }
 
+  get isDeployablesCollapsed(): boolean {
+    const saved = localStorage.getItem('player-deployables-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  }
   toggleDeployablesCollapse() {
-    this.isDeployablesCollapsed = !this.isDeployablesCollapsed;
+    const newState = !this.isDeployablesCollapsed;
+    localStorage.setItem('player-deployables-collapsed', JSON.stringify(newState));
   }
 
   @ViewChild('mistralDialog', { read: TemplateRef }) mistralDialogTemplate!: TemplateRef<any>;
@@ -88,12 +104,57 @@ export class PlayerDetailComponent implements OnChanges {
   mistralModalType: 'digital' | 'physical' | null = null;
   mistralModalInput = '';
 
+  private destroy$ = new Subject<void>();
+
   constructor(
     private dataService: DataService,
     private activePlayerService: ActivePlayerService,
     private toastService: ToastService,
     public modalService: ModalService
   ) {}
+
+  ngOnInit(): void {
+    this.dataService.weapons$?.pipe(takeUntil(this.destroy$)).subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+        if (this.character) {
+          this.ngOnChanges();
+        }
+      }
+    });
+
+    this.dataService.items$?.pipe(takeUntil(this.destroy$)).subscribe(items => {
+      if (items && items.items && items.items.length > 0) {
+        this.itemsData = { ...items };
+        if (this.character) {
+          this.ngOnChanges();
+        }
+      }
+    });
+
+    this.dataService.weaponRules$?.pipe(takeUntil(this.destroy$)).subscribe(rules => {
+      if (rules && rules.length > 0) {
+        this.weaponRulesData = [...rules];
+        if (this.character) {
+          this.ngOnChanges();
+        }
+      }
+    });
+
+    this.dataService.alteredStates$?.pipe(takeUntil(this.destroy$)).subscribe(states => {
+      if (states && states.length > 0) {
+        this.alteredStates = [...states];
+        if (this.character) {
+          this.ngOnChanges();
+        }
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   getCalculatedAttributes(): any {
     if (!this.character || !this.character.attributes) {
@@ -380,17 +441,19 @@ export class PlayerDetailComponent implements OnChanges {
   }
 
   getItemById(id: number): any {
-    // With the new structure, items are in a single array
     let item = null;
     if (this.itemsData && this.itemsData.items) {
       item = this.itemsData.items.find((item: any) => item.id === id);
     }
     
-    // Also check weapons data as equipment/inventory might contain weapons
     if (!item && this.weaponsData) {
       item = this.weaponsData.find(w => w.id === id);
     }
     
+    if (!item) {
+      item = this.dataService.getItemById(id) || this.dataService.getWeaponById(id);
+    }
+
     return item;
   }
 

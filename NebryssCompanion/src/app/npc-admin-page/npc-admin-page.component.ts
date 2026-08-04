@@ -100,22 +100,42 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   }
 
   toggleFactionCollapse(faction: string): void {
-    if (this.expandedFactions.has(faction)) {
+    const currentlyCollapsed = this.isFactionCollapsed(faction);
+    const newState = !currentlyCollapsed;
+    if (newState) {
       this.expandedFactions.delete(faction);
     } else {
       this.expandedFactions.add(faction);
     }
+    try {
+      localStorage.setItem(`npc-admin-faction-${faction}-collapsed`, JSON.stringify(newState));
+    } catch {}
   }
 
   isFactionCollapsed(faction: string): boolean {
     if (this.searchTerm.trim().length > 0) {
       return false;
     }
-    return !this.expandedFactions.has(faction);
+    const saved = localStorage.getItem(`npc-admin-faction-${faction}-collapsed`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return true;
   }
 
   get isEditing(): boolean {
     return this.id !== null;
+  }
+
+  get canSubmit(): boolean {
+    if (!this.isAdmin || this.isSaving || this.isDeleting) {
+      return false;
+    }
+    return !!this.name.trim();
+  }
+
+  get canDelete(): boolean {
+    return this.isAdmin && this.isEditing && !this.isSaving && !this.isDeleting && this.id !== null;
   }
 
   get factionOptions(): string[] {
@@ -131,6 +151,20 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
       });
 
     this.loadNpcs();
+
+    this.dataService.npcs$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(npcs => {
+        if (npcs) {
+          this.npcs = npcs;
+          if (this.id !== null) {
+            const updatedSelected = this.npcs.find(n => n.id === this.id);
+            if (updatedSelected) {
+              this.populateForm(updatedSelected);
+            }
+          }
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -164,6 +198,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
 
   startNewNpc(): void {
     this.id = null;
+    this.selectedNpcId = null;
     this.name = '';
     this.faction = 'Gilded Accord';
     this.subgroup = '';
@@ -176,7 +211,6 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.backstory = '';
     this.bestiaryId = null;
     this.discovered = true;
-    this.selectedNpcId = null;
     this.showDeleteConfirm = false;
   }
 
@@ -202,8 +236,17 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   }
 
   saveNpc(): void {
+    if (!this.isAdmin) {
+      this.toastService.show('Admin privileges required to manage NPCs.', 'error');
+      return;
+    }
+
     if (!this.name.trim()) {
-      this.toastService.show('NPC Name is required.', 'info');
+      this.toastService.show('NPC Name is required.', 'error');
+      return;
+    }
+
+    if (!this.canSubmit) {
       return;
     }
 
@@ -273,7 +316,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   }
 
   confirmDelete(): void {
-    if (this.id === null) return;
+    if (!this.canDelete || this.id === null) return;
 
     this.isDeleting = true;
     const deletedId = this.id;

@@ -39,9 +39,7 @@ export class TalentsComponent implements OnInit, OnDestroy {
       this.talentCategories = talents;
       this.scrollSections = this.talentCategories.map((category: TalentCategory) => {
         const saved = localStorage.getItem(`talent-cat-${category.id}`);
-        if (saved) {
-          this.collapsedCategories[category.id] = JSON.parse(saved);
-        }
+        this.collapsedCategories[category.id] = saved !== null ? JSON.parse(saved) : true;
         return {
           title: category.name,
           id: category.id
@@ -61,14 +59,18 @@ export class TalentsComponent implements OnInit, OnDestroy {
   }
 
   toggleCategory(categoryId: string): void {
-    this.collapsedCategories[categoryId] = !this.collapsedCategories[categoryId];
+    const current = this.isCategoryCollapsed(categoryId);
+    this.collapsedCategories[categoryId] = !current;
     try {
       localStorage.setItem(`talent-cat-${categoryId}`, JSON.stringify(this.collapsedCategories[categoryId]));
     } catch {}
   }
 
   isCategoryCollapsed(categoryId: string): boolean {
-    return !!this.collapsedCategories[categoryId];
+    const val = this.collapsedCategories[categoryId];
+    if (val !== undefined) return val;
+    const saved = localStorage.getItem(`talent-cat-${categoryId}`);
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   addTalentPoint(): void {

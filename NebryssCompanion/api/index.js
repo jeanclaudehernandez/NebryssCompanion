@@ -1,32 +1,104 @@
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
+const { setupWebSocketServer } = require('./websocket-server');
 
 const app = express();
+const server = http.createServer(app);
+const { broadcastDataUpdate } = setupWebSocketServer(server);
 
 app.use(cors());
 app.use(express.json());
 
-const mongoUri = process.env.MONGODB_URI;
-const mainDbName = process.env.MONGODB_DB_MAIN;
-const playersDbName = process.env.MONGODB_DB_PLAYERS;
+function notifyChange(entity, action, data, campaign) {
+  try {
+    broadcastDataUpdate(entity, action, data, campaign);
+  } catch (err) {
+    console.error('Error broadcasting update:', err);
+  }
 
-if (!mongoUri || !mainDbName || !playersDbName) {
-  throw new Error('Missing MongoDB configuration environment variables');
+  if (process.env.WS_SERVER_URL) {
+    try {
+      const url = `${process.env.WS_SERVER_URL.replace(/\/$/, '')}/broadcast`;
+      fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ entity, action, data, campaign })
+      }).catch(err => console.error('Error posting to WS_SERVER_URL:', err.message));
+    } catch (e) {
+      console.error('Failed to dispatch WS broadcast:', e);
+    }
+  }
 }
 
-const client = new MongoClient(mongoUri);
+function getCampaignCollectionName(campaign, defaultCollection) {
+  if (!campaign) return defaultCollection;
+  const prefix = campaign.prefix || (campaign.playersCollectionName ? campaign.playersCollectionName.replace(/-player$/, '') : '');
+  if (prefix && String(prefix).trim()) {
+    return `${String(prefix).trim()}-${defaultCollection}`;
+  }
+  if (campaign.playersCollectionName && defaultCollection === 'player') {
+    return String(campaign.playersCollectionName).trim();
+  }
+  return defaultCollection;
+}
 
-let mainDb;
-let playersDb;
+function extractCampaign(req) {
+  if (req.body && req.body.campaign) {
+    return req.body.campaign;
+  }
+  if (req.query && req.query.campaign) {
+    try {
+      return typeof req.query.campaign === 'string' ? JSON.parse(req.query.campaign) : req.query.campaign;
+    } catch (e) {
+      return null;
+    }
+  }
+  if (req.headers && req.headers['x-campaign']) {
+    try {
+      return JSON.parse(req.headers['x-campaign']);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
+function extractPayloadAndCampaign(req) {
+  const campaign = extractCampaign(req);
+  let payload = req.body;
+  if (req.body && typeof req.body === 'object' && 'payload' in req.body) {
+    payload = req.body.payload;
+  }
+  return { payload, campaign };
+}
+
+const mongoUri = process.env.MONGODB_URI;
+const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'test';
+const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'players';
+
+let cachedClient = null;
+let cachedMainDb = null;
+let cachedPlayersDb = null;
 
 async function getDatabases() {
-  if (!mainDb || !playersDb) {
-    await client.connect();
-    mainDb = client.db(mainDbName);
-    playersDb = client.db(playersDbName);
+  if (cachedClient && cachedMainDb && cachedPlayersDb) {
+    return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
   }
-  return { mainDb, playersDb };
+
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is not set');
+  }
+
+  const client = new MongoClient(mongoUri);
+  await client.connect();
+
+  cachedClient = client;
+  cachedMainDb = client.db(mainDbName);
+  cachedPlayersDb = client.db(playersDbName);
+
+  return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
 }
 
 async function fetchCollection(db, collectionName) {
@@ -39,7 +111,7 @@ function createUpdateRoute(path, options) {
   const { usePlayersDb, collectionName } = options;
 
   app.put(path, async (req, res) => {
-    const item = req.body;
+    const { payload: item, campaign } = extractPayloadAndCampaign(req);
 
     if (!item || typeof item.id === 'undefined') {
       return res.status(400).json({ error: 'id is required in request body' });
@@ -48,23 +120,28 @@ function createUpdateRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const collection = db.collection(collectionName);
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const collection = db.collection(targetCollection);
 
       if (item._id) {
         delete item._id;
       }
 
-      const result = await collection.replaceOne(
-        { id: item.id },
-        item
-      );
-
-      if (result.matchedCount === 0) {
-        return res.status(404).json({ error: 'Item not found' });
+      let query = { id: item.id };
+      if (!isNaN(Number(item.id))) {
+        query = { id: { $in: [item.id, Number(item.id), String(item.id)] } };
       }
 
+      await collection.replaceOne(
+        query,
+        item,
+        { upsert: true }
+      );
+
+      notifyChange(collectionName, 'update', item, campaign);
       res.json(item);
     } catch (error) {
+      console.error(`[API] Error updating ${collectionName}:`, error);
       res.status(500).json({ error: 'Internal server error' });
     }
   });
@@ -74,7 +151,7 @@ function createInsertRoute(path, options) {
   const { usePlayersDb, collectionName } = options;
 
   app.post(path, async (req, res) => {
-    const item = req.body;
+    const { payload: item, campaign } = extractPayloadAndCampaign(req);
 
     if (!item) {
       return res.status(400).json({ error: 'Request body is required' });
@@ -88,7 +165,8 @@ function createInsertRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const collection = db.collection(collectionName);
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const collection = db.collection(targetCollection);
 
       if (typeof item.id === 'undefined' || item.id === 0) {
         const lastItem = await collection.find().sort({ id: -1 }).limit(1).toArray();
@@ -110,6 +188,7 @@ function createInsertRoute(path, options) {
       }
 
       await collection.insertOne(item);
+      notifyChange(collectionName, 'create', item, campaign);
       res.status(201).json(item);
     } catch (error) {
       console.error(error);
@@ -123,7 +202,8 @@ function createDeleteRoute(path, options) {
 
   app.delete(`${path}/:id`, async (req, res) => {
     const idParam = req.params.id;
-    
+    const campaign = extractCampaign(req);
+
     if (!idParam) {
       return res.status(400).json({ error: 'id is required' });
     }
@@ -131,12 +211,13 @@ function createDeleteRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const collection = db.collection(collectionName);
-      
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const collection = db.collection(targetCollection);
+
       let query = { id: idParam };
       // Support numeric IDs if the param looks like a number
       if (!isNaN(Number(idParam))) {
-         query = { id: { $in: [idParam, Number(idParam)] } };
+        query = { id: { $in: [idParam, Number(idParam)] } };
       }
 
       const result = await collection.updateOne(
@@ -148,6 +229,7 @@ function createDeleteRoute(path, options) {
         return res.status(404).json({ error: 'Item not found' });
       }
 
+      notifyChange(collectionName, 'delete', { id: idParam }, campaign);
       res.json({ success: true, id: idParam });
     } catch (error) {
       console.error(error);
@@ -161,9 +243,11 @@ function createCollectionRoute(path, options) {
 
   app.get(path, async (req, res) => {
     try {
+      const campaign = extractCampaign(req);
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const documents = await fetchCollection(db, collectionName);
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const documents = await fetchCollection(db, targetCollection);
       res.json(documents);
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
@@ -171,34 +255,120 @@ function createCollectionRoute(path, options) {
   });
 }
 
+createCollectionRoute('/api/campaign', {
+  usePlayersDb: false,
+  collectionName: 'campaign',
+});
+
+createUpdateRoute('/api/campaign', {
+  usePlayersDb: false,
+  collectionName: 'campaign',
+});
+
+app.post('/api/campaign', async (req, res) => {
+  const { payload: item, campaign } = extractPayloadAndCampaign(req);
+
+  if (!item || !item.name) {
+    return res.status(400).json({ error: 'Campaign name is required' });
+  }
+
+  if (item._id) {
+    delete item._id;
+  }
+
+  try {
+    const { mainDb, playersDb } = await getDatabases();
+    const collection = mainDb.collection('campaign');
+
+    if (typeof item.id === 'undefined' || item.id === 0) {
+      const lastItem = await collection.find().sort({ id: -1 }).limit(1).toArray();
+      if (lastItem.length === 0) {
+        item.id = 1;
+      } else {
+        const lastId = lastItem[0].id;
+        if (typeof lastId === 'number') {
+          item.id = lastId + 1;
+        } else {
+          return res.status(400).json({ error: 'id is required for this collection' });
+        }
+      }
+    } else {
+      const existing = await collection.findOne({ id: item.id });
+      if (existing) {
+        return res.status(409).json({ error: 'Campaign with this id already exists' });
+      }
+    }
+
+    const campaignPrefix = item.prefix || (item.name ? item.name.toLowerCase().replace(/[^a-z0-9_-]/g, '-') : '');
+    item.prefix = campaignPrefix;
+
+    const collectionsToCreate = [
+      `${campaignPrefix}-player`,
+      `${campaignPrefix}-shop`,
+      `${campaignPrefix}-location`,
+      `${campaignPrefix}-npc`
+    ];
+
+    for (const targetColl of collectionsToCreate) {
+      const existingCollections = await playersDb.listCollections({ name: targetColl }).toArray();
+      if (existingCollections.length === 0) {
+        await playersDb.createCollection(targetColl);
+        console.log(`[API] Created collection '${targetColl}' in playersDb for campaign '${item.name}'`);
+      }
+    }
+
+    await collection.insertOne(item);
+    notifyChange('campaign', 'create', item, campaign);
+    res.status(201).json(item);
+  } catch (error) {
+    console.error('Error creating campaign:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+createDeleteRoute('/api/campaign', {
+  usePlayersDb: false,
+  collectionName: 'campaign',
+});
+
 createCollectionRoute('/api/player', {
   usePlayersDb: true,
   collectionName: 'player',
 });
 
 app.put('/api/player', async (req, res) => {
-  const player = req.body;
+  const { payload: player, campaign } = extractPayloadAndCampaign(req);
 
   if (!player || typeof player.id === 'undefined') {
     return res.status(400).json({ error: 'Player id is required in request body' });
   }
 
+  const targetCollection = getCampaignCollectionName(campaign, 'player');
+
   try {
     const { playersDb } = await getDatabases();
-    const collection = playersDb.collection('player');
+    const collection = playersDb.collection(targetCollection);
 
-    const result = await collection.replaceOne(
-      { id: player.id },
-      player
-    );
-
-    if (result.matchedCount === 0) {
-      return res.status(404).json({ error: 'Player not found' });
+    if (player._id) {
+      delete player._id;
     }
 
+    let query = { id: player.id };
+    if (!isNaN(Number(player.id))) {
+      query = { id: { $in: [player.id, Number(player.id), String(player.id)] } };
+    }
+
+    await collection.replaceOne(
+      query,
+      player,
+      { upsert: true }
+    );
+
+    notifyChange('player', 'update', player, campaign);
     res.json(player);
   } catch (error) {
-    res.status(500).json({ error: error });
+    console.error(`[API] Error updating player in collection '${targetCollection}':`, error);
+    res.status(500).json({ error: error.message || error });
   }
 });
 
@@ -293,22 +463,22 @@ createDeleteRoute('/api/bestiary', {
 });
 
 createCollectionRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createUpdateRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createInsertRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createDeleteRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
@@ -333,22 +503,22 @@ createDeleteRoute('/api/itemCategory', {
 });
 
 createCollectionRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createUpdateRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createInsertRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createDeleteRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
@@ -372,23 +542,25 @@ createDeleteRoute('/api/lore', {
   collectionName: 'lore',
 });
 
+
+
 createCollectionRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createUpdateRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createInsertRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createDeleteRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
@@ -544,6 +716,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
     }
 
     const updatedLetter = await collection.findOne(query);
+    notifyChange('letters', 'update', updatedLetter);
     res.json(updatedLetter);
   } catch (error) {
     console.error(error);
@@ -553,6 +726,6 @@ app.post('/api/letter/:id/read', async (req, res) => {
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  process.stdout.write(`API server listening on port ${port}\n`);
+server.listen(port, () => {
+  process.stdout.write(`API & WebSocket server listening on port ${port}\n`);
 });

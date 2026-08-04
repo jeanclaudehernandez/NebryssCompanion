@@ -6,6 +6,7 @@ import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideServiceWorker } from '@angular/service-worker';
 import { loadingInterceptor } from './loading.interceptor';
+import { campaignInterceptor } from './campaign.interceptor';
 import { GlobalErrorHandler } from './global-error-handler';
 
 export const appConfig: ApplicationConfig = {
@@ -21,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     ), 
     provideHttpClient(
       withFetch(),
-      withInterceptors([loadingInterceptor])
+      withInterceptors([campaignInterceptor, loadingInterceptor])
     ), 
     provideAnimationsAsync(), 
     provideServiceWorker('ngsw-worker.js', {

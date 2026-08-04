@@ -44,10 +44,6 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   isDeleting = false;
   showDeleteConfirm = false;
 
-  // Collapsible state (sections collapsed by default)
-  isInventoryCollapsed = true;
-  isPickerCollapsed = true;
-
   // Location group collapse state (collapsed by default)
   expandedLocations = new Set<string>();
 
@@ -123,27 +119,59 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   isLocationExpanded(locName: string): boolean {
     // If user is searching, auto-expand so they can see results instantly
     if (this.searchTerm.trim().length > 0) return true;
-    return this.expandedLocations.has(locName);
+    const saved = localStorage.getItem(`shop-admin-loc-${locName}-expanded`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return false;
   }
 
   toggleLocationGroup(locName: string): void {
-    if (this.expandedLocations.has(locName)) {
-      this.expandedLocations.delete(locName);
-    } else {
+    const currentlyExpanded = this.isLocationExpanded(locName);
+    const newState = !currentlyExpanded;
+    if (newState) {
       this.expandedLocations.add(locName);
+    } else {
+      this.expandedLocations.delete(locName);
     }
+    try {
+      localStorage.setItem(`shop-admin-loc-${locName}-expanded`, JSON.stringify(newState));
+    } catch {}
+  }
+
+  get isInventoryCollapsed(): boolean {
+    const saved = localStorage.getItem('shop-admin-inv-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   toggleInventoryCollapse(): void {
-    this.isInventoryCollapsed = !this.isInventoryCollapsed;
+    const newState = !this.isInventoryCollapsed;
+    localStorage.setItem('shop-admin-inv-collapsed', JSON.stringify(newState));
+  }
+
+  get isPickerCollapsed(): boolean {
+    const saved = localStorage.getItem('shop-admin-picker-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
   }
 
   togglePickerCollapse(): void {
-    this.isPickerCollapsed = !this.isPickerCollapsed;
+    const newState = !this.isPickerCollapsed;
+    localStorage.setItem('shop-admin-picker-collapsed', JSON.stringify(newState));
   }
 
   get isEditing(): boolean {
     return this.id !== null;
+  }
+
+  get canSubmit(): boolean {
+    if (!this.isAdmin || this.isSaving || this.isDeleting) {
+      return false;
+    }
+    return !!this.name.trim() && this.ownerId !== null && Number(this.ownerId) > 0;
+  }
+
+  get canDelete(): boolean {
+    return this.isAdmin && this.isEditing && !this.isSaving && !this.isDeleting && this.id !== null;
   }
 
   // ── For Sale: weapons with shop prices applied ──────────────────────────────
@@ -235,6 +263,19 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
         this.isAdmin = isAdmin;
       });
     this.loadAllData();
+    this.dataService.shops$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(shops => {
+        if (shops) {
+          this.shops = shops;
+          if (this.selectedShopId) {
+            const updatedSelected = this.shops.find(s => s.id === this.selectedShopId);
+            if (updatedSelected) {
+              this.populateForm(updatedSelected);
+            }
+          }
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -436,12 +477,20 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   // ── Save / Delete ─────────────────────────────────────────────────────────────
 
   saveShop(): void {
-    if (!this.name.trim()) {
-      this.toastService.show('Shop Name is required.', 'info');
+    if (!this.isAdmin) {
+      this.toastService.show('Admin privileges required to manage shops.', 'error');
       return;
     }
-    if (!this.ownerId) {
-      this.toastService.show('Owner NPC must be selected.', 'info');
+    if (!this.name.trim()) {
+      this.toastService.show('Shop Name is required.', 'error');
+      return;
+    }
+    if (!this.ownerId || Number(this.ownerId) <= 0) {
+      this.toastService.show('Owner NPC must be selected.', 'error');
+      return;
+    }
+
+    if (!this.canSubmit) {
       return;
     }
 
@@ -511,7 +560,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   }
 
   confirmDelete(): void {
-    if (this.id === null) return;
+    if (!this.canDelete || this.id === null) return;
     this.isDeleting = true;
     const deletedId = this.id;
     const deletedName = this.name;

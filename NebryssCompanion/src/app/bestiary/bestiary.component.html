@@ -44,6 +44,12 @@
                     <span class="material-icons">person</span>
                     <span>NPC</span>
                 </button>
+                <button *ngIf="isAdmin" type="button" class="gm-discovered-btn"
+                    [class.is-discovered]="creature.isDiscovered !== false"
+                    (click)="toggleCreatureDiscovered(creature, $event)"
+                    [title]="creature.isDiscovered !== false ? 'Creature is Discovered by players. Click to mark Undiscovered.' : 'Creature is Undiscovered. Click to mark Discovered.'">
+                    <span class="material-icons">{{ creature.isDiscovered !== false ? 'visibility' : 'visibility_off' }}</span>
+                </button>
                 <button class="remove-creature-btn" (click)="removeCreature(creature)"
                     title="Remove creature">✕</button>
             </div>

@@ -229,7 +229,7 @@
   "_id": {
     "$oid": "6a6fdeb982914f49f3897036"
   },
-  "id": 0,
+  "id": 19,
   "name": "Seneschal Lucren Vale",
   "faction": "Crimson Corsairs",
   "subgroup": "Head of Seneschal Family",
@@ -237,8 +237,7 @@
   "personality": "Serious, pragmatic and secretive, fiercely loyal to the Voss dynasty.",
   "mission": "- Serve the Voss",
   "location": "Zephyria",
-  "reputation": "- Held in the upmost regard by all factions of the Voss dynasty.\n- Loved by all the members of the Seneschal family",
-  "wargear": []
+  "discovered": true
 },
 {
   "_id": {

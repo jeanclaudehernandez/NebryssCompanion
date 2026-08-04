@@ -12,9 +12,10 @@ import { AdminEditorSession } from './admin-editor.models';
 import { ActivePlayerService } from './active-player.service';
 import { AppViewHostComponent } from './app-view-host.component';
 import { APP_VIEWS, AppView } from './app-view.types';
-import { Location } from './model';
+import { Location, Campaign } from './model';
 import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service';
 import { ModalService } from './modal.service';
+import { CampaignService } from './campaign.service';
 
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
@@ -192,11 +193,30 @@ import { ToastService } from './toast.service';
         </ng-container>
       </div>
     </ng-template>
+
+    <ng-template #campaignPromptDialog let-campaigns="campaigns" let-select="select">
+      <div class="confirmation-dialog campaign-prompt-modal">
+        <h3 style="color: #a855f7; margin-bottom: 8px;">Select a Campaign</h3>
+        <p style="margin-bottom: 16px; color: #cbd5e1;">Please select a campaign to continue playing in Nebryss Companion:</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+          <button
+            *ngFor="let camp of campaigns"
+            type="button"
+            class="btn-confirm"
+            style="background-color: #8b5cf6; width: 100%; text-align: center; margin-bottom: 6px;"
+            (click)="select(camp)"
+          >
+            {{ camp.name }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   @ViewChild('adminDialog') adminDialogTemplate?: TemplateRef<any>;
+  @ViewChild('campaignPromptDialog') campaignPromptDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
 
   currentView: AppView = 'players';
@@ -218,73 +238,6 @@ export class AppComponent {
   hasAdminAccess$ = this.adminService.hasAdminAccess$;
   isAdmin$ = this.adminService.isAdmin$;
 
-  toggleAdminMode(): void {
-    const nextState = !this.adminService.isAdmin;
-    this.adminService.setAdminStatus(nextState);
-    this.toastService.show(
-      nextState ? 'Modo GM Activado (Viendo Secretos de Campaña)' : 'Modo Jugador Activado (Secretos Ocultos)',
-      'info'
-    );
-  }
-
-  get showFooterMenu(): boolean {
-    return this.currentView !== 'bestiary';
-  }
-
-  get showHeaderPlayerTitle(): boolean {
-    return this.currentView !== 'bestiary';
-  }
-
-  get showBestiaryLootButton(): boolean {
-    return this.currentView === 'bestiary' && this.bestiaryMaterialsCount > 0;
-  }
-
-  get currentViewTitle(): string {
-    switch (this.currentView) {
-      case 'players': return 'Players';
-      case 'bestiary': return 'Bestiary';
-      case 'letters': return 'Letters';
-      case 'items': return 'Items & Equipment';
-      case 'shops': return 'Shops';
-      case 'lore': return 'Lore & Factions';
-      case 'locations': return 'Locations';
-      case 'worldMap': return 'World Map';
-      case 'talents': return 'Talents';
-      case 'mistEffects': return 'Mist Effects';
-      case 'terrains': return 'Terrains';
-      case 'mistEngineBattles': return 'Mist Engine';
-      case 'weaponRules': return 'Weapon Rules';
-      case 'alteredStates': return 'Altered States';
-      case 'afflictions': return 'Afflictions';
-      case 'shipNavigation': return 'Ship Navigation';
-      case 'npcs': return 'NPCs';
-      case 'adminItemCreator': return 'Item Creator';
-      case 'adminLocationCreator': return 'Location Creator';
-      case 'adminPlayerEditor': return 'Player Editor';
-      case 'adminCreatureEditor': return 'Creature Editor';
-      default: return 'Nebryss Companion';
-    }
-  }
-
-  // Pull to refresh variables
-  private pullStartY = 0;
-  private isPulling = false;
-  private readonly PULL_THRESHOLD = 150; // px to trigger refresh
-  private readonly PULL_START_MAX_Y = 32;
-  private readonly PULL_ACTIVATION_DISTANCE = 14;
-  public pullProgress = 0; // 0 to 1
-  public isRefreshing = false;
-
-  get pullIndicatorHeight(): number {
-    return Math.min(this.pullProgress * 60, 80);
-  }
-
-  get contentTransform(): string {
-    // Optional: push content down as we pull
-    // return `translateY(${this.pullIndicatorHeight}px)`;
-    return 'none'; // Keep content static for now, overlay indicator
-  }
-
   constructor(
     public themeService: ThemeService,
     public loadingService: LoadingService,
@@ -294,10 +247,13 @@ export class AppComponent {
     private dialog: MatDialog,
     private activePlayerService: ActivePlayerService,
     private bestiaryMaterialsService: BestiaryMaterialsService,
-    private modalService: ModalService
+    private modalService: ModalService,
+    public campaignService: CampaignService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
+
+    this.checkAndPromptCampaign();
 
     this.dataService.getLetters()
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -330,6 +286,97 @@ export class AppComponent {
 
     this.initPullToRefreshListeners();
   }
+
+  private checkAndPromptCampaign(): void {
+    if (!this.campaignService.hasCampaignSelected()) {
+      setTimeout(() => {
+        this.dataService.getCampaigns().subscribe(campaigns => {
+          if (campaigns && campaigns.length > 0 && !this.campaignService.hasCampaignSelected() && this.campaignPromptDialogTemplate) {
+            const dialogContext = {
+              campaigns,
+              select: (camp: Campaign) => {
+                this.activePlayerService.clearActivePlayer();
+                this.campaignService.setSelectedCampaign(camp);
+                this.dataService.refreshPlayers().subscribe();
+                this.modalService.close();
+              }
+            };
+            this.modalService.openFromTemplate(this.campaignPromptDialogTemplate, dialogContext, { showCloseButton: false });
+          }
+        });
+      }, 300);
+    }
+  }
+
+  toggleAdminMode(): void {
+    const nextState = !this.adminService.isAdmin;
+    this.adminService.setAdminStatus(nextState);
+    this.toastService.show(
+      nextState ? 'Modo GM Activado (Viendo Secretos de Campaña)' : 'Modo Jugador Activado (Secretos Ocultos)',
+      'info'
+    );
+  }
+
+  get showFooterMenu(): boolean {
+    return this.currentView !== 'bestiary';
+  }
+
+  get showHeaderPlayerTitle(): boolean {
+    return true;
+  }
+
+  get showBestiaryLootButton(): boolean {
+    return this.currentView === 'bestiary' && this.bestiaryMaterialsCount > 0;
+  }
+
+  get currentViewTitle(): string {
+    switch (this.currentView) {
+      case 'players': return 'Players';
+      case 'bestiary': return 'Bestiary';
+      case 'letters': return 'Letters';
+      case 'items': return 'Items & Equipment';
+      case 'shops': return 'Shops';
+      case 'lore': return 'Lore & Factions';
+      case 'locations': return 'Locations';
+      case 'worldMap': return 'World Map';
+      case 'talents': return 'Talents';
+      case 'mistEffects': return 'Mist Effects';
+      case 'terrains': return 'Terrains';
+      case 'mistEngineBattles': return 'Mist Engine';
+      case 'weaponRules': return 'Weapon Rules';
+      case 'alteredStates': return 'Altered States';
+      case 'afflictions': return 'Afflictions';
+      case 'shipNavigation': return 'Ship Navigation';
+      case 'npcs': return 'NPCs';
+      case 'adminItemCreator': return 'Item Creator';
+      case 'adminLocationCreator': return 'Location Creator';
+      case 'adminPlayerEditor': return 'Player Editor';
+      case 'adminCreatureEditor': return 'Creature Editor';
+      case 'adminCampaignEditor': return 'Campaign Editor';
+      default: return 'Nebryss Companion';
+    }
+  }
+
+  // Pull to refresh variables
+  private pullStartY = 0;
+  private isPulling = false;
+  private readonly PULL_THRESHOLD = 150; // px to trigger refresh
+  private readonly PULL_START_MAX_Y = 32;
+  private readonly PULL_ACTIVATION_DISTANCE = 14;
+  public pullProgress = 0; // 0 to 1
+  public isRefreshing = false;
+
+  get pullIndicatorHeight(): number {
+    return Math.min(this.pullProgress * 60, 80);
+  }
+
+  get contentTransform(): string {
+    // Optional: push content down as we pull
+    // return `translateY(${this.pullIndicatorHeight}px)`;
+    return 'none'; // Keep content static for now, overlay indicator
+  }
+
+
 
   // Detect if we are in standalone PWA mode (iOS or Android)
   private get isStandalone(): boolean {

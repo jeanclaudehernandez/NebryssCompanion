@@ -86,7 +86,7 @@
     </div>
 
     <div class="map-empty-state" *ngIf="!worldMapLocation">
-      <p>No world map image is set up yet. Mark a location with <code>"isWorldMap": true</code> in locations.json.</p>
+      <p>No world map image is set up yet. Mark a location with <code>"isWorldMap": true</code>.</p>
     </div>
   </div>
 
@@ -135,7 +135,6 @@
         [title]="selectedPin.discovered !== false ? 'Location is Discovered on Player Map. Click to hide.' : 'Location is Undiscovered. Click to reveal on Player Map.'"
       >
         <span class="material-icons">{{ selectedPin.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
-        <span>{{ selectedPin.discovered !== false ? 'Discovered' : 'Undiscovered' }}</span>
       </button>
     </div>
 
@@ -197,7 +196,7 @@
 
     <div class="dialog-buttons modal-actions">
       <button class="btn-secondary" type="button" (click)="copyLocationsJson()">
-        <span class="material-icons">content_copy</span> Copy locations.json
+        <span class="material-icons">content_copy</span> Copy Locations JSON
       </button>
       <button class="btn-cancel" type="button" (click)="cancel()">Close</button>
       <button class="btn-confirm" type="button" (click)="applyMapCalibration()" [disabled]="isCalibrating">

@@ -7,16 +7,45 @@
     <form class="player-detail-container" (ngSubmit)="save()">
       <section class="admin-section">
 
-        <label class="field">
-          <span>Player</span>
-          <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId" (ngModelChange)="onPlayerSelect($event)">
-            <option [ngValue]="null">Select a player</option>
-            <option *ngFor="let player of players" [ngValue]="player.id">{{ player.name }}</option>
-          </select>
-        </label>
+        <div class="player-select-bar" style="display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px;">
+          <label class="field" style="flex: 1; margin: 0;">
+            <span>Player</span>
+            <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId" (ngModelChange)="onPlayerSelect($event)">
+              <option [ngValue]="null">Select a player</option>
+              <option *ngFor="let player of players" [ngValue]="player.id">{{ player.name }}</option>
+            </select>
+          </label>
+          <button type="button" class="inline-btn btn-new-player" (click)="createNewPlayer()" style="height: 44px; padding: 0 16px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
+            + New Player
+          </button>
+        </div>
       </section>
 
       <ng-container *ngIf="editablePlayer as player">
+        <section class="admin-section">
+          <div class="section-header">
+            <div>
+              <h3>Identity</h3>
+            </div>
+          </div>
+          <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+            <label class="field">
+              <span>Name</span>
+              <input [(ngModel)]="player.name" name="playerName" type="text" placeholder="Character Name" required />
+            </label>
+
+            <label class="field">
+              <span>Race</span>
+              <input [(ngModel)]="player.race" name="playerRace" type="text" placeholder="Race (e.g. Human)" />
+            </label>
+
+            <label class="field">
+              <span>Origin</span>
+              <input [(ngModel)]="player.origin" name="playerOrigin" type="text" placeholder="Origin / Faction" />
+            </label>
+          </div>
+        </section>
+
         <section class="admin-section">
           <div class="section-header">
             <div>
@@ -273,9 +302,12 @@
           </ng-template>
         </section>
 
-        <div class="actions dialog-buttons">
+        <div class="actions dialog-buttons" style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
           <button class="btn-confirm" type="submit" [disabled]="!canSave">
             {{ isSaving ? 'Saving...' : 'Save Player' }}
+          </button>
+          <button type="button" class="remove-btn" (click)="deletePlayer()" style="background: #ef4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
+            Delete Player
           </button>
         </div>
       </ng-container>

@@ -1,0 +1,171 @@
+<div class="campaign-admin-container">
+  <!-- Header Banner -->
+  <header class="admin-header">
+    <div class="header-title-group">
+      <span class="material-icons header-icon">flag</span>
+      <div>
+        <h2>Campaign Management</h2>
+        <p class="header-sub">Create, edit, and operate multiple Nebryss campaigns.</p>
+      </div>
+    </div>
+    <button type="button" class="btn-new-campaign" (click)="resetForm()">
+      <span class="material-icons">add</span>
+      <span>New Campaign</span>
+    </button>
+  </header>
+
+  <div class="admin-layout">
+    <!-- Sidebar / Campaign List -->
+    <aside class="campaign-sidebar">
+      <div class="search-box">
+        <span class="material-icons search-icon">search</span>
+        <input
+          type="text"
+          placeholder="Search campaigns..."
+          [(ngModel)]="searchTerm"
+          class="search-input"
+        />
+        <button *ngIf="searchTerm" type="button" class="btn-clear-search" (click)="searchTerm = ''">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="spinner-small"></div>
+        <span>Loading campaigns...</span>
+      </div>
+
+      <div *ngIf="!isLoading && filteredCampaigns.length === 0" class="empty-state">
+        <span class="material-icons">folder_off</span>
+        <p>No campaigns found.</p>
+      </div>
+
+      <ul *ngIf="!isLoading && filteredCampaigns.length > 0" class="campaign-list">
+        <li
+          *ngFor="let camp of filteredCampaigns"
+          class="campaign-item"
+          [class.selected]="selectedCampaignId === camp.id"
+          [class.active-current]="activeCampaignId === camp.id"
+          (click)="selectCampaign(camp)"
+        >
+          <div class="campaign-item-info">
+            <span class="campaign-name">{{ camp.name }}</span>
+            <span class="collection-tag">Collection: {{ camp.prefix ? camp.prefix + '-player' : 'player' }}</span>
+          </div>
+          
+          <div class="campaign-item-actions">
+            <button
+              type="button"
+              class="btn-activate-badge"
+              [class.active]="activeCampaignId === camp.id"
+              (click)="makeActive(camp, $event)"
+              [title]="activeCampaignId === camp.id ? 'Currently Active Campaign' : 'Set as Active Campaign'"
+            >
+              <span class="material-icons">{{ activeCampaignId === camp.id ? 'check_circle' : 'radio_button_unchecked' }}</span>
+              <span>{{ activeCampaignId === camp.id ? 'Active' : 'Select' }}</span>
+            </button>
+          </div>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Form Section -->
+    <main class="campaign-form-section">
+      <div class="form-card">
+        <h3 class="form-title">
+          <span class="material-icons">{{ id ? 'edit' : 'add_circle' }}</span>
+          <span>{{ id ? 'Edit Campaign #' + id : 'Create New Campaign' }}</span>
+        </h3>
+
+        <form (ngSubmit)="saveCampaign()" #campaignForm="ngForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="campaignName">Campaign Name <span class="required">*</span></label>
+              <input
+                id="campaignName"
+                type="text"
+                name="name"
+                [(ngModel)]="name"
+                required
+                placeholder="e.g., nebryss-voss-succession"
+                class="form-control"
+              />
+              <span class="field-hint">Unique title / slug for this campaign.</span>
+            </div>
+
+            <div class="form-group">
+              <label for="campaignPrefix">Campaign Prefix <span class="required">*</span></label>
+              <input
+                id="campaignPrefix"
+                type="text"
+                name="prefix"
+                [(ngModel)]="prefix"
+                required
+                placeholder="e.g., nebryss-voss-sucession"
+                class="form-control"
+              />
+              <span class="field-hint">Prefix used for MongoDB player collections (creates collection "{{ prefix ? prefix + '-player' : 'prefix-player' }}").</span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="btn-primary"
+              [disabled]="isSaving || !name.trim()"
+            >
+              <span class="material-icons">save</span>
+              <span>{{ isSaving ? 'Saving...' : (id ? 'Update Campaign' : 'Create Campaign') }}</span>
+            </button>
+
+            <button
+              *ngIf="id"
+              type="button"
+              class="btn-secondary"
+              (click)="makeActive({ id: id, name: name, prefix: prefix })"
+            >
+              <span class="material-icons">play_circle</span>
+              <span>Set as Active</span>
+            </button>
+
+            <button
+              type="button"
+              class="btn-ghost"
+              (click)="resetForm()"
+            >
+              <span class="material-icons">clear</span>
+              <span>Reset</span>
+            </button>
+
+            <button
+              *ngIf="id"
+              type="button"
+              class="btn-danger"
+              (click)="confirmDelete()"
+              [disabled]="isDeleting"
+            >
+              <span class="material-icons">delete</span>
+              <span>Delete</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Delete Confirmation Overlay / Banner -->
+        <div *ngIf="showDeleteConfirm" class="delete-confirm-banner">
+          <span class="material-icons warning-icon">warning</span>
+          <div class="confirm-text">
+            <h4>Delete Campaign "{{ name }}"?</h4>
+            <p>This action cannot be undone.</p>
+          </div>
+          <div class="confirm-buttons">
+            <button type="button" class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+            <button type="button" class="btn-confirm-delete" (click)="deleteCampaign()" [disabled]="isDeleting">
+              {{ isDeleting ? 'Deleting...' : 'Confirm Delete' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

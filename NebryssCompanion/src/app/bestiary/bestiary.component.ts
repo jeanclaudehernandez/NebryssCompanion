@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { BestiaryMaterialsService } from './bestiary-materials.service';
 
+import { ToastService } from '../toast.service';
+
 @Component({
   selector: 'app-bestiary',
   standalone: true,
@@ -56,12 +58,21 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     private dataService: DataService,
     private adminService: AdminService,
     private themeService: ThemeService,
-    private bestiaryMaterialsService: BestiaryMaterialsService
+    private bestiaryMaterialsService: BestiaryMaterialsService,
+    private toastService: ToastService
   ) {}
 
   ngOnInit() {
     this.themeSubscription = this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
+      if (this.bestiary.length > 0) {
+        this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
+        this.applyFilters();
+        this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
+        this.selectedCreatures = this.selectedCreatures.filter(c => this.isAdmin || c.isDiscovered !== false);
+        this.syncCreatureScrollSections();
+        this.updateDroppedMaterials();
+      }
     });
 
     this.themeSubscription.add(
@@ -82,7 +93,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
       this.itemsData = response.items;
       this.weaponsData = response.weapons;
       this.weaponRulesData = response.weaponRules;
-      this.factions = this.getUniqueValues(response.bestiary, 'faction');
+      this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
       this.alteredStates = response.alteredStates;
 
       // Load saved filters
@@ -105,7 +116,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
         const ids = JSON.parse(savedCreatureIds) as number[];
         this.selectedCreatures = ids.map(id => 
           this.bestiary.find(c => c.id === id)
-        ).filter(c => c !== undefined) as BestiaryEntry[];
+        ).filter((c): c is BestiaryEntry => c !== undefined && (this.isAdmin || c.isDiscovered !== false));
         this.syncCreatureScrollSections();
         
         if (this.selectedCreatures.length > 0) {
@@ -119,6 +130,33 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
         this.selectAndScrollToCreature(this.initialBestiaryId);
       }
     });
+
+    this.dataService.bestiary$?.subscribe(bestiary => {
+      if (bestiary && bestiary.length > 0) {
+        this.bestiary = bestiary;
+        this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
+        this.applyFilters();
+        this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
+
+        this.selectedCreatures = this.selectedCreatures
+          .map(selected => this.bestiary.find(c => c.id === selected.id))
+          .filter((c): c is BestiaryEntry => c !== undefined && (this.isAdmin || c.isDiscovered !== false));
+        this.syncCreatureScrollSections();
+        this.updateDroppedMaterials();
+      }
+    });
+
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+      }
+    });
+
+    this.dataService.items$?.subscribe(items => {
+      if (items && items.items) {
+        this.itemsData = { ...items };
+      }
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -130,6 +168,10 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy() {
     this.themeSubscription.unsubscribe();
     this.bestiaryMaterialsService.reset();
+  }
+
+  private getVisibleCreatures(): BestiaryEntry[] {
+    return this.bestiary.filter(c => this.isAdmin || c.isDiscovered !== false);
   }
 
   private getUniqueValues(array: any[], property: string): string[] {
@@ -159,7 +201,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private applyFilters() {
-    this.filteredCreatures = this.bestiary.filter(c => {
+    this.filteredCreatures = this.getVisibleCreatures().filter(c => {
       const factionMatch = !this.selectedFaction || c.faction === this.selectedFaction;
       const subgroupMatch = !this.selectedSubGroup || c.subgroup === this.selectedSubGroup;
       return factionMatch && subgroupMatch;
@@ -170,7 +212,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     if (this.selectedCreatureId) {
       const creature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId)) || null;
       
-      if (creature) {
+      if (creature && (this.isAdmin || creature.isDiscovered !== false)) {
         // Check if already selected
         const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
         
@@ -194,7 +236,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   selectAndScrollToCreature(bestiaryId: number): void {
     if (!bestiaryId) return;
     const creature = this.bestiary.find(c => c.id === Number(bestiaryId));
-    if (!creature) return;
+    if (!creature || (!this.isAdmin && creature.isDiscovered === false)) return;
 
     const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
     if (!alreadySelected) {
@@ -206,6 +248,26 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.syncCreatureScrollSections();
     this.updateDroppedMaterials();
     this.scrollToMob(creature.id);
+  }
+
+  toggleCreatureDiscovered(creature: BestiaryEntry, event?: Event): void {
+    event?.stopPropagation();
+    const nextDiscovered = creature.isDiscovered === false ? true : false;
+    const updated: BestiaryEntry = {
+      ...creature,
+      isDiscovered: nextDiscovered
+    };
+    this.dataService.saveBestiary(updated).subscribe({
+      next: saved => {
+        const statusMsg = saved.isDiscovered !== false
+          ? `Creature "${saved.name}" is now DISCOVERED (Visible to Players).`
+          : `Creature "${saved.name}" is now UNDISCOVERED (Hidden from Players).`;
+        this.toastService.show(statusMsg, 'success');
+      },
+      error: () => {
+        this.toastService.show('Failed to update creature discovery status', 'error');
+      }
+    });
   }
 
   getNpcForCreature(creatureId: number): NPC | undefined {

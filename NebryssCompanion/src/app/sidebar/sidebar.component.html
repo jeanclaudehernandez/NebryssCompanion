@@ -111,11 +111,31 @@
       <span class="material-icons">pets</span>
       <span>Creature</span>
     </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminCampaignEditor()">
+      <span class="material-icons">flag</span>
+      <span>Campaigns</span>
+    </div>
 
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
         <span class="material-icons">refresh</span> Refresh Data
       </button>
+      <div class="campaign-selector-wrapper">
+        <label for="campaign-select" class="campaign-select-label">
+          <span class="material-icons">flag</span> Campaign
+        </label>
+        <select
+          id="campaign-select"
+          class="sidebar-campaign-select"
+          [ngModel]="selectedCampaign?.id"
+          (change)="onCampaignSelect($event)"
+        >
+          <option [ngValue]="null" disabled>Select Campaign...</option>
+          <option *ngFor="let camp of campaigns" [value]="camp.id">
+            {{ camp.name }}
+          </option>
+        </select>
+      </div>
     </div>
     <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
       <span class="material-icons">lock</span> Admin Access

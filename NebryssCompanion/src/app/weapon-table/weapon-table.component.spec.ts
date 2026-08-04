@@ -14,12 +14,14 @@ describe('WeaponTableComponent', () => {
   let mockToastService: jasmine.SpyObj<ToastService>;
 
   beforeEach(async () => {
-    mockDataService = jasmine.createSpyObj('DataService', ['getTalents', 'getAfflictions', 'getItemById']);
+    mockDataService = jasmine.createSpyObj('DataService', ['getTalents', 'getAfflictions', 'getItemById', 'getItems', 'getTalentById']);
     mockActivePlayerService = jasmine.createSpyObj('ActivePlayerService', [], { activePlayer$: of(null), activePlayer: null });
     mockToastService = jasmine.createSpyObj('ToastService', ['show']);
 
     mockDataService.getTalents.and.returnValue(of([]));
     mockDataService.getAfflictions.and.returnValue(of([]));
+    mockDataService.getItems.and.returnValue(of({ items: [] } as any));
+    mockDataService.getTalentById.and.returnValue(null);
 
     await TestBed.configureTestingModule({
       imports: [WeaponTableComponent],
@@ -89,6 +91,7 @@ describe('WeaponTableComponent', () => {
     component.weaponIds = [1];
     component.weaponsData = [mockWeapon] as any;
     component.talentsData = [mockTalent] as any;
+    mockDataService.getTalentById.and.callFake((id: string) => id === 't1' ? mockTalent.talents[0] as any : null);
     
     // Override active player
     Object.defineProperty(mockActivePlayerService, 'activePlayer', { get: () => mockPlayer });

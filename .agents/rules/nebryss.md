@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # NebryssCompanion - Project Context & Rules for AI Agents
 
 ## 1. Project Overview
@@ -60,3 +64,29 @@ NebryssCompanion is a responsive companion Progressive Web Application (PWA) bui
 5. **English Language UI**: All user-facing UI text, headers, menu titles, category names, dialogs, tooltips, and aria attributes MUST be strictly in English.
 6. **No Automatic Builds**: Do NOT run build commands (`ng build`, `npm run build`, `npm run build:prod`, etc.) after making changes unless explicitly requested by the user.
 7. **No constant git  checks**: Do NOT run commands (`git status`, `git diff`, `git log`, etc.) unless explicitly requested by the user or if the task at hand requires checking work history.
+
+---
+name: deploy
+description: Deploy the frontend or backend of Nebryss Companion by checking deploy.bat for deployment instructions and execution steps.
+---
+
+# Deployment Instructions
+
+When asked to deploy the frontend, backend, or the full application:
+
+1. **Check `deploy.bat`**: Always view `deploy.bat` in the repository root first to verify the latest environment variables (`GCLOUD_PROJECT`, `CLOUD_RUN_SERVICE`, `GCLOUD_REGION`, `IMAGE_NAME`) and script commands.
+
+2. **Frontend Deployment**:
+   - Do NOT run any `git` commands.
+   - Run `npm run build` to build the Angular frontend distribution files.
+   - Run `npx firebase deploy --only hosting` (or `firebase deploy`) to publish the built frontend.
+
+3. **Backend Deployment**:
+   - Submit the Docker container build via Cloud Build:
+     `gcloud builds submit --project "%GCLOUD_PROJECT%" --tag "%IMAGE_NAME%"`
+   - Deploy the container to Google Cloud Run:
+     `gcloud run deploy "%CLOUD_RUN_SERVICE%" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed --quiet`
+
+4. **Full Stack Deployment**:
+   - Follow the steps sequentially as listed in `deploy.bat`.
+

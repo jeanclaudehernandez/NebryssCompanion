@@ -54,16 +54,25 @@ export class LocationsComponent implements OnInit {
     if (event) {
       event.stopPropagation();
     }
-    if (this.collapsedFactions.has(factionName)) {
-      this.collapsedFactions.delete(factionName);
-    } else {
+    const currentlyCollapsed = this.isFactionCollapsed(factionName);
+    const newState = !currentlyCollapsed;
+    if (newState) {
       this.collapsedFactions.add(factionName);
+    } else {
+      this.collapsedFactions.delete(factionName);
     }
+    try {
+      localStorage.setItem(`loc-faction-${factionName}-collapsed`, JSON.stringify(newState));
+    } catch {}
     this.cdr.markForCheck();
   }
 
   isFactionCollapsed(factionName: string): boolean {
-    return this.collapsedFactions.has(factionName);
+    const saved = localStorage.getItem(`loc-faction-${factionName}-collapsed`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return true;
   }
 
   onFactionEmblemClick(event: Event, factionName: string): void {
@@ -223,6 +232,20 @@ export class LocationsComponent implements OnInit {
 
       this.cdr.markForCheck();
     });
+
+    this.dataService.locations$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => {
+        if (data && data.locations) {
+          this.locations = data.locations;
+          this.uniqueFactions = this.getUniqueFactions();
+          if (this.selectedLocation) {
+            const updatedSelected = this.locations.find(l => l.id === this.selectedLocation?.id || l.name === this.selectedLocation?.name);
+            this.selectedLocation = updatedSelected || null;
+          }
+          this.cdr.markForCheck();
+        }
+      });
 
     this.dataService.getLore().subscribe(data => {
       this.loreData = data;

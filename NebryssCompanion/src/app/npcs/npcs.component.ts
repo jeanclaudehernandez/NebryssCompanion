@@ -106,6 +106,19 @@ export class NpcsComponent implements OnInit {
 
         this.cdr.markForCheck();
       });
+
+    this.dataService.npcs$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(npcs => {
+        if (npcs) {
+          this.npcs = npcs;
+          if (this.selectedNpc) {
+            const updated = this.npcs.find(n => n.id === this.selectedNpc?.id || n.name === this.selectedNpc?.name);
+            this.selectedNpc = updated || null;
+          }
+          this.cdr.markForCheck();
+        }
+      });
   }
 
   setGroupBy(mode: NpcGroupBy): void {
@@ -125,16 +138,25 @@ export class NpcsComponent implements OnInit {
     if (event) {
       event.stopPropagation();
     }
-    if (this.collapsedGroups.has(groupName)) {
-      this.collapsedGroups.delete(groupName);
-    } else {
+    const currentlyCollapsed = this.isGroupCollapsed(groupName);
+    const newState = !currentlyCollapsed;
+    if (newState) {
       this.collapsedGroups.add(groupName);
+    } else {
+      this.collapsedGroups.delete(groupName);
     }
+    try {
+      localStorage.setItem(`npc-group-${groupName}-collapsed`, JSON.stringify(newState));
+    } catch {}
     this.cdr.markForCheck();
   }
 
   isGroupCollapsed(groupName: string): boolean {
-    return this.collapsedGroups.has(groupName);
+    const saved = localStorage.getItem(`npc-group-${groupName}-collapsed`);
+    if (saved !== null) {
+      return JSON.parse(saved);
+    }
+    return true;
   }
 
   selectNpc(npc: NPC): void {

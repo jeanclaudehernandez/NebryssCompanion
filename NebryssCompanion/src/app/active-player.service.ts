@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
+import { BehaviorSubject, Observable, interval, pairwise } from 'rxjs';
 import { Player } from './model';
 import { DataService } from './data.service';
+import { CampaignService } from './campaign.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +11,43 @@ export class ActivePlayerService {
   private readonly STORAGE_KEY = 'activePlayer';
   private activePlayerSubject = new BehaviorSubject<Player | null>(null);
   
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private campaignService: CampaignService
+  ) {
     this.loadFromLocalStorage();
     this.syncActivePlayerFromDatabase();
+    this.listenToRealtimePlayerUpdates();
+    this.listenToCampaignChanges();
     this.startPeriodicSync();
+  }
+
+  private listenToCampaignChanges(): void {
+    this.campaignService.selectedCampaign$
+      .pipe(pairwise())
+      .subscribe(([prev, curr]) => {
+        if (prev?.id !== curr?.id || prev?.prefix !== curr?.prefix) {
+          this.clearActivePlayer();
+        }
+      });
+  }
+
+  private listenToRealtimePlayerUpdates(): void {
+    if (!this.dataService || !this.dataService.players$) {
+      return;
+    }
+    this.dataService.players$.subscribe(players => {
+      const current = this.activePlayer;
+      if (!current || !players || players.length === 0) {
+        return;
+      }
+      const freshPlayer = players.find(p => p.id === current.id);
+      if (freshPlayer) {
+        if (JSON.stringify(freshPlayer) !== JSON.stringify(current)) {
+          this.setActivePlayer(freshPlayer);
+        }
+      }
+    });
   }
 
   get activePlayer$(): Observable<Player | null> {
@@ -87,7 +121,7 @@ export class ActivePlayerService {
 
   private syncActivePlayerFromDatabase(): void {
     const storedPlayer = this.activePlayer;
-    if (!storedPlayer) {
+    if (!storedPlayer || !this.dataService || typeof this.dataService.getPlayers !== 'function') {
       return;
     }
 

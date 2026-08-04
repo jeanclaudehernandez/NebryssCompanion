@@ -197,6 +197,7 @@ export class CreatureAdminPageComponent implements OnInit {
     this.selectedCreatureId = creature.id;
     this.isEditing = true;
     this.editableCreature = this.cloneCreature(creature);
+    this.editableCreature.isDiscovered = creature.isDiscovered !== false;
     this.editableCreature.weapons = [...(this.editableCreature.weapons ?? [])]
       .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
       .filter((id): id is number => typeof id === 'number' && !isNaN(id));
@@ -223,6 +224,7 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.selectedFaction || '',
       subgroup: this.selectedSubGroup || '',
       pr: 10,
+      isDiscovered: true,
       attributes: {
         Movement: 6,
         Wounds: 10,
@@ -253,6 +255,7 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.editableCreature.faction,
       subgroup: this.editableCreature.subgroup,
       pr: this.editableCreature.pr,
+      isDiscovered: this.editableCreature.isDiscovered !== false,
       attributes: this.editableCreature.attributes,
       weapons: this.editableCreature.weapons,
       abilities: this.editableCreature.abilities,
@@ -573,6 +576,7 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.editableCreature.faction.trim() || 'Neutral',
       subgroup: this.editableCreature.subgroup.trim() || 'General',
       pr: Number(this.editableCreature.pr) || 10,
+      isDiscovered: this.editableCreature.isDiscovered !== false,
       weapons: [...(this.editableCreature.weapons ?? [])]
         .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
         .filter((id): id is number => typeof id === 'number' && !isNaN(id)),

@@ -1,431 +1,5 @@
 [{
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a60"
-  },
-  "id": 1,
-  "name": "Bayonet",
-  "price": 10,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "human",
-      "type": "knife"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a61"
-  },
-  "id": 2,
-  "name": "Chainsword",
-  "price": 12,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "two-handed sword"
-    },
-    {
-      "profileName": "power cell",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "one-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a62"
-  },
-  "id": 3,
-  "name": "Mistforged Saber",
-  "price": 25,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 16,
-          "modValue": null
-        },
-        {
-          "ruleId": 4,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "one-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a63"
-  },
-  "id": 4,
-  "name": "Arc Shock Gauntlets",
-  "price": 35,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 17,
-          "modValue": null
-        },
-        {
-          "ruleId": 18,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a64"
-  },
-  "id": 5,
-  "name": "Mist-Warp Staff",
-  "price": 40,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 12,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "staff"
-    },
-    {
-      "profileName": "astartes",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "astartes",
-      "type": "staff"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a65"
-  },
-  "id": 6,
-  "name": "Mistborn Whipblade",
-  "price": 80,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        },
-        {
-          "ruleId": 2,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "whip"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a66"
-  },
-  "id": 7,
-  "name": "Graviton Crusher",
-  "price": 120,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 2,
-      "damage": {
-        "min": 5,
-        "max": 6
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        },
-        {
-          "ruleId": 1,
-          "modValue": 1
-        },
-        {
-          "ruleId": 3,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "two-handed hammer"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a67"
-  },
-  "id": 8,
-  "name": "Power Sword",
-  "price": 130,
-  "profiles": [
-    {
-      "profileName": "power cell",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        },
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "two-handed sword"
-    },
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 4
-      },
-      "specialRules": [],
-      "body": "astartes",
-      "type": "two-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a68"
-  },
-  "id": 9,
-  "name": "Narthecium",
-  "price": 150,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "narthecium"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a69"
-  },
-  "id": 10,
-  "name": "Rusty Spear",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "universal",
-      "type": "spear"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a6a"
-  },
-  "id": 11,
-  "name": "Coral Sword",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 1,
-        "max": 2
-      },
-      "specialRules": [
-        {
-          "ruleId": 18,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "one-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a6b"
-  },
-  "id": 12,
-  "name": "Tidal Trident",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 20,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "spear"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a6c"
-  },
-  "id": 13,
-  "name": "Royal Bone Sword",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 21,
-          "modValue": 5
-        },
-        {
-          "ruleId": 22,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "two-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a6d"
   },
   "id": 14,
@@ -449,154 +23,6 @@
       ],
       "body": "astartes",
       "type": "one-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a6e"
-  },
-  "id": 15,
-  "name": "Lance of Sabatine",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 5,
-        "max": 7
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        },
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a6f"
-  },
-  "id": 16,
-  "name": "Aetherwing Talon Gauntlet",
-  "price": 35,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 17,
-          "modValue": null
-        },
-        {
-          "ruleId": 18,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a70"
-  },
-  "id": 17,
-  "name": "Leg Blade",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 14,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "one-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a71"
-  },
-  "id": 18,
-  "name": "Claws",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "fellgor",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a72"
-  },
-  "id": 19,
-  "name": "Aether Talons",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "aetherwing",
-      "type": "gauntlet"
     }
   ]
 },
@@ -658,80 +84,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a75"
-  },
-  "id": 22,
-  "name": "Stone Fists",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        }
-      ],
-      "body": "golem",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a76"
-  },
-  "id": 23,
-  "name": "Lasgun",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "human",
-      "type": "rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a77"
-  },
-  "id": 24,
-  "name": "Stub Pistol",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 10,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "human",
-      "type": "pistol"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a78"
   },
   "name": "Mistforged Pistol",
@@ -787,194 +139,6 @@
       ],
       "body": "human",
       "type": "rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a7a"
-  },
-  "id": 27,
-  "name": "Pulse Carbine",
-  "price": 25,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "plasma rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a7b"
-  },
-  "id": 28,
-  "name": "Voidstrike Pistol",
-  "price": 25,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 34,
-          "modValue": 1
-        }
-      ],
-      "body": "astartes",
-      "type": "plasma pistol"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a7c"
-  },
-  "id": 29,
-  "name": "Plasma Rifle",
-  "price": 20,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 2,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 35,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "plasma rifle"
-    },
-    {
-      "profileName": "over charge",
-      "rng": null,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 35,
-          "modValue": null
-        },
-        {
-          "ruleId": 34,
-          "modValue": 1
-        },
-        {
-          "ruleId": 33,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "plasma rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a7d"
-  },
-  "id": 30,
-  "name": "Plasma Pistol",
-  "price": 50,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 34,
-          "modValue": 1
-        }
-      ],
-      "body": "universal",
-      "type": "plasma pistol"
-    },
-    {
-      "profileName": "super charge",
-      "rng": 12,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 34,
-          "modValue": 1
-        },
-        {
-          "ruleId": 21,
-          "modValue": 5
-        }
-      ],
-      "body": "astartes",
-      "type": "plasma pistol"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a7e"
-  },
-  "id": 31,
-  "name": "Boltgun",
-  "price": 60,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 14,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 24,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "bolter rifle"
     }
   ]
 },
@@ -1092,138 +256,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a81"
-  },
-  "id": 34,
-  "name": "Pneumatic Harpoon",
-  "price": 40,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 2,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 5,
-          "modValue": 3
-        },
-        {
-          "ruleId": 26,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "spear"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a82"
-  },
-  "id": 35,
-  "name": "Stormchaser Assault Rifle",
-  "price": 30,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 14,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 18,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a83"
-  },
-  "id": 36,
-  "name": "Nightstalker Sniper",
-  "price": 50,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 3,
-      "ws": 2,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 25,
-          "modValue": 2
-        },
-        {
-          "ruleId": 28,
-          "modValue": null
-        },
-        {
-          "ruleId": 26,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "sniper"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a84"
-  },
-  "id": 37,
-  "name": "Inferno Bolter Rifle",
-  "price": 35,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 21,
-          "modValue": 5
-        },
-        {
-          "ruleId": 6,
-          "modValue": null
-        },
-        {
-          "ruleId": 35,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "bolter rifle"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a85"
   },
   "id": 38,
@@ -1296,166 +328,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a87"
-  },
-  "id": 40,
-  "name": "Crude Net",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 6,
-      "attacks": 2,
-      "ws": 5,
-      "damage": {
-        "min": 1,
-        "max": 2
-      },
-      "specialRules": [
-        {
-          "ruleId": 29,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "launcher"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a88"
-  },
-  "id": 41,
-  "name": "Throwing Spear",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 33,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "spear"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a89"
-  },
-  "id": 42,
-  "name": "Tidal Bolt",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 30,
-          "modValue": 1
-        },
-        {
-          "ruleId": 32,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a8a"
-  },
-  "id": 43,
-  "name": "Tidal Blast",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 6,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 30,
-          "modValue": 1
-        },
-        {
-          "ruleId": 18,
-          "modValue": null
-        },
-        {
-          "ruleId": 32,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a8b"
-  },
-  "id": 44,
-  "name": "Windblast",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 30,
-          "modValue": 1
-        },
-        {
-          "ruleId": 31,
-          "modValue": 2
-        },
-        {
-          "ruleId": 32,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a8c"
   },
   "id": 45,
@@ -1479,38 +351,6 @@
         {
           "ruleId": 18,
           "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "warp"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a8d"
-  },
-  "id": 46,
-  "name": "Balefire Bolt",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 32,
-          "modValue": null
-        },
-        {
-          "ruleId": 30,
-          "modValue": 2
         }
       ],
       "body": "spell",
@@ -1578,29 +418,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a8f"
-  },
-  "id": 48,
-  "name": "Mist Slam",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 3,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [],
-      "body": "golem",
-      "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a90"
   },
   "id": 49,
@@ -1637,66 +454,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a91"
-  },
-  "id": 50,
-  "name": "Mist Blast",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 10,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 12,
-          "modValue": null
-        },
-        {
-          "ruleId": 32,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a92"
-  },
-  "id": 51,
-  "name": "Servo-Hammer",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "two-handed hammer"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a93"
   },
   "id": 52,
@@ -1715,29 +472,6 @@
       "specialRules": [],
       "body": "astartes",
       "type": "bolter pistol"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a94"
-  },
-  "id": 53,
-  "name": "Autogun Turret",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 2
-      },
-      "specialRules": [],
-      "body": "construct",
-      "type": "rifle"
     }
   ]
 },
@@ -1771,6 +505,806 @@
 },
 {
   "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa5"
+  },
+  "id": 70,
+  "name": "Inferno Pistol",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 6,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 6,
+          "modValue": null
+        },
+        {
+          "ruleId": 30,
+          "modValue": 2
+        }
+      ],
+      "body": "universal",
+      "type": "flamer"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa7"
+  },
+  "id": 72,
+  "name": "Warp Talons",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 38,
+          "modValue": null
+        },
+        {
+          "ruleId": 7,
+          "modValue": null
+        }
+      ],
+      "body": "daemon",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa9"
+  },
+  "id": 74,
+  "name": "Murloc Spine Dagger",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        },
+        {
+          "ruleId": 36,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "knife"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aac"
+  },
+  "id": 77,
+  "name": "Screamer Whip",
+  "price": 30,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 3,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 20,
+          "modValue": null
+        },
+        {
+          "ruleId": 21,
+          "modValue": 5
+        }
+      ],
+      "body": "universal",
+      "type": "whip"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aae"
+  },
+  "id": 79,
+  "name": "Heavy Flamer",
+  "price": 20,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 6,
+      "ws": 2,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 30,
+          "modValue": 2
+        },
+        {
+          "ruleId": 6,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "flamer"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aaf"
+  },
+  "id": 80,
+  "name": "Needle Rifle",
+  "price": 18,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 28,
+          "modValue": null
+        },
+        {
+          "ruleId": 21,
+          "modValue": 5
+        },
+        {
+          "ruleId": 34,
+          "modValue": 1
+        }
+      ],
+      "body": "universal",
+      "type": "rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab3"
+  },
+  "id": 84,
+  "name": "Fellgor Cleaver",
+  "price": 15,
+  "profiles": [
+    {
+      "profileName": "Cleave",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [],
+      "body": "universal",
+      "type": "two-handed axe"
+    },
+    {
+      "profileName": "Frenzy",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 18,
+          "modValue": 1
+        }
+      ],
+      "body": "fellgor",
+      "type": "two-handed axe"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab5"
+  },
+  "id": 86,
+  "name": "Frag Missile Launcher",
+  "price": 80,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 14,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 30,
+          "modValue": 2
+        },
+        {
+          "ruleId": 26,
+          "modValue": null
+        },
+        {
+          "ruleId": 34,
+          "modValue": 1
+        }
+      ],
+      "body": "universal",
+      "type": "launcher"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab8"
+  },
+  "id": 89,
+  "name": "Choppa",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "ork",
+      "type": "two-handed axe"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926abd"
+  },
+  "id": 94,
+  "name": "Breacha Ram",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 5,
+        "max": 6
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        },
+        {
+          "ruleId": 17,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "ram"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926abf"
+  },
+  "id": 96,
+  "name": "Rokkit Launcha",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 34,
+          "modValue": 1
+        },
+        {
+          "ruleId": 30,
+          "modValue": 2
+        }
+      ],
+      "body": "universal",
+      "type": "launcher"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ac0"
+  },
+  "id": 97,
+  "name": "Snipa Rifle",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 4,
+      "ws": 2,
+      "damage": {
+        "min": 3,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 28,
+          "modValue": null
+        },
+        {
+          "ruleId": 25,
+          "modValue": 3
+        }
+      ],
+      "body": "universal",
+      "type": "sniper"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aca"
+  },
+  "id": 107,
+  "name": "Frag Grenade Mk I",
+  "price": 3,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 6,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 30,
+          "modValue": 3
+        },
+        {
+          "ruleId": 48,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "grenade"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a62"
+  },
+  "id": 3,
+  "name": "Mistforged Saber",
+  "price": 25,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 16,
+          "modValue": null
+        },
+        {
+          "ruleId": 4,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "one-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a64"
+  },
+  "id": 5,
+  "name": "Mist-Warp Staff",
+  "price": 40,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 12,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "staff"
+    },
+    {
+      "profileName": "astartes",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [],
+      "body": "astartes",
+      "type": "staff"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a67"
+  },
+  "id": 8,
+  "name": "Power Sword",
+  "price": 130,
+  "profiles": [
+    {
+      "profileName": "power cell",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        },
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "two-handed sword"
+    },
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 4
+      },
+      "specialRules": [],
+      "body": "astartes",
+      "type": "two-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a6b"
+  },
+  "id": 12,
+  "name": "Tidal Trident",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 20,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "spear"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a6c"
+  },
+  "id": 13,
+  "name": "Royal Bone Sword",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 21,
+          "modValue": 5
+        },
+        {
+          "ruleId": 22,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "two-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a71"
+  },
+  "id": 18,
+  "name": "Claws",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "fellgor",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a77"
+  },
+  "id": 24,
+  "name": "Stub Pistol",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 10,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [],
+      "body": "human",
+      "type": "pistol"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a7b"
+  },
+  "id": 28,
+  "name": "Voidstrike Pistol",
+  "price": 25,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 34,
+          "modValue": 1
+        }
+      ],
+      "body": "astartes",
+      "type": "plasma pistol"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a7c"
+  },
+  "id": 29,
+  "name": "Plasma Rifle",
+  "price": 20,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 2,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 35,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "plasma rifle"
+    },
+    {
+      "profileName": "over charge",
+      "rng": null,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 35,
+          "modValue": null
+        },
+        {
+          "ruleId": 34,
+          "modValue": 1
+        },
+        {
+          "ruleId": 33,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "plasma rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a88"
+  },
+  "id": 41,
+  "name": "Throwing Spear",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 33,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "spear"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a8d"
+  },
+  "id": 46,
+  "name": "Balefire Bolt",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 30,
+          "modValue": 2
+        }
+      ],
+      "body": "spell",
+      "type": "warp"
+    }
+  ]
+},
+{
+  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a96"
   },
   "id": 55,
@@ -1794,62 +1328,6 @@
       ],
       "body": "universal",
       "type": "spray"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a97"
-  },
-  "id": 56,
-  "name": "Micro-Assault Cannon",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 26,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "launcher"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a98"
-  },
-  "id": 57,
-  "name": "Mini-Power Fist",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 2,
-      "ws": 4,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 20,
-          "modValue": null
-        }
-      ],
-      "body": "astartes",
-      "type": "gauntlet"
     }
   ]
 },
@@ -1887,38 +1365,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a9a"
-  },
-  "id": 59,
-  "name": "Soulrender",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 39,
-          "modValue": null
-        },
-        {
-          "ruleId": 38,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "warp"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926a9b"
   },
   "id": 60,
@@ -1946,70 +1392,6 @@
       ],
       "body": "plant",
       "type": "whip"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a9c"
-  },
-  "id": 61,
-  "name": "Crushing Slam",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 5,
-        "max": 6
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        },
-        {
-          "ruleId": 17,
-          "modValue": null
-        }
-      ],
-      "body": "plant",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926a9d"
-  },
-  "id": 62,
-  "name": "Mist Tendrils",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 1,
-        "max": 2
-      },
-      "specialRules": [
-        {
-          "ruleId": 32,
-          "modValue": null
-        },
-        {
-          "ruleId": 5,
-          "modValue": 5
-        }
-      ],
-      "body": "spirit",
-      "type": "mist"
     }
   ]
 },
@@ -2078,38 +1460,6 @@
       ],
       "body": "behemoth",
       "type": "mist"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa0"
-  },
-  "id": 65,
-  "name": "Reality Rend Claws",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 2,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        },
-        {
-          "ruleId": 25,
-          "modValue": 2
-        }
-      ],
-      "body": "behemoth",
-      "type": "gauntlet"
     }
   ]
 },
@@ -2201,102 +1551,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa3"
-  },
-  "id": 68,
-  "name": "Mist Repeller Gauntlets",
-  "price": 45,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 31,
-          "modValue": 3
-        },
-        {
-          "ruleId": 11,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa4"
-  },
-  "id": 69,
-  "name": "Executioner Greatblade",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        },
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "two-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa5"
-  },
-  "id": 70,
-  "name": "Inferno Pistol",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 6,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 6,
-          "modValue": null
-        },
-        {
-          "ruleId": 30,
-          "modValue": 2
-        }
-      ],
-      "body": "universal",
-      "type": "flamer"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926aa6"
   },
   "id": 71,
@@ -2329,134 +1583,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa7"
-  },
-  "id": 72,
-  "name": "Warp Talons",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 38,
-          "modValue": null
-        },
-        {
-          "ruleId": 7,
-          "modValue": null
-        }
-      ],
-      "body": "daemon",
-      "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa8"
-  },
-  "id": 73,
-  "name": "Photon Grenade Launcher",
-  "price": 30,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 30,
-          "modValue": 2
-        },
-        {
-          "ruleId": 17,
-          "modValue": null
-        }
-      ],
-      "body": "human",
-      "type": "launcher"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aa9"
-  },
-  "id": 74,
-  "name": "Murloc Spine Dagger",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 15,
-          "modValue": null
-        },
-        {
-          "ruleId": 36,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "knife"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aaa"
-  },
-  "id": 75,
-  "name": "Aetherwing Bow",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 3,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 28,
-          "modValue": null
-        },
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "bow"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926aab"
   },
   "id": 76,
@@ -2484,138 +1610,6 @@
       ],
       "body": "universal",
       "type": "two-handed hammer"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aac"
-  },
-  "id": 77,
-  "name": "Screamer Whip",
-  "price": 30,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 3,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 20,
-          "modValue": null
-        },
-        {
-          "ruleId": 21,
-          "modValue": 5
-        }
-      ],
-      "body": "universal",
-      "type": "whip"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aad"
-  },
-  "id": 78,
-  "name": "Thunder Hammer",
-  "price": 25,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 5,
-        "max": 6
-      },
-      "specialRules": [
-        {
-          "ruleId": 17,
-          "modValue": null
-        },
-        {
-          "ruleId": 19,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "two-handed hammer"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aae"
-  },
-  "id": 79,
-  "name": "Heavy Flamer",
-  "price": 20,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 8,
-      "attacks": 6,
-      "ws": 2,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 30,
-          "modValue": 2
-        },
-        {
-          "ruleId": 6,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "flamer"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aaf"
-  },
-  "id": 80,
-  "name": "Needle Rifle",
-  "price": 18,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 28,
-          "modValue": null
-        },
-        {
-          "ruleId": 21,
-          "modValue": 5
-        },
-        {
-          "ruleId": 34,
-          "modValue": 1
-        }
-      ],
-      "body": "universal",
-      "type": "rifle"
     }
   ]
 },
@@ -2707,38 +1701,108 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab2"
+    "$oid": "69ac39b03b7e32e8c2926ab7"
   },
-  "id": 83,
-  "name": "Witchblade",
-  "price": 20,
+  "id": 88,
+  "name": "Slugga",
+  "price": 0,
   "profiles": [
     {
-      "profileName": "Standard",
-      "rng": 0,
-      "attacks": 3,
+      "profileName": "",
+      "rng": 6,
+      "attacks": 4,
       "ws": 4,
       "damage": {
         "min": 3,
         "max": 4
       },
       "specialRules": [],
-      "body": "universal",
-      "type": "two-handed sword"
-    },
+      "body": "ork",
+      "type": "rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab9"
+  },
+  "id": 90,
+  "name": "Grot Shiv",
+  "price": 0,
+  "profiles": [
     {
-      "profileName": "Psychic Strike",
+      "profileName": "",
       "rng": 0,
-      "attacks": 4,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "one-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926abb"
+  },
+  "name": "Dakka Shoota",
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 10,
+      "attacks": 5,
+      "ws": 5,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 24,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "rifle"
+    }
+  ],
+  "id": 92,
+  "price": 0
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ac7"
+  },
+  "id": 104,
+  "name": "Psychic Scream",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 6,
+      "attacks": 5,
       "ws": 3,
       "damage": {
-        "min": 4,
-        "max": 5
+        "min": 2,
+        "max": 3
       },
       "specialRules": [
         {
           "ruleId": 32,
           "modValue": null
+        },
+        {
+          "ruleId": 45,
+          "modValue": 3
         },
         {
           "ruleId": 23,
@@ -2746,62 +1810,44 @@
         }
       ],
       "body": "spell",
-      "type": "two-handed sword"
+      "type": "warp"
     }
   ]
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab3"
+    "$oid": "69ac39b03b7e32e8c2926a60"
   },
-  "id": 84,
-  "name": "Fellgor Cleaver",
-  "price": 15,
+  "name": "Bayonet",
   "profiles": [
     {
-      "profileName": "Cleave",
+      "profileName": "",
       "rng": 0,
       "attacks": 3,
       "ws": 4,
       "damage": {
-        "min": 4,
-        "max": 5
+        "min": 2,
+        "max": 3
       },
       "specialRules": [],
-      "body": "universal",
-      "type": "two-handed axe"
-    },
-    {
-      "profileName": "Frenzy",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 18,
-          "modValue": 1
-        }
-      ],
-      "body": "fellgor",
-      "type": "two-handed axe"
+      "body": "human",
+      "type": "knife"
     }
-  ]
+  ],
+  "id": 1,
+  "price": 10
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab4"
+    "$oid": "69ac39b03b7e32e8c2926a61"
   },
-  "id": 85,
-  "name": "Mist-Caller's Tempest",
-  "price": 55,
+  "id": 2,
+  "name": "Chainsword",
+  "price": 12,
   "profiles": [
     {
       "profileName": "",
-      "rng": 10,
+      "rng": 0,
       "attacks": 4,
       "ws": 3,
       "damage": {
@@ -2810,24 +1856,345 @@
       },
       "specialRules": [
         {
-          "ruleId": 32,
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "two-handed sword"
+    },
+    {
+      "profileName": "power cell",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "one-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a63"
+  },
+  "id": 4,
+  "name": "Arc Shock Gauntlets",
+  "price": 35,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 17,
           "modValue": null
         },
+        {
+          "ruleId": 18,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a6f"
+  },
+  "id": 16,
+  "name": "Aetherwing Talon Gauntlet",
+  "price": 35,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 17,
+          "modValue": null
+        },
+        {
+          "ruleId": 18,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a70"
+  },
+  "id": 17,
+  "name": "Leg Blade",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 14,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "one-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a75"
+  },
+  "id": 22,
+  "name": "Stone Fists",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        }
+      ],
+      "body": "golem",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a76"
+  },
+  "id": 23,
+  "name": "Lasgun",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [],
+      "body": "human",
+      "type": "rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a7a"
+  },
+  "name": "Pulse Carbine",
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "plasma rifle"
+    }
+  ],
+  "id": 27,
+  "price": 25
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a7e"
+  },
+  "id": 31,
+  "name": "Boltgun",
+  "price": 60,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 14,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 24,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "bolter rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a81"
+  },
+  "id": 34,
+  "name": "Pneumatic Harpoon",
+  "price": 40,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 2,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 5,
+          "modValue": 3
+        },
+        {
+          "ruleId": 26,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "spear"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a82"
+  },
+  "id": 35,
+  "name": "Stormchaser Assault Rifle",
+  "price": 30,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 14,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 18,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a87"
+  },
+  "id": 40,
+  "name": "Crude Net",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 6,
+      "attacks": 2,
+      "ws": 5,
+      "damage": {
+        "min": 1,
+        "max": 2
+      },
+      "specialRules": [
+        {
+          "ruleId": 29,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "launcher"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a89"
+  },
+  "id": 42,
+  "name": "Tidal Bolt",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
         {
           "ruleId": 30,
-          "modValue": 2
+          "modValue": 1
         },
         {
-          "ruleId": 40,
+          "ruleId": 32,
           "modValue": null
-        },
-        {
-          "ruleId": 23,
-          "modValue": null
-        },
-        {
-          "ruleId": 31,
-          "modValue": 3
         }
       ],
       "body": "spell",
@@ -2837,20 +2204,190 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab5"
+    "$oid": "69ac39b03b7e32e8c2926a8f"
   },
-  "id": 86,
-  "name": "Frag Missile Launcher",
-  "price": 80,
+  "id": 48,
+  "name": "Mist Slam",
+  "price": 0,
   "profiles": [
     {
       "profileName": "",
-      "rng": 14,
+      "rng": 3,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [],
+      "body": "golem",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a94"
+  },
+  "id": 53,
+  "name": "Autogun Turret",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
       "attacks": 4,
       "ws": 4,
       "damage": {
-        "min": 4,
-        "max": 5
+        "min": 2,
+        "max": 2
+      },
+      "specialRules": [],
+      "body": "construct",
+      "type": "rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a97"
+  },
+  "id": 56,
+  "name": "Micro-Assault Cannon",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 26,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "launcher"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a9a"
+  },
+  "id": 59,
+  "name": "Soulrender",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 39,
+          "modValue": null
+        },
+        {
+          "ruleId": 38,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "warp"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a9d"
+  },
+  "id": 62,
+  "name": "Mist Tendrils",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 1,
+        "max": 2
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 5,
+          "modValue": 5
+        }
+      ],
+      "body": "spirit",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa4"
+  },
+  "id": 69,
+  "name": "Executioner Greatblade",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        },
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "two-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa8"
+  },
+  "id": 73,
+  "name": "Photon Grenade Launcher",
+  "price": 30,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
       },
       "specialRules": [
         {
@@ -2858,15 +2395,11 @@
           "modValue": 2
         },
         {
-          "ruleId": 26,
+          "ruleId": 17,
           "modValue": null
-        },
-        {
-          "ruleId": 34,
-          "modValue": 1
         }
       ],
-      "body": "universal",
+      "body": "human",
       "type": "launcher"
     }
   ]
@@ -2900,85 +2433,6 @@
       ],
       "body": "ork",
       "type": "gauntlet"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab7"
-  },
-  "id": 88,
-  "name": "Slugga",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 6,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [],
-      "body": "ork",
-      "type": "rifle"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab8"
-  },
-  "id": 89,
-  "name": "Choppa",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "ork",
-      "type": "two-handed axe"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ab9"
-  },
-  "id": 90,
-  "name": "Grot Shiv",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 16,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "one-handed sword"
     }
   ]
 },
@@ -3020,34 +2474,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926abb"
-  },
-  "name": "Dakka Shoota",
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 10,
-      "attacks": 5,
-      "ws": 5,
-      "damage": {
-        "min": 3,
-        "max": 4
-      },
-      "specialRules": [
-        {
-          "ruleId": 24,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "rifle"
-    }
-  ],
-  "id": 92,
-  "price": 0
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926abc"
   },
   "id": 93,
@@ -3080,38 +2506,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926abd"
-  },
-  "id": 94,
-  "name": "Breacha Ram",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 5,
-        "max": 6
-      },
-      "specialRules": [
-        {
-          "ruleId": 19,
-          "modValue": null
-        },
-        {
-          "ruleId": 17,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "ram"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926abe"
   },
   "id": 95,
@@ -3135,70 +2529,6 @@
       ],
       "body": "universal",
       "type": "one-handed axe"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926abf"
-  },
-  "id": 96,
-  "name": "Rokkit Launcha",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 34,
-          "modValue": 1
-        },
-        {
-          "ruleId": 30,
-          "modValue": 2
-        }
-      ],
-      "body": "universal",
-      "type": "launcher"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ac0"
-  },
-  "id": 97,
-  "name": "Snipa Rifle",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 4,
-      "ws": 2,
-      "damage": {
-        "min": 3,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 28,
-          "modValue": null
-        },
-        {
-          "ruleId": 25,
-          "modValue": 3
-        }
-      ],
-      "body": "universal",
-      "type": "sniper"
     }
   ]
 },
@@ -3291,38 +2621,6 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ac4"
-  },
-  "id": 101,
-  "name": "Murloc King's sword",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 0,
-      "attacks": 4,
-      "ws": 4,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 14,
-          "modValue": null
-        },
-        {
-          "ruleId": 15,
-          "modValue": null
-        }
-      ],
-      "body": "universal",
-      "type": "two-handed sword"
-    }
-  ]
-},
-{
-  "_id": {
     "$oid": "69ac39b03b7e32e8c2926ac5"
   },
   "id": 102,
@@ -3349,110 +2647,6 @@
         },
         {
           "ruleId": 6,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "warp"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ac6"
-  },
-  "id": 103,
-  "name": "Thunderbolt",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": null,
-      "attacks": 3,
-      "ws": 4,
-      "damage": {
-        "min": 4,
-        "max": 5
-      },
-      "specialRules": [
-        {
-          "ruleId": 32,
-          "modValue": null
-        },
-        {
-          "ruleId": 17,
-          "modValue": null
-        },
-        {
-          "ruleId": 21,
-          "modValue": 5
-        }
-      ],
-      "body": "spell",
-      "type": "warp"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ac7"
-  },
-  "id": 104,
-  "name": "Psychic Scream",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 6,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 2,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 32,
-          "modValue": null
-        },
-        {
-          "ruleId": 45,
-          "modValue": 3
-        },
-        {
-          "ruleId": 23,
-          "modValue": null
-        }
-      ],
-      "body": "spell",
-      "type": "warp"
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "69ac39b03b7e32e8c2926ac8"
-  },
-  "id": 105,
-  "name": "Arcane Missiles",
-  "price": 0,
-  "profiles": [
-    {
-      "profileName": "",
-      "rng": 12,
-      "attacks": 5,
-      "ws": 3,
-      "damage": {
-        "min": 3,
-        "max": 3
-      },
-      "specialRules": [
-        {
-          "ruleId": 32,
-          "modValue": null
-        },
-        {
-          "ruleId": 18,
           "modValue": null
         }
       ],
@@ -3503,16 +2697,345 @@
 },
 {
   "_id": {
-    "$oid": "69ac39b03b7e32e8c2926aca"
+    "$oid": "69ac39b03b7e32e8c2926a65"
   },
-  "id": 107,
-  "name": "Frag Grenade Mk I",
-  "price": 3,
+  "id": 6,
+  "name": "Mistborn Whipblade",
+  "price": 80,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        },
+        {
+          "ruleId": 2,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "whip"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a66"
+  },
+  "id": 7,
+  "name": "Graviton Crusher",
+  "price": 120,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 2,
+      "damage": {
+        "min": 5,
+        "max": 6
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        },
+        {
+          "ruleId": 1,
+          "modValue": 1
+        },
+        {
+          "ruleId": 3,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "two-handed hammer"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a68"
+  },
+  "id": 9,
+  "name": "Narthecium",
+  "price": 150,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "narthecium"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a69"
+  },
+  "id": 10,
+  "name": "Rusty Spear",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [],
+      "body": "universal",
+      "type": "spear"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a6a"
+  },
+  "id": 11,
+  "name": "Coral Sword",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 1,
+        "max": 2
+      },
+      "specialRules": [
+        {
+          "ruleId": 18,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "one-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a6e"
+  },
+  "id": 15,
+  "name": "Lance of Sabatine",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 5,
+        "max": 7
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        },
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a72"
+  },
+  "id": 19,
+  "name": "Aether Talons",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "aetherwing",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a7d"
+  },
+  "id": 30,
+  "name": "Plasma Pistol",
+  "price": 50,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 8,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 34,
+          "modValue": 1
+        }
+      ],
+      "body": "universal",
+      "type": "plasma pistol"
+    },
+    {
+      "profileName": "super charge",
+      "rng": 12,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 34,
+          "modValue": 1
+        },
+        {
+          "ruleId": 21,
+          "modValue": 5
+        }
+      ],
+      "body": "astartes",
+      "type": "plasma pistol"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a83"
+  },
+  "id": 36,
+  "name": "Nightstalker Sniper",
+  "price": 50,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 3,
+      "ws": 2,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 25,
+          "modValue": 2
+        },
+        {
+          "ruleId": 28,
+          "modValue": null
+        },
+        {
+          "ruleId": 26,
+          "modValue": null
+        }
+      ],
+      "body": "human",
+      "type": "sniper"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a84"
+  },
+  "id": 37,
+  "name": "Inferno Bolter Rifle",
+  "price": 35,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 21,
+          "modValue": 5
+        },
+        {
+          "ruleId": 6,
+          "modValue": null
+        },
+        {
+          "ruleId": 35,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "bolter rifle"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a8a"
+  },
+  "id": 43,
+  "name": "Tidal Blast",
+  "price": 0,
   "profiles": [
     {
       "profileName": "",
       "rng": 6,
-      "attacks": 4,
+      "attacks": 3,
       "ws": 4,
       "damage": {
         "min": 2,
@@ -3521,15 +3044,492 @@
       "specialRules": [
         {
           "ruleId": 30,
+          "modValue": 1
+        },
+        {
+          "ruleId": 18,
+          "modValue": null
+        },
+        {
+          "ruleId": 32,
+          "modValue": null
+        }
+      ],
+      "body": "spell",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a8b"
+  },
+  "id": 44,
+  "name": "Windblast",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 30,
+          "modValue": 1
+        },
+        {
+          "ruleId": 31,
+          "modValue": 2
+        },
+        {
+          "ruleId": 32,
+          "modValue": null
+        }
+      ],
+      "body": "spell",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a91"
+  },
+  "id": 50,
+  "name": "Mist Blast",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 10,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 12,
+          "modValue": null
+        },
+        {
+          "ruleId": 32,
+          "modValue": null
+        }
+      ],
+      "body": "spell",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a92"
+  },
+  "id": 51,
+  "name": "Servo-Hammer",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "two-handed hammer"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a98"
+  },
+  "id": 57,
+  "name": "Mini-Power Fist",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 2,
+      "ws": 4,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 20,
+          "modValue": null
+        }
+      ],
+      "body": "astartes",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926a9c"
+  },
+  "id": 61,
+  "name": "Crushing Slam",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 5,
+        "max": 6
+      },
+      "specialRules": [
+        {
+          "ruleId": 19,
+          "modValue": null
+        },
+        {
+          "ruleId": 17,
+          "modValue": null
+        }
+      ],
+      "body": "plant",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa0"
+  },
+  "id": 65,
+  "name": "Reality Rend Claws",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 5,
+      "ws": 2,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 15,
+          "modValue": null
+        },
+        {
+          "ruleId": 25,
+          "modValue": 2
+        }
+      ],
+      "body": "behemoth",
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aa3"
+  },
+  "id": 68,
+  "name": "Mist Repeller Gauntlets",
+  "price": 45,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 31,
           "modValue": 3
         },
         {
-          "ruleId": 48,
+          "ruleId": 11,
           "modValue": null
         }
       ],
       "body": "universal",
-      "type": "grenade"
+      "type": "gauntlet"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aaa"
+  },
+  "id": 75,
+  "name": "Aetherwing Bow",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 3,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 28,
+          "modValue": null
+        },
+        {
+          "ruleId": 16,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "bow"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926aad"
+  },
+  "id": 78,
+  "name": "Thunder Hammer",
+  "price": 25,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 5,
+        "max": 6
+      },
+      "specialRules": [
+        {
+          "ruleId": 17,
+          "modValue": null
+        },
+        {
+          "ruleId": 19,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "two-handed hammer"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab2"
+  },
+  "id": 83,
+  "name": "Witchblade",
+  "price": 20,
+  "profiles": [
+    {
+      "profileName": "Standard",
+      "rng": 0,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [],
+      "body": "universal",
+      "type": "two-handed sword"
+    },
+    {
+      "profileName": "Psychic Strike",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 23,
+          "modValue": null
+        }
+      ],
+      "body": "spell",
+      "type": "two-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ab4"
+  },
+  "id": 85,
+  "name": "Mist-Caller's Tempest",
+  "price": 55,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 10,
+      "attacks": 4,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 4
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 30,
+          "modValue": 2
+        },
+        {
+          "ruleId": 40,
+          "modValue": null
+        },
+        {
+          "ruleId": 23,
+          "modValue": null
+        },
+        {
+          "ruleId": 31,
+          "modValue": 3
+        }
+      ],
+      "body": "spell",
+      "type": "mist"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ac4"
+  },
+  "id": 101,
+  "name": "Murloc King's sword",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 0,
+      "attacks": 4,
+      "ws": 4,
+      "damage": {
+        "min": 2,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 14,
+          "modValue": null
+        },
+        {
+          "ruleId": 15,
+          "modValue": null
+        }
+      ],
+      "body": "universal",
+      "type": "two-handed sword"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ac6"
+  },
+  "id": 103,
+  "name": "Thunderbolt",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": null,
+      "attacks": 3,
+      "ws": 4,
+      "damage": {
+        "min": 4,
+        "max": 5
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 17,
+          "modValue": null
+        },
+        {
+          "ruleId": 21,
+          "modValue": 5
+        }
+      ],
+      "body": "spell",
+      "type": "warp"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69ac39b03b7e32e8c2926ac8"
+  },
+  "id": 105,
+  "name": "Arcane Missiles",
+  "price": 0,
+  "profiles": [
+    {
+      "profileName": "",
+      "rng": 12,
+      "attacks": 5,
+      "ws": 3,
+      "damage": {
+        "min": 3,
+        "max": 3
+      },
+      "specialRules": [
+        {
+          "ruleId": 32,
+          "modValue": null
+        },
+        {
+          "ruleId": 18,
+          "modValue": null
+        }
+      ],
+      "body": "spell",
+      "type": "warp"
     }
   ]
 },

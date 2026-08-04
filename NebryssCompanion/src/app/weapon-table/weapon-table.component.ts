@@ -56,7 +56,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Input() shoppingMode: boolean = false;
   @Input() title: string = '';
   @Input() collapsible: boolean = false;
-  @Input() isCollapsed: boolean = false;
+  @Input() isCollapsed: boolean = true;
   @Input() enableBodyFilter: boolean = false;
   @Input() filterStorageKey: string = '';
 
@@ -66,9 +66,21 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   @Output() addToCart = new EventEmitter<any>();
   @Output() toggleCollapse = new EventEmitter<void>();
 
+  private getCollapseStorageKey(): string | null {
+    if (this.filterStorageKey) return `wptable-${this.filterStorageKey}-collapsed`;
+    if (this.title) return `wptable-${this.title.replace(/\s+/g, '-').toLowerCase()}-collapsed`;
+    return null;
+  }
+
   onToggleCollapse(): void {
     if (this.collapsible) {
       this.isCollapsed = !this.isCollapsed;
+      const key = this.getCollapseStorageKey();
+      if (key) {
+        try {
+          localStorage.setItem(key, JSON.stringify(this.isCollapsed));
+        } catch {}
+      }
       this.toggleCollapse.emit();
     }
   }
@@ -122,20 +134,47 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
+    if (this.collapsible) {
+      const key = this.getCollapseStorageKey();
+      if (key) {
+        const saved = localStorage.getItem(key);
+        if (saved !== null) {
+          this.isCollapsed = JSON.parse(saved);
+        } else {
+          this.isCollapsed = true;
+        }
+      } else {
+        this.isCollapsed = true;
+      }
+    }
     this.restoreBodyFilterSelection();
     this.validateBodyFilterSelection();
     this.updateSortedProfiles();
 
-    this.dataService.getItems().subscribe(() => {
+    this.dataService.weapons$?.subscribe(weapons => {
+      if (weapons && weapons.length > 0) {
+        this.weaponsData = [...weapons];
+        this.updateSortedProfiles();
+      }
+    });
+
+    this.dataService.items$?.subscribe(() => {
       this.updateSortedProfiles();
     });
 
-    this.dataService.getTalents().subscribe(talents => {
+    this.dataService.weaponRules$?.subscribe(rules => {
+      if (rules && rules.length > 0) {
+        this.weaponRulesData = [...rules];
+        this.updateSortedProfiles();
+      }
+    });
+
+    this.dataService.talents$?.subscribe(talents => {
       this.talentsData = talents;
       this.updateSortedProfiles();
     });
 
-    this.dataService.getAfflictions().subscribe(afflictions => {
+    this.dataService.afflictions$?.subscribe(afflictions => {
       this.afflictionsData = afflictions;
       this.updateSortedProfiles();
     });
@@ -590,7 +629,7 @@ export class WeaponTableComponent implements OnChanges, OnDestroy, OnInit {
   }
   
   getWeaponById(id: number): Weapon | null {
-    return this.weaponsData.find(w => w.id === id) || null;
+    return (this.weaponsData && this.weaponsData.find(w => w.id === id)) || this.dataService.getWeaponById(id);
   }
 
   filterByBody(weaponProfile: any): boolean {
