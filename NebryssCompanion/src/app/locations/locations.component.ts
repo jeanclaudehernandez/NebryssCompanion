@@ -236,14 +236,12 @@ export class LocationsComponent implements OnInit {
     this.dataService.locations$
       ?.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
-        if (data && data.locations && data.locations.length > 0) {
+        if (data && data.locations) {
           this.locations = data.locations;
           this.uniqueFactions = this.getUniqueFactions();
           if (this.selectedLocation) {
             const updatedSelected = this.locations.find(l => l.id === this.selectedLocation?.id || l.name === this.selectedLocation?.name);
-            if (updatedSelected) {
-              this.selectedLocation = updatedSelected;
-            }
+            this.selectedLocation = updatedSelected || null;
           }
           this.cdr.markForCheck();
         }

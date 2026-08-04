@@ -147,6 +147,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
           this.navigateToLocation.emit({ locationName, backTarget: null })
         );
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
         break;
       case 'lore':
         subscribeToOutput('navigateToLocation', locationName =>

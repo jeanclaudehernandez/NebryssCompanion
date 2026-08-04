@@ -159,10 +159,13 @@ export class ShopsComponent implements OnInit, OnDestroy {
           }, 200);
         }
       }
+
+      this.isLoading = false;
+      this.cdr.markForCheck();
     });
 
     this.dataService.shops$?.subscribe(shops => {
-      if (shops && shops.length > 0) {
+      if (shops) {
         this.shops = [...shops];
         this.processShops();
         this.cdr.markForCheck();
@@ -177,17 +180,9 @@ export class ShopsComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.dataService.items$?.subscribe(items => {
-      if (items && items.items) {
-        this.itemsData = { ...items };
-        this.processShops();
-        this.cdr.markForCheck();
-      }
-    });
-
-    this.dataService.weapons$?.subscribe(weapons => {
-      if (weapons && weapons.length > 0) {
-        this.weaponsData = [...weapons];
+    this.dataService.npcs$?.subscribe(npcs => {
+      if (npcs) {
+        this.npcs = [...npcs];
         this.processShops();
         this.cdr.markForCheck();
       }

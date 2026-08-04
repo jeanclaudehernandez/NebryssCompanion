@@ -1667,3 +1667,46 @@ body.dark-theme .gm-discovered-btn.is-discovered {
   background: rgba(16, 185, 129, 0.2);
   color: #34d399;
 }
+
+/* Unified GM Action Edit Button */
+.gm-edit-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  min-height: 32px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.14);
+  color: #2563eb;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.gm-edit-btn .material-icons {
+  font-size: 16px;
+}
+
+.gm-edit-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.15);
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.25);
+}
+
+.gm-edit-btn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+body.dark-theme .gm-edit-btn {
+  border-color: rgba(96, 165, 250, 0.4);
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}

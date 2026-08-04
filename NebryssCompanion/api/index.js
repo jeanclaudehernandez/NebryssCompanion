@@ -32,15 +32,16 @@ function notifyChange(entity, action, data, campaign) {
   }
 }
 
-function getPlayerCollectionName(campaign) {
-  if (!campaign) return 'player';
-  if (campaign.prefix && String(campaign.prefix).trim()) {
-    return `${String(campaign.prefix).trim()}-player`;
+function getCampaignCollectionName(campaign, defaultCollection) {
+  if (!campaign) return defaultCollection;
+  const prefix = campaign.prefix || (campaign.playersCollectionName ? campaign.playersCollectionName.replace(/-player$/, '') : '');
+  if (prefix && String(prefix).trim()) {
+    return `${String(prefix).trim()}-${defaultCollection}`;
   }
-  if (campaign.playersCollectionName && String(campaign.playersCollectionName).trim()) {
+  if (campaign.playersCollectionName && defaultCollection === 'player') {
     return String(campaign.playersCollectionName).trim();
   }
-  return 'player';
+  return defaultCollection;
 }
 
 function extractCampaign(req) {
@@ -74,25 +75,30 @@ function extractPayloadAndCampaign(req) {
 }
 
 const mongoUri = process.env.MONGODB_URI;
-const mainDbName = process.env.MONGODB_DB_MAIN;
-const playersDbName = process.env.MONGODB_DB_PLAYERS;
+const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'test';
+const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'players';
 
-if (!mongoUri || !mainDbName || !playersDbName) {
-  throw new Error('Missing MongoDB configuration environment variables');
-}
-
-const client = new MongoClient(mongoUri);
-
-let mainDb;
-let playersDb;
+let cachedClient = null;
+let cachedMainDb = null;
+let cachedPlayersDb = null;
 
 async function getDatabases() {
-  if (!mainDb || !playersDb) {
-    await client.connect();
-    mainDb = client.db(mainDbName);
-    playersDb = client.db(playersDbName);
+  if (cachedClient && cachedMainDb && cachedPlayersDb) {
+    return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
   }
-  return { mainDb, playersDb };
+
+  if (!mongoUri) {
+    throw new Error('MONGODB_URI is not set');
+  }
+
+  const client = new MongoClient(mongoUri);
+  await client.connect();
+
+  cachedClient = client;
+  cachedMainDb = client.db(mainDbName);
+  cachedPlayersDb = client.db(playersDbName);
+
+  return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
 }
 
 async function fetchCollection(db, collectionName) {
@@ -114,7 +120,7 @@ function createUpdateRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const targetCollection = (usePlayersDb && campaign) ? getPlayerCollectionName(campaign) : collectionName;
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
       const collection = db.collection(targetCollection);
 
       if (item._id) {
@@ -159,7 +165,7 @@ function createInsertRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const targetCollection = (usePlayersDb && campaign) ? getPlayerCollectionName(campaign) : collectionName;
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
       const collection = db.collection(targetCollection);
 
       if (typeof item.id === 'undefined' || item.id === 0) {
@@ -205,13 +211,13 @@ function createDeleteRoute(path, options) {
     try {
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const targetCollection = (usePlayersDb && campaign) ? getPlayerCollectionName(campaign) : collectionName;
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
       const collection = db.collection(targetCollection);
 
       let query = { id: idParam };
       // Support numeric IDs if the param looks like a number
       if (!isNaN(Number(idParam))) {
-         query = { id: { $in: [idParam, Number(idParam)] } };
+        query = { id: { $in: [idParam, Number(idParam)] } };
       }
 
       const result = await collection.updateOne(
@@ -240,7 +246,7 @@ function createCollectionRoute(path, options) {
       const campaign = extractCampaign(req);
       const { mainDb, playersDb } = await getDatabases();
       const db = usePlayersDb ? playersDb : mainDb;
-      const targetCollection = (usePlayersDb && campaign) ? getPlayerCollectionName(campaign) : collectionName;
+      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
       const documents = await fetchCollection(db, targetCollection);
       res.json(documents);
     } catch (error) {
@@ -293,15 +299,22 @@ app.post('/api/campaign', async (req, res) => {
       }
     }
 
-    if (!item.prefix && item.name) {
-      item.prefix = item.name.toLowerCase().replace(/[^a-z0-9_-]/g, '-');
-    }
+    const campaignPrefix = item.prefix || (item.name ? item.name.toLowerCase().replace(/[^a-z0-9_-]/g, '-') : '');
+    item.prefix = campaignPrefix;
 
-    const targetCollection = getPlayerCollectionName(item);
-    const existingCollections = await playersDb.listCollections({ name: targetCollection }).toArray();
-    if (existingCollections.length === 0) {
-      await playersDb.createCollection(targetCollection);
-      console.log(`[API] Created new players collection '${targetCollection}' in playersDb for campaign '${item.name}'`);
+    const collectionsToCreate = [
+      `${campaignPrefix}-player`,
+      `${campaignPrefix}-shop`,
+      `${campaignPrefix}-location`,
+      `${campaignPrefix}-npc`
+    ];
+
+    for (const targetColl of collectionsToCreate) {
+      const existingCollections = await playersDb.listCollections({ name: targetColl }).toArray();
+      if (existingCollections.length === 0) {
+        await playersDb.createCollection(targetColl);
+        console.log(`[API] Created collection '${targetColl}' in playersDb for campaign '${item.name}'`);
+      }
     }
 
     await collection.insertOne(item);
@@ -330,7 +343,7 @@ app.put('/api/player', async (req, res) => {
     return res.status(400).json({ error: 'Player id is required in request body' });
   }
 
-  const targetCollection = getPlayerCollectionName(campaign);
+  const targetCollection = getCampaignCollectionName(campaign, 'player');
 
   try {
     const { playersDb } = await getDatabases();
@@ -450,22 +463,22 @@ createDeleteRoute('/api/bestiary', {
 });
 
 createCollectionRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createUpdateRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createInsertRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
 createDeleteRoute('/api/shop', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'shop',
 });
 
@@ -490,52 +503,22 @@ createDeleteRoute('/api/itemCategory', {
 });
 
 createCollectionRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createUpdateRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createInsertRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
 createDeleteRoute('/api/npc', {
-  usePlayersDb: false,
-  collectionName: 'npc',
-});
-
-createCollectionRoute('/api/lore', {
-  usePlayersDb: false,
-  collectionName: 'lore',
-});
-
-createCollectionRoute('/api/npcs', {
-  usePlayersDb: false,
-  collectionName: 'npc',
-});
-
-createCollectionRoute('/api/npc', {
-  usePlayersDb: false,
-  collectionName: 'npc',
-});
-
-createUpdateRoute('/api/npc', {
-  usePlayersDb: false,
-  collectionName: 'npc',
-});
-
-createInsertRoute('/api/npc', {
-  usePlayersDb: false,
-  collectionName: 'npc',
-});
-
-createDeleteRoute('/api/npc', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'npc',
 });
 
@@ -554,48 +537,25 @@ createDeleteRoute('/api/lore', {
   collectionName: 'lore',
 });
 
-createCollectionRoute('/api/shops', {
-  usePlayersDb: false,
-  collectionName: 'shop',
-});
 
-createCollectionRoute('/api/shop', {
-  usePlayersDb: false,
-  collectionName: 'shop',
-});
-
-createUpdateRoute('/api/shop', {
-  usePlayersDb: false,
-  collectionName: 'shop',
-});
-
-createInsertRoute('/api/shop', {
-  usePlayersDb: false,
-  collectionName: 'shop',
-});
-
-createDeleteRoute('/api/shop', {
-  usePlayersDb: false,
-  collectionName: 'shop',
-});
 
 createCollectionRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createUpdateRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createInsertRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
 createDeleteRoute('/api/locations', {
-  usePlayersDb: false,
+  usePlayersDb: true,
   collectionName: 'location',
 });
 
@@ -697,26 +657,6 @@ createInsertRoute('/api/afflictions', {
 createDeleteRoute('/api/afflictions', {
   usePlayersDb: false,
   collectionName: 'affliction',
-});
-
-createCollectionRoute('/api/locations', {
-  usePlayersDb: false,
-  collectionName: 'locations',
-});
-
-createUpdateRoute('/api/locations', {
-  usePlayersDb: false,
-  collectionName: 'locations',
-});
-
-createInsertRoute('/api/locations', {
-  usePlayersDb: false,
-  collectionName: 'locations',
-});
-
-createDeleteRoute('/api/locations', {
-  usePlayersDb: false,
-  collectionName: 'locations',
 });
 
 createCollectionRoute('/api/letter', {

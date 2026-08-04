@@ -113,9 +113,35 @@ export class DataService {
       this.players = [];
       this.playersSubject.next([]);
       this.playersCache$ = null;
+
+      this.shops = [];
+      this.shopsSubject.next([]);
+      this.shopsCache$ = null;
+
+      this.locations = { locations: [] };
+      this.locationsSubject.next({ ...this.locations });
+      this.locationsCache$ = null;
+
+      this.npcs = [];
+      this.npcsSubject.next([]);
+      this.npcsCache$ = null;
+
       this.allDataCache$ = null;
+
       this.refreshPlayers().subscribe();
+      this.refreshShops().subscribe();
+      this.refreshLocations().subscribe();
+      this.refreshNpcs().subscribe();
     });
+  }
+
+  private isEventForCurrentCampaign(eventCampaign?: Campaign): boolean {
+    if (!eventCampaign) return true;
+    const current = this.campaignService.getSelectedCampaign();
+    if (!current) return true;
+    const eventPrefix = eventCampaign.prefix || (eventCampaign as any).playersCollectionName;
+    const currentPrefix = current.prefix || (current as any).playersCollectionName;
+    return (eventCampaign.id === current.id) || (!!eventPrefix && eventPrefix === currentPrefix);
   }
 
   private initRealtimeSync(): void {
@@ -131,14 +157,7 @@ export class DataService {
     const normalizedEntity = entity.toLowerCase();
 
     if (normalizedEntity === 'player' || normalizedEntity === 'players') {
-      const currentCampaign = this.campaignService.getSelectedCampaign();
-      if (event.campaign && currentCampaign) {
-        const isSameCampaign = (event.campaign.id === currentCampaign.id) ||
-          (event.campaign.prefix === currentCampaign.prefix);
-        if (!isSameCampaign) {
-          return;
-        }
-      }
+      if (!this.isEventForCurrentCampaign(event.campaign)) return;
       this.updateArrayCollection(this.players, data, action, p => p.id);
       this.playersSubject.next([...this.players]);
       this.playersCache$ = of(this.players);
@@ -169,13 +188,23 @@ export class DataService {
       this.bestiarySubject.next([...this.bestiary]);
       this.bestiaryCache$ = of(this.bestiary);
     } else if (normalizedEntity === 'npc' || normalizedEntity === 'npcs') {
+      if (!this.isEventForCurrentCampaign(event.campaign)) return;
       this.updateArrayCollection(this.npcs, data, action, n => n.id);
       this.npcsSubject.next([...this.npcs]);
       this.npcsCache$ = of(this.npcs);
     } else if (normalizedEntity === 'shop' || normalizedEntity === 'shops') {
+      if (!this.isEventForCurrentCampaign(event.campaign)) return;
       this.updateArrayCollection(this.shops, data, action, s => s.id);
       this.shopsSubject.next([...this.shops]);
       this.shopsCache$ = of(this.shops);
+    } else if (normalizedEntity === 'location' || normalizedEntity === 'locations') {
+      if (!this.isEventForCurrentCampaign(event.campaign)) return;
+      if (!this.locations || !this.locations.locations) {
+        this.locations = { locations: [] };
+      }
+      this.updateArrayCollection(this.locations.locations, data, action, l => l.id);
+      this.locationsSubject.next({ ...this.locations });
+      this.locationsCache$ = of(this.locations);
     } else if (normalizedEntity === 'itemcategory' || normalizedEntity === 'itemcategories') {
       this.updateArrayCollection(this.itemCategories, data, action, c => c.id);
       this.itemCategoriesSubject.next([...this.itemCategories]);
@@ -390,7 +419,8 @@ export class DataService {
     this.npcsCache$ = this.http.get<NPC[]>(`${this.apiUrl}/npc`).pipe(
       catchError(() => this.http.get<NPC[]>('assets/npcs.json')),
       tap(npcs => {
-        this.npcs = npcs;
+        this.npcs = npcs || [];
+        this.npcsSubject.next([...this.npcs]);
       }),
       shareReplay(1)
     );
@@ -651,7 +681,8 @@ export class DataService {
     this.shopsCache$ = this.http.get<Shop[]>(`${this.apiUrl}/shop`).pipe(
       catchError(() => this.http.get<Shop[]>('assets/shops.json')),
       tap(shops => {
-        this.shops = shops;
+        this.shops = shops || [];
+        this.shopsSubject.next([...this.shops]);
       }),
       shareReplay(1)
     );
@@ -829,6 +860,7 @@ export class DataService {
 
         const wrapped: Locations = { locations: mergedLocations };
         this.locations = wrapped;
+        this.locationsSubject.next({ ...this.locations });
         return wrapped;
       }),
       shareReplay(1)
