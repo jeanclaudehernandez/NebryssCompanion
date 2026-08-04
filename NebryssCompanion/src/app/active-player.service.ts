@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, interval } from 'rxjs';
+import { BehaviorSubject, Observable, interval, pairwise } from 'rxjs';
 import { Player } from './model';
 import { DataService } from './data.service';
+import { CampaignService } from './campaign.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +11,25 @@ export class ActivePlayerService {
   private readonly STORAGE_KEY = 'activePlayer';
   private activePlayerSubject = new BehaviorSubject<Player | null>(null);
   
-  constructor(private dataService: DataService) {
+  constructor(
+    private dataService: DataService,
+    private campaignService: CampaignService
+  ) {
     this.loadFromLocalStorage();
     this.syncActivePlayerFromDatabase();
     this.listenToRealtimePlayerUpdates();
+    this.listenToCampaignChanges();
     this.startPeriodicSync();
+  }
+
+  private listenToCampaignChanges(): void {
+    this.campaignService.selectedCampaign$
+      .pipe(pairwise())
+      .subscribe(([prev, curr]) => {
+        if (prev?.id !== curr?.id || prev?.prefix !== curr?.prefix) {
+          this.clearActivePlayer();
+        }
+      });
   }
 
   private listenToRealtimePlayerUpdates(): void {

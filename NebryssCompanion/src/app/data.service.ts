@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap, catchError, of } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter, Campaign } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
 import { WebSocketService, EntityUpdateEvent } from './websocket.service';
+import { CampaignService } from './campaign.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ import { WebSocketService, EntityUpdateEvent } from './websocket.service';
 export class DataService {
   private readonly apiUrl = 'https://nebryss-companion-api-771693340084.us-east4.run.app/api';
 
+  private campaigns: Campaign[] = [];
   private players: Player[] = [];
   private weapons: Weapon[] = [];
   private bestiary: BestiaryEntry[] = [];
@@ -27,6 +29,9 @@ export class DataService {
   private terrains: Terrain[] = [];
   private afflictions: Affliction[] = [];
   private letters: Letter[] = [];
+
+  private campaignsSubject = new BehaviorSubject<Campaign[]>([]);
+  readonly campaigns$ = this.campaignsSubject.asObservable();
 
   private playersSubject = new BehaviorSubject<Player[]>([]);
   readonly players$ = this.playersSubject.asObservable();
@@ -76,6 +81,7 @@ export class DataService {
   private locationsSubject = new BehaviorSubject<Locations>({ locations: [] });
   readonly locations$ = this.locationsSubject.asObservable();
 
+  private campaignsCache$: Observable<Campaign[]> | null = null;
   private playersCache$: Observable<Player[]> | null = null;
   private npcsCache$: Observable<NPC[]> | null = null;
   private bestiaryCache$: Observable<BestiaryEntry[]> | null = null;
@@ -95,27 +101,51 @@ export class DataService {
 
   constructor(
     private http: HttpClient,
-    private wsService: WebSocketService
+    private wsService: WebSocketService,
+    private campaignService: CampaignService
   ) {
     this.initRealtimeSync();
+    this.listenToCampaignChanges();
+  }
+
+  private listenToCampaignChanges(): void {
+    this.campaignService.selectedCampaign$.subscribe(() => {
+      this.players = [];
+      this.playersSubject.next([]);
+      this.playersCache$ = null;
+      this.allDataCache$ = null;
+      this.refreshPlayers().subscribe();
+    });
   }
 
   private initRealtimeSync(): void {
-    this.wsService.messages$.subscribe((event: EntityUpdateEvent) => {
+    this.wsService.messages$.subscribe((event: EntityUpdateEvent & { campaign?: Campaign }) => {
       this.handleRealtimeEvent(event);
     });
   }
 
-  private handleRealtimeEvent(event: EntityUpdateEvent): void {
+  private handleRealtimeEvent(event: EntityUpdateEvent & { campaign?: Campaign }): void {
     const { entity, action, data } = event;
     if (!entity || !data) return;
 
     const normalizedEntity = entity.toLowerCase();
 
     if (normalizedEntity === 'player' || normalizedEntity === 'players') {
+      const currentCampaign = this.campaignService.getSelectedCampaign();
+      if (event.campaign && currentCampaign) {
+        const isSameCampaign = (event.campaign.id === currentCampaign.id) ||
+          (event.campaign.prefix === currentCampaign.prefix);
+        if (!isSameCampaign) {
+          return;
+        }
+      }
       this.updateArrayCollection(this.players, data, action, p => p.id);
       this.playersSubject.next([...this.players]);
       this.playersCache$ = of(this.players);
+    } else if (normalizedEntity === 'campaign' || normalizedEntity === 'campaigns') {
+      this.updateArrayCollection(this.campaigns, data, action, c => c.id);
+      this.campaignsSubject.next([...this.campaigns]);
+      this.campaignsCache$ = of(this.campaigns);
     } else if (normalizedEntity === 'weapon' || normalizedEntity === 'weapons') {
       this.updateArrayCollection(this.weapons, data, action, w => w.id);
       this.weaponsSubject.next([...this.weapons]);
@@ -255,6 +285,62 @@ export class DataService {
         this.updateArrayCollection(this.afflictions, { id }, 'delete', a => a.id);
         this.afflictionsSubject.next([...this.afflictions]);
         this.refreshAfflictions().subscribe();
+      })
+    );
+  }
+
+  getCampaigns(): Observable<Campaign[]> {
+    if (!this.campaignsCache$) {
+      this.campaignsCache$ = this.http.get<Campaign[]>(`${this.apiUrl}/campaign`).pipe(
+        catchError(() => this.http.get<Campaign[]>('assets/campaigns.json')),
+        tap(campaigns => {
+          this.campaigns = campaigns;
+          this.campaignsSubject.next([...this.campaigns]);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.campaignsCache$;
+  }
+
+  refreshCampaigns(): Observable<Campaign[]> {
+    this.campaignsCache$ = this.http.get<Campaign[]>(`${this.apiUrl}/campaign`).pipe(
+      catchError(() => this.http.get<Campaign[]>('assets/campaigns.json')),
+      tap(campaigns => {
+        this.campaigns = campaigns;
+        this.campaignsSubject.next([...this.campaigns]);
+      }),
+      shareReplay(1)
+    );
+    return this.campaignsCache$;
+  }
+
+  createCampaign(campaign: Campaign): Observable<Campaign> {
+    return this.http.post<Campaign>(`${this.apiUrl}/campaign`, campaign).pipe(
+      tap((newCampaign) => {
+        this.updateArrayCollection(this.campaigns, newCampaign, 'create', c => c.id);
+        this.campaignsSubject.next([...this.campaigns]);
+        this.refreshCampaigns().subscribe();
+      })
+    );
+  }
+
+  updateCampaign(campaign: Campaign): Observable<Campaign> {
+    return this.http.put<Campaign>(`${this.apiUrl}/campaign`, campaign).pipe(
+      tap((updated) => {
+        this.updateArrayCollection(this.campaigns, updated, 'update', c => c.id);
+        this.campaignsSubject.next([...this.campaigns]);
+        this.refreshCampaigns().subscribe();
+      })
+    );
+  }
+
+  deleteCampaign(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/campaign/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.campaigns, { id }, 'delete', c => c.id);
+        this.campaignsSubject.next([...this.campaigns]);
+        this.refreshCampaigns().subscribe();
       })
     );
   }
@@ -1004,6 +1090,40 @@ export class DataService {
         } else {
           this.players.push(savedPlayer);
         }
+        this.playersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  createPlayer(player: Player): Observable<Player> {
+    this.updateArrayCollection(this.players, player, 'create', p => p.id);
+    this.playersSubject.next([...this.players]);
+
+    return this.http.post<Player>(`${this.apiUrl}/player`, player, {
+      headers: new HttpHeaders({
+        [SKIP_LOADING_HEADER]: 'true'
+      })
+    }).pipe(
+      tap(createdPlayer => {
+        const index = this.players.findIndex(existingPlayer => existingPlayer.id === createdPlayer.id);
+        if (index !== -1) {
+          this.players[index] = createdPlayer;
+        } else {
+          this.players.push(createdPlayer);
+        }
+        this.playersSubject.next([...this.players]);
+        this.playersCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deletePlayer(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/player/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.players, { id }, 'delete', p => p.id);
+        this.playersSubject.next([...this.players]);
         this.playersCache$ = null;
         this.allDataCache$ = null;
       })

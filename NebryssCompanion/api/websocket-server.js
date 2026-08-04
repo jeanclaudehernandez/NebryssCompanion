@@ -29,7 +29,7 @@ function setupWebSocketServer(server) {
       try {
         const parsed = JSON.parse(message);
         if (parsed && parsed.type === 'ENTITY_UPDATE') {
-          broadcastDataUpdate(parsed.entity, parsed.action, parsed.data);
+          broadcastDataUpdate(parsed.entity, parsed.action, parsed.data, parsed.campaign);
         }
       } catch (err) {
         console.error('Error handling WebSocket message:', err);
@@ -48,12 +48,13 @@ function setupWebSocketServer(server) {
     }
   });
 
-  function broadcastDataUpdate(entity, action, data) {
+  function broadcastDataUpdate(entity, action, data, campaign) {
     const payload = JSON.stringify({
       type: 'ENTITY_UPDATE',
       entity,
       action,
       data,
+      campaign,
       timestamp: Date.now()
     });
 
@@ -84,11 +85,11 @@ if (require.main === module) {
   });
 
   app.post('/broadcast', (req, res) => {
-    const { entity, action, data } = req.body || {};
+    const { entity, action, data, campaign } = req.body || {};
     if (!entity || !action || !data) {
       return res.status(400).json({ error: 'Missing entity, action, or data in request body' });
     }
-    broadcastDataUpdate(entity, action, data);
+    broadcastDataUpdate(entity, action, data, campaign);
     res.json({ success: true, entity, action });
   });
 

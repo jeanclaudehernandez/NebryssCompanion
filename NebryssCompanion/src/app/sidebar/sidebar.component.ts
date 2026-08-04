@@ -6,11 +6,17 @@ import { ModalService } from '../modal.service';
 import { ThemeService } from '../theme.service';
 import { AdminService } from '../admin.service';
 import { AppView } from '../app-view.types';
+import { FormsModule } from '@angular/forms';
+import { DataService } from '../data.service';
+import { CampaignService } from '../campaign.service';
+import { Campaign } from '../model';
+
+import { ActivePlayerService } from '../active-player.service';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, MatDialogModule],
+  imports: [CommonModule, FormsModule, MatDialogModule],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.css']
 })
@@ -23,16 +29,39 @@ export class SidebarComponent {
   isOpen = false;
   isAdmin = false;
 
+  campaigns: Campaign[] = [];
+  selectedCampaign: Campaign | null = null;
+
   constructor(
     private matDialog: MatDialog,
     public updateService: UpdateService,
     private modalService: ModalService,
     public themeService: ThemeService,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private dataService: DataService,
+    public campaignService: CampaignService,
+    private activePlayerService: ActivePlayerService
   ) {
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+
+    this.dataService.getCampaigns().subscribe(campaigns => {
+      this.campaigns = campaigns;
+    });
+
+    this.campaignService.selectedCampaign$.subscribe(campaign => {
+      this.selectedCampaign = campaign;
+    });
+  }
+
+  onCampaignSelect(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const campaignId = Number(select.value);
+    const chosen = this.campaigns.find(c => c.id === campaignId) || null;
+    this.activePlayerService.clearActivePlayer();
+    this.campaignService.setSelectedCampaign(chosen);
+    this.dataService.refreshPlayers().subscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -128,6 +157,17 @@ export class SidebarComponent {
 
     this.openAdminDialog(this.adminDialogTemplate, () => {
       this.changeView('adminCreatureEditor');
+    });
+  }
+
+  openAdminCampaignEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminCampaignEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminCampaignEditor');
     });
   }
 

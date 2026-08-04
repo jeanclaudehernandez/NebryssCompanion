@@ -13,21 +13,26 @@ echo   GCLOUD_REGION    = %GCLOUD_REGION%
 echo   IMAGE_NAME       = %IMAGE_NAME%
 echo.
 
-echo Step 1/3: Building Docker image with Cloud Build...
+echo Step 1/4: Building Docker image with Cloud Build...
 call gcloud builds submit --project "%GCLOUD_PROJECT%" --tag "%IMAGE_NAME%"
 if errorlevel 1 goto :error
 
 echo.
-echo Step 2/3: Deploying container to Cloud Run (preserving existing revision settings)...
+echo Step 2/4: Deploying container to Cloud Run API service...
 call gcloud run deploy "%CLOUD_RUN_SERVICE%" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed --quiet
 if errorlevel 1 goto :error
 
 echo.
-echo Step 3/3: Building Angular frontend and deploying to Firebase Hosting...
+echo Step 3/4: Deploying container to Cloud Run WebSocket service...
+call gcloud run deploy "nebryss-companion-ws" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed --quiet
+if errorlevel 1 goto :error
+
+echo.
+echo Step 4/4: Building Angular frontend and deploying to Firebase Hosting...
 call npm run build
 if errorlevel 1 goto :error
 
-call firebase deploy
+call firebase deploy --only hosting
 if errorlevel 1 goto :error
 
 echo.

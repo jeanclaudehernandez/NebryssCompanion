@@ -56,9 +56,12 @@ export class PlayerListComponent implements OnInit, OnDestroy {
     });
 
     this.dataService.players$?.pipe(takeUntil(this.destroy$)).subscribe(players => {
-      if (players && players.length > 0) {
-        this.players = players;
+      this.players = players || [];
+      const active = this.activePlayerService.activePlayer;
+      if (active && this.players.some(p => p.id === active.id)) {
         this.updatePlayerFromActivePlayer();
+      } else {
+        this.selectedPlayer = null;
       }
     });
 

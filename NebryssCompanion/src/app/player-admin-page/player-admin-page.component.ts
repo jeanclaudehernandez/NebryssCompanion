@@ -255,6 +255,60 @@ export class PlayerAdminPageComponent implements OnInit {
     this.editablePlayer.attributes.body = current;
   }
 
+  createNewPlayer(): void {
+    const maxId = this.players.reduce((max, p) => (p.id > max ? p.id : max), 0);
+    const newPlayer: Player = {
+      id: maxId + 1,
+      name: 'New Operative',
+      race: 'Human',
+      origin: 'Imperium of Man',
+      attributes: {
+        Movement: 6,
+        Wounds: 10,
+        Save: 4,
+        APL: 3,
+        body: ['human']
+      },
+      weapons: [],
+      abilities: [
+        { name: 'Core Training', effect: 'Standard operative conditioning.' }
+      ],
+      items: [],
+      progression: {
+        talentPoints: 0,
+        mistrals: { digital: 0, physical: 0 },
+        talents: [],
+        afflictions: [],
+        equipment: []
+      }
+    };
+
+    this.selectedPlayerId = newPlayer.id;
+    this.editablePlayer = newPlayer;
+    this.lastSavedPlayer = null;
+    this.rebuildDisplayTables(newPlayer);
+  }
+
+  deletePlayer(): void {
+    if (!this.editablePlayer || !this.editablePlayer.id) return;
+    const deletingId = this.editablePlayer.id;
+
+    this.dataService.deletePlayer(deletingId).subscribe({
+      next: () => {
+        this.toastService.show('Player deleted successfully', 'info');
+        if (this.activePlayerService.activePlayer?.id === deletingId) {
+          this.activePlayerService.clearActivePlayer();
+        }
+        this.players = this.players.filter(p => p.id !== deletingId);
+        this.selectInitialPlayer();
+        this.dataService.refreshPlayers().subscribe();
+      },
+      error: () => {
+        this.toastService.show('Failed to delete player', 'error');
+      }
+    });
+  }
+
   save(): void {
     if (!this.editablePlayer || !this.canSave) {
       return;
@@ -271,11 +325,21 @@ export class PlayerAdminPageComponent implements OnInit {
       abilities
     };
 
+    const isNew = !this.players.some(player => player.id === payload.id);
     this.isSaving = true;
-    this.dataService.savePlayer(payload).subscribe({
+
+    const request$ = isNew
+      ? this.dataService.createPlayer(payload)
+      : this.dataService.savePlayer(payload);
+
+    request$.subscribe({
       next: savedPlayer => {
         this.lastSavedPlayer = savedPlayer;
-        this.players = this.players.map(player => player.id === savedPlayer.id ? savedPlayer : player);
+        if (isNew) {
+          this.players.push(savedPlayer);
+        } else {
+          this.players = this.players.map(player => player.id === savedPlayer.id ? savedPlayer : player);
+        }
         this.players.sort((left, right) => left.name.localeCompare(right.name));
         this.onPlayerSelect(savedPlayer.id);
 

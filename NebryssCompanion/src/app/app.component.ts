@@ -12,9 +12,10 @@ import { AdminEditorSession } from './admin-editor.models';
 import { ActivePlayerService } from './active-player.service';
 import { AppViewHostComponent } from './app-view-host.component';
 import { APP_VIEWS, AppView } from './app-view.types';
-import { Location } from './model';
+import { Location, Campaign } from './model';
 import { BestiaryMaterialsService } from './bestiary/bestiary-materials.service';
 import { ModalService } from './modal.service';
+import { CampaignService } from './campaign.service';
 
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
@@ -192,11 +193,30 @@ import { ToastService } from './toast.service';
         </ng-container>
       </div>
     </ng-template>
+
+    <ng-template #campaignPromptDialog let-campaigns="campaigns" let-select="select">
+      <div class="confirmation-dialog campaign-prompt-modal">
+        <h3 style="color: #a855f7; margin-bottom: 8px;">Select a Campaign</h3>
+        <p style="margin-bottom: 16px; color: #cbd5e1;">Please select a campaign to continue playing in Nebryss Companion:</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+          <button
+            *ngFor="let camp of campaigns"
+            type="button"
+            class="btn-confirm"
+            style="background-color: #8b5cf6; width: 100%; text-align: center; margin-bottom: 6px;"
+            (click)="select(camp)"
+          >
+            {{ camp.name }}
+          </button>
+        </div>
+      </div>
+    </ng-template>
   `,
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   @ViewChild('adminDialog') adminDialogTemplate?: TemplateRef<any>;
+  @ViewChild('campaignPromptDialog') campaignPromptDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
 
   currentView: AppView = 'players';
@@ -217,6 +237,76 @@ export class AppComponent {
   activePlayer$ = this.activePlayerService.activePlayer$;
   hasAdminAccess$ = this.adminService.hasAdminAccess$;
   isAdmin$ = this.adminService.isAdmin$;
+
+  constructor(
+    public themeService: ThemeService,
+    public loadingService: LoadingService,
+    public adminService: AdminService,
+    private toastService: ToastService,
+    private dataService: DataService,
+    private dialog: MatDialog,
+    private activePlayerService: ActivePlayerService,
+    private bestiaryMaterialsService: BestiaryMaterialsService,
+    private modalService: ModalService,
+    public campaignService: CampaignService
+  ) {
+    const savedView = localStorage.getItem('lastView');
+    this.currentView = this.isValidView(savedView) ? savedView : 'players';
+
+    this.checkAndPromptCampaign();
+
+    this.dataService.getLetters()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe();
+
+    combineLatest([this.activePlayerService.activePlayer$, this.dataService.letters$])
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(([player, letters]) => {
+        if (!player) {
+          this.letterUnreadCount = 0;
+          return;
+        }
+
+        this.letterUnreadCount = letters.filter(
+          letter => letter.recipientIds.includes(player.id) && !letter.readBy.includes(player.id)
+        ).length;
+      });
+
+    this.bestiaryMaterialsService.count$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(count => {
+        this.bestiaryMaterialsCount = count;
+      });
+
+    this.bestiaryMaterialsService.open$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isOpen => {
+        this.bestiaryMaterialsSidebarOpen = isOpen;
+      });
+
+    this.initPullToRefreshListeners();
+  }
+
+  private checkAndPromptCampaign(): void {
+    if (!this.campaignService.hasCampaignSelected()) {
+      setTimeout(() => {
+        this.dataService.getCampaigns().subscribe(campaigns => {
+          if (campaigns && campaigns.length > 0 && !this.campaignService.hasCampaignSelected() && this.campaignPromptDialogTemplate) {
+            const dialogContext = {
+              campaigns,
+              select: (camp: Campaign) => {
+                this.activePlayerService.clearActivePlayer();
+                this.campaignService.setSelectedCampaign(camp);
+                this.dataService.refreshPlayers().subscribe();
+                this.modalService.close();
+              }
+            };
+            this.modalService.openFromTemplate(this.campaignPromptDialogTemplate, dialogContext, { showCloseButton: false });
+          }
+        });
+      }, 300);
+    }
+  }
 
   toggleAdminMode(): void {
     const nextState = !this.adminService.isAdmin;
@@ -262,6 +352,7 @@ export class AppComponent {
       case 'adminLocationCreator': return 'Location Creator';
       case 'adminPlayerEditor': return 'Player Editor';
       case 'adminCreatureEditor': return 'Creature Editor';
+      case 'adminCampaignEditor': return 'Campaign Editor';
       default: return 'Nebryss Companion';
     }
   }
@@ -285,51 +376,7 @@ export class AppComponent {
     return 'none'; // Keep content static for now, overlay indicator
   }
 
-  constructor(
-    public themeService: ThemeService,
-    public loadingService: LoadingService,
-    public adminService: AdminService,
-    private toastService: ToastService,
-    private dataService: DataService,
-    private dialog: MatDialog,
-    private activePlayerService: ActivePlayerService,
-    private bestiaryMaterialsService: BestiaryMaterialsService,
-    private modalService: ModalService
-  ) {
-    const savedView = localStorage.getItem('lastView');
-    this.currentView = this.isValidView(savedView) ? savedView : 'players';
 
-    this.dataService.getLetters()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe();
-
-    combineLatest([this.activePlayerService.activePlayer$, this.dataService.letters$])
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(([player, letters]) => {
-        if (!player) {
-          this.letterUnreadCount = 0;
-          return;
-        }
-
-        this.letterUnreadCount = letters.filter(
-          letter => letter.recipientIds.includes(player.id) && !letter.readBy.includes(player.id)
-        ).length;
-      });
-
-    this.bestiaryMaterialsService.count$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(count => {
-        this.bestiaryMaterialsCount = count;
-      });
-
-    this.bestiaryMaterialsService.open$
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(isOpen => {
-        this.bestiaryMaterialsSidebarOpen = isOpen;
-      });
-
-    this.initPullToRefreshListeners();
-  }
 
   // Detect if we are in standalone PWA mode (iOS or Android)
   private get isStandalone(): boolean {
