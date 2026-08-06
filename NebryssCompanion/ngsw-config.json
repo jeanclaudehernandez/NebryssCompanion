@@ -31,17 +31,6 @@
   ],
   "dataGroups": [
     {
-      "name": "api",
-      "urls": [
-        "https://nebryss-companion-api-771693340084.us-east4.run.app/api/**"
-      ],
-      "cacheConfig": {
-        "maxSize": 100,
-        "maxAge": "30d",
-        "strategy": "performance"
-      }
-    },
-    {
       "name": "external-images",
       "urls": [
         "https://iili.io/**"

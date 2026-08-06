@@ -6,23 +6,32 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
   const campaignService = inject(CampaignService);
   const activeCampaign = campaignService.getSelectedCampaign();
 
+  let reqWithHeaders = req.clone({
+    setHeaders: {
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0',
+      'ngsw-bypass': 'true'
+    }
+  });
+
   if (!activeCampaign) {
-    return next(req);
+    return next(reqWithHeaders);
   }
 
   // Intercept outgoing API requests
-  if (req.url.includes('/api/')) {
-    if (req.method === 'POST' || req.method === 'PUT') {
+  if (reqWithHeaders.url.includes('/api/')) {
+    if (reqWithHeaders.method === 'POST' || reqWithHeaders.method === 'PUT') {
       const wrappedBody = {
-        payload: req.body,
+        payload: reqWithHeaders.body,
         campaign: activeCampaign
       };
-      return next(req.clone({
+      return next(reqWithHeaders.clone({
         body: wrappedBody
       }));
     } else {
       // GET, DELETE, etc.
-      return next(req.clone({
+      return next(reqWithHeaders.clone({
         setParams: {
           campaign: JSON.stringify(activeCampaign)
         },
@@ -33,5 +42,5 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
     }
   }
 
-  return next(req);
+  return next(reqWithHeaders);
 };
