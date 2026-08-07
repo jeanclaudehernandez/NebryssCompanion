@@ -13,6 +13,8 @@
     "build:opt": "ng build --configuration optimized",
     "build:stats": "ng build --configuration optimized --stats-json",
     "analyze": "webpack-bundle-analyzer dist/nebryss-companion/stats.json",
+    "start:duckdns": "node scripts/start-duckdns.js",
+    "update:duckdns": "node scripts/duckdns-updater.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -50,6 +52,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "localtunnel": "^2.0.2",
     "typescript": "~5.4.2",
     "webpack-bundle-analyzer": "^4.10.1"
   }

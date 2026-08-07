@@ -5,13 +5,23 @@ import { CampaignService } from './campaign.service';
 export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
   const campaignService = inject(CampaignService);
   const activeCampaign = campaignService.getSelectedCampaign();
+  const adminPin = localStorage.getItem('nebryss_admin_pin') || '849201';
+
+  let headers = req.headers
+
+
+  if (req.url.includes('/api/')) {
+    headers = headers.set('ngsw-bypass', 'true');
+  }
 
   let reqWithHeaders = req.clone({
     setHeaders: {
       'Cache-Control': 'no-cache, no-store, must-revalidate',
       'Pragma': 'no-cache',
       'Expires': '0',
-      'ngsw-bypass': 'true'
+      'ngsw-bypass': 'true',
+      'ngrok-skip-browser-warning': 'true',
+      'X-Admin-PIN': adminPin
     }
   });
 
@@ -35,9 +45,7 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
         setParams: {
           campaign: JSON.stringify(activeCampaign)
         },
-        setHeaders: {
-          'X-Campaign': JSON.stringify(activeCampaign)
-        }
+        headers
       }));
     }
   }

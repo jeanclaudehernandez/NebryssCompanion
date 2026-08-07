@@ -84,24 +84,13 @@ export class WebSocketService implements OnDestroy {
 
   private getWebSocketUrl(): string {
     const win = window as any;
+
+    // 1. Injected at runtime by the server (api/index.js injects this into index.html)
     if (win.WS_URL) {
       return win.WS_URL;
     }
 
-    const defaultWsUrl = 'wss://nebryss-companion-ws-771693340084.us-east4.run.app/ws';
-    const defaultApiUrl = 'https://nebryss-companion-api-771693340084.us-east4.run.app/api';
-    const apiUrl = win.API_URL || defaultApiUrl;
-
-    if (apiUrl.includes('nebryss-companion-api')) {
-      return defaultWsUrl;
-    }
-
-    if (apiUrl.startsWith('http://')) {
-      return apiUrl.replace(/^http:\/\//, 'ws://').replace(/\/api\/?$/, '') + '/ws';
-    } else if (apiUrl.startsWith('https://')) {
-      return apiUrl.replace(/^https:\/\//, 'wss://').replace(/\/api\/?$/, '') + '/ws';
-    }
-
+    // 2. Derive from current page origin — works for localhost, ngrok, or any other host
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.host}/ws`;
   }

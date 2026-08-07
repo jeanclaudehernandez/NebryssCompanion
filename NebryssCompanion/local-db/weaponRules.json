@@ -1,0 +1,515 @@
+[
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b4"
+    },
+    "id": 2,
+    "name": "Agile",
+    "effect": "When resolving attack dices, resolve 1 dice before the fight sequence (if both weapons have this rule, active operative resolves first).",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b6"
+    },
+    "id": 4,
+    "name": "Mist-Accuracy",
+    "effect": "Ranged: isn't affected by penalties of the mist. Melee: When in mist improve WS by 1.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088bb"
+    },
+    "id": 10,
+    "name": "Supressing",
+    "effect": "Target operative and active operative roll 1D6 + APL if active operative score is higher, apply /status/:4/ status on target.",
+    "prModifier": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088bc"
+    },
+    "id": 11,
+    "name": "Mist Dispersal",
+    "effect": "Clears mist in a 3 inches radius for one round.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c1"
+    },
+    "id": 16,
+    "name": "Balanced",
+    "effect": "Re-roll one attack die.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c5"
+    },
+    "id": 20,
+    "name": "Punishing",
+    "effect": "After rolling attack dice, if you retain any critical hit, you can retain 1 failed dice as successful.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c8"
+    },
+    "id": 23,
+    "name": "Saturate",
+    "effect": "Weapon removes cover save bonuses.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c9"
+    },
+    "id": 24,
+    "name": "Relentless",
+    "effect": "After rolling attack dice, you can re-roll any number of dices.",
+    "prModifier": 7
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088cc"
+    },
+    "id": 27,
+    "name": "Piercing Crits <x>",
+    "effect": "After rolling attack dice, weapon gains Piercing <x> if any critical hits are retainted.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d0"
+    },
+    "id": 31,
+    "name": "Push <x> inches",
+    "effect": "Move the target <x> inches away after this action if you retain any sucesses.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d1"
+    },
+    "id": 32,
+    "name": "Psychic",
+    "effect": "This attack cannot be performed by operatives without the spell body type.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d3"
+    },
+    "id": 34,
+    "name": "Piercing <x>",
+    "effect": "Before rolling defense dice, the defending operatives rolls <x> less defense dice.",
+    "prModifier": 5
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d4"
+    },
+    "id": 35,
+    "name": "hot",
+    "effect": "After finishing a shoot action, roll 1d6, on a result lower than weapon hit stat, operative suffers 2x result wounds.",
+    "prModifier": -2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d6"
+    },
+    "id": 37,
+    "name": "Noxious Cloud",
+    "effect": "All operatives within 2 inches of the target (including the attacker) suffer 1 wound at the end of the activation. Does not affect other Nurglings.",
+    "prModifier": -1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b3"
+    },
+    "id": 1,
+    "name": "Shockwave <x> inches",
+    "effect": "If a critical dice is retained, weapon gains blast <x> inches weapon rule. (melee weapons treat as shooting actions against secondary targets)",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b5"
+    },
+    "id": 3,
+    "name": "Fixed Result",
+    "effect": "Attacks made with this weapon can't reroll any dice.",
+    "prModifier": -2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088ba"
+    },
+    "id": 8,
+    "name": "Electrify",
+    "effect": "If damage is made to the target during this action, apply /status/:6/ status to the target.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088be"
+    },
+    "id": 13,
+    "name": "Life Siphon",
+    "effect": "Select 1 friendly operative visible and within 6 inches. For each dice that deals damage, it heals 1 or 1D3 wounds if it was a critical. Once per turning point.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088bf"
+    },
+    "id": 14,
+    "name": "Quick Assault",
+    "effect": "Once per battle: if this operative hasn't done a shoot action during this activation and performed a charge action, it can resolve two successful or critical hit dice in sequence and add 1dmg to both their damage characteristics.",
+    "prModifier": 7
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c6"
+    },
+    "id": 21,
+    "name": "Lethal <x>+",
+    "effect": "Critical hits are retained on unmodified rolls of <x>+ instead of 6.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d5"
+    },
+    "id": 36,
+    "name": "Plague Bite",
+    "effect": "If damage is made to the target during this action, apply /status/:2/ status to the target. If the target is already bleeding, apply /status/:3/ status.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088db"
+    },
+    "id": 42,
+    "name": "Vorpal Strike",
+    "effect": "If the target is slain, this operative gains 1AP on their next activation.",
+    "prModifier": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088dc"
+    },
+    "id": 43,
+    "name": "Mistcloak Sync",
+    "effect": "While in a mist zone, the operative gains +1 Save. If the operative is cover, they cannot be targeted by ranged attacks beyond 6inches.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e1"
+    },
+    "id": 48,
+    "name": "Seek Light",
+    "effect": "When selecting target for a shoot action, visible operatives can be targeted even if they are in cover from light terrain.",
+    "prModifier": "6"
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b9"
+    },
+    "id": 7,
+    "name": "Bleeding",
+    "effect": "If damage is made to the target during this action, apply /status/:2/ status to the target.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088bd"
+    },
+    "id": 12,
+    "name": "Psychic Push",
+    "effect": "After attack, if at least one attack dice inflicted damage, move the target 2 inches. Roll one D6, on a 2-, active suffers 1 wound.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c0"
+    },
+    "id": 15,
+    "name": "Rending",
+    "effect": "After rolling attack dice, if you retain a critical hit, you can retain a normal sucessful as critical",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088cb"
+    },
+    "id": 26,
+    "name": "Heavy(dash only)",
+    "effect": "This weapon can't be used in the same activation as a reposition action.",
+    "prModifier": -1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088cd"
+    },
+    "id": 28,
+    "name": "Silent",
+    "effect": "Can be used to shoot even in conceal order.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d7"
+    },
+    "id": 38,
+    "name": "Shadow Claws",
+    "effect": "After rolling attack dice, retain one additional normal success if the target is in a mist zone or this operative has heavy terrain within control range.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d8"
+    },
+    "id": 39,
+    "name": "Soulrender",
+    "effect": "For each critical hit retained, restore 1 wound on this operative.",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088dd"
+    },
+    "id": 44,
+    "name": "Accurate <x>",
+    "effect": "Before rolling attack dice, you can retain <x> dices as sucesses.",
+    "prModifier": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088df"
+    },
+    "id": 46,
+    "name": "Severe",
+    "effect": "After rolling attack dice, if you don't retain any critical success, you can change one of your normal success to become critical (rules that apply when you retain critical success will apply).",
+    "prModifier": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e0"
+    },
+    "id": 47,
+    "name": "Seek",
+    "effect": "When selecting target for a shoot action, visible operatives can be targeted even if they are in cover.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b7"
+    },
+    "id": 5,
+    "name": "Drag <x> inches",
+    "effect": "If a critical dice is retained, move the enemy <x> inches in the shortest possible direction towards the active operative.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088b8"
+    },
+    "id": 6,
+    "name": "Burning",
+    "effect": "If damage is made to the target during this action, apply /status/:3/ status to the target.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c2"
+    },
+    "id": 17,
+    "name": "Stun",
+    "effect": "Target loses 1AP on their next activation.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c3"
+    },
+    "id": 18,
+    "name": "Ceaseless",
+    "effect": "Choose a number and re-roll all attack dice with results of that number.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c4"
+    },
+    "id": 19,
+    "name": "Brutal",
+    "effect": "Opponent can only parry with critical successes.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088c7"
+    },
+    "id": 22,
+    "name": "Shock",
+    "effect": "After rolling attack dice, if you retain a critical hit, you can discard one of your opponent's successes (you can discard a critical if there are no normals).",
+    "prModifier": 6
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088ca"
+    },
+    "id": 25,
+    "name": "Devastating <x>",
+    "effect": "Deal <x> wounds on critical hits.",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088ce"
+    },
+    "id": 29,
+    "name": "Entangle",
+    "effect": "If damage is made with a critical hit, apply /status/:1/ status on target.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088cf"
+    },
+    "id": 30,
+    "name": "Blast <x> inches",
+    "effect": "After this shoot action, make a shoot action against all operatives other than target within <x> inches of the target, treat cover and obscuring same as the original target",
+    "prModifier": "X"
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d2"
+    },
+    "id": 33,
+    "name": "Break",
+    "effect": "After use, roll a 1d6 +APL, on a failed roll of +5, the weapon breaks.",
+    "prModifier": null
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088d9"
+    },
+    "id": 40,
+    "name": "Mist Resonance",
+    "effect": "Attacks made in mist zones gain +1 damage. If the mist is dense, also gain rending.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088da"
+    },
+    "id": 41,
+    "name": "Phase Shift",
+    "effect": "During a charge action, you may ignore movement penalties from terrain while in a mist zone. During the turning point you use this rule, when fighting or retaliating, the operative must use this weapon, after that fight or retalaitiong you may move 2 inches in any direction ignorening terrain.",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088de"
+    },
+    "id": 45,
+    "name": "Torrent <x>",
+    "effect": "After this shoot action, make a shoot action against all operatives other than target that are visible and within <x> inches of the target.",
+    "prModifier": 4
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e2"
+    },
+    "id": 49,
+    "name": "Assasinate",
+    "effect": "Operative can perform charge action on conceal only if it fights after the charge action.",
+    "prModifier": 2
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e3"
+    },
+    "id": 50,
+    "name": "Witchhunt",
+    "effect": "If the target is a [spell] operative, gain Piercing 1.",
+    "prModifier": 1
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e4"
+    },
+    "id": 51,
+    "name": "Corrupt",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:7/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "6999dda0f7703abfb2c088e5"
+    },
+    "id": 52,
+    "name": "Poisonous",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:9/ status to the target.",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "699af6297733e1ac4a0b2aa3"
+    },
+    "id": 53,
+    "name": "Penetrating <x>",
+    "effect": "Worsen the save stat of the target during the shoot action by <x>.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "699f4eaff245beb5315f0e51"
+    },
+    "id": 54,
+    "name": "Disorienting",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:8/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "699f4eaff245beb5315f0e52"
+    },
+    "id": 55,
+    "name": "Blinding",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:10/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "699f4eaff245beb5315f0e53"
+    },
+    "id": 56,
+    "name": "Mist-Infused",
+    "effect": "If damage is made to the target during this action with a critical success, apply /status/:5/ status to the target.",
+    "prModifier": 8
+  },
+  {
+    "_id": {
+      "$oid": "699f4eaff245beb5315f0e54"
+    },
+    "id": 57,
+    "name": "Executioner",
+    "effect": "If the target has less than half of its wounds remaining, add 1 to both Damage characteristics of this weapon.",
+    "prModifier": 3
+  },
+  {
+    "_id": {
+      "$oid": "699fa9dcac9c1cc3b21d8393"
+    },
+    "id": 58,
+    "name": "Fate Seal",
+    "effect": "The target of this fight, retaliation or shoot cannot re-roll dices during this action.",
+    "prModifier": 8
+  }
+]

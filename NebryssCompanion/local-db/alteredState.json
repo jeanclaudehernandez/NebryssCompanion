@@ -1,0 +1,114 @@
+[
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c08830"
+    },
+    "id": 8,
+    "name": "Disoriented",
+    "effect": "Worsen WS/BS by 1. Roll 1D6 + APL at the end of its activation. On a 6+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c08829"
+    },
+    "id": 1,
+    "name": "Entangled",
+    "effect": "The operative cannot perform actions that involve moving. At the start of its activation, roll 1D6 + APL. On a 6+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882b"
+    },
+    "id": 3,
+    "name": "Burning",
+    "effect": "At the start of the operative's activation, it suffers 1 wound. After 3 Activations, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882d"
+    },
+    "id": 5,
+    "name": "Mistbound",
+    "effect": "Treats all terrain as mist zone, if in a mistzone increase density. At the start of its activation, roll 1D6 + APL. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882f"
+    },
+    "id": 7,
+    "name": "Corrupted",
+    "effect": "Operative loses 1APL and suffers 1 wound at the end of each activation. Roll 1D6 + APL at the end of its activation. On a 6+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c08831"
+    },
+    "id": 9,
+    "name": "Poisoned",
+    "effect": "At the start of the operative's activation, it suffers 1 wounds and worsen WS by 1 for the activation. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882a"
+    },
+    "id": 2,
+    "name": "Bleeding",
+    "effect": "At the start of the operative's activation, it suffers 1D3 wounds. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882e"
+    },
+    "id": 6,
+    "name": "Electrified",
+    "effect": "At the start of the operative's activation, it suffers 1D3 wounds and cannot retain critical successes. To remove, spend 1AP to 'ground' itself."
+  },
+  {
+    "_id": {
+      "$oid": "6999dc23f7703abfb2c0882c"
+    },
+    "id": 4,
+    "name": "Supressed",
+    "effect": "When this operative would activate, instead skip its activation and remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "699f4e95f245beb5315f0e49"
+    },
+    "id": 10,
+    "name": "Blinded",
+    "effect": "Cannot perform Shoot actions or Overwatch. Worsen BS by 1 for melee attacks. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "699f4e95f245beb5315f0e4a"
+    },
+    "id": 11,
+    "name": "Vulnerable",
+    "effect": "Re-roll successful Defense dice. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "699f4e95f245beb5315f0e4b"
+    },
+    "id": 12,
+    "name": "Stunned",
+    "effect": "Subtract 1 from APL. Limit 1 per operative. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "699f4e95f245beb5315f0e4c"
+    },
+    "id": 13,
+    "name": "Crippled",
+    "effect": "Reduce Movement characteristic by half. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  },
+  {
+    "_id": {
+      "$oid": "699f4e95f245beb5315f0e4d"
+    },
+    "id": 14,
+    "name": "Frenzied",
+    "effect": "Add 1 to Attacks characteristic of melee weapons. Defense dice cannot be re-rolled and cannot parry during fights. Roll 1D6 + APL at the end of its activation. On a 5+, remove this state."
+  }
+]
