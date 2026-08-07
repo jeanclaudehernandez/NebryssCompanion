@@ -11,7 +11,25 @@ const server = http.createServer(app);
 const { broadcastDataUpdate } = setupWebSocketServer(server);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+app.disable('x-powered-by');
+
+// Security PIN verification middleware for write operations (POST, PUT, DELETE)
+const adminPin = process.env.ADMIN_PIN || null;
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
+  if (!adminPin || req.method === 'GET') {
+    return next();
+  }
+  const providedPin = req.headers['x-admin-pin'] || req.query.adminPin || (req.body && req.body.adminPin);
+  if (providedPin !== adminPin) {
+    return res.status(403).json({ error: 'Unauthorized: Invalid or missing Admin PIN for write operations' });
+  }
+  next();
+});
 
 function notifyChange(entity, action, data, campaign) {
   try {
@@ -65,15 +83,16 @@ function extractPayloadAndCampaign(req) {
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCompanion';
 const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'test';
-const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'players';
+const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'NebryssCampaignAssets';
 
-// Default to 100% Local PC JSON Database mode if remote MongoDB Atlas is configured or local mode is active
-let isUsingLocalJsonFallback = true;
-if (mongoUri && (mongoUri.includes('127.0.0.1') || mongoUri.includes('localhost'))) {
-  isUsingLocalJsonFallback = false;
-}
+// Attempt MongoDB connection (Atlas or Local), falling back to Local PC JSON if unreachable
+let isUsingLocalJsonFallback = !mongoUri;
 
 const assetsDir = path.join(__dirname, '../src/assets');
+
+let cachedClient = null;
+let cachedMainDb = null;
+let cachedPlayersDb = null;
 
 async function getDatabases() {
   if (isUsingLocalJsonFallback) {
@@ -176,7 +195,14 @@ async function saveToLocalJson(collectionName, documents) {
         }
       }
     }
-    fs.writeFileSync(filePath, JSON.stringify(toSave, null, 2), 'utf8');
+    const jsonStr = JSON.stringify(toSave, null, 2);
+    fs.writeFileSync(filePath, jsonStr, 'utf8');
+
+    // Also sync to compiled dist assets if dist folder exists
+    const distFilePath = path.join(__dirname, '../dist/nebryss-companion/browser/assets', path.basename(filePath));
+    if (fs.existsSync(path.dirname(distFilePath))) {
+      fs.writeFileSync(distFilePath, jsonStr, 'utf8');
+    }
   } catch (e) {
     console.error(`[LocalDB] Error writing ${filePath}:`, e);
   }
@@ -210,11 +236,14 @@ function createUpdateRoute(routePath, options) {
 
       const db = usePlayersDb ? dbs.playersDb : dbs.mainDb;
       const collection = db.collection(targetCollection);
-      let query = { id: item.id };
-      if (!isNaN(Number(item.id))) {
-        query = { id: { $in: [item.id, Number(item.id), String(item.id)] } };
+      const numId = Number(item.id);
+      const strId = String(item.id);
+      const existing = await collection.findOne({ $or: [{ id: item.id }, { id: numId }, { id: strId }] });
+      if (existing) {
+        await collection.replaceOne({ _id: existing._id }, item);
+      } else {
+        await collection.insertOne(item);
       }
-      await collection.replaceOne(query, item, { upsert: true });
       notifyChange(collectionName, 'update', item, campaign);
       res.json(item);
     } catch (error) {
@@ -468,11 +497,14 @@ app.put('/api/player', async (req, res) => {
     }
 
     const collection = dbs.playersDb.collection(targetCollection);
-    let query = { id: player.id };
-    if (!isNaN(Number(player.id))) {
-      query = { id: { $in: [player.id, Number(player.id), String(player.id)] } };
+    const numId = Number(player.id);
+    const strId = String(player.id);
+    const existing = await collection.findOne({ $or: [{ id: player.id }, { id: numId }, { id: strId }] });
+    if (existing) {
+      await collection.replaceOne({ _id: existing._id }, player);
+    } else {
+      await collection.insertOne(player);
     }
-    await collection.replaceOne(query, player, { upsert: true });
     notifyChange('player', 'update', player, campaign);
     res.json(player);
   } catch (error) {
@@ -842,11 +874,18 @@ const staticPath = path.join(__dirname, '../dist/nebryss-companion/browser');
 const indexHtmlPath = path.join(staticPath, 'index.html');
 
 if (fs.existsSync(staticPath)) {
-  // Serve all static assets (JS, CSS, images) with caching — but NOT index.html
+  // Serve static files — ONLY cache image files (png, jpg, jpeg, webp, gif, svg, ico, avif)
   app.use(express.static(staticPath, {
-    maxAge: '7d',
     etag: true,
-    index: false  // disable auto-serving index.html so our handler runs first
+    index: false,
+    setHeaders: (res, filePath) => {
+      const isImage = /\.(png|jpe?g|webp|gif|svg|ico|avif)$/i.test(filePath);
+      if (isImage) {
+        res.setHeader('Cache-Control', 'public, max-age=604800, immutable'); // 7 days cache for images
+      } else {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // no cache for JS, CSS, JSON, HTML, etc.
+      }
+    }
   }));
 
   // Serve index.html dynamically, injecting runtime config based on request host
@@ -878,6 +917,8 @@ if (fs.existsSync(staticPath)) {
       html = html.replace('<head>', `<head>\n  ${configScript}`);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       res.setHeader('Cache-Control', 'no-store'); // never cache index.html
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
       res.send(html);
     } catch (err) {
       console.error('[API] Error serving index.html:', err);

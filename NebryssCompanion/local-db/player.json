@@ -193,12 +193,13 @@
     ],
     "progression": {
       "talentPoints": 0,
-      "talents": [],
       "mistrals": {
         "digital": 0,
-        "physical": 0
+        "physical": 23
       },
-      "afflictions": []
+      "talents": [],
+      "afflictions": [],
+      "equipment": []
     },
     "items": [
       {
@@ -436,5 +437,10 @@
         "quant": 2
       }
     ]
+  },
+  {
+    "id": 999,
+    "name": "Authorized Test",
+    "isDeleted": true
   }
 ]

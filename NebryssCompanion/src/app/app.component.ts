@@ -309,9 +309,12 @@ export class AppComponent {
     this.initShakeToRickroll();
   }
 
+  private shakeCount = 0;
+  private lastShakeTime = 0;
+
   private initShakeToRickroll(): void {
-    const SHAKE_THRESHOLD = 18;
-    const COOLDOWN_MS = 3000;
+    const SHAKE_THRESHOLD = 50;
+    const COOLDOWN_MS = 8000;
 
     if (typeof window === 'undefined' || !('DeviceMotionEvent' in window)) {
       return;
@@ -329,10 +332,21 @@ export class AppComponent {
       this.shakeLastY = acc.y;
       this.shakeLastZ = acc.z;
 
+      const now = Date.now();
       if ((dx + dy + dz) > SHAKE_THRESHOLD && !this.shakeCooldown && !this.rickrollVisible) {
-        this.rickrollVisible = true;
-        this.shakeCooldown = true;
-        setTimeout(() => { this.shakeCooldown = false; }, COOLDOWN_MS);
+        if (now - this.lastShakeTime < 1200) {
+          this.shakeCount++;
+        } else {
+          this.shakeCount = 1;
+        }
+        this.lastShakeTime = now;
+
+        if (this.shakeCount >= 3) {
+          this.rickrollVisible = true;
+          this.shakeCooldown = true;
+          this.shakeCount = 0;
+          setTimeout(() => { this.shakeCooldown = false; }, COOLDOWN_MS);
+        }
       }
     });
   }

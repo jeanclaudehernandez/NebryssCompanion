@@ -8,8 +8,26 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials">
   <meta name="theme-color" content="#1976d2">
+  <script>
+    // Unregister stale service workers and clear API caches automatically
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for (var reg of registrations) { reg.unregister(); }
+      });
+    }
+    if ('caches' in window) {
+      caches.keys().then(function(names) {
+        for (var name of names) {
+          // Only clear API data caches, preserve asset caches
+          if (name.includes('api') || name.includes('ngsw:db:') || name.includes('dynamic')) {
+            caches.delete(name);
+          }
+        }
+      });
+    }
+  </script>
 </head>
 <body>
   <app-root></app-root>

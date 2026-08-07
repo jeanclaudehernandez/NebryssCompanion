@@ -19,29 +19,29 @@ if (fs.existsSync(envPath)) {
 
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCompanion';
 const mainDbName = process.env.MONGODB_DB_MAIN || 'Nebryss-assets';
-const playersDbName = process.env.MONGODB_DB_PLAYERS || 'Nebryss-players-local';
+const playersDbName = process.env.MONGODB_DB_PLAYERS || 'NebryssCampaignAssets';
 
 const assetsDir = path.join(__dirname, '../src/assets');
 const localDbDir = path.join(__dirname, '../local-db');
 
 const collectionsMap = [
-  { jsonFile: 'afflictions.json', collection: 'afflictions', usePlayersDb: false },
-  { jsonFile: 'alteredStates.json', collection: 'alteredState', usePlayersDb: false },
+  { jsonFile: 'afflictions.json', collection: 'affliction', usePlayersDb: false },
+  { jsonFile: 'alteredStates.json', collection: 'status', usePlayersDb: false },
   { jsonFile: 'bestiary.json', collection: 'bestiary', usePlayersDb: false },
-  { jsonFile: 'campaigns.json', collection: 'campaigns', usePlayersDb: false },
-  { jsonFile: 'itemCategories.json', collection: 'itemCategories', usePlayersDb: false },
-  { jsonFile: 'items.json', collection: 'items', usePlayersDb: false },
+  { jsonFile: 'campaigns.json', collection: 'campaign', usePlayersDb: false },
+  { jsonFile: 'itemCategories.json', collection: 'itemCategory', usePlayersDb: false },
+  { jsonFile: 'items.json', collection: 'item', usePlayersDb: false },
   { jsonFile: 'letters.json', collection: 'letters', usePlayersDb: false },
-  { jsonFile: 'locations.json', collection: 'locations', usePlayersDb: false },
+  { jsonFile: 'locations.json', collection: 'location', usePlayersDb: true },
   { jsonFile: 'lore.json', collection: 'lore', usePlayersDb: false },
-  { jsonFile: 'mistEffects.json', collection: 'mistEffects', usePlayersDb: false },
-  { jsonFile: 'npcs.json', collection: 'npcs', usePlayersDb: false },
+  { jsonFile: 'mistEffects.json', collection: 'mistEffect', usePlayersDb: false },
+  { jsonFile: 'npcs.json', collection: 'npc', usePlayersDb: true },
   { jsonFile: 'players.json', collection: 'player', usePlayersDb: true },
-  { jsonFile: 'shops.json', collection: 'shops', usePlayersDb: false },
-  { jsonFile: 'talents.json', collection: 'talents', usePlayersDb: false },
-  { jsonFile: 'terrainRules.json', collection: 'terrains', usePlayersDb: false },
-  { jsonFile: 'weaponRules.json', collection: 'weaponRules', usePlayersDb: false },
-  { jsonFile: 'weapons.json', collection: 'weapons', usePlayersDb: false }
+  { jsonFile: 'shops.json', collection: 'shop', usePlayersDb: true },
+  { jsonFile: 'talents.json', collection: 'talent', usePlayersDb: false },
+  { jsonFile: 'terrainRules.json', collection: 'terrainRule', usePlayersDb: false },
+  { jsonFile: 'weaponRules.json', collection: 'weaponRule', usePlayersDb: false },
+  { jsonFile: 'weapons.json', collection: 'weapon', usePlayersDb: false }
 ];
 
 async function populateDatabase() {
@@ -104,6 +104,13 @@ async function populateDatabase() {
             await coll.deleteMany({});
             const res = await coll.insertMany(docsToInsert);
             console.log(`[MongoDB] ${item.collection} -> Populated ${res.insertedCount} items.`);
+
+            if (item.collection === 'player') {
+              const successionColl = targetDb.collection('nebryss-voss-sucession-player');
+              await successionColl.deleteMany({});
+              await successionColl.insertMany(docsToInsert.map(d => ({ ...d })));
+              console.log(`[MongoDB] nebryss-voss-sucession-player -> Populated ${docsToInsert.length} players.`);
+            }
           }
         } else if (typeof data === 'object') {
           const clone = { ...data };

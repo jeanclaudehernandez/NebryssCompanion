@@ -14,7 +14,7 @@ if not exist ".env.duckdns" (
       echo PORT=8080
       echo MONGODB_URI=mongodb+srv://jeanhernandezmeze_db_user:6hBfhByK45BGAxdy@cluster0.wjbet35.mongodb.net/
       echo MONGODB_DB_MAIN=Nebryss-assets
-      echo MONGODB_DB_PLAYERS=Nebryss-players-local
+      echo MONGODB_DB_PLAYERS=NebryssCampaignAssets
     ) > .env.duckdns
 )
 

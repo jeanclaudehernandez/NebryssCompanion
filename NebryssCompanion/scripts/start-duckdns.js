@@ -40,16 +40,53 @@ require('../api/index.js');
 
 // Establish HTTPS Tunnel
 function startTunnel() {
+  const localtunnelSubdomain = process.env.LOCALTUNNEL_SUBDOMAIN;
+
+  const isWin = process.platform === 'win32';
+  const npxCmd = isWin ? 'npx.cmd' : 'npx';
+
+  if (localtunnelSubdomain) {
+    console.log(`\n[Tunnel] Establishing LocalTunnel with subdomain: https://${localtunnelSubdomain}.loca.lt ...`);
+    const tunnelProc = spawn(npxCmd, ['-y', 'localtunnel', '--port', String(port), '--subdomain', localtunnelSubdomain], {
+      shell: isWin,
+      windowsHide: true
+    });
+
+    let urlPrinted = false;
+
+    const parseLog = (data) => {
+      const str = data.toString();
+      if (!urlPrinted && str.includes('loca.lt')) {
+        urlPrinted = true;
+        console.log('\n====================================================');
+        console.log('  🚀 SERVIDOR CON URL FIJA Y PERMANENTE EN VIVO!');
+        console.log('====================================================');
+        console.log(`  🔗 Tu URL Fija para compartir:`);
+        console.log(`     https://${localtunnelSubdomain}.loca.lt`);
+        console.log('====================================================\n');
+      }
+    };
+
+    tunnelProc.stdout.on('data', parseLog);
+    tunnelProc.stderr.on('data', parseLog);
+
+    tunnelProc.on('close', () => {
+      console.log('[Tunnel] Tunnel disconnected. Reconnecting in 3s...');
+      setTimeout(startTunnel, 3000);
+    });
+    return;
+  }
+
   if (ngrokDomain) {
     if (ngrokAuthToken && ngrokAuthToken !== 'your-ngrok-authtoken') {
       try {
-        spawn('npx', ['-y', 'ngrok', 'config', 'add-authtoken', ngrokAuthToken], { shell: true, windowsHide: true });
+        spawn(npxCmd, ['-y', 'ngrok', 'config', 'add-authtoken', ngrokAuthToken], { shell: isWin, windowsHide: true });
       } catch (e) {}
     }
 
     console.log(`\n[Tunnel] Connecting to fixed Ngrok static domain: https://${ngrokDomain}...`);
-    const tunnelProc = spawn('npx', ['-y', 'ngrok', 'http', `--url=${ngrokDomain}`, port], {
-      shell: true,
+    const tunnelProc = spawn(npxCmd, ['-y', 'ngrok', 'http', `--url=${ngrokDomain}`, String(port)], {
+      shell: isWin,
       windowsHide: true
     });
 
@@ -77,8 +114,8 @@ function startTunnel() {
     });
   } else {
     console.log('\n[Tunnel] Establishing Cloudflare HTTPS public tunnel...');
-    const tunnelProc = spawn('npx', ['-y', 'cloudflared', 'tunnel', '--url', `http://localhost:${port}`], {
-      shell: true,
+    const tunnelProc = spawn(npxCmd, ['-y', 'cloudflared', 'tunnel', '--url', `http://localhost:${port}`], {
+      shell: isWin,
       windowsHide: true
     });
 

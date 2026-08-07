@@ -833,7 +833,6 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
     const action = appliedDelta > 0 ? 'Added' : 'Removed';
     const absAmount = Math.abs(appliedDelta);
     this.toastService.show(`${action} ${absAmount} ${label} mistrals`, 'success');
-
     this.closeMistralModal();
   }
 }

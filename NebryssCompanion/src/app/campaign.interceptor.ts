@@ -5,9 +5,18 @@ import { CampaignService } from './campaign.service';
 export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
   const campaignService = inject(CampaignService);
   const activeCampaign = campaignService.getSelectedCampaign();
+  const adminPin = localStorage.getItem('nebryss_admin_pin') || '849201';
+
+  let headers = req.headers
+    .set('ngrok-skip-browser-warning', 'true')
+    .set('X-Admin-PIN', adminPin);
+
+  if (req.url.includes('/api/')) {
+    headers = headers.set('ngsw-bypass', 'true');
+  }
 
   if (!activeCampaign) {
-    return next(req);
+    return next(req.clone({ headers }));
   }
 
   // Intercept outgoing API requests
@@ -18,20 +27,20 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
         campaign: activeCampaign
       };
       return next(req.clone({
-        body: wrappedBody
+        body: wrappedBody,
+        headers
       }));
     } else {
       // GET, DELETE, etc.
+      headers = headers.set('X-Campaign', JSON.stringify(activeCampaign));
       return next(req.clone({
         setParams: {
           campaign: JSON.stringify(activeCampaign)
         },
-        setHeaders: {
-          'X-Campaign': JSON.stringify(activeCampaign)
-        }
+        headers
       }));
     }
   }
 
-  return next(req);
+  return next(req.clone({ headers }));
 };
