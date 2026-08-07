@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef, OnInit, DestroyRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataService } from '../data.service';
@@ -8,6 +8,15 @@ import { CapitalCasePipe } from '../capital-case.pipe';
 import { ImageViewerComponent } from '../image-viewer/image-viewer.component';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
 import { Lore, ScrollSection, Locations, Location } from '../model';
+
+export interface BookChapter {
+  id: string;
+  title: string;
+  subtitle: string;
+  roman: string;
+  icon: string;
+  key: string;
+}
 
 @Component({
   selector: 'app-lore',
@@ -31,6 +40,16 @@ export class LoreComponent implements OnInit {
   loreData!: Lore;
   locationsData!: Locations;
   isAdmin = false;
+  viewMode: 'book' | 'scroll' = 'book';
+  activeChapterIndex = 0;
+
+  chapters: BookChapter[] = [
+    { id: 'prologue', title: 'The World & The Mist', subtitle: 'Geography, Warp Anomalies & Trade Routes', roman: 'PROLOGUE', icon: 'public', key: 'world' },
+    { id: 'factions', title: 'The Five Factions', subtitle: 'Imperium, Accord, Cabal, Republic & Corsairs', roman: 'CHAPTER I', icon: 'shield', key: 'factions' },
+    { id: 'technology', title: 'Technology & Mist-Weaving', subtitle: 'Flying Ships, Mist Engines & Shamanic Rituals', roman: 'CHAPTER II', icon: 'auto_awesome', key: 'technology' },
+    { id: 'daily-life', title: 'Trade, Currency & Life', subtitle: 'Mistral Coin, Settlements & Infrastructure', roman: 'CHAPTER III', icon: 'monetization_on', key: 'dailyLife' },
+    { id: 'struggle', title: 'Chronicles & Legends', subtitle: 'The Great Struggle, Story Hooks & Endgame', roman: 'CHAPTER IV', icon: 'auto_stories', key: 'struggle' }
+  ];
 
   loreSections: {
     title: string,
@@ -66,6 +85,10 @@ export class LoreComponent implements OnInit {
 
   scrollSections: ScrollSection[] = [];
 
+  // Touch swipe support
+  private touchStartX = 0;
+  private touchEndX = 0;
+
   constructor(
     private dataService: DataService,
     private adminService: AdminService,
@@ -86,11 +109,11 @@ export class LoreComponent implements OnInit {
         this.loreData = data;
         this.prepareLoreSections();
         this.cdr.markForCheck();
-        
+
         if (this.initialFactionName) {
           setTimeout(() => {
             this.scrollToFaction(this.initialFactionName!);
-          }, 100);
+          }, 150);
         }
       },
       error: (err) => console.error('Error loading lore:', err)
@@ -105,16 +128,75 @@ export class LoreComponent implements OnInit {
     });
   }
 
-  scrollToFaction(factionName: string) {
-    const factionId = 'faction-' + factionName.toLowerCase().replace(/\s+/g, '-');
-    const element = document.getElementById(factionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      element.classList.add('highlight-faction');
-      setTimeout(() => {
-        element.classList.remove('highlight-faction');
-      }, 2000);
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.viewMode !== 'book') return;
+    if (event.key === 'ArrowRight' || event.key === 'PageDown') {
+      this.nextChapter();
+    } else if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+      this.prevChapter();
     }
+  }
+
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+
+  private handleSwipe() {
+    const swipeThreshold = 50;
+    if (this.touchEndX < this.touchStartX - swipeThreshold) {
+      this.nextChapter();
+    }
+    if (this.touchEndX > this.touchStartX + swipeThreshold) {
+      this.prevChapter();
+    }
+  }
+
+  toggleViewMode(mode: 'book' | 'scroll') {
+    this.viewMode = mode;
+    this.cdr.markForCheck();
+  }
+
+  selectChapter(index: number) {
+    if (index >= 0 && index < this.chapters.length) {
+      this.activeChapterIndex = index;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.cdr.markForCheck();
+    }
+  }
+
+  nextChapter() {
+    if (this.activeChapterIndex < this.chapters.length - 1) {
+      this.selectChapter(this.activeChapterIndex + 1);
+    }
+  }
+
+  prevChapter() {
+    if (this.activeChapterIndex > 0) {
+      this.selectChapter(this.activeChapterIndex - 1);
+    }
+  }
+
+  scrollToFaction(factionName: string) {
+    this.activeChapterIndex = 1; // Chapter I: Factions
+    this.cdr.markForCheck();
+
+    setTimeout(() => {
+      const factionId = 'faction-' + factionName.toLowerCase().replace(/\s+/g, '-');
+      const element = document.getElementById(factionId);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        element.classList.add('highlight-faction');
+        setTimeout(() => {
+          element.classList.remove('highlight-faction');
+        }, 2000);
+      }
+    }, 200);
   }
 
   isStandardSection(section: string): boolean {
@@ -135,7 +217,7 @@ export class LoreComponent implements OnInit {
 
   getFactionCapital(factionName: string): Location | undefined {
     if (!this.locationsData?.locations) return undefined;
-    return this.locationsData.locations.find(location => 
+    return this.locationsData.locations.find(location =>
       location.faction === factionName && location.isCapital &&
       (this.isAdmin || !location.isSecret || location.isSecretRevealed)
     );
@@ -173,7 +255,7 @@ export class LoreComponent implements OnInit {
     if (!worldData) {
       return;
     }
-    
+
     this.loreSections = [
       {
         title: 'World',
@@ -252,7 +334,7 @@ export class LoreComponent implements OnInit {
 
   formatLoreContent(content: any): string {
     if (!content) return '';
-    
+
     if (typeof content === 'string') {
       return `<p>${content}</p>`;
     }
@@ -266,7 +348,7 @@ export class LoreComponent implements OnInit {
         }
       }).join('');
     }
-    
+
     return this.formatObjectContent(content);
   }
 
@@ -291,7 +373,7 @@ export class LoreComponent implements OnInit {
         html += `</div>`;
       } else if (typeof obj[key] === 'object') {
         html += `<div class="sub-section"><h3>${this.formatKey(key)}</h3>${this.formatObjectContent(obj[key])}</div>`;
-      } 
+      }
     }
     return html;
   }

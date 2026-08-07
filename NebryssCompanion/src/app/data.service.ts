@@ -10,7 +10,13 @@ import { CampaignService } from './campaign.service';
   providedIn: 'root'
 })
 export class DataService {
-  private readonly apiUrl = 'https://nebryss-companion-api-771693340084.us-east4.run.app/api';
+  private get apiUrl(): string {
+    const win = window as any;
+    if (win.API_URL) {
+      return win.API_URL;
+    }
+    return `${window.location.origin}/api`;
+  }
 
   private campaigns: Campaign[] = [];
   private players: Player[] = [];
@@ -319,29 +325,17 @@ export class DataService {
   }
 
   getCampaigns(): Observable<Campaign[]> {
-    if (!this.campaignsCache$) {
-      this.campaignsCache$ = this.http.get<Campaign[]>(`${this.apiUrl}/campaign`).pipe(
-        catchError(() => this.http.get<Campaign[]>('assets/campaigns.json')),
-        tap(campaigns => {
-          this.campaigns = campaigns;
-          this.campaignsSubject.next([...this.campaigns]);
-        }),
-        shareReplay(1)
-      );
-    }
-    return this.campaignsCache$;
-  }
-
-  refreshCampaigns(): Observable<Campaign[]> {
-    this.campaignsCache$ = this.http.get<Campaign[]>(`${this.apiUrl}/campaign`).pipe(
+    return this.http.get<Campaign[]>(`${this.apiUrl}/campaign`).pipe(
       catchError(() => this.http.get<Campaign[]>('assets/campaigns.json')),
       tap(campaigns => {
         this.campaigns = campaigns;
         this.campaignsSubject.next([...this.campaigns]);
-      }),
-      shareReplay(1)
+      })
     );
-    return this.campaignsCache$;
+  }
+
+  refreshCampaigns(): Observable<Campaign[]> {
+    return this.getCampaigns();
   }
 
   createCampaign(campaign: Campaign): Observable<Campaign> {
@@ -375,30 +369,17 @@ export class DataService {
   }
 
   getPlayers(): Observable<Player[]> {
-    if (!this.playersCache$) {
-      this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
-        catchError(() => this.http.get<Player[]>('assets/players.json')),
-        tap(players => {
-          this.players = players;
-          this.playersSubject.next([...this.players]);
-        }),
-        shareReplay(1)
-      );
-    }
-    return this.playersCache$;
-  }
-
-  refreshPlayers(): Observable<Player[]> {
-    this.playersCache$ = this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
+    return this.http.get<Player[]>(`${this.apiUrl}/player`).pipe(
       catchError(() => this.http.get<Player[]>('assets/players.json')),
       tap(players => {
         this.players = players;
         this.playersSubject.next([...this.players]);
-      }),
-      shareReplay(1)
+      })
     );
-    this.allDataCache$ = null;
-    return this.playersCache$;
+  }
+
+  refreshPlayers(): Observable<Player[]> {
+    return this.getPlayers();
   }
 
   getNpcs(): Observable<NPC[]> {

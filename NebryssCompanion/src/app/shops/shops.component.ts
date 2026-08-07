@@ -545,8 +545,10 @@ export class ShopsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getOwnerName(owner: number) {
-    return this.dataService.getNpcByd(owner).name;
+  getOwnerName(owner: number): string {
+    if (!owner) return 'Unknown';
+    const npc = this.dataService.getNpcByd(owner);
+    return npc?.name ?? `NPC #${owner}`;
   }
 
   getWeaponIds(shop: Shop) {

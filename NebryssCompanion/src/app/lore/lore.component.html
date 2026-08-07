@@ -1,263 +1,332 @@
-<div class="lore-container">
-    <div *ngFor="let section of loreSections" class="lore-section" [id]="section.key">
-      <ng-container *ngIf="!isProhibitedSection(section.key)">
-        <h2 style="text-align: center;">{{section.title}}</h2>
-        <div style="width:100%; display:flex; justify-content:space-around" *ngIf="section.imgUrl">
-            <app-image-viewer 
-                [imageUrl]="section.imgUrl"
-                [thumbnailUrl]="section.thumbnail"
-                [altText]="section.title"
-            ></app-image-viewer>
+<div class="book-container">
+  <!-- Chapter Index Header (No Horizontal Scroll - Wrap Grid) -->
+  <header class="book-header-index">
+    <div class="book-title-row">
+      <span class="material-icons book-icon">auto_stories</span>
+      <span class="book-main-title">THE CHRONICLES OF NEBRYSS</span>
+    </div>
+
+    <!-- Chapter Grid Selector: Wraps cleanly on all screens (No Horizontal Scrolling) -->
+    <nav class="chapter-grid-nav" aria-label="Book Chapters">
+      <button 
+        *ngFor="let ch of chapters; let idx = index" 
+        type="button"
+        class="chapter-grid-pill"
+        [class.active]="activeChapterIndex === idx"
+        (click)="selectChapter(idx)"
+      >
+        <span class="pill-roman">{{ ch.roman }}</span>
+        <span class="pill-title">{{ ch.title }}</span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- EXPANDED FLUID NARRATIVE CONTENT -->
+  <main class="book-flow-content" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+    
+    <!-- Chapter Hero Banner -->
+    <div class="chapter-hero-title">
+      <span class="hero-roman">{{ chapters[activeChapterIndex].roman }}</span>
+      <h1 class="hero-main-title">{{ chapters[activeChapterIndex].title }}</h1>
+      <p class="hero-sub">{{ chapters[activeChapterIndex].subtitle }}</p>
+      <div class="hero-gold-divider"></div>
+    </div>
+
+    <!-- CHAPTER 0: PROLOGUE - THE WORLD & THE ENIGMATIC MIST -->
+    <article *ngIf="activeChapterIndex === 0 && loreData?.world" class="chapter-article">
+      <p class="illuminated-text">
+        <span class="drop-letter">S</span>ituated on the perilous and lawless edge of the <strong>Imperium Nihilus</strong>, the world of Nebryss stands isolated among cosmic waters. Cut off from Imperial reinforcements by violent warp storms, this aquatic realm of floating archipelagos must carve out its own survival amidst unpredictable skies, shrouded horizons, and ancient arcane forces.
+      </p>
+
+      <h3 class="section-sub-title"><span class="material-icons">public</span> Geography & Archipelago Islands</h3>
+      <p>
+        {{ loreData.world.geography }} The surface is dominated by vast, endless oceans interspersed with soaring mountain islands, floating sky-docks, and ancient imperial ruins. Key settlements such as <em>Zephyria</em>, <em>Luminos</em>, and the sinister <em>Dreadspire Coves</em> serve as the hubs of regional power.
+      </p>
+
+      <h3 class="section-sub-title"><span class="material-icons">cloud</span> The Enigmatic Mist & Warp Anomalies</h3>
+      <p>
+        {{ loreData.world.theMist }} Unlike typical Warp manifestations, the Mist of Nebryss does not inherently serve the Chaos gods, yet it bends the laws of physics. Ships dipping beneath the cloud ceiling face temporal distortions, hallucinated specters, and ravenous mistborn creatures born from raw warp energy.
+      </p>
+
+      <p>
+        Navigation through Nebryss relies entirely upon stable sky channels formed by hovering mist currents. Control over these vital trade corridors dictates island commerce, military dominance, and faction survival.
+      </p>
+
+      <div *ngIf="loreData.world.mistTradeRoutes" class="prose-spotlight">
+        <h4><span class="material-icons">alt_route</span> Mist Trade Routes & Sky Corridors</h4>
+        <p><strong>Overview:</strong> {{ loreData.world.mistTradeRoutes.description }}</p>
+        <p><strong>Strategic Significance:</strong> {{ loreData.world.mistTradeRoutes.importance }} These routes shift periodically with warp tides, forcing merchant fleets to employ master navigators known as Fogbound Cartographers.</p>
+      </div>
+
+      <div *ngIf="loreData.world.imgUrl" class="prologue-world-map">
+        <img
+          [src]="loreData.world.imgUrl"
+          [alt]="loreData.world.name || 'World Map of Nebryss'"
+          class="prologue-map-img"
+          loading="lazy"
+        />
+      </div>
+
+      <!-- GM Vault Secrets -->
+      <div class="revealed-lore-banner" *ngIf="loreData.world.isSecretRevealed && loreData.world.privateNotes">
+        <div class="revealed-lore-header">
+          <span class="material-icons">auto_awesome</span>
+          <h4>Campaign Secret Unlocked: The World of Nebryss</h4>
         </div>
-        <div class="player-card" *ngIf="section.title !== 'Factions' && section.title !== 'Locations'" [innerHTML]="formatLoreContent(section.content)"></div>
-        
-        <!-- Public Revealed Banner for General Sections -->
-        <div class="revealed-lore-banner lore-section-revealed" *ngIf="section.content?.isSecretRevealed && section.content?.privateNotes">
-          <div class="revealed-lore-header">
-            <span class="material-icons">auto_awesome</span>
-            <h4>Campaign Discovery Unlocked: {{ section.title }}</h4>
+        <div class="revealed-lore-body">
+          <p>{{ loreData.world.privateNotes }}</p>
+        </div>
+      </div>
+
+      <div class="gm-vault-card" *ngIf="isAdmin && loreData.world.privateNotes">
+        <div class="gm-vault-header">
+          <div class="gm-vault-title">
+            <span class="material-icons">security</span>
+            <h4>GM Secret Vault: World Secrets</h4>
           </div>
-          <div class="revealed-lore-body">
-            <p>{{ section.content.privateNotes }}</p>
+          <button
+            type="button"
+            class="gm-reveal-btn"
+            [class.active]="loreData.world.isSecretRevealed"
+            (click)="toggleSecrecy(loreData.world, 'World of Nebryss')"
+          >
+            <span class="material-icons">{{ loreData.world.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+            {{ loreData.world.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+          </button>
+        </div>
+        <div class="gm-vault-content">
+          <p>{{ loreData.world.privateNotes }}</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- CHAPTER I: THE FIVE FACTIONS OF THE REALM -->
+    <article *ngIf="activeChapterIndex === 1" class="chapter-article">
+      <section *ngFor="let faction of loreData?.factions" class="faction-fluid-section" [id]="factionScrollId(faction)">
+        
+        <div class="faction-fluid-header">
+          <h2 class="faction-fluid-name">{{ faction.name }}</h2>
+          <span class="faction-fluid-control">Territory Control: {{ faction.control }}</span>
+        </div>
+
+        <div *ngIf="faction.image" class="faction-fluid-emblem">
+          <app-image-viewer
+            [imageUrl]="faction.image"
+            [thumbnailUrl]="faction.thumbnail"
+            [altText]="faction.name"
+          ></app-image-viewer>
+        </div>
+
+        <div class="faction-content-blocks">
+          <div class="prose-block" *ngIf="faction.role">
+            <h3><span class="material-icons">shield</span> Doctrine, Role & Purpose</h3>
+            <p>{{ faction.role }} Operating with uncompromising zeal, their forces enforce strict hierarchy and military discipline across their controlled territories.</p>
+          </div>
+
+          <div class="prose-block" *ngIf="faction.peopleIdentity">
+            <h3><span class="material-icons">badge</span> Culture, People & Heritage</h3>
+            <p>{{ faction.peopleIdentity }}</p>
+          </div>
+
+          <div class="prose-block" *ngIf="faction.mistKnowledge">
+            <h3><span class="material-icons">psychology</span> Arcane Knowledge of the Mist</h3>
+            <p>{{ faction.mistKnowledge }}</p>
+          </div>
+
+          <div class="prose-block" *ngIf="faction.goals">
+            <h3><span class="material-icons">flag</span> Strategic Objectives & Ambitions</h3>
+            <ul class="fluid-list">
+              <li *ngFor="let goal of faction.goals">{{ goal }}</li>
+            </ul>
+          </div>
+
+          <div class="prose-block" *ngIf="faction.challenges">
+            <h3><span class="material-icons">warning</span> Vulnerabilities & Military Challenges</h3>
+            <ul *ngIf="Array.isArray(faction.challenges)" class="fluid-list">
+              <li *ngFor="let challenge of faction.challenges">{{ challenge }}</li>
+            </ul>
+            <p *ngIf="!Array.isArray(faction.challenges)">{{ faction.challenges }}</p>
+          </div>
+
+          <div class="prose-block" *ngIf="faction.notableOrganizations">
+            <h3><span class="material-icons">groups</span> Key Regiments & Guilds</h3>
+            <div class="org-row" *ngFor="let org of faction.notableOrganizations">
+              <strong>{{ org.name }}:</strong> {{ org.description }}
+            </div>
+          </div>
+
+          <!-- Capital Link -->
+          <div class="capital-fluid-link" *ngIf="getFactionCapital(faction.name) as capital" (click)="onCapitalClick(capital.name)">
+            <span class="material-icons">account_balance</span>
+            <div>
+              <strong>Faction Capital: {{ capital.name }}</strong>
+              <p>{{ capital.description }}</p>
+            </div>
           </div>
         </div>
 
-        <!-- GM Private Vault for General Sections -->
-        <div class="gm-vault-card lore-section-vault" *ngIf="isAdmin && section.content?.privateNotes">
+        <!-- Secrets & GM Vault -->
+        <div class="revealed-lore-banner" *ngIf="faction.isSecretRevealed && faction.privateNotes">
+          <div class="revealed-lore-header">
+            <span class="material-icons">auto_awesome</span>
+            <h4>Campaign Secret Unlocked: {{ faction.name }}</h4>
+          </div>
+          <div class="revealed-lore-body">
+            <p>{{ faction.privateNotes }}</p>
+          </div>
+        </div>
+
+        <div class="gm-vault-card" *ngIf="isAdmin && faction.privateNotes">
           <div class="gm-vault-header">
             <div class="gm-vault-title">
               <span class="material-icons">security</span>
-              <h4>GM Secret Vault: {{ section.title }}</h4>
+              <h4>GM Secret Vault: {{ faction.name }}</h4>
             </div>
             <button
               type="button"
               class="gm-reveal-btn"
-              [class.active]="section.content.isSecretRevealed"
-              (click)="toggleSecrecy(section.content, section.title)"
+              [class.active]="faction.isSecretRevealed"
+              (click)="toggleSecrecy(faction, faction.name)"
             >
-              <span class="material-icons">{{ section.content.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
-              {{ section.content.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
+              <span class="material-icons">{{ faction.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
+              {{ faction.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
             </button>
           </div>
           <div class="gm-vault-content">
-            <div class="gm-vault-field">
-              <p>{{ section.content.privateNotes }}</p>
-            </div>
+            <p>{{ faction.privateNotes }}</p>
           </div>
         </div>
+      </section>
+    </article>
 
-        <!-- Factions Section -->
-        <div *ngIf="section.title === 'Factions'" class="factions-container">
-            <div *ngFor="let faction of section.content.factions" class="faction-card" [id]="factionScrollId(faction)">
-            <div class="faction-card-header-row">
-              <h3>{{faction.name}} <span class="faction-control-badge">(Controls {{faction.control}})</span></h3>
-              <span *ngIf="isAdmin && faction.privateNotes && !faction.isSecretRevealed" class="secret-badge">GM Secret</span>
-              <span *ngIf="isAdmin && faction.privateNotes && faction.isSecretRevealed" class="revealed-badge">Revealed</span>
-            </div>
+    <!-- CHAPTER II: ARCANE TECHNOLOGY & MIST-WEAVING -->
+    <article *ngIf="activeChapterIndex === 2" class="chapter-article">
+      <div *ngIf="loreData?.technologyAndInfrastructure">
+        <p class="illuminated-text">
+          <span class="drop-letter">F</span>lying ships and mist-fueled engines represent the lifeblood of Nebryssian civilization. Without these majestic vessels, human settlements across the archipelago would collapse into isolated, defenseless islands.
+        </p>
 
-            <div *ngIf="faction.image" class="faction-image-container">
-                <app-image-viewer
-                    [imageUrl]="faction.image"
-                    [thumbnailUrl]="faction.thumbnail"
-                    [altText]="faction.name"
-                ></app-image-viewer>
-            </div>
-            
-            <div class="faction-details">
-                <div class="faction-role">
-                <h4>Role</h4>
-                <p>{{faction.role}}</p>
-                </div>
-                
-                <div class="faction-info" *ngIf="faction.mistKnowledge">
-                <h4>Mist Knowledge</h4>
-                <p>{{faction.mistKnowledge}}</p>
-                </div>
-                
-                <div class="faction-info" *ngIf="faction.peopleIdentity">
-                <h4>People Identity</h4>
-                <p>{{faction.peopleIdentity}}</p>
-                </div>
-                
-                <div class="faction-info" *ngIf="faction.goals">
-                <h4>Goals</h4>
-                <ul>
-                    <li *ngFor="let goal of faction.goals">{{goal}}</li>
-                </ul>
-                </div>
-                
-                <div class="faction-info" *ngIf="faction.challenges">
-                <h4>Challenges</h4>
-                <ul *ngIf="Array.isArray(faction.challenges)">
-                    <li *ngFor="let challenge of faction.challenges">{{challenge}}</li>
-                </ul>
-                <p *ngIf="!Array.isArray(faction.challenges)">{{faction.challenges}}</p>
-                </div>
+        <h3 class="section-sub-title"><span class="material-icons">precision_manufacturing</span> Mist Engine Production & Engineering</h3>
+        <p><strong>The Gilded Accord:</strong> {{ loreData.technologyAndInfrastructure.flyingShipsAndMistEngines?.mistEngines?.gildedAccordsRole }} Their high-efficiency mistforges supply the finest turbines in the realm.</p>
+        <p><strong>Independent Manufacturers:</strong> {{ loreData.technologyAndInfrastructure.flyingShipsAndMistEngines?.mistEngines?.otherFactions }} Custom shipyards modify engines for extreme speed or heavy armor.</p>
 
-                <ng-container *ngFor="let sec of Object.keys(faction)">
-                    <div class="faction-info" *ngIf="!isStandardSection(sec)">
-                        <h4>{{sec | capitalCase}}</h4>
-                        <p>{{faction[sec]}}</p>
-                    </div>
-                </ng-container>
+        <h3 class="section-sub-title"><span class="material-icons">tune</span> Engine Optimization Classes</h3>
+        <ul class="fluid-list" *ngIf="loreData.technologyAndInfrastructure.flyingShipsAndMistEngines?.optimizationCategories">
+          <li><strong>Speed Class:</strong> {{ loreData.technologyAndInfrastructure.flyingShipsAndMistEngines.optimizationCategories.speed }} Utilized by Corsairs for sudden ambushes.</li>
+          <li><strong>Endurance Class:</strong> {{ loreData.technologyAndInfrastructure.flyingShipsAndMistEngines.optimizationCategories.endurance }} Engineered for long-distance trade caravans traversing dense mist currents.</li>
+          <li><strong>Cargo Capacity Class:</strong> {{ loreData.technologyAndInfrastructure.flyingShipsAndMistEngines.optimizationCategories.cargoCapacity }} Heavy hulls constructed for massive resource transport and troop deployment.</li>
+        </ul>
 
-                <!-- Capital Section from Locations -->
-                <div class="faction-info clickable-capital" *ngIf="getFactionCapital(faction.name) as capital" (click)="onCapitalClick(capital.name)" title="Click to view in Locations">
-                    <h4>Capital <span style="font-size: 0.7em; color: #aaa; margin-left: 8px;">(View Location)</span></h4>
-                    <p><strong>{{capital.name}}</strong>: {{capital.description}}</p>
-                    <app-image-viewer 
-                        *ngIf="capital.imgUrl"
-                        [imageUrl]="capital.imgUrl"
-                        [thumbnailUrl]="capital.thumbnail"
-                        [altText]="capital.name"
-                    ></app-image-viewer>
-                </div>
+        <h3 class="section-sub-title"><span class="material-icons">military_tech</span> Armaments & Warfare</h3>
+        <p>{{ loreData.technologyAndInfrastructure.weapons?.description }} Conflict across Nebryss combines traditional swordplay with high-tech plasma weaponry.</p>
+        <ul class="fluid-list" *ngIf="loreData.technologyAndInfrastructure.weapons?.types">
+          <li *ngFor="let w of loreData.technologyAndInfrastructure.weapons.types">{{ w }}</li>
+        </ul>
+      </div>
 
-                <div class="faction-info" *ngIf="faction.notableOrganizations">
-                    <h4>Notable Organizations</h4>
-                    <ul>
-                        <li *ngFor="let organization of faction.notableOrganizations">
-                            <strong>{{organization.name}}</strong>: 
-                            {{organization.description}}
-                        </li>
-                    </ul>
-                </div>
+      <div class="chapter-ornament">~ ❦ ~</div>
 
-                <!-- Revealed Campaign Discovery for Factions -->
-                <div class="revealed-lore-banner" *ngIf="faction.isSecretRevealed && faction.privateNotes">
-                  <div class="revealed-lore-header">
-                    <span class="material-icons">auto_awesome</span>
-                    <h4>Campaign Secret Unlocked: {{ faction.name }}</h4>
-                  </div>
-                  <div class="revealed-lore-body">
-                    <p>{{ faction.privateNotes }}</p>
-                  </div>
-                </div>
+      <div *ngIf="loreData?.mistEffects">
+        <h3 class="section-sub-title"><span class="material-icons">compress</span> Mist Density Phenomena</h3>
+        <p><strong>Denser Mist Zones:</strong> {{ loreData.mistEffects.densityLevels?.denserMist }}</p>
+        <p><strong>Lighter Mist Corridors:</strong> {{ loreData.mistEffects.densityLevels?.lighterMist }}</p>
 
-                <!-- GM Private Campaign Vault for Factions -->
-                <div class="gm-vault-card" *ngIf="isAdmin && faction.privateNotes">
-                  <div class="gm-vault-header">
-                    <div class="gm-vault-title">
-                      <span class="material-icons">security</span>
-                      <h4>GM Secret Vault: {{ faction.name }}</h4>
-                    </div>
-                    <button
-                      type="button"
-                      class="gm-reveal-btn"
-                      [class.active]="faction.isSecretRevealed"
-                      (click)="toggleSecrecy(faction, faction.name)"
-                    >
-                      <span class="material-icons">{{ faction.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
-                      {{ faction.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
-                    </button>
-                  </div>
-                  <div class="gm-vault-content">
-                    <div class="gm-vault-field">
-                      <p>{{ faction.privateNotes }}</p>
-                    </div>
-                  </div>
-                </div>
-            </div>
-            </div>
+        <h3 class="section-sub-title"><span class="material-icons">auto_awesome</span> Mist-Weaving Shamanism (NLR Rituals)</h3>
+        <p>{{ loreData.mistEffects.mistWeavingTechnology?.overview }}</p>
+        <p><strong>Rituals & Ancestral Offerings:</strong> {{ loreData.mistEffects.mistWeavingTechnology?.howItWorks?.ritualsAndSacrifice }}</p>
+        <p><strong>Psychic Toll & Secrecy:</strong> {{ loreData.mistEffects.mistWeavingTechnology?.limitationsAndRisks?.psychicStrain }}</p>
+      </div>
+    </article>
+
+    <!-- CHAPTER III: COMMERCE, CURRENCY & DAILY LIFE -->
+    <article *ngIf="activeChapterIndex === 3" class="chapter-article">
+      <div *ngIf="loreData?.currency">
+        <p class="illuminated-text">
+          <span class="drop-letter">T</span>he official currency of trade across Nebryss, the <strong>Mistral Coin (₥)</strong> fuels transactions in sky bazaars, harbor ports, and merchant institutes throughout the realm.
+        </p>
+
+        <h3 class="section-sub-title"><span class="material-icons">payments</span> Coin Appearance & Minting</h3>
+        <p>{{ loreData.currency.appearance }}</p>
+        <p><strong>Economic Value & Exchange:</strong> {{ loreData.currency.value }}</p>
+
+        <h3 class="section-sub-title"><span class="material-icons">account_balance_wallet</span> Transaction Infrastructure</h3>
+        <p *ngIf="loreData.currency.usage"><strong>Physical Mint:</strong> {{ loreData.currency.usage.physicalCoins }}</p>
+        <p *ngIf="loreData.currency.usage"><strong>Digital Exchanges:</strong> {{ loreData.currency.usage.digitalTransactions }}</p>
+        <p *ngIf="loreData.currency.culturalSignificance"><strong>Cultural Significance:</strong> {{ loreData.currency.culturalSignificance }}</p>
+      </div>
+
+      <div class="chapter-ornament">~ ❦ ~</div>
+
+      <div *ngIf="loreData?.dailyLife">
+        <h3 class="section-sub-title"><span class="material-icons">holiday_village</span> Settlements, Fortresses & Cities</h3>
+        <p>{{ loreData.dailyLife.settlements }}</p>
+
+        <h3 class="section-sub-title"><span class="material-icons">directions_bus</span> Inland Transportation</h3>
+        <p>{{ loreData.dailyLife.transportation }}</p>
+      </div>
+    </article>
+
+    <!-- CHAPTER IV: CHRONICLES, STORY HOOKS & ENDGAME -->
+    <article *ngIf="activeChapterIndex === 4" class="chapter-article">
+      <section *ngIf="loreData?.struggleForNebryss">
+        <h2 class="section-sub-title">The Great Struggle for Nebryss</h2>
+        <ul class="fluid-list">
+          <li *ngFor="let st of loreData.struggleForNebryss">{{ st }}</li>
+        </ul>
+      </section>
+
+      <section *ngIf="loreData?.chroniclesOfNebryss" class="story-section">
+        <h2 class="section-sub-title">Chronicles & Historical Eras</h2>
+        <div *ngFor="let era of loreData.chroniclesOfNebryss" class="story-block">
+          <h3>{{ era.era }}</h3>
+          <p>{{ era.summary }}</p>
         </div>
-      </ng-container>
+      </section>
 
-      <!-- Chronicles of Nebryss Special Renderer -->
-      <ng-container *ngIf="section.key === 'chroniclesOfNebryss'">
-        <h2 style="text-align: center;">Chronicles of Nebryss</h2>
-        <div class="chronicles-container">
-          <div *ngFor="let era of section.content.chronicles" class="chronicle-card player-card">
-            <div class="chronicle-header">
-              <h3>{{ era.era }}</h3>
-              <span *ngIf="isAdmin && era.privateNotes && !era.isSecretRevealed" class="secret-badge">GM Secret</span>
-              <span *ngIf="isAdmin && era.privateNotes && era.isSecretRevealed" class="revealed-badge">Revealed</span>
-            </div>
-            <p class="chronicle-summary">{{ era.summary }}</p>
-
-            <div class="revealed-lore-banner" *ngIf="era.isSecretRevealed && era.privateNotes">
-              <div class="revealed-lore-header">
-                <span class="material-icons">auto_awesome</span>
-                <h4>Campaign Secret Unlocked</h4>
-              </div>
-              <div class="revealed-lore-body">
-                <p>{{ era.privateNotes }}</p>
-              </div>
-            </div>
-
-            <div class="gm-vault-card" *ngIf="isAdmin && era.privateNotes">
-              <div class="gm-vault-header">
-                <div class="gm-vault-title">
-                  <span class="material-icons">security</span>
-                  <h4>GM Secret Vault</h4>
-                </div>
-                <button
-                  type="button"
-                  class="gm-reveal-btn"
-                  [class.active]="era.isSecretRevealed"
-                  (click)="toggleSecrecy(era, era.era)"
-                >
-                  <span class="material-icons">{{ era.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
-                  {{ era.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
-                </button>
-              </div>
-              <div class="gm-vault-content">
-                <div class="gm-vault-field">
-                  <p>{{ era.privateNotes }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <section *ngIf="loreData?.storyHooks" class="story-section">
+        <h2 class="section-sub-title">Campaign Story Hooks & Adventure Seeds</h2>
+        <div *ngFor="let hook of loreData.storyHooks" class="story-block">
+          <h3>{{ hook.name }}</h3>
+          <p><strong>Premise:</strong> {{ hook.premise }}</p>
+          <p><strong>Key Elements:</strong> {{ hook.keyElements }}</p>
+          <p><strong>Potential Impact:</strong> {{ hook.potentialImpact }}</p>
         </div>
-      </ng-container>
+      </section>
 
-      <!-- Story Hooks Special Renderer -->
-      <ng-container *ngIf="section.key === 'storyHooks'">
-        <h2 style="text-align: center;">Story Hooks</h2>
-        <div class="hooks-container">
-          <div *ngFor="let hook of section.content.hooks" class="hook-card player-card">
-            <div class="hook-header">
-              <h3>{{ hook.name }}</h3>
-              <span *ngIf="isAdmin && hook.privateNotes && !hook.isSecretRevealed" class="secret-badge">GM Secret</span>
-              <span *ngIf="isAdmin && hook.privateNotes && hook.isSecretRevealed" class="revealed-badge">Revealed</span>
-            </div>
-            <p><strong>Premise:</strong> {{ hook.premise }}</p>
-            <p><strong>Key Elements:</strong> {{ hook.keyElements }}</p>
-            <p><strong>Potential Impact:</strong> {{ hook.potentialImpact }}</p>
-
-            <div class="revealed-lore-banner" *ngIf="hook.isSecretRevealed && hook.privateNotes">
-              <div class="revealed-lore-header">
-                <span class="material-icons">auto_awesome</span>
-                <h4>Campaign Secret Unlocked</h4>
-              </div>
-              <div class="revealed-lore-body">
-                <p>{{ hook.privateNotes }}</p>
-              </div>
-            </div>
-
-            <div class="gm-vault-card" *ngIf="isAdmin && hook.privateNotes">
-              <div class="gm-vault-header">
-                <div class="gm-vault-title">
-                  <span class="material-icons">security</span>
-                  <h4>GM Secret Vault</h4>
-                </div>
-                <button
-                  type="button"
-                  class="gm-reveal-btn"
-                  [class.active]="hook.isSecretRevealed"
-                  (click)="toggleSecrecy(hook, hook.name)"
-                >
-                  <span class="material-icons">{{ hook.isSecretRevealed ? 'visibility_off' : 'visibility' }}</span>
-                  {{ hook.isSecretRevealed ? 'Hide Secret from Players' : 'Reveal Secret to Players' }}
-                </button>
-              </div>
-              <div class="gm-vault-content">
-                <div class="gm-vault-field">
-                  <p>{{ hook.privateNotes }}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+      <section *ngIf="loreData?.potentialEndgameScenarios" class="story-section">
+        <h2 class="section-sub-title">Potential Endgame Scenarios</h2>
+        <div *ngFor="let eg of loreData.potentialEndgameScenarios" class="story-block">
+          <h3><span class="material-icons" style="font-size: 18px; color: #d4af37;">crisis_alert</span> {{ eg.name }}</h3>
+          <p>{{ eg.description }}</p>
         </div>
-      </ng-container>
-    </div>
+      </section>
+    </article>
+
+    <!-- Footer Page Turn -->
+    <footer class="book-footer">
+      <button 
+        type="button" 
+        class="turn-btn" 
+        [disabled]="activeChapterIndex === 0" 
+        (click)="prevChapter()"
+      >
+        <span class="material-icons">chevron_left</span>
+        <span>Previous Chapter</span>
+      </button>
+
+      <div class="book-page-count">
+        {{ chapters[activeChapterIndex].roman }} • Page {{ activeChapterIndex + 1 }} of {{ chapters.length }}
+      </div>
+
+      <button 
+        type="button" 
+        class="turn-btn" 
+        [disabled]="activeChapterIndex === chapters.length - 1" 
+        (click)="nextChapter()"
+      >
+        <span>Next Chapter</span>
+        <span class="material-icons">chevron_right</span>
+      </button>
+    </footer>
+  </main>
 </div>

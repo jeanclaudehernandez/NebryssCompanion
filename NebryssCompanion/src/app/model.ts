@@ -167,6 +167,8 @@ export interface Lore {
       description: string;
       importance: string;
     };
+    privateNotes?: string;
+    isSecretRevealed?: boolean;
   };
   currency: {
     name: string;
@@ -230,6 +232,7 @@ export interface Lore {
     goals?: string[];
     challenges?: string | string[];
     mistKnowledge?: string;
+    peopleIdentity?: string;
     naming?: string;
     image?: string;
     thumbnail?: string;

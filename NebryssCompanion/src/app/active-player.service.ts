@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, interval, pairwise } from 'rxjs';
-import { Player } from './model';
+import { Campaign, Player } from './model';
 import { DataService } from './data.service';
 import { CampaignService } from './campaign.service';
 
@@ -125,16 +125,38 @@ export class ActivePlayerService {
       return;
     }
 
-    this.dataService.getPlayers().subscribe({
-      next: players => {
-        const freshPlayer = players.find(p => p.id === storedPlayer.id);
-        if (freshPlayer) {
-          this.setActivePlayer(freshPlayer);
+    // Wait for the campaign to be set before syncing — otherwise we'd read from
+    // the generic 'player' collection (without the campaign prefix) and overwrite
+    // the player's localStorage data with stale/default values.
+    this.campaignService.selectedCampaign$.pipe(
+      // Only proceed once we have a campaign (non-null), then complete
+      (source) => new Observable<Campaign | null>(subscriber => {
+        const sub = source.subscribe({
+          next: campaign => {
+            if (campaign) {
+              subscriber.next(campaign);
+              subscriber.complete();
+            }
+          },
+          error: err => subscriber.error(err),
+          complete: () => subscriber.complete()
+        });
+        return () => sub.unsubscribe();
+      })
+    ).subscribe(() => {
+      this.dataService.getPlayers().subscribe({
+        next: players => {
+          const current = this.activePlayer;
+          if (!current) return;
+          const freshPlayer = players.find(p => p.id === current.id);
+          if (freshPlayer) {
+            this.setActivePlayer(freshPlayer);
+          }
+        },
+        error: error => {
+          console.error('Error syncing active player from database:', error);
         }
-      },
-      error: error => {
-        console.error('Error syncing active player from database:', error);
-      }
+      });
     });
   }
 
@@ -158,4 +180,4 @@ export class ActivePlayerService {
       });
     });
   }
-} 
+}

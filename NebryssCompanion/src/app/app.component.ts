@@ -211,6 +211,20 @@ import { ToastService } from './toast.service';
         </div>
       </div>
     </ng-template>
+
+    <!-- 🎵 Shake-to-Rickroll Easter Egg Overlay -->
+    @if (rickrollVisible) {
+      <div class="rickroll-overlay" (click)="dismissRickroll()">
+        <iframe
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&loop=1&playlist=dQw4w9WgXcQ"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+        ></iframe>
+        <button class="rickroll-close" (click)="dismissRickroll()" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+    }
   `,
   styleUrls: ['./app.component.css']
 })
@@ -234,6 +248,13 @@ export class AppComponent {
   letterUnreadCount = 0;
   bestiaryMaterialsCount = 0;
   bestiaryMaterialsSidebarOpen = false;
+  rickrollVisible = false;
+
+  // Shake detection state
+  private shakeLastX = 0;
+  private shakeLastY = 0;
+  private shakeLastZ = 0;
+  private shakeCooldown = false;
   activePlayer$ = this.activePlayerService.activePlayer$;
   hasAdminAccess$ = this.adminService.hasAdminAccess$;
   isAdmin$ = this.adminService.isAdmin$;
@@ -285,6 +306,53 @@ export class AppComponent {
       });
 
     this.initPullToRefreshListeners();
+    this.initShakeToRickroll();
+  }
+
+  private shakeCount = 0;
+  private lastShakeTime = 0;
+
+  private initShakeToRickroll(): void {
+    const SHAKE_THRESHOLD = 50;
+    const COOLDOWN_MS = 8000;
+
+    if (typeof window === 'undefined' || !('DeviceMotionEvent' in window)) {
+      return;
+    }
+
+    window.addEventListener('devicemotion', (event: DeviceMotionEvent) => {
+      const acc = event.accelerationIncludingGravity;
+      if (!acc || acc.x == null || acc.y == null || acc.z == null) return;
+
+      const dx = Math.abs(acc.x - this.shakeLastX);
+      const dy = Math.abs(acc.y - this.shakeLastY);
+      const dz = Math.abs(acc.z - this.shakeLastZ);
+
+      this.shakeLastX = acc.x;
+      this.shakeLastY = acc.y;
+      this.shakeLastZ = acc.z;
+
+      const now = Date.now();
+      if ((dx + dy + dz) > SHAKE_THRESHOLD && !this.shakeCooldown && !this.rickrollVisible) {
+        if (now - this.lastShakeTime < 1200) {
+          this.shakeCount++;
+        } else {
+          this.shakeCount = 1;
+        }
+        this.lastShakeTime = now;
+
+        if (this.shakeCount >= 3) {
+          this.rickrollVisible = true;
+          this.shakeCooldown = true;
+          this.shakeCount = 0;
+          setTimeout(() => { this.shakeCooldown = false; }, COOLDOWN_MS);
+        }
+      }
+    });
+  }
+
+  dismissRickroll(): void {
+    this.rickrollVisible = false;
   }
 
   private checkAndPromptCampaign(): void {
