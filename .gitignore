@@ -1,0 +1,41 @@
+# Node & dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+tmp/
+out-tsc/
+.angular/
+
+# Database files & data storage
+**/local-db/mongodb_data/
+**/local-db/*.log
+**/local-db/*.sock
+**/local-db/*.lock
+**/mongodb_data/
+**/mongod.log
+**/diagnostic.data/
+**/*.sqlite
+**/*.sqlite3
+**/*.db
+WiredTiger*
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+
+# IDEs & System files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db

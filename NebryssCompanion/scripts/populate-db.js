@@ -105,11 +105,14 @@ async function populateDatabase() {
             const res = await coll.insertMany(docsToInsert);
             console.log(`[MongoDB] ${item.collection} -> Populated ${res.insertedCount} items.`);
 
-            if (item.collection === 'player') {
-              const successionColl = targetDb.collection('nebryss-voss-sucession-player');
-              await successionColl.deleteMany({});
-              await successionColl.insertMany(docsToInsert.map(d => ({ ...d })));
-              console.log(`[MongoDB] nebryss-voss-sucession-player -> Populated ${docsToInsert.length} players.`);
+            if (item.usePlayersDb) {
+              const prefixes = ['nebryss-voss-sucession', 'nebryss-voss-succession'];
+              for (const pfx of prefixes) {
+                const prefixedColl = targetDb.collection(`${pfx}-${item.collection}`);
+                await prefixedColl.deleteMany({});
+                await prefixedColl.insertMany(docsToInsert.map(d => ({ ...d })));
+              }
+              console.log(`[MongoDB] nebryss-voss-sucession-${item.collection} -> Populated ${docsToInsert.length} items.`);
             }
           }
         } else if (typeof data === 'object') {

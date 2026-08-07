@@ -1,643 +1,1466 @@
-[
-  {
-    "id": 1,
-    "name": "Herbwhisper's Apothecary",
-    "owner": 6,
-    "locationId": 1,
-    "locationName": "Zephyria",
-    "location": "Zephyria's Sky Bazaar",
-    "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
-    "discovered": true,
-    "imgUrl": "https://iili.io/CSTieSe.png",
-    "thumbnail": "https://iili.io/CSTieSe.th.png",
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 16,
-        "price": 5,
-        "type": "item"
-      },
-      {
-        "id": 17,
-        "price": 3,
-        "type": "item"
-      },
-      {
-        "id": 18,
-        "price": 6,
-        "type": "item"
-      },
-      {
-        "id": 19,
-        "price": 7,
-        "type": "item"
-      },
-      {
-        "id": 20,
-        "price": 2,
-        "type": "item"
-      },
-      {
-        "id": 21,
-        "price": 9,
-        "type": "item"
-      },
-      {
-        "id": 22,
-        "price": 3.5,
-        "type": "item"
-      },
-      {
-        "id": 24,
-        "price": 2,
-        "type": "item"
-      }
-    ],
-    "categoriesData": [],
-    "weaponsData": [],
-    "weaponIds": [],
-    "hasWeapons": false
+[{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae1"
   },
-  {
-    "_id": {
-      "$oid": "69a62fd33b9695542bb77ae2"
+  "id": 1,
+  "name": "Herbwhisper's Apothecary",
+  "owner": 6,
+  "locationId": 1,
+  "locationName": "Zephyria",
+  "location": "Zephyria's Sky Bazaar",
+  "description": "A cozy, fragrant shop filled with jars of dried herbs, bubbling cauldrons, and shelves of colorful elixirs. Known for its rare herbs and potent potions, the apothecary is a haven for healers, alchemists, and adventurers seeking remedies or enhancements.",
+  "discovered": true,
+  "imgUrl": "https://iili.io/CSTieSe.png",
+  "thumbnail": "https://iili.io/CSTieSe.th.png",
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 16,
+      "price": 5,
+      "type": "item"
     },
-    "id": 2,
-    "name": "Ironveil’s Ward",
-    "owner": 7,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
-    "imgUrl": "https://iili.io/CSTiNK7.png",
-    "thumbnail": "https://iili.io/CSTiNK7.th.png",
-    "categories": [
-      1
-    ],
-    "paymentMethod": {
-      "digital": true,
-      "physical": true
+    {
+      "id": 17,
+      "price": 3,
+      "type": "item"
     },
-    "items": [
-      {
+    {
+      "id": 18,
+      "price": 6,
+      "type": "item"
+    },
+    {
+      "id": 19,
+      "price": 7,
+      "type": "item"
+    },
+    {
+      "id": 20,
+      "price": 2,
+      "type": "item"
+    },
+    {
+      "id": 21,
+      "price": 9,
+      "type": "item"
+    },
+    {
+      "id": 22,
+      "price": 3.5,
+      "type": "item"
+    },
+    {
+      "id": 24,
+      "price": 2,
+      "type": "item"
+    }
+  ],
+  "categoriesData": [],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae2"
+  },
+  "id": 2,
+  "name": "Ironveil’s Ward",
+  "owner": 7,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "description": "A well-organized shop filled with gleaming armor and protective gear. Known for its masterfully crafted armor that balances beauty and functionality, it’s a favorite among knights, elite guards, and adventurers.",
+  "imgUrl": "https://iili.io/CSTiNK7.png",
+  "thumbnail": "https://iili.io/CSTiNK7.th.png",
+  "categories": [
+    1
+  ],
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 1,
+      "price": 8,
+      "type": "item"
+    },
+    {
+      "id": 2,
+      "price": 18,
+      "type": "item"
+    },
+    {
+      "id": 3,
+      "price": 22,
+      "type": "item"
+    },
+    {
+      "id": 4,
+      "price": 25,
+      "type": "item"
+    },
+    {
+      "id": 5,
+      "price": 30,
+      "type": "item"
+    },
+    {
+      "id": 6,
+      "price": 25,
+      "type": "item"
+    },
+    {
+      "id": 7,
+      "price": 50,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  " discovered": true,
+  "categoriesData": [
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08833",
         "id": 1,
-        "price": 8,
-        "type": "item"
+        "name": "Armor",
+        "key": "armor",
+        "headers": [
+          "Name",
+          "Price",
+          "Description",
+          "Body"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "description",
+          "raceReq"
+        ]
       },
-      {
-        "id": 2,
-        "price": 18,
-        "type": "item"
-      },
-      {
-        "id": 3,
-        "price": 22,
-        "type": "item"
-      },
-      {
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69cb",
+          "id": 1,
+          "name": "Mistcloak",
+          "price": 8,
+          "description": "Save +1 in mist zones of density medium or higher.",
+          "raceReq": "universal",
+          "type": "armor",
+          "isEquippable": true
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69cc",
+          "id": 2,
+          "name": "Mist-Resistant Armor",
+          "price": 18,
+          "description": "Reduces damage from mist anomalies by 1 (to a minimum of 1).",
+          "raceReq": "universal",
+          "type": "armor",
+          "isEquippable": true
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69cd",
+          "id": 3,
+          "name": "Reinforced Carapace",
+          "price": 22,
+          "description": "Wounds +4, Movement -1 inch (min 4 inches).",
+          "raceReq": "universal",
+          "type": "armor",
+          "isEquippable": true,
+          "statModifications": [
+            {
+              "stat": "Wounds",
+              "mod": 4
+            },
+            {
+              "stat": "Movement",
+              "mod": -1
+            }
+          ]
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69ce",
+          "id": 4,
+          "name": "Mistweave Plate",
+          "price": 25,
+          "description": "wounds +2, Re-roll one failed Save roll once per Battle.",
+          "raceReq": "human",
+          "type": "armor",
+          "isEquippable": true,
+          "statModifications": [
+            {
+              "stat": "Wounds",
+              "mod": 2
+            }
+          ]
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69cf",
+          "id": 5,
+          "name": "Mistweave Shroud",
+          "price": 30,
+          "description": "Wounds +1, Save +1 in mist zones. Re-roll one failed Save roll once per battle.",
+          "raceReq": "human",
+          "type": "armor",
+          "isEquippable": true
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69d0",
+          "id": 6,
+          "name": "Swiftwind Harness",
+          "price": 25,
+          "description": "Wounds -1, Dash costs 0 AP.",
+          "raceReq": "human",
+          "type": "armor",
+          "isEquippable": true,
+          "statModifications": [
+            {
+              "stat": "Wounds",
+              "mod": -1
+            }
+          ]
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69d1",
+          "id": 7,
+          "name": "Aegis Battleplate",
+          "price": 50,
+          "description": "Wounds +5, Save +2, Movement -2 inches (min 3 inches) and cannot be used with Fly or Climb abilities.",
+          "raceReq": "astartes",
+          "type": "armor",
+          "isEquippable": true,
+          "statModifications": [
+            {
+              "stat": "Wounds",
+              "mod": 5
+            },
+            {
+              "stat": "Save",
+              "mod": 2
+            },
+            {
+              "stat": "Movement",
+              "mod": -2
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false,
+  "discovered": false
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae3"
+  },
+  "id": 3,
+  "name": "Blackhammer’s Arsenal",
+  "owner": 8,
+  "location": "Zephyria’s Sky Bazaar",
+  "locationName": "Zephyria",
+  "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
+  "imgUrl": "https://iili.io/CSTiUDx.png",
+  "thumbnail": "https://iili.io/CSTiUDx.th.png",
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 25,
+      "price": 15,
+      "type": "weapon"
+    },
+    {
+      "id": 2,
+      "price": 12,
+      "type": "weapon"
+    },
+    {
+      "id": 29,
+      "price": 20,
+      "type": "weapon"
+    },
+    {
+      "id": 26,
+      "price": 17,
+      "type": "weapon"
+    },
+    {
+      "id": 37,
+      "price": 35,
+      "type": "weapon"
+    },
+    {
+      "id": 28,
+      "price": 25,
+      "type": "weapon"
+    },
+    {
+      "id": 36,
+      "price": 50,
+      "type": "weapon"
+    },
+    {
+      "id": 35,
+      "price": 30,
+      "type": "weapon"
+    },
+    {
+      "id": 107,
+      "price": 2,
+      "type": "weapon"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true,
+  "categoriesData": [],
+  "weaponsData": [
+    {
+      "_id": "69ac39b03b7e32e8c2926a61",
+      "id": 2,
+      "name": "Chainsword",
+      "price": 12,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 0,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 15,
+              "modValue": null
+            }
+          ],
+          "body": "universal",
+          "type": "two-handed sword"
+        },
+        {
+          "profileName": "power cell",
+          "rng": 0,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 15,
+              "modValue": null
+            }
+          ],
+          "body": "astartes",
+          "type": "one-handed sword"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a78",
+      "name": "Mistforged Pistol",
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 10,
+          "attacks": 4,
+          "ws": 4,
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": [
+            {
+              "ruleId": 21,
+              "modValue": 5
+            },
+            {
+              "ruleId": 4,
+              "modValue": null
+            }
+          ],
+          "body": "human",
+          "type": "pistol"
+        }
+      ],
+      "id": 25,
+      "price": 15
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a79",
+      "id": 26,
+      "name": "Longshot Rifle",
+      "price": 17,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": null,
+          "attacks": 3,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 23,
+              "modValue": null
+            }
+          ],
+          "body": "human",
+          "type": "rifle"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a7b",
+      "id": 28,
+      "name": "Voidstrike Pistol",
+      "price": 25,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 8,
+          "attacks": 3,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 34,
+              "modValue": 1
+            }
+          ],
+          "body": "astartes",
+          "type": "plasma pistol"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a7c",
+      "id": 29,
+      "name": "Plasma Rifle",
+      "price": 20,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": null,
+          "attacks": 2,
+          "ws": 4,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 35,
+              "modValue": null
+            }
+          ],
+          "body": "astartes",
+          "type": "plasma rifle"
+        },
+        {
+          "profileName": "over charge",
+          "rng": null,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 35,
+              "modValue": null
+            },
+            {
+              "ruleId": 34,
+              "modValue": 1
+            },
+            {
+              "ruleId": 33,
+              "modValue": null
+            }
+          ],
+          "body": "astartes",
+          "type": "plasma rifle"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a82",
+      "id": 35,
+      "name": "Stormchaser Assault Rifle",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 14,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 2,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 18,
+              "modValue": null
+            }
+          ],
+          "body": "human",
+          "type": "rifle"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a83",
+      "id": 36,
+      "name": "Nightstalker Sniper",
+      "price": 50,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": null,
+          "attacks": 3,
+          "ws": 2,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 25,
+              "modValue": 2
+            },
+            {
+              "ruleId": 28,
+              "modValue": null
+            },
+            {
+              "ruleId": 26,
+              "modValue": null
+            }
+          ],
+          "body": "human",
+          "type": "sniper"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a84",
+      "id": 37,
+      "name": "Inferno Bolter Rifle",
+      "price": 35,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 21,
+              "modValue": 5
+            },
+            {
+              "ruleId": 6,
+              "modValue": null
+            },
+            {
+              "ruleId": 35,
+              "modValue": null
+            }
+          ],
+          "body": "astartes",
+          "type": "bolter rifle"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926aca",
+      "id": 107,
+      "name": "Frag Grenade Mk I",
+      "price": 2,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 4,
+          "ws": 4,
+          "damage": {
+            "min": 2,
+            "max": 3
+          },
+          "specialRules": [
+            {
+              "ruleId": 30,
+              "modValue": 3
+            },
+            {
+              "ruleId": 48,
+              "modValue": null
+            }
+          ],
+          "body": "universal",
+          "type": "grenade"
+        }
+      ]
+    }
+  ],
+  "weaponIds": [
+    2,
+    25,
+    26,
+    28,
+    29,
+    35,
+    36,
+    37,
+    107
+  ],
+  "hasWeapons": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae4"
+  },
+  "id": 4,
+  "name": "Anchorforge's Drydock",
+  "owner": 9,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers",
+  "imgUrl": "https://iili.io/CSTiXol.png",
+  "thumbnail": "https://iili.io/CSTiXol.th.png",
+  "categories": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "paymentMethod": {
+    "digital": true,
+    "physical": false
+  },
+  "items": [
+    {
+      "id": 40,
+      "price": 500,
+      "type": "item"
+    },
+    {
+      "id": 41,
+      "price": 450,
+      "type": "item"
+    },
+    {
+      "id": 42,
+      "price": 400,
+      "type": "item"
+    },
+    {
+      "id": 43,
+      "price": 850,
+      "type": "item"
+    },
+    {
+      "id": 45,
+      "price": 800,
+      "type": "item"
+    },
+    {
+      "id": 46,
+      "price": 750,
+      "type": "item"
+    },
+    {
+      "id": 47,
+      "price": 700,
+      "type": "item"
+    },
+    {
+      "id": 48,
+      "price": 900,
+      "type": "item"
+    },
+    {
+      "id": 49,
+      "price": 30,
+      "type": "item"
+    },
+    {
+      "id": 50,
+      "price": 50,
+      "type": "item"
+    },
+    {
+      "id": 51,
+      "price": 60,
+      "type": "item"
+    },
+    {
+      "id": 52,
+      "price": 700,
+      "type": "item"
+    },
+    {
+      "id": 53,
+      "price": 50,
+      "type": "item"
+    },
+    {
+      "id": 54,
+      "price": 100,
+      "type": "item"
+    },
+    {
+      "id": 55,
+      "price": 150,
+      "type": "item"
+    },
+    {
+      "id": 56,
+      "price": 200,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "categoriesData": [
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08836",
         "id": 4,
-        "price": 25,
-        "type": "item"
+        "name": "Mist Engines",
+        "key": "mistEngine",
+        "headers": [
+          "Name",
+          "Price",
+          "Optimal Conditions",
+          "Max Speed",
+          "Max Weight"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "optimalConditions",
+          "maxSpeed",
+          "maxWeight"
+        ]
       },
-      {
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69f2",
+          "id": 40,
+          "name": "Swiftwind Engine",
+          "price": 500,
+          "optimalConditions": "W:40%  M: light",
+          "maxSpeed": "120kmph / 12 inches",
+          "maxWeight": 100,
+          "type": "mistEngine"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69f3",
+          "id": 41,
+          "name": "Endurance Engine",
+          "price": 450,
+          "optimalConditions": "W:70%  M: light/medium",
+          "maxSpeed": "60kmph / 7 inches",
+          "maxWeight": 300,
+          "type": "mistEngine"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69f4",
+          "id": 42,
+          "name": "Cargo Hauler Engine",
+          "price": 400,
+          "optimalConditions": "W:90%  M: medium",
+          "maxSpeed": "35kmph / 4 inches",
+          "maxWeight": 600,
+          "type": "mistEngine"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69f5",
+          "id": 43,
+          "name": "Balanced Engine",
+          "price": 850,
+          "optimalConditions": "W:60%  M:-",
+          "maxSpeed": "90 kmph / 9 inches",
+          "maxWeight": 175,
+          "type": "mistEngine"
+        }
+      ]
+    },
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08837",
         "id": 5,
-        "price": 30,
-        "type": "item"
+        "name": "Ship Hulls",
+        "key": "shipHull",
+        "headers": [
+          "Name",
+          "Price",
+          "Weight",
+          "Ship Wounds",
+          "Defense",
+          "Max Cargo"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "weight",
+          "shipWounds",
+          "defense",
+          "maxCargo"
+        ]
       },
-      {
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69f7",
+          "id": 45,
+          "name": "Swiftwind Hull",
+          "price": 800,
+          "weight": 20,
+          "shipWounds": 40,
+          "defense": 2,
+          "maxCargo": 60,
+          "type": "shipHull"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69f8",
+          "id": 46,
+          "name": "Endurance Hull",
+          "price": 750,
+          "weight": 150,
+          "shipWounds": 80,
+          "defense": 4,
+          "maxCargo": 100,
+          "type": "shipHull"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69f9",
+          "id": 47,
+          "name": "Cargo Hauler Hull",
+          "price": 700,
+          "weight": 200,
+          "shipWounds": 60,
+          "defense": 3,
+          "maxCargo": 200,
+          "type": "shipHull"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69fa",
+          "id": 48,
+          "name": "Fortified Hull",
+          "price": 900,
+          "weight": 350,
+          "shipWounds": 120,
+          "defense": 5,
+          "maxCargo": 80,
+          "type": "shipHull"
+        }
+      ]
+    },
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08838",
         "id": 6,
-        "price": 25,
-        "type": "item"
+        "name": "Cannons",
+        "key": "cannon",
+        "headers": [
+          "Name",
+          "Price",
+          "Ammo Type",
+          "Weight"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "ammoType",
+          "weight"
+        ]
       },
-      {
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69fb",
+          "id": 49,
+          "name": "Light Deck Cannon",
+          "price": 30,
+          "ammoType": "Standard Cannonballs",
+          "weight": 15,
+          "type": "cannon"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69fc",
+          "id": 50,
+          "name": "Heavy Broadside",
+          "price": 50,
+          "ammoType": "Explosive Cannonballs",
+          "weight": 40,
+          "type": "cannon"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69fd",
+          "id": 51,
+          "name": "Mistfire Cannon",
+          "price": 60,
+          "ammoType": "Mist-Infused Ammo",
+          "weight": 35,
+          "type": "cannon"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69fe",
+          "id": 52,
+          "name": "Plasma Cannon",
+          "price": 700,
+          "ammoType": "Plasma Charges",
+          "weight": 60,
+          "type": "cannon"
+        }
+      ]
+    },
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08839",
         "id": 7,
-        "price": 50,
-        "type": "item"
-      }
-    ],
-    "locationId": 1,
-    " discovered": true
-  },
-  {
-    "_id": {
-      "$oid": "69a62fd33b9695542bb77ae3"
-    },
-    "id": 3,
-    "name": "Blackhammer’s Arsenal",
-    "owner": 8,
-    "location": "Zephyria’s Sky Bazaar",
-    "locationName": "Zephyria",
-    "descrtipion": "A bustling forge filled with the clang of steel and the glow of molten metal. Known for its deadly and durable weapons, the arsenal is a go-to destination for mercenaries, adventurers, and warriors.",
-    "imgUrl": "https://iili.io/CSTiUDx.png",
-    "thumbnail": "https://iili.io/CSTiUDx.th.png",
-    "paymentMethod": {
-      "digital": true,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 25,
-        "price": 15,
-        "type": "weapon"
+        "name": "Cannonballs",
+        "key": "cannonball",
+        "headers": [
+          "Name",
+          "Price",
+          "Damage"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "damage"
+        ]
       },
-      {
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69ff",
+          "id": 53,
+          "name": "Standard Cannonballs",
+          "price": 50,
+          "damage": "4/6",
+          "type": "cannonball"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c6a00",
+          "id": 54,
+          "name": "Explosive Cannonballs",
+          "price": 100,
+          "damage": "8/10",
+          "type": "cannonball"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c6a01",
+          "id": 55,
+          "name": "Mist-Infused Ammo",
+          "price": 150,
+          "damage": "12/15",
+          "type": "cannonball"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c6a02",
+          "id": 56,
+          "name": "Plasma Charges",
+          "price": 200,
+          "damage": "20/25",
+          "type": "cannonball"
+        }
+      ]
+    }
+  ],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false,
+  "discovered": true
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae5"
+  },
+  "id": 5,
+  "name": "The Stoutbarrel Tavern",
+  "owner": 10,
+  "location": "Zephyria",
+  "locationName": "Zephyria",
+  "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
+  "imgUrl": "https://iili.io/CSTi8Ab.png",
+  "thumbnail": "https://iili.io/CSTi8Ab.th.png",
+  "categories": [
+    2
+  ],
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 20,
+      "price": 2,
+      "type": "item"
+    },
+    {
+      "id": 17,
+      "price": 3,
+      "type": "item"
+    },
+    {
+      "id": 22,
+      "price": 3.5,
+      "type": "item"
+    },
+    {
+      "id": 23,
+      "price": 2.5,
+      "type": "item"
+    },
+    {
+      "id": 26,
+      "price": 1,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true,
+  "categoriesData": [
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08834",
         "id": 2,
-        "price": 12,
-        "type": "weapon"
-      },
-      {
-        "id": 29,
-        "price": 20,
-        "type": "weapon"
-      },
-      {
-        "id": 26,
-        "price": 17,
-        "type": "weapon"
-      },
-      {
-        "id": 37,
-        "price": 35,
-        "type": "weapon"
-      },
-      {
-        "id": 28,
-        "price": 25,
-        "type": "weapon"
-      },
-      {
-        "id": 36,
-        "price": 50,
-        "type": "weapon"
-      },
-      {
-        "id": 35,
-        "price": 30,
-        "type": "weapon"
-      },
-      {
-        "id": 107,
-        "price": 2,
-        "type": "weapon"
-      }
-    ],
-    "locationId": 1,
-    "discovered": true
-  },
-  {
-    "_id": {
-      "$oid": "69a62fd33b9695542bb77ae4"
-    },
-    "id": 4,
-    "name": "Anchorforge's Drydock",
-    "owner": 9,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "description": "A bustling shipyard where workers hammer, saw, and paint ships of all sizes. Known for crafting vessels that can withstand the harshest mist storms, it’s a hub for sailors, traders, and explorers",
-    "imgUrl": "https://iili.io/CSTiXol.png",
-    "thumbnail": "https://iili.io/CSTiXol.th.png",
-    "categories": [
-      4,
-      5,
-      6,
-      7
-    ],
-    "paymentMethod": {
-      "digital": true,
-      "physical": false
-    },
-    "items": [
-      {
-        "id": 40,
-        "price": 500,
-        "type": "item"
-      },
-      {
-        "id": 41,
-        "price": 450,
-        "type": "item"
-      },
-      {
-        "id": 42,
-        "price": 400,
-        "type": "item"
-      },
-      {
-        "id": 43,
-        "price": 850,
-        "type": "item"
-      },
-      {
-        "id": 45,
-        "price": 800,
-        "type": "item"
-      },
-      {
-        "id": 46,
-        "price": 750,
-        "type": "item"
-      },
-      {
-        "id": 47,
-        "price": 700,
-        "type": "item"
-      },
-      {
-        "id": 48,
-        "price": 900,
-        "type": "item"
-      },
-      {
-        "id": 49,
-        "price": 30,
-        "type": "item"
-      },
-      {
-        "id": 50,
-        "price": 50,
-        "type": "item"
-      },
-      {
-        "id": 51,
-        "price": 60,
-        "type": "item"
-      },
-      {
-        "id": 52,
-        "price": 700,
-        "type": "item"
-      },
-      {
-        "id": 53,
-        "price": 50,
-        "type": "item"
-      },
-      {
-        "id": 54,
-        "price": 100,
-        "type": "item"
-      },
-      {
-        "id": 55,
-        "price": 150,
-        "type": "item"
-      },
-      {
-        "id": 56,
-        "price": 200,
-        "type": "item"
-      }
-    ],
-    "locationId": 1,
-    "discvored": true
-  },
-  {
-    "_id": {
-      "$oid": "69a62fd33b9695542bb77ae5"
-    },
-    "id": 5,
-    "name": "The Stoutbarrel Tavern",
-    "owner": 10,
-    "location": "Zephyria",
-    "locationName": "Zephyria",
-    "description": "A lively tavern known for its hearty food, strong drinks, and welcoming atmosphere. A popular gathering spot for locals and travelers alike, it’s filled with laughter, music, and the occasional brawl.",
-    "imgUrl": "https://iili.io/CSTi8Ab.png",
-    "thumbnail": "https://iili.io/CSTi8Ab.th.png",
-    "categories": [
-      2
-    ],
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 20,
-        "price": 2,
-        "type": "item"
-      },
-      {
-        "id": 17,
-        "price": 3,
-        "type": "item"
-      },
-      {
-        "id": 22,
-        "price": 3.5,
-        "type": "item"
-      },
-      {
-        "id": 23,
-        "price": 2.5,
-        "type": "item"
-      },
-      {
-        "id": 26,
-        "price": 1,
-        "type": "item"
-      }
-    ],
-    "locationId": 1,
-    "discovered": true
-  },
-  {
-    "_id": {
-      "$oid": "69a62fd33b9695542bb77ae6"
-    },
-    "id": 6,
-    "name": "Skyguide’s Emporium",
-    "owner": 11,
-    "location": "Zephyria's Sky Bazaar",
-    "locationName": "Zephyria",
-    "categories": [
-      2
-    ],
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 16,
-        "price": 4,
-        "type": "item"
-      },
-      {
-        "id": 8,
-        "price": 12,
-        "type": "item"
-      },
-      {
-        "id": 25,
-        "price": 10,
-        "type": "item"
-      },
-      {
-        "id": 19,
-        "price": 7,
-        "type": "item"
-      },
-      {
-        "id": 27,
-        "price": 20,
-        "type": "item"
-      }
-    ],
-    "locationId": 1,
-    "discovered": true
-  },
-  {
-    "_id": {
-      "$oid": "69aa0d0b1d3387484b352149"
-    },
-    "id": 7,
-    "name": "The Shaman's Circle",
-    "owner": 16,
-    "locationId": 6,
-    "locationName": "Misthaven",
-    "location": "Misthaven",
-    "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
-    "discovered": false,
-    "imgUrl": "https://iili.io/CSTijPS.png",
-    "thumbnail": "https://iili.io/CSTijPS.th.png",
-    "paymentMethod": {
-      "digital": false,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 102,
-        "price": 50,
-        "type": "weapon"
-      },
-      {
-        "id": 105,
-        "price": 40,
-        "type": "weapon"
-      }
-    ]
-  },
-  {
-    "_id": {
-      "$oid": "69aa31f11d3387484b352162"
-    },
-    "id": 8,
-    "name": "The Gloom-Weaver's Sanctuary",
-    "owner": 18,
-    "locationId": 0,
-    "locationName": "Unbound",
-    "location": "Unbound",
-    "description": "A secluded, shifting sanctuary veiled in thick purple-tinted mist. Shelves carved from petrified wood hold grim scrolls, grimoires, and glowing spell-shards. Mother Morvath offers her ancient forbidden spells to anyone who dares to seek out her dark wisdom.",
-    "discovered": false,
-    "paymentMethod": {
-      "digital": true,
-      "physical": true
-    },
-    "items": [
-      {
-        "id": 112,
-        "price": 65,
-        "type": "weapon"
-      },
-      {
-        "id": 113,
-        "price": 75,
-        "type": "weapon"
-      },
-      {
-        "id": 46,
-        "price": 45,
-        "type": "weapon"
-      },
-      {
-        "id": 106,
-        "price": 70,
-        "type": "weapon"
-      },
-      {
-        "id": 45,
-        "price": 30,
-        "type": "weapon"
-      }
-    ],
-    "categoriesData": [],
-    "weaponsData": [
-      {
-        "_id": "69ac39b03b7e32e8c2926a8c",
-        "id": 45,
-        "name": "Psychic Shriek",
-        "price": 30,
-        "profiles": [
-          {
-            "profileName": "",
-            "rng": 6,
-            "attacks": 2,
-            "ws": 4,
-            "damage": {
-              "min": 1,
-              "max": 2
-            },
-            "specialRules": [
-              {
-                "ruleId": 32,
-                "modValue": null
-              },
-              {
-                "ruleId": 18,
-                "modValue": null
-              }
-            ],
-            "body": "spell",
-            "type": "warp"
-          }
+        "name": "Consumables",
+        "key": "consumable",
+        "headers": [
+          "Name",
+          "Price",
+          "Description"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "description"
         ]
       },
-      {
-        "_id": "69ac39b03b7e32e8c2926a8d",
-        "id": 46,
-        "name": "Balefire Bolt",
-        "price": 45,
-        "profiles": [
-          {
-            "profileName": "",
-            "rng": 12,
-            "attacks": 3,
-            "ws": 4,
-            "damage": {
-              "min": 3,
-              "max": 4
-            },
-            "specialRules": [
-              {
-                "ruleId": 32,
-                "modValue": null
-              },
-              {
-                "ruleId": 30,
-                "modValue": 2
-              }
-            ],
-            "body": "spell",
-            "type": "warp"
-          }
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69de",
+          "id": 20,
+          "name": "Rations Pack",
+          "price": 2,
+          "description": "A week's worth of preserved food and water, essential for long journeys.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69db",
+          "name": "Stimpack",
+          "type": "consumable",
+          "id": 17,
+          "description": "Single-use injector, restores 1D3+1 wounds to the user or target within control range. Combat: 0AP (once per activation), cannot be used within Control Range of enemy operatives and cannot be used to heal allies.",
+          "price": 3
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e0",
+          "id": 22,
+          "name": "Mist-Repellent Spray",
+          "price": 3.5,
+          "description": "Single-use spray that clears mist in a 1 inch radius for 1 round. Combat: 1AP, cannot be used within Control Range of enemy operatives.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e1",
+          "id": 23,
+          "name": "Signal Flare",
+          "price": 2.5,
+          "description": "A flare that can be used to signal for help or mark a location, visible through mist.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e4",
+          "id": 26,
+          "name": "Stoutbarrel Ale",
+          "price": 1,
+          "description": "Restores 1D3 wounds but imposes a -1″ movement penalty for the next reposition action the operative performs.",
+          "type": "consumable"
+        }
+      ]
+    }
+  ],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false
+},
+{
+  "_id": {
+    "$oid": "69a62fd33b9695542bb77ae6"
+  },
+  "id": 6,
+  "name": "Skyguide’s Emporium",
+  "owner": 11,
+  "location": "Zephyria's Sky Bazaar",
+  "locationName": "Zephyria",
+  "categories": [
+    2
+  ],
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 16,
+      "price": 4,
+      "type": "item"
+    },
+    {
+      "id": 8,
+      "price": 12,
+      "type": "item"
+    },
+    {
+      "id": 25,
+      "price": 10,
+      "type": "item"
+    },
+    {
+      "id": 19,
+      "price": 7,
+      "type": "item"
+    },
+    {
+      "id": 27,
+      "price": 20,
+      "type": "item"
+    }
+  ],
+  "locationId": 1,
+  "discovered": true,
+  "categoriesData": [
+    {
+      "category": {
+        "_id": "6999dc58f7703abfb2c08834",
+        "id": 2,
+        "name": "Consumables",
+        "key": "consumable",
+        "headers": [
+          "Name",
+          "Price",
+          "Description"
+        ],
+        "keys": [
+          "name",
+          "price",
+          "description"
         ]
       },
-      {
-        "_id": "69ac39b03b7e32e8c2926ac9",
-        "id": 106,
-        "name": "Warp Tear",
-        "price": 70,
-        "profiles": [
-          {
-            "profileName": "",
-            "rng": 6,
-            "attacks": 3,
-            "ws": 4,
-            "damage": {
-              "min": 5,
-              "max": 7
+      "items": [
+        {
+          "_id": "69ac2f7d2618b8cf122c69da",
+          "id": 16,
+          "name": "Mist Compass",
+          "price": 4,
+          "description": "Handheld device, helps navigate mist zones. Roll 1D6; on a 4+, your character is not lost.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e3",
+          "id": 25,
+          "name": "Lockpick Set",
+          "price": 10,
+          "description": "A set of tools for bypassing locks and traps.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69dd",
+          "id": 19,
+          "name": "Mist Lantern",
+          "price": 7,
+          "description": "A portable light source that pierces through dense mist, illuminating a 6 inches radius.",
+          "type": "consumable"
+        },
+        {
+          "_id": "69ac2f7d2618b8cf122c69e5",
+          "id": 27,
+          "name": "Mist Maps",
+          "price": 20,
+          "description": "Grants re-rolls for navigation checks in mist zones.",
+          "type": "consumable"
+        }
+      ]
+    }
+  ],
+  "weaponsData": [],
+  "weaponIds": [],
+  "hasWeapons": false
+},
+{
+  "_id": {
+    "$oid": "69aa0d0b1d3387484b352149"
+  },
+  "id": 7,
+  "name": "The Shaman's Circle",
+  "owner": 16,
+  "locationId": 6,
+  "locationName": "Misthaven",
+  "location": "Misthaven",
+  "description": "A ritual circle marked by carved stones and beast skulls, where the mist seems to swirl with intent. Here, Korgar teaches the forbidden arts of mist-weaving to those who can pay the price.",
+  "discovered": true,
+  "imgUrl": "https://iili.io/CSTijPS.png",
+  "thumbnail": "https://iili.io/CSTijPS.th.png",
+  "paymentMethod": {
+    "digital": false,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 102,
+      "price": 50,
+      "type": "weapon"
+    },
+    {
+      "id": 105,
+      "price": 40,
+      "type": "weapon"
+    }
+  ]
+},
+{
+  "_id": {
+    "$oid": "69aa31f11d3387484b352162"
+  },
+  "id": 8,
+  "name": "The Gloom-Weaver's Sanctuary",
+  "owner": 18,
+  "locationId": 0,
+  "locationName": "Unbound",
+  "location": "Unbound",
+  "description": "A secluded, shifting sanctuary veiled in thick purple-tinted mist. Shelves carved from petrified wood hold grim scrolls, grimoires, and glowing spell-shards. Mother Morvath offers her ancient forbidden spells to anyone who dares to seek out her dark wisdom.",
+  "discovered": false,
+  "paymentMethod": {
+    "digital": true,
+    "physical": true
+  },
+  "items": [
+    {
+      "id": 112,
+      "price": 65,
+      "type": "weapon"
+    },
+    {
+      "id": 113,
+      "price": 75,
+      "type": "weapon"
+    },
+    {
+      "id": 46,
+      "price": 45,
+      "type": "weapon"
+    },
+    {
+      "id": 106,
+      "price": 70,
+      "type": "weapon"
+    },
+    {
+      "id": 45,
+      "price": 30,
+      "type": "weapon"
+    }
+  ],
+  "categoriesData": [],
+  "weaponsData": [
+    {
+      "_id": "69ac39b03b7e32e8c2926a8c",
+      "id": 45,
+      "name": "Psychic Shriek",
+      "price": 30,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 2,
+          "ws": 4,
+          "damage": {
+            "min": 1,
+            "max": 2
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
             },
-            "specialRules": [
-              {
-                "ruleId": 32,
-                "modValue": null
-              },
-              {
-                "ruleId": 15,
-                "modValue": null
-              },
-              {
-                "ruleId": 34,
-                "modValue": 2
-              },
-              {
-                "ruleId": 35,
-                "modValue": null
-              }
-            ],
-            "body": "spell",
-            "type": "warp"
-          }
-        ]
-      },
-      {
-        "_id": "69aa31f11d3387484b352158",
-        "id": 112,
-        "name": "Maledictum Hex",
-        "price": 65,
-        "profiles": [
-          {
-            "profileName": "",
-            "rng": 10,
-            "attacks": 4,
-            "ws": 3,
-            "damage": {
-              "min": 3,
-              "max": 4
+            {
+              "ruleId": 18,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926a8d",
+      "id": 46,
+      "name": "Balefire Bolt",
+      "price": 45,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 12,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
             },
-            "specialRules": [
-              {
-                "ruleId": 32,
-                "modValue": null
-              },
-              {
-                "ruleId": 51,
-                "modValue": null
-              },
-              {
-                "ruleId": 58,
-                "modValue": null
-              }
-            ],
-            "body": "spell",
-            "type": "warp"
-          }
-        ]
-      },
-      {
-        "_id": "69aa31f11d3387484b352159",
-        "id": 113,
-        "name": "Siphon Soul",
-        "price": 75,
-        "profiles": [
-          {
-            "profileName": "",
-            "rng": 6,
-            "attacks": 3,
-            "ws": 3,
-            "damage": {
-              "min": 4,
-              "max": 5
+            {
+              "ruleId": 30,
+              "modValue": 2
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69ac39b03b7e32e8c2926ac9",
+      "id": 106,
+      "name": "Warp Tear",
+      "price": 70,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 4,
+          "damage": {
+            "min": 5,
+            "max": 7
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
             },
-            "specialRules": [
-              {
-                "ruleId": 32,
-                "modValue": null
-              },
-              {
-                "ruleId": 39,
-                "modValue": null
-              },
-              {
-                "ruleId": 53,
-                "modValue": 1
-              }
-            ],
-            "body": "spell",
-            "type": "warp"
-          }
-        ]
-      }
-    ],
-    "weaponIds": [
-      45,
-      46,
-      106,
-      112,
-      113
-    ],
-    "hasWeapons": true
-  }
-]
+            {
+              "ruleId": 15,
+              "modValue": null
+            },
+            {
+              "ruleId": 34,
+              "modValue": 2
+            },
+            {
+              "ruleId": 35,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352158",
+      "id": 112,
+      "name": "Maledictum Hex",
+      "price": 65,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 10,
+          "attacks": 4,
+          "ws": 3,
+          "damage": {
+            "min": 3,
+            "max": 4
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 51,
+              "modValue": null
+            },
+            {
+              "ruleId": 58,
+              "modValue": null
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    },
+    {
+      "_id": "69aa31f11d3387484b352159",
+      "id": 113,
+      "name": "Siphon Soul",
+      "price": 75,
+      "profiles": [
+        {
+          "profileName": "",
+          "rng": 6,
+          "attacks": 3,
+          "ws": 3,
+          "damage": {
+            "min": 4,
+            "max": 5
+          },
+          "specialRules": [
+            {
+              "ruleId": 32,
+              "modValue": null
+            },
+            {
+              "ruleId": 39,
+              "modValue": null
+            },
+            {
+              "ruleId": 53,
+              "modValue": 1
+            }
+          ],
+          "body": "spell",
+          "type": "warp"
+        }
+      ]
+    }
+  ],
+  "weaponIds": [
+    45,
+    46,
+    106,
+    112,
+    113
+  ],
+  "hasWeapons": true
+}]

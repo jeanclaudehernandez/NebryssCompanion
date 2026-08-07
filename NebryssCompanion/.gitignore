@@ -37,7 +37,23 @@ yarn-error.log
 testem.log
 /typings
 /.firebase
-firebase.json
+# Database & Data storage
+local-db/mongodb_data/
+local-db/*.log
+local-db/*.sock
+local-db/*.lock
+mongodb_data/
+mongod.log
+diagnostic.data/
+WiredTiger*
+*.sqlite
+*.sqlite3
+*.db
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
 
 # System files
 .DS_Store

@@ -14,7 +14,7 @@
       "id": "sec-sanctus-1",
       "title": "Subterranean Inquisitorial Vault",
       "content": "Inquisitor Vontis Mortis maintains a subterranean interrogation chamber beneath the Cathedral. Interrogation logs confirm that rogue trader warrants associated with the Voss lineage were blacklisted here under Ordo Hereticus Decree #42-B.",
-      "isRevealed": true
+      "isRevealed": false
     },
     {
       "id": "sec-sanctus-2",

@@ -81,8 +81,25 @@ function extractPayloadAndCampaign(req) {
   return { payload, campaign };
 }
 
+// Load environment variables (.env or .env.duckdns)
+const envFiles = [path.join(__dirname, '../.env'), path.join(__dirname, '../.env.duckdns')];
+for (const envFile of envFiles) {
+  if (fs.existsSync(envFile)) {
+    const envConfig = fs.readFileSync(envFile, 'utf8');
+    envConfig.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [key, ...vals] = trimmed.split('=');
+        if (key && !process.env[key.trim()]) {
+          process.env[key.trim()] = vals.join('=').trim();
+        }
+      }
+    });
+  }
+}
+
 const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCompanion';
-const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'test';
+const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'Nebryss-assets';
 const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'NebryssCampaignAssets';
 
 // Attempt MongoDB connection (Atlas or Local), falling back to Local PC JSON if unreachable
@@ -369,7 +386,13 @@ function createCollectionRoute(routePath, options) {
       const dbs = await getDatabases();
       const db = dbs ? (usePlayersDb ? dbs.playersDb : dbs.mainDb) : null;
       const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
-      const documents = await fetchCollection(db, targetCollection);
+      let documents = await fetchCollection(db, targetCollection);
+      if (usePlayersDb && (!documents || documents.length === 0) && !campaign && db) {
+        const fallbackDocs = await fetchCollection(db, `nebryss-voss-sucession-${collectionName}`);
+        if (fallbackDocs && fallbackDocs.length > 0) {
+          documents = fallbackDocs;
+        }
+      }
       res.json(documents);
     } catch (error) {
       console.error(`[API] Error fetching ${collectionName}:`, error);
@@ -869,6 +892,34 @@ app.post('/api/letter/:id/read', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+// Route aliases to support both singular and plural endpoint variants
+const collectionAliases = [
+  { singular: '/api/location', plural: '/api/locations', usePlayersDb: true, collectionName: 'location' },
+  { singular: '/api/affliction', plural: '/api/afflictions', usePlayersDb: false, collectionName: 'affliction' },
+  { singular: '/api/letter', plural: '/api/letters', usePlayersDb: false, collectionName: 'letters' },
+  { singular: '/api/item', plural: '/api/items', usePlayersDb: false, collectionName: 'item' },
+  { singular: '/api/weapon', plural: '/api/weapons', usePlayersDb: false, collectionName: 'weapon' },
+  { singular: '/api/player', plural: '/api/players', usePlayersDb: true, collectionName: 'player' },
+  { singular: '/api/shop', plural: '/api/shops', usePlayersDb: true, collectionName: 'shop' },
+  { singular: '/api/npc', plural: '/api/npcs', usePlayersDb: true, collectionName: 'npc' },
+  { singular: '/api/talent', plural: '/api/talents', usePlayersDb: false, collectionName: 'talent' },
+  { singular: '/api/mistEffect', plural: '/api/mistEffects', usePlayersDb: false, collectionName: 'mistEffect' },
+  { singular: '/api/terrainRule', plural: '/api/terrains', usePlayersDb: false, collectionName: 'terrainRule' },
+  { singular: '/api/weaponRule', plural: '/api/weaponRules', usePlayersDb: false, collectionName: 'weaponRule' },
+  { singular: '/api/itemCategory', plural: '/api/itemCategories', usePlayersDb: false, collectionName: 'itemCategory' },
+  { singular: '/api/campaign', plural: '/api/campaigns', usePlayersDb: false, collectionName: 'campaign' },
+  { singular: '/api/status', plural: '/api/alteredStates', usePlayersDb: false, collectionName: 'status' }
+];
+
+for (const alias of collectionAliases) {
+  // Register the other variant
+  createCollectionRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createCollectionRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createUpdateRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createInsertRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createDeleteRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+}
 
 const staticPath = path.join(__dirname, '../dist/nebryss-companion/browser');
 const indexHtmlPath = path.join(staticPath, 'index.html');
