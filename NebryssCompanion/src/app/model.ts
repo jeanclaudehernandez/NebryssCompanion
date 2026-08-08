@@ -7,10 +7,12 @@ export interface Campaign {
 
 export interface CampaignSession {
   id?: number;
+  _id?: string;
   campaignId: number;
   sessionId: number;
   content: string;
   conclussion: string;
+  playerVisibleBranches?: string[];
 }
 
 export interface AlteredState {

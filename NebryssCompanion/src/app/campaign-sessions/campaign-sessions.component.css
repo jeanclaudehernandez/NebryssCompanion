@@ -282,6 +282,24 @@
   border: 1px solid rgba(251, 191, 36, 0.25);
 }
 
+.session-badge--branches-gm {
+  background: rgba(168, 85, 247, 0.14);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.session-badge--branches-player {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.session-badge--branches-pending {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
 .session-expand-icon {
   font-size: 24px;
   color: #c9a84c;
@@ -471,6 +489,53 @@
   text-transform: uppercase;
   flex-shrink: 0;
   margin-right: 4px;
+}
+
+:host ::ng-deep .branch-gm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-left: auto;
+}
+
+:host ::ng-deep .branch-gm-pill .pill-icon {
+  font-size: 13px;
+}
+
+:host ::ng-deep .branch-gm-pill--visible {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+:host ::ng-deep .branch-gm-pill--hidden {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px dashed rgba(148, 163, 184, 0.3);
+}
+
+:host ::ng-deep .item-gm-status {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  margin-right: 6px;
+}
+
+:host ::ng-deep .item-gm-status--visible {
+  color: #34d399;
+}
+
+:host ::ng-deep .item-gm-status--hidden {
+  color: #94a3b8;
+  font-style: italic;
 }
 
 :host ::ng-deep .heading-icon {
@@ -900,6 +965,44 @@
   background: rgba(124, 58, 237, 0.12);
   color: #7c3aed;
   border-color: rgba(124, 58, 237, 0.3);
+}
+
+:host-context(body:not(.dark-theme)) .session-badge--branches-gm {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) .session-badge--branches-player {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) .session-badge--branches-pending {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border-color: rgba(100, 116, 139, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .branch-gm-pill--visible {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .branch-gm-pill--hidden {
+  background: rgba(100, 116, 139, 0.1);
+  color: #64748b;
+  border-color: rgba(100, 116, 139, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .item-gm-status--visible {
+  color: #059669;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .item-gm-status--hidden {
+  color: #64748b;
 }
 
 :host-context(body:not(.dark-theme)) ::ng-deep .tag--phase {

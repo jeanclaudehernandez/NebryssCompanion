@@ -373,18 +373,24 @@ async function listSessions(campaignId, expandDisplay = false) {
   return sessions;
 }
 
-async function saveSession({ campaignId, sessionId, content, conclussion }) {
+async function saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches }) {
   const context = await getCampaignContext(campaignId);
-
   const normalizedContent = normalizeToIdTags(content || '', context);
   const normalizedConclussion = normalizeToIdTags(conclussion || '', context);
+
+  const branchesArray = Array.isArray(playerVisibleBranches)
+    ? playerVisibleBranches
+    : (typeof playerVisibleBranches === 'string'
+      ? playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean)
+      : []);
 
   const client = await getClient();
   const sessionDoc = {
     campaignId: Number(campaignId),
     sessionId: Number(sessionId),
     content: normalizedContent,
-    conclussion: normalizedConclussion
+    conclussion: normalizedConclussion,
+    playerVisibleBranches: branchesArray
   };
 
   let resultDoc = null;
@@ -402,7 +408,13 @@ async function saveSession({ campaignId, sessionId, content, conclussion }) {
       if (existing) {
         await collection.updateOne(
           { _id: existing._id },
-          { $set: { content: sessionDoc.content, conclussion: sessionDoc.conclussion } }
+          {
+            $set: {
+              content: sessionDoc.content,
+              conclussion: sessionDoc.conclussion,
+              playerVisibleBranches: sessionDoc.playerVisibleBranches
+            }
+          }
         );
         resultDoc = { ...existing, ...sessionDoc };
       } else {
@@ -436,9 +448,17 @@ async function saveSession({ campaignId, sessionId, content, conclussion }) {
   };
 }
 
-async function finalizeSession({ campaignId, sessionId, conclussion }) {
+async function finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches }) {
   const context = await getCampaignContext(campaignId);
   const normalizedConclussion = normalizeToIdTags(conclussion || '', context);
+
+  const branchesArray = playerVisibleBranches !== undefined
+    ? (Array.isArray(playerVisibleBranches)
+      ? playerVisibleBranches
+      : (typeof playerVisibleBranches === 'string'
+        ? playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean)
+        : []))
+    : undefined;
 
   const client = await getClient();
   let updated = null;
@@ -453,8 +473,12 @@ async function finalizeSession({ campaignId, sessionId, conclussion }) {
       };
       const existing = await collection.findOne(query);
       if (existing) {
-        await collection.updateOne({ _id: existing._id }, { $set: { conclussion: normalizedConclussion } });
-        updated = { ...existing, conclussion: normalizedConclussion };
+        const updateFields = { conclussion: normalizedConclussion };
+        if (branchesArray !== undefined) {
+          updateFields.playerVisibleBranches = branchesArray;
+        }
+        await collection.updateOne({ _id: existing._id }, { $set: updateFields });
+        updated = { ...existing, ...updateFields };
       }
     } finally {
       await client.close();
@@ -465,6 +489,9 @@ async function finalizeSession({ campaignId, sessionId, conclussion }) {
   const idx = allJson.findIndex(s => Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === Number(sessionId));
   if (idx !== -1) {
     allJson[idx].conclussion = normalizedConclussion;
+    if (branchesArray !== undefined) {
+      allJson[idx].playerVisibleBranches = branchesArray;
+    }
     writeJsonFallback('campaignSessions.json', allJson);
     if (!updated) updated = allJson[idx];
   }
@@ -939,28 +966,42 @@ NPC & Bestiary Creation:
     let sessionId = 1;
     let content = '';
     let conclussion = '';
+    let playerVisibleBranches = [];
 
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
-      if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
-      if (arg.startsWith('--content=')) content = arg.substring('--content='.length);
-      if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--content=')) content = arg.substring('--content='.length);
+      else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--playerVisibleBranches=')) {
+        playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
+      }
+      else if (arg.startsWith('--branches=')) {
+        playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
+      }
     });
 
-    const res = await saveSession({ campaignId, sessionId, content, conclussion });
+    const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches });
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'finalize') {
     let campaignId = 1;
     let sessionId = 1;
     let conclussion = '';
+    let playerVisibleBranches = undefined;
 
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
-      if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
-      if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--playerVisibleBranches=')) {
+        playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
+      }
+      else if (arg.startsWith('--branches=')) {
+        playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
+      }
     });
 
-    const res = await finalizeSession({ campaignId, sessionId, conclussion });
+    const res = await finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches });
     console.log(JSON.stringify(res, null, 2));
   }
 }

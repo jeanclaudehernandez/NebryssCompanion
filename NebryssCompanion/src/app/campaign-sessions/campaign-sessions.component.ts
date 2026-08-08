@@ -35,6 +35,10 @@ interface ParsedSession {
   parsedConclusion: SafeHtml;
   isConcluded: boolean;
   expanded: boolean;
+  branches: string[];
+  playerVisibleBranches: string[];
+  visibleBranchesCount: number;
+  playerBranchesLabel: string;
 }
 
 type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary';
@@ -146,15 +150,27 @@ export class CampaignSessionsComponent implements OnInit {
       const conclusionTitleFormatted = rawConclusionTitle ? this.formatInline(rawConclusionTitle) : '';
       const conclusionTitleHtml = this.sanitizer.bypassSecurityTrustHtml(conclusionTitleFormatted);
 
+      const branches = this.extractBranches(session.content || '');
+      const playerVisibleBranches = session.playerVisibleBranches || [];
+
+      const visibleBranchesCount = branches.filter(b => this.isBranchVisible(b, playerVisibleBranches)).length;
+      const playerBranchesLabel = visibleBranchesCount > 0
+        ? `Path: ${playerVisibleBranches.join(', ')}`
+        : '';
+
       return {
         session,
         rawTitle,
         titleHtml,
         conclusionTitleHtml,
-        parsedContent: this.renderMarkdown(session.content || ''),
-        parsedConclusion: this.renderMarkdown(session.conclussion || ''),
+        parsedContent: this.renderMarkdown(session.content || '', true, playerVisibleBranches, this.isAdmin),
+        parsedConclusion: this.renderMarkdown(session.conclussion || '', true, playerVisibleBranches, this.isAdmin),
         isConcluded: this.isConcluded(session),
-        expanded: false
+        expanded: false,
+        branches,
+        playerVisibleBranches,
+        visibleBranchesCount,
+        playerBranchesLabel
       };
     });
 
@@ -175,6 +191,46 @@ export class CampaignSessionsComponent implements OnInit {
 
   collapseAll(): void {
     this.parsedSessions.forEach(s => s.expanded = false);
+  }
+
+  // --- Branch Extraction & Matching ---
+
+  extractBranches(content: string): string[] {
+    if (!content) {
+      return [];
+    }
+    const branches: string[] = [];
+    const regex = /#{1,5}\s*(?:Act\s+[IVXLCDM]+\s*[—–-]\s*)?Branch\s*([A-Z0-9]+)\b/gi;
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(content)) !== null) {
+      const branchCode = match[1].toUpperCase();
+      const branchName = `Branch ${branchCode}`;
+      if (!branches.includes(branchName)) {
+        branches.push(branchName);
+      }
+    }
+    return branches;
+  }
+
+  isBranchVisible(branchKey: string, visibleBranches?: string[]): boolean {
+    if (!visibleBranches || visibleBranches.length === 0) {
+      return false;
+    }
+    const cleanKey = branchKey.trim().toLowerCase();
+    const letterMatch = cleanKey.match(/(?:branch\s*)?([a-z0-9]+)/i);
+    const coreKey = letterMatch ? letterMatch[1].toLowerCase() : cleanKey;
+
+    return visibleBranches.some(v => {
+      const cleanV = v.trim().toLowerCase();
+      if (cleanV === cleanKey) return true;
+      if (cleanV === `branch ${cleanKey}`) return true;
+      if (`branch ${cleanV}` === cleanKey) return true;
+      const vMatch = cleanV.match(/(?:branch\s*)?([a-z0-9]+)/i);
+      const coreV = vMatch ? vMatch[1].toLowerCase() : cleanV;
+      if (coreV === coreKey) return true;
+      if (cleanKey.includes(cleanV) || cleanV.includes(cleanKey)) return true;
+      return false;
+    });
   }
 
   // --- Title & Markdown Parsing ---
@@ -203,7 +259,12 @@ export class CampaignSessionsComponent implements OnInit {
     return '';
   }
 
-  private renderMarkdown(rawText: string, stripMainHeader = true): SafeHtml {
+  private renderMarkdown(
+    rawText: string,
+    stripMainHeader = true,
+    playerVisibleBranches: string[] = [],
+    isAdmin = false
+  ): SafeHtml {
     if (!rawText || !rawText.trim()) {
       return this.sanitizer.bypassSecurityTrustHtml('');
     }
@@ -219,6 +280,7 @@ export class CampaignSessionsComponent implements OnInit {
     const lines = text.split('\n');
     const resultHtml: string[] = [];
     let inList = false;
+    let isBranchActive = true;
 
     for (let i = 0; i < lines.length; i++) {
       const rawLine = lines[i];
@@ -238,43 +300,104 @@ export class CampaignSessionsComponent implements OnInit {
           resultHtml.push('</ul>');
           inList = false;
         }
-        resultHtml.push('<div class="narrative-hr"><span class="hr-diamond"></span></div>');
+        if (isBranchActive) {
+          resultHtml.push('<div class="narrative-hr"><span class="hr-diamond"></span></div>');
+        }
+        isBranchActive = true;
         continue;
       }
 
-      // Headings
+      // Check for Branch Headings (e.g. "#### Act II — Branch A: ...", "#### Branch A: ...")
+      const actBranchMatch = trimmed.match(/^#{1,5}\s*(?:Act\s+([IVXLCDM]+)\s*[—–-]\s*)?Branch\s*([A-Z0-9]+)\s*:\s*(.*)$/i);
+      if (actBranchMatch) {
+        if (inList) {
+          resultHtml.push('</ul>');
+          inList = false;
+        }
+        const actNum = actBranchMatch[1] ? actBranchMatch[1].toUpperCase() : '';
+        const branchCode = actBranchMatch[2].toUpperCase();
+        const branchName = `Branch ${branchCode}`;
+        const title = this.formatInline(actBranchMatch[3]);
+        const isPlayerVis = this.isBranchVisible(branchName, playerVisibleBranches);
+
+        isBranchActive = isAdmin || isPlayerVis;
+
+        if (isBranchActive) {
+          const actBadge = actNum ? `<span class="act-badge">ACT ${actNum}</span> ` : '';
+          const branchBadge = `<span class="branch-badge">BRANCH ${branchCode}</span> `;
+          const titleSpan = `<span class="heading-text">${title}</span>`;
+          const gmPill = isAdmin
+            ? (isPlayerVis
+              ? `<span class="branch-gm-pill branch-gm-pill--visible"><span class="material-icons pill-icon">visibility</span> Visible to Players</span>`
+              : `<span class="branch-gm-pill branch-gm-pill--hidden"><span class="material-icons pill-icon">visibility_off</span> GM Only</span>`)
+            : '';
+
+          resultHtml.push(`<h3 class="narrative-h3 heading--branch">${actBadge}${branchBadge}${titleSpan} ${gmPill}</h3>`);
+        }
+        continue;
+      }
+
+      // Headings (Non-branch)
       if (trimmed.startsWith('##### ')) {
         if (inList) { resultHtml.push('</ul>'); inList = false; }
+        isBranchActive = true;
         resultHtml.push(this.parseHeading(trimmed.substring(6), 5));
         continue;
       }
 
       if (trimmed.startsWith('#### ')) {
         if (inList) { resultHtml.push('</ul>'); inList = false; }
+        isBranchActive = true;
         resultHtml.push(this.parseHeading(trimmed.substring(5), 4));
         continue;
       }
 
       if (trimmed.startsWith('### ')) {
         if (inList) { resultHtml.push('</ul>'); inList = false; }
+        isBranchActive = true;
         resultHtml.push(this.parseHeading(trimmed.substring(4), 3));
         continue;
       }
 
       if (trimmed.startsWith('## ')) {
         if (inList) { resultHtml.push('</ul>'); inList = false; }
+        isBranchActive = true;
         resultHtml.push(this.parseHeading(trimmed.substring(3), 2));
+        continue;
+      }
+
+      // If currently inside a branch that is hidden from player, skip content
+      if (!isBranchActive) {
         continue;
       }
 
       // Bullet List Items
       const listMatch = trimmed.match(/^[-*]\s+(.*)$/);
       if (listMatch) {
+        const itemContent = listMatch[1];
+        // Check if list item specifies a branch (e.g. Outcome A, Branch A Combat Objectives)
+        let itemBranchCode: string | null = null;
+        const outcomeMatch = itemContent.match(/^\*\*Outcome\s*([A-Z0-9]+)\s*(?:\(([^)]+)\))?\s*:\*\*\s*(.*)$/i);
+        if (outcomeMatch) {
+          itemBranchCode = outcomeMatch[1].toUpperCase();
+        }
+        const branchCombatMatch = itemContent.match(/^\*\*Branch\s*([A-Z0-9]+)\s*(?:Combat\s+Objectives|Objectives)?\s*:\*\*\s*(.*)$/i);
+        if (branchCombatMatch) {
+          itemBranchCode = branchCombatMatch[1].toUpperCase();
+        }
+
+        if (itemBranchCode) {
+          const isItemVis = isAdmin || this.isBranchVisible(`Branch ${itemBranchCode}`, playerVisibleBranches);
+          if (!isItemVis) {
+            continue; // Skip hidden branch-specific objective/outcome in non-GM mode
+          }
+        }
+
         if (!inList) {
           resultHtml.push('<ul class="narrative-list">');
           inList = true;
         }
-        resultHtml.push(this.parseListItem(listMatch[1]));
+        resultHtml.push(this.parseListItem(itemContent, isAdmin, playerVisibleBranches));
         continue;
       }
 
@@ -297,21 +420,11 @@ export class CampaignSessionsComponent implements OnInit {
   private parseHeading(headingText: string, level: number): string {
     const formatted = this.formatInline(headingText);
 
-    // Act match: e.g. "Act I: The Proclamation...", "Act II — Branch A: ...", "Act III: ..."
-    const actBranchMatch = headingText.match(/^Act\s+([IVXLCDM]+)(?:\s*[—–-]\s*Branch\s*([A-Z0-9]+))?\s*:\s*(.*)$/i);
-    if (actBranchMatch) {
-      const actNum = actBranchMatch[1].toUpperCase();
-      const branch = actBranchMatch[2];
-      const title = this.formatInline(actBranchMatch[3]);
-
-      if (branch) {
-        return `<h3 class="narrative-h3 heading--branch">`
-          + `<span class="act-badge">ACT ${actNum}</span> `
-          + `<span class="branch-badge">BRANCH ${branch.toUpperCase()}</span> `
-          + `<span class="heading-text">${title}</span>`
-          + `</h3>`;
-      }
-
+    // Standard Act match: e.g. "Act I: The Proclamation...", "Act III: ..."
+    const actMatch = headingText.match(/^Act\s+([IVXLCDM]+)\s*:\s*(.*)$/i);
+    if (actMatch) {
+      const actNum = actMatch[1].toUpperCase();
+      const title = this.formatInline(actMatch[2]);
       return `<h3 class="narrative-h3 heading--act">`
         + `<span class="act-badge">ACT ${actNum}</span> `
         + `<span class="heading-text">${title}</span>`
@@ -370,7 +483,7 @@ export class CampaignSessionsComponent implements OnInit {
     return `<h3 class="narrative-h3"><span class="h4-ornament"></span> <span class="heading-text">${formatted}</span></h3>`;
   }
 
-  private parseListItem(rawItem: string): string {
+  private parseListItem(rawItem: string, isAdmin = false, playerVisibleBranches: string[] = []): string {
     // Check for Phase: "- **Phase 1 (Beach Landing):** ..."
     const phaseMatch = rawItem.match(/^\*\*Phase\s*(\d+)\s*(?:\(([^)]+)\))?\s*:\*\*\s*(.*)$/i);
     if (phaseMatch) {
@@ -423,16 +536,40 @@ export class CampaignSessionsComponent implements OnInit {
         + `</li>`;
     }
 
+    // Check for Branch Combat Objectives: "- **Branch A Combat Objectives:** ..."
+    const branchCombatMatch = rawItem.match(/^\*\*Branch\s*([A-Z0-9]+)\s*(?:Combat\s+Objectives|Objectives)?\s*:\*\*\s*(.*)$/i);
+    if (branchCombatMatch) {
+      const letter = branchCombatMatch[1].toUpperCase();
+      const rest = this.formatInline(branchCombatMatch[2]);
+      const isPlayerVis = this.isBranchVisible(`Branch ${letter}`, playerVisibleBranches);
+      const tagClass = letter === 'A' ? 'tag--outcome-a' : 'tag--outcome-b';
+      const gmStatus = isAdmin
+        ? (isPlayerVis
+          ? `<span class="item-gm-status item-gm-status--visible">(Player Visible)</span> `
+          : `<span class="item-gm-status item-gm-status--hidden">(GM Only)</span> `)
+        : '';
+      return `<li class="narrative-list-item item--branch-combat">`
+        + `<span class="narrative-tag ${tagClass}"><span class="material-icons tag-icon">sports_kabaddi</span> Branch ${letter} Objectives</span> `
+        + `${gmStatus}<span class="item-body">${rest}</span>`
+        + `</li>`;
+    }
+
     // Check for Outcome A / Outcome B: "- **Outcome A (...):** ..."
     const outcomeMatch = rawItem.match(/^\*\*Outcome\s*([A-Z0-9]+)\s*(?:\(([^)]+)\))?\s*:\*\*\s*(.*)$/i);
     if (outcomeMatch) {
       const letter = outcomeMatch[1].toUpperCase();
       const label = outcomeMatch[2] ? ` (${outcomeMatch[2]})` : '';
       const rest = this.formatInline(outcomeMatch[3]);
+      const isPlayerVis = this.isBranchVisible(`Branch ${letter}`, playerVisibleBranches);
       const tagClass = letter === 'A' ? 'tag--outcome-a' : 'tag--outcome-b';
+      const gmStatus = isAdmin
+        ? (isPlayerVis
+          ? `<span class="item-gm-status item-gm-status--visible">(Player Visible)</span> `
+          : `<span class="item-gm-status item-gm-status--hidden">(GM Only)</span> `)
+        : '';
       return `<li class="narrative-list-item item--outcome">`
         + `<span class="narrative-tag ${tagClass}">OUTCOME ${letter}${label}</span> `
-        + `<span class="item-body">${rest}</span>`
+        + `${gmStatus}<span class="item-body">${rest}</span>`
         + `</li>`;
     }
 

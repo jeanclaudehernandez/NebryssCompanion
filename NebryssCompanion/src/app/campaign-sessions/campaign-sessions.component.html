@@ -67,6 +67,15 @@
               <span class="session-badge session-badge--draft" *ngIf="!entry.isConcluded && isAdmin">
                 <span class="material-icons">edit_note</span> Draft — GM Only
               </span>
+              <span class="session-badge session-badge--branches-gm" *ngIf="entry.branches.length > 0 && isAdmin" [title]="'Branches: ' + entry.branches.join(', ')">
+                <span class="material-icons">alt_route</span> Branches ({{ entry.visibleBranchesCount }}/{{ entry.branches.length }} Visible)
+              </span>
+              <span class="session-badge session-badge--branches-player" *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount > 0">
+                <span class="material-icons">alt_route</span> {{ entry.playerBranchesLabel }}
+              </span>
+              <span class="session-badge session-badge--branches-pending" *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount === 0">
+                <span class="material-icons">alt_route</span> Path Undecided
+              </span>
             </div>
           </div>
         </div>
