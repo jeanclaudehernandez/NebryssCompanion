@@ -456,19 +456,92 @@ export class CampaignSessionsComponent implements OnInit {
       (_match, type: EntityType, tagContent: string) => {
         const { id, name } = this.resolveEntity(type, tagContent.trim());
         const config = ENTITY_CONFIG[type];
+        const isDiscovered = this.isEntityDiscovered(type, id, name);
+        const undiscoveredClass = isDiscovered ? '' : 'entity-chip--undiscovered';
+        const titleText = isDiscovered
+          ? `Navigate to ${config.label}: ${name}`
+          : `${config.label}: ${name} (Undiscovered)`;
 
-        return `<span class="entity-chip ${config.cssClass}" `
+        return `<span class="entity-chip ${config.cssClass} ${undiscoveredClass}" `
           + `data-entity-type="${type}" `
           + `data-entity-id="${id}" `
           + `data-entity-name="${name}" `
-          + `role="button" tabindex="0" `
-          + `title="Navigate to ${config.label}: ${name}">`
+          + `data-discovered="${isDiscovered}" `
+          + `role="${isDiscovered ? 'button' : 'text'}" `
+          + `tabindex="${isDiscovered ? '0' : '-1'}" `
+          + `title="${titleText}">`
           + `${name}`
           + `</span>`;
       }
     );
 
     return escaped;
+  }
+
+  isEntityDiscovered(type: EntityType, id: number, nameHint = ''): boolean {
+    if (this.isAdmin) {
+      return true;
+    }
+
+    switch (type) {
+      case 'player': {
+        const player = (id > 0 ? this.lookup.players.find(p => p.id === id) : null)
+          || (nameHint ? this.lookup.players.find(p => p.name.toLowerCase() === nameHint.toLowerCase()) : null);
+        return !!player;
+      }
+      case 'npc': {
+        const npc = (id > 0 ? this.lookup.npcs.find(n => n.id === id) : null)
+          || (nameHint ? this.lookup.npcs.find(n => n.name.toLowerCase() === nameHint.toLowerCase()) : null);
+        if (!npc || npc.discovered === false) {
+          return false;
+        }
+        if (npc.location) {
+          const loc = this.lookup.locations.find(l => l.name.trim().toLowerCase() === npc.location!.trim().toLowerCase());
+          if (loc && (loc.discovered === false || (loc.isSecret && !loc.isSecretRevealed))) {
+            return false;
+          }
+        }
+        return true;
+      }
+      case 'location': {
+        const location = (id > 0 ? this.lookup.locations.find(l => l.id === id) : null)
+          || (nameHint ? this.lookup.locations.find(l => l.name.toLowerCase() === nameHint.toLowerCase()) : null);
+        if (!location) {
+          return false;
+        }
+        return location.discovered !== false && (!location.isSecret || !!location.isSecretRevealed);
+      }
+      case 'shop': {
+        const shop = (id > 0 ? this.lookup.shops.find(s => s.id === id) : null)
+          || (nameHint ? this.lookup.shops.find(s => s.name.toLowerCase() === nameHint.toLowerCase()) : null);
+        if (!shop || shop.discovered === false) {
+          return false;
+        }
+        if (shop.locationId) {
+          const loc = this.lookup.locations.find(l => l.id === shop.locationId);
+          if (loc && (loc.discovered === false || (loc.isSecret && !loc.isSecretRevealed))) {
+            return false;
+          }
+        } else if (shop.locationName || shop.location) {
+          const locName = (shop.locationName || shop.location || '').trim().toLowerCase();
+          const loc = this.lookup.locations.find(l => l.name.trim().toLowerCase() === locName);
+          if (loc && (loc.discovered === false || (loc.isSecret && !loc.isSecretRevealed))) {
+            return false;
+          }
+        }
+        return true;
+      }
+      case 'bestiary': {
+        const creature = (id > 0 ? this.lookup.bestiary.find(b => b.id === id) : null)
+          || (nameHint ? this.lookup.bestiary.find(b => b.name.toLowerCase() === nameHint.toLowerCase()) : null);
+        if (!creature) {
+          return false;
+        }
+        return creature.isDiscovered !== false && (creature as any).discovered !== false;
+      }
+      default:
+        return true;
+    }
   }
 
   private resolveEntity(type: EntityType, tagContent: string): { id: number; name: string } {
@@ -560,13 +633,16 @@ export class CampaignSessionsComponent implements OnInit {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
     const entityType = chip.getAttribute('data-entity-type') as EntityType;
     const entityId = parseInt(chip.getAttribute('data-entity-id') || '0', 10);
     const entityName = chip.getAttribute('data-entity-name') || '';
 
+    if (!this.isEntityDiscovered(entityType, entityId, entityName)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
     this.navigateToEntity(entityType, entityId, entityName);
   }
 
@@ -581,14 +657,23 @@ export class CampaignSessionsComponent implements OnInit {
       return;
     }
 
-    event.preventDefault();
     const entityType = target.getAttribute('data-entity-type') as EntityType;
     const entityId = parseInt(target.getAttribute('data-entity-id') || '0', 10);
     const entityName = target.getAttribute('data-entity-name') || '';
+
+    if (!this.isEntityDiscovered(entityType, entityId, entityName)) {
+      return;
+    }
+
+    event.preventDefault();
     this.navigateToEntity(entityType, entityId, entityName);
   }
 
   private navigateToEntity(type: EntityType, id: number, nameHint = ''): void {
+    if (!this.isEntityDiscovered(type, id, nameHint)) {
+      return;
+    }
+
     switch (type) {
       case 'player': {
         const player = (id > 0 ? this.lookup.players.find(p => p.id === id) : null)

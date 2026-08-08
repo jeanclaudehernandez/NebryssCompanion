@@ -696,6 +696,18 @@
   opacity: 0.8;
 }
 
+/* --- Undiscovered References (Non-clickable / Default Cursor) --- */
+:host ::ng-deep .entity-chip--undiscovered {
+  cursor: default !important;
+  pointer-events: none;
+}
+
+:host ::ng-deep .entity-chip--undiscovered:hover {
+  transform: none !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
 /* --- Player References (Purple) --- */
 :host ::ng-deep .entity-chip--player {
   color: #c084fc;

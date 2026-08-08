@@ -267,12 +267,21 @@ export class ShopsComponent implements OnInit, OnDestroy {
     });
 
     const processedShops = visibleShops.map(shop => {
-      const categoriesData: ShopCategoryData[] = (shop.categories || []).map(catId => {
+      const categoryIdSet = new Set<number>(shop.categories || []);
+      this.itemsCategories.forEach(cat => {
+        if (this.getShopItemsWithPrices(shop, cat.key).length > 0) {
+          categoryIdSet.add(cat.id);
+        }
+      });
+
+      const categoriesData: ShopCategoryData[] = Array.from(categoryIdSet).map(catId => {
         const category = this.findCategory(catId);
         if (!category) return null;
+        const items = this.getShopItemsWithPrices(shop, category.key);
+        if (items.length === 0) return null;
         return {
           category,
-          items: this.getShopItemsWithPrices(shop, category.key)
+          items
         };
       }).filter((d): d is ShopCategoryData => d !== null);
 

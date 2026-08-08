@@ -496,6 +496,18 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
 
     this.isSaving = true;
 
+    // Collect all category IDs present in the shop
+    const shopCategoryIds = new Set<number>();
+    this.shopItems.filter(si => si.type !== 'weapon').forEach(si => {
+      const itemDef = this.itemsList.find(i => i.id === si.id);
+      if (itemDef?.type) {
+        const cat = this.itemCategories.find(c => c.key === itemDef.type);
+        if (cat) {
+          shopCategoryIds.add(cat.id);
+        }
+      }
+    });
+
     const shopData: Shop = {
       id: this.id ?? 0,
       name: this.name.trim(),
@@ -505,6 +517,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
       location: this.location.trim() || this.locationName.trim(),
       description: this.description.trim() || undefined,
       discovered: this.discovered,
+      categories: Array.from(shopCategoryIds),
       imgUrl: this.imgUrl.trim() || undefined,
       thumbnail: this.thumbnail.trim() || undefined,
       paymentMethod: {

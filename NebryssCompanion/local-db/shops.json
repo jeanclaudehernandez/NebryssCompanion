@@ -10,6 +10,9 @@
     "discovered": true,
     "imgUrl": "https://iili.io/CSTieSe.png",
     "thumbnail": "https://iili.io/CSTieSe.th.png",
+    "categories": [
+      2
+    ],
     "paymentMethod": {
       "digital": false,
       "physical": true
