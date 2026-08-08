@@ -14,6 +14,8 @@
     "build:stats": "ng build --configuration optimized --stats-json",
     "analyze": "webpack-bundle-analyzer dist/nebryss-companion/stats.json",
     "start:duckdns": "node scripts/start-duckdns.js",
+    "start:local": "node scripts/start-local.js",
+    "dev:local": "node scripts/start-local.js",
     "update:duckdns": "node scripts/duckdns-updater.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
