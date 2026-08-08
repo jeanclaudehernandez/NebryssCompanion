@@ -203,17 +203,21 @@ Triggered when the user asks to conclude, finalize, or record the outcome of a s
    - *Decisions & Forks:* Which choices did the players make at key narrative branches?
    - *Loot & Upgrades:* Any gear purchased at `@shop[<id>]` or salvaged from combat?
 
-3. **Print Narrative Conclusion Draft in Chat:**
+3. **Branch Visibility Handling (Player-Visible vs GM-Only):**
+   - **For sessions with branching paths (e.g. Branch A / Branch B)**: When the user/GM indicates that the players chose or completed a specific branch (e.g. Branch A), **ONLY the chosen/completed branch(es) must be added to `playerVisibleBranches` (e.g. `["Branch A"]` or `["Branch A: <Branch Title>"]`)**.
+   - Any unexplored, unchosen, or alternative branches must **NOT** be added to `playerVisibleBranches` so that they remain strictly GM-only and hidden from player views.
+
+4. **Print Narrative Conclusion Draft in Chat:**
    Synthesize answers into standard conclusion sections and print in chat for user feedback:
    - **Summary of Action:** Concise recap of journey and skirmishes.
    - **Combat Aftermath:** Character performance, casualties, defeated enemies.
    - **Decisions & Consequences:** The path chosen and its immediate world impact.
    - **Current State:** Resting location, player wounds/afflictions, next hooks.
 
-4. **Insert & Finalize Conclusion upon Chat Approval:**
+5. **Insert & Finalize Conclusion upon Chat Approval:**
    Only when the user explicitly says **"approve"** in chat:
    ```bash
-   node ./scripts/campaign-session-tool.js finalize --campaignId=<id> --sessionId=<num> --conclussion="<approved conclusion>"
+   node ./scripts/campaign-session-tool.js finalize --campaignId=<id> --sessionId=<num> --conclussion="<approved conclusion>" --branches="Branch A: <Title>"
    ```
 
 ---

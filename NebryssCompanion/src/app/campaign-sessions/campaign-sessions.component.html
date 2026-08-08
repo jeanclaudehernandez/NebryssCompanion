@@ -8,7 +8,6 @@
       <span class="material-icons sessions-title-icon">menu_book</span>
       Campaign Chronicles
     </h2>
-    <p class="sessions-subtitle">A chronicle of your adventures across Nebryss</p>
     <div class="sessions-header-ornament"></div>
   </div>
 
@@ -39,20 +38,11 @@
 
   <!-- Session Cards -->
   <div class="sessions-list" *ngIf="!isLoading && hasSessions">
-    <div
-      *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId"
-      class="session-card"
-      [class.session-card--expanded]="entry.expanded"
-      [class.session-card--draft]="!entry.isConcluded"
-    >
+    <div *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId" class="session-card"
+      [class.session-card--expanded]="entry.expanded" [class.session-card--draft]="!entry.isConcluded">
       <!-- Session Header -->
-      <button
-        type="button"
-        class="session-card-header"
-        (click)="toggleSession(i)"
-        [attr.aria-expanded]="entry.expanded"
-        [attr.aria-label]="'Toggle Session ' + entry.session.sessionId"
-      >
+      <button type="button" class="session-card-header" (click)="toggleSession(i)" [attr.aria-expanded]="entry.expanded"
+        [attr.aria-label]="'Toggle Session ' + entry.session.sessionId">
         <div class="session-card-header-left">
           <span class="session-number-badge">{{ entry.session.sessionId }}</span>
           <div class="session-header-text">
@@ -67,13 +57,17 @@
               <span class="session-badge session-badge--draft" *ngIf="!entry.isConcluded && isAdmin">
                 <span class="material-icons">edit_note</span> Draft — GM Only
               </span>
-              <span class="session-badge session-badge--branches-gm" *ngIf="entry.branches.length > 0 && isAdmin" [title]="'Branches: ' + entry.branches.join(', ')">
-                <span class="material-icons">alt_route</span> Branches ({{ entry.visibleBranchesCount }}/{{ entry.branches.length }} Visible)
+              <span class="session-badge session-badge--branches-gm" *ngIf="entry.branches.length > 0 && isAdmin"
+                [title]="'Branches: ' + entry.branches.join(', ')">
+                <span class="material-icons">alt_route</span> Branches ({{ entry.visibleBranchesCount }}/{{
+                entry.branches.length }} Visible)
               </span>
-              <span class="session-badge session-badge--branches-player" *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount > 0">
+              <span class="session-badge session-badge--branches-player"
+                *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount > 0">
                 <span class="material-icons">alt_route</span> {{ entry.playerBranchesLabel }}
               </span>
-              <span class="session-badge session-badge--branches-pending" *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount === 0">
+              <span class="session-badge session-badge--branches-pending"
+                *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount === 0">
                 <span class="material-icons">alt_route</span> Path Undecided
               </span>
             </div>
@@ -96,7 +90,8 @@
           </div>
 
           <!-- Ornamental Divider -->
-          <div class="session-divider" *ngIf="entry.session.content && (entry.isConcluded || (isAdmin && entry.session.conclussion))">
+          <div class="session-divider"
+            *ngIf="entry.session.content && (entry.isConcluded || (isAdmin && entry.session.conclussion))">
             <span class="session-divider-diamond"></span>
           </div>
 
