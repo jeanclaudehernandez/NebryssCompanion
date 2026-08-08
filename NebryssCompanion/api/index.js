@@ -983,7 +983,16 @@ if (fs.existsSync(staticPath)) {
 
 const port = process.env.PORT || 8080;
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`[Server] Port ${port} is already in use by another process. Please close it and retry.`);
+  } else {
+    console.error('[Server] Listen error:', err);
+  }
+});
+
 server.listen(port, () => {
   process.stdout.write(`API & WebSocket server listening on port ${port}\n`);
 });
+
 
