@@ -6,17 +6,7 @@
   },
   {
     "id": 2,
-    "name": "test new campaign",
-    "prefix": "test"
-  },
-  {
-    "id": 3,
-    "name": "test",
-    "prefix": "test"
-  },
-  {
-    "id": 4,
-    "name": "testamento",
-    "prefix": "test"
+    "name": "DevTesting",
+    "prefix": "testing"
   }
 ]
