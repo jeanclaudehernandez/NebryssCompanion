@@ -1710,3 +1710,480 @@ body.dark-theme .gm-edit-btn {
   background: rgba(59, 130, 246, 0.2);
   color: #60a5fa;
 }
+
+/* ==========================================================================
+   CHARACTER LORE SKINS SYSTEM (GRIMDARK ARTWORK & SINGLE-FRAME ARCHITECTURE)
+   ========================================================================== */
+
+.header-action-btn.skin-toggle-btn.active {
+  color: #f3ca40 !important;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.8) !important;
+  border-color: rgba(212, 175, 55, 0.6) !important;
+  background: rgba(212, 175, 55, 0.15) !important;
+}
+
+/* --------------------------------------------------------------------------
+   STRICT BORDER HIERARCHY (ELIMINATES TRIPLE MARCO NESTED BOXES)
+   -------------------------------------------------------------------------- */
+body[class*="skin-"] .player-list-container,
+body[class*="skin-"] .player-detail-container,
+body[class*="skin-"] .table-container,
+body[class*="skin-"] .category-block,
+body[class*="skin-"] .category-content,
+body[class*="skin-"] .table-scroll-wrapper,
+body[class*="skin-"] .section-block,
+body.akrina-theme .player-list-container,
+body.akrina-theme .player-detail-container,
+body.akrina-theme .table-container,
+body.akrina-theme .category-block,
+body.akrina-theme .category-content,
+body.akrina-theme .table-scroll-wrapper,
+body.akrina-theme .section-block {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  margin: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Table Category Headers: Clean Underline Bar, NO BOX RECTANGLE */
+body[class*="skin-"] .table-header,
+body.akrina-theme .table-header {
+  border: none !important;
+  box-shadow: none !important;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 0%, transparent 90%) !important;
+  border-bottom: 2px solid var(--accent-color, #d4af37) !important;
+  border-radius: 0 !important;
+  padding: 8px 4px !important;
+  margin-top: 10px !important;
+  margin-bottom: 8px !important;
+}
+
+/* ONLY .player-card gets 1 single main outer frame */
+body[class*="skin-"] .player-card,
+body.akrina-theme .player-card {
+  border: 1.5px solid var(--header-border, #d4af37) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(0, 0, 0, 0.8) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Inner Sections (.profile, .ability, .item, .weapon-card): Borderless Slate Strips */
+body[class*="skin-"] .player-card .profile,
+body[class*="skin-"] .player-card .ability,
+body[class*="skin-"] .player-card .item,
+body[class*="skin-"] .player-card .weapon-card,
+body.akrina-theme .player-card .profile,
+body.akrina-theme .player-card .ability,
+body.akrina-theme .player-card .item,
+body.akrina-theme .player-card .weapon-card {
+  border: none !important;
+  border-left: 3.5px solid var(--accent-color, #d4af37) !important;
+  background: rgba(0, 0, 0, 0.38) !important;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 4px !important;
+  margin: 6px 0 !important;
+}
+
+/* Deep Canvas Grimdark Vignette Filter */
+body[class*="skin-"]::after,
+body.akrina-theme::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.65) 100%);
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   1. WENDY - Astra Militarum Field Medic (Cadian Stencil & Field Medic Cross)
+   -------------------------------------------------------------------------- */
+body.skin-wendy {
+  background-color: #10190f !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(46, 117, 89, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(20, 32, 18, 0.95) 0%, rgba(8, 14, 8, 0.98) 100%),
+    repeating-linear-gradient(45deg, rgba(78, 124, 65, 0.03) 0px, rgba(78, 124, 65, 0.03) 2px, transparent 2px, transparent 8px) !important;
+  color: #e2e8f0 !important;
+  --header-bg: linear-gradient(180deg, rgba(24, 38, 22, 0.98) 0%, rgba(12, 19, 11, 0.98) 100%);
+  --header-border: #4e7c41;
+  --header-fg: #a2e091;
+  --footer-menu-bg: linear-gradient(0deg, rgba(20, 32, 18, 0.98) 0%, rgba(8, 14, 8, 0.98) 100%);
+  --footer-menu-border: #4e7c41;
+  --footer-menu-active: #a2e091;
+  --accent-color: #4e7c41;
+  --card-bg: #142213;
+}
+
+body.skin-wendy h1, body.skin-wendy h2, body.skin-wendy h3, body.skin-wendy h4, body.skin-wendy h5, body.skin-wendy h6,
+body.skin-wendy .header-title, body.skin-wendy .player-name, body.skin-wendy .card-title, body.skin-wendy .section-title, body.skin-wendy .option-main {
+  font-family: 'Cinzel', 'Roboto', sans-serif !important;
+  color: #a2e091 !important;
+  text-shadow: 0 0 8px rgba(162, 224, 145, 0.4) !important;
+  letter-spacing: 0.5px;
+}
+
+body.skin-wendy .app-header { border-bottom: 2px solid #4e7c41 !important; }
+body.skin-wendy .active-player-chip {
+  background: linear-gradient(135deg, #1b4d24 0%, #0d2912 100%) !important;
+  border: 1.5px solid #4e7c41 !important;
+  color: #d5e8cf !important;
+}
+
+body.skin-wendy .player-card { background: linear-gradient(145deg, #162415 0%, #0c150c 100%) !important; }
+
+body.skin-wendy button:not(.header-action-btn), body.skin-wendy .btn, body.skin-wendy .action-btn {
+  background: linear-gradient(135deg, #2e5a27 0%, #153311 100%) !important;
+  border: 1px solid #62a353 !important;
+  color: #e2f5de !important;
+}
+
+/* --------------------------------------------------------------------------
+   2. THENNUR - Fellgor Shaman (Emerald Mist & Primal Glyphs)
+   -------------------------------------------------------------------------- */
+body.skin-thennur {
+  background-color: #05140d !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 230, 118, 0.22) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(10, 36, 24, 0.95) 0%, rgba(4, 15, 10, 0.98) 100%) !important;
+  color: #e0e0ce !important;
+  --header-bg: linear-gradient(180deg, rgba(14, 42, 29, 0.98) 0%, rgba(7, 21, 14, 0.98) 100%);
+  --header-border: #00e676;
+  --header-fg: #69f0ae;
+  --footer-menu-bg: linear-gradient(0deg, rgba(10, 36, 24, 0.98) 0%, rgba(4, 15, 10, 0.98) 100%);
+  --footer-menu-border: #00e676;
+  --footer-menu-active: #00e676;
+  --accent-color: #00e676;
+}
+
+body.skin-thennur h1, body.skin-thennur h2, body.skin-thennur h3, body.skin-thennur h4, body.skin-thennur h5, body.skin-thennur h6,
+body.skin-thennur .header-title, body.skin-thennur .player-name, body.skin-thennur .card-title, body.skin-thennur .section-title, body.skin-thennur .option-main {
+  font-family: 'Cinzel', serif !important;
+  color: #69f0ae !important;
+  text-shadow: 0 0 10px rgba(0, 230, 118, 0.6) !important;
+}
+
+body.skin-thennur .app-header { border-bottom: 2px solid #00e676 !important; }
+body.skin-thennur .active-player-chip {
+  background: linear-gradient(135deg, #1b5e20 0%, #0a3810 100%) !important;
+  border: 1.5px solid #00e676 !important;
+  color: #b9f6ca !important;
+}
+
+body.skin-thennur .player-card { background: linear-gradient(145deg, #0b2217 0%, #05120c 100%) !important; }
+
+body.skin-thennur button:not(.header-action-btn), body.skin-thennur .btn, body.skin-thennur .action-btn {
+  background: linear-gradient(135deg, #1b5e20 0%, #0d3b13 100%) !important;
+  border: 1px solid #00e676 !important;
+  color: #e8f5e9 !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. AKRINA V. - Rogue Trader (Warhammer 40k Imperial Gold & Crimson)
+   -------------------------------------------------------------------------- */
+body.skin-akrina, body.akrina-theme {
+  background-color: #0a070a !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(139, 0, 0, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(20, 11, 21, 0.95) 0%, rgba(8, 4, 8, 0.98) 100%),
+    repeating-linear-gradient(0deg, rgba(212, 175, 55, 0.02) 0px, rgba(212, 175, 55, 0.02) 1px, transparent 1px, transparent 4px) !important;
+  color: #f3e9d2 !important;
+  font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+  --header-bg: linear-gradient(180deg, rgba(32, 6, 9, 0.98) 0%, rgba(14, 3, 5, 0.98) 100%);
+  --header-border: #d4af37;
+  --header-fg: #f5e6be;
+  --footer-menu-bg: linear-gradient(0deg, rgba(28, 5, 8, 0.98) 0%, rgba(12, 2, 4, 0.98) 100%);
+  --footer-menu-border: #d4af37;
+  --footer-menu-active: #ffe89e;
+  --accent-color: #d4af37;
+}
+
+body.skin-akrina h1, body.skin-akrina h2, body.skin-akrina h3, body.skin-akrina h4, body.skin-akrina h5, body.skin-akrina h6,
+body.skin-akrina .header-title, body.skin-akrina .player-name, body.skin-akrina .card-title, body.skin-akrina .section-title, body.skin-akrina .option-main,
+body.akrina-theme h1, body.akrina-theme h2, body.akrina-theme h3, body.akrina-theme h4, body.akrina-theme h5, body.akrina-theme h6,
+body.akrina-theme .header-title, body.akrina-theme .player-name, body.akrina-theme .card-title, body.akrina-theme .section-title, body.akrina-theme .option-main {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  color: #f3ca40 !important;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4), 0 2px 4px rgba(0, 0, 0, 0.9) !important;
+  letter-spacing: 0.6px;
+}
+
+body.skin-akrina .app-header, body.akrina-theme .app-header { border-bottom: 2px solid #d4af37 !important; }
+body.skin-akrina .active-player-chip, body.akrina-theme .active-player-chip {
+  background: linear-gradient(135deg, #7a0c0c 0%, #300000 100%) !important;
+  border: 1.5px solid #d4af37 !important;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5), inset 0 0 8px rgba(252, 211, 77, 0.2) !important;
+  color: #fff3d1 !important;
+}
+
+body.skin-akrina .player-card, body.akrina-theme .player-card { background: linear-gradient(145deg, #180d19 0%, #0d060e 100%) !important; }
+
+body.skin-akrina button:not(.header-action-btn), body.skin-akrina .btn, body.skin-akrina .action-btn,
+body.akrina-theme button:not(.header-action-btn), body.akrina-theme .btn, body.akrina-theme .action-btn {
+  background: linear-gradient(135deg, #7a0c0c 0%, #300000 100%) !important;
+  border: 1px solid #d4af37 !important;
+  color: #ffe89e !important;
+}
+
+/* --------------------------------------------------------------------------
+   4. XARION VEX - Abyssal Oracle Sorcerer (Tzeentch Sapphire & Warp Teal)
+   -------------------------------------------------------------------------- */
+body.skin-xarion {
+  background-color: #060c18 !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 245, 212, 0.25) 0%, transparent 60%),
+    radial-gradient(circle at 50% 100%, rgba(128, 90, 213, 0.2) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(12, 20, 38, 0.95) 0%, rgba(5, 9, 18, 0.98) 100%) !important;
+  color: #e2e8f0 !important;
+  --header-bg: linear-gradient(180deg, rgba(14, 25, 48, 0.98) 0%, rgba(6, 12, 24, 0.98) 100%);
+  --header-border: #00f5d4;
+  --header-fg: #00f5d4;
+  --footer-menu-bg: linear-gradient(0deg, rgba(12, 20, 38, 0.98) 0%, rgba(5, 9, 18, 0.98) 100%);
+  --footer-menu-border: #00f5d4;
+  --footer-menu-active: #00f5d4;
+  --accent-color: #00f5d4;
+}
+
+body.skin-xarion h1, body.skin-xarion h2, body.skin-xarion h3, body.skin-xarion h4, body.skin-xarion h5, body.skin-xarion h6,
+body.skin-xarion .header-title, body.skin-xarion .player-name, body.skin-xarion .card-title, body.skin-xarion .section-title, body.skin-xarion .option-main {
+  font-family: 'Cinzel', serif !important;
+  color: #00f5d4 !important;
+  text-shadow: 0 0 12px rgba(0, 245, 212, 0.6) !important;
+}
+
+body.skin-xarion .app-header { border-bottom: 2px solid #00f5d4 !important; }
+body.skin-xarion .active-player-chip {
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%) !important;
+  border: 1.5px solid #00f5d4 !important;
+  color: #ccfbf1 !important;
+}
+
+body.skin-xarion .player-card { background: linear-gradient(145deg, #0e1b33 0%, #070e1b 100%) !important; }
+
+body.skin-xarion button:not(.header-action-btn), body.skin-xarion .btn, body.skin-xarion .action-btn {
+  background: linear-gradient(135deg, #1e40af 0%, #1e1b4b 100%) !important;
+  border: 1px solid #00f5d4 !important;
+  color: #e0f2fe !important;
+}
+
+/* --------------------------------------------------------------------------
+   5. TELLURIUS - Warp Mist Golem (Granite Stone & Bioluminescent Purple)
+   -------------------------------------------------------------------------- */
+body.skin-tellurius {
+  background-color: #0b0c12 !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(157, 78, 221, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(18, 20, 28, 0.95) 0%, rgba(8, 9, 13, 0.98) 100%) !important;
+  color: #e2e8f0 !important;
+  --header-bg: linear-gradient(180deg, rgba(25, 27, 40, 0.98) 0%, rgba(12, 13, 20, 0.98) 100%);
+  --header-border: #9f7aea;
+  --header-fg: #d8b4fe;
+  --footer-menu-bg: linear-gradient(0deg, rgba(18, 20, 28, 0.98) 0%, rgba(8, 9, 13, 0.98) 100%);
+  --footer-menu-border: #9f7aea;
+  --footer-menu-active: #c084fc;
+  --accent-color: #9f7aea;
+}
+
+body.skin-tellurius h1, body.skin-tellurius h2, body.skin-tellurius h3, body.skin-tellurius h4, body.skin-tellurius h5, body.skin-tellurius h6,
+body.skin-tellurius .header-title, body.skin-tellurius .player-name, body.skin-tellurius .card-title, body.skin-tellurius .section-title, body.skin-tellurius .option-main {
+  font-family: 'Cinzel', serif !important;
+  color: #d8b4fe !important;
+  text-shadow: 0 0 10px rgba(157, 78, 221, 0.6) !important;
+}
+
+body.skin-tellurius .app-header { border-bottom: 2px solid #9f7aea !important; }
+body.skin-tellurius .active-player-chip {
+  background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%) !important;
+  border: 1.5px solid #9f7aea !important;
+  color: #f3e8ff !important;
+}
+
+body.skin-tellurius .player-card { background: linear-gradient(145deg, #171a26 0%, #0a0b10 100%) !important; }
+
+body.skin-tellurius button:not(.header-action-btn), body.skin-tellurius .btn, body.skin-tellurius .action-btn {
+  background: linear-gradient(135deg, #581c87 0%, #2e1065 100%) !important;
+  border: 1px solid #c084fc !important;
+  color: #f3e8ff !important;
+}
+
+/* --------------------------------------------------------------------------
+   6. TECHMARINE VAREK BASTION - Omnissiah Forge (Mars Rust Red & Forge Orange)
+   -------------------------------------------------------------------------- */
+body.skin-varek {
+  background-color: #140606 !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(255, 152, 0, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(36, 9, 9, 0.95) 0%, rgba(15, 4, 4, 0.98) 100%),
+    repeating-linear-gradient(0deg, rgba(255, 183, 3, 0.02) 0px, rgba(255, 183, 3, 0.02) 1px, transparent 1px, transparent 4px) !important;
+  color: #fef3c7 !important;
+  --header-bg: linear-gradient(180deg, rgba(42, 10, 10, 0.98) 0%, rgba(18, 4, 4, 0.98) 100%);
+  --header-border: #ff9800;
+  --header-fg: #ffb703;
+  --footer-menu-bg: linear-gradient(0deg, rgba(36, 9, 9, 0.98) 0%, rgba(15, 4, 4, 0.98) 100%);
+  --footer-menu-border: #ff9800;
+  --footer-menu-active: #ffb703;
+  --accent-color: #ff9800;
+}
+
+body.skin-varek h1, body.skin-varek h2, body.skin-varek h3, body.skin-varek h4, body.skin-varek h5, body.skin-varek h6,
+body.skin-varek .header-title, body.skin-varek .player-name, body.skin-varek .card-title, body.skin-varek .section-title, body.skin-varek .option-main {
+  font-family: 'Cinzel', sans-serif !important;
+  color: #ffb703 !important;
+  text-shadow: 0 0 10px rgba(255, 183, 3, 0.6) !important;
+}
+
+body.skin-varek .app-header { border-bottom: 2px solid #ff9800 !important; }
+body.skin-varek .active-player-chip {
+  background: linear-gradient(135deg, #7c2d12 0%, #451a03 100%) !important;
+  border: 1.5px solid #ff9800 !important;
+  color: #fef3c7 !important;
+}
+
+body.skin-varek .player-card { background: linear-gradient(145deg, #220a0a 0%, #100404 100%) !important; }
+
+body.skin-varek button:not(.header-action-btn), body.skin-varek .btn, body.skin-varek .action-btn {
+  background: linear-gradient(135deg, #9a3412 0%, #431407 100%) !important;
+  border: 1px solid #ffb703 !important;
+  color: #fff7ed !important;
+}
+
+/* --------------------------------------------------------------------------
+   7. CASSIOS EDILECTO - Imperial Crusader (Knightly Cobalt & Holy Gold)
+   -------------------------------------------------------------------------- */
+body.skin-cassios {
+  background-color: #080e1f !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(234, 179, 8, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(12, 18, 34, 0.95) 0%, rgba(6, 9, 17, 0.98) 100%) !important;
+  color: #f8fafc !important;
+  --header-bg: linear-gradient(180deg, rgba(16, 26, 48, 0.98) 0%, rgba(8, 13, 24, 0.98) 100%);
+  --header-border: #eab308;
+  --header-fg: #fef08a;
+  --footer-menu-bg: linear-gradient(0deg, rgba(12, 18, 34, 0.98) 0%, rgba(6, 9, 17, 0.98) 100%);
+  --footer-menu-border: #eab308;
+  --footer-menu-active: #fef08a;
+  --accent-color: #eab308;
+}
+
+body.skin-cassios h1, body.skin-cassios h2, body.skin-cassios h3, body.skin-cassios h4, body.skin-cassios h5, body.skin-cassios h6,
+body.skin-cassios .header-title, body.skin-cassios .player-name, body.skin-cassios .card-title, body.skin-cassios .section-title, body.skin-cassios .option-main {
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  color: #fef08a !important;
+  text-shadow: 0 0 10px rgba(234, 179, 8, 0.6) !important;
+}
+
+body.skin-cassios .app-header { border-bottom: 2px solid #eab308 !important; }
+body.skin-cassios .active-player-chip {
+  background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%) !important;
+  border: 1.5px solid #eab308 !important;
+  color: #fef08a !important;
+}
+
+body.skin-cassios .player-card { background: linear-gradient(145deg, #152033 0%, #0a101a 100%) !important; }
+
+body.skin-cassios button:not(.header-action-btn), body.skin-cassios .btn, body.skin-cassios .action-btn {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e1b4b 100%) !important;
+  border: 1px solid #fef08a !important;
+  color: #fefce8 !important;
+}
+
+/* --------------------------------------------------------------------------
+   8. KARUMNEKIÁ - Aelindrach Shadow Mandrake (Balefire Neon Green & Void)
+   -------------------------------------------------------------------------- */
+body.skin-karumnekia {
+  background-color: #02050e !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.25) 0%, transparent 60%),
+    linear-gradient(135deg, rgba(8, 12, 20, 0.95) 0%, rgba(3, 5, 10, 0.98) 100%) !important;
+  color: #f0fdf4 !important;
+  --header-bg: linear-gradient(180deg, rgba(12, 19, 14, 0.98) 0%, rgba(5, 9, 7, 0.98) 100%);
+  --header-border: #22c55e;
+  --header-fg: #4ade80;
+  --footer-menu-bg: linear-gradient(0deg, rgba(8, 12, 20, 0.98) 0%, rgba(3, 5, 10, 0.98) 100%);
+  --footer-menu-border: #22c55e;
+  --footer-menu-active: #4ade80;
+  --accent-color: #22c55e;
+}
+
+body.skin-karumnekia h1, body.skin-karumnekia h2, body.skin-karumnekia h3, body.skin-karumnekia h4, body.skin-karumnekia h5, body.skin-karumnekia h6,
+body.skin-karumnekia .header-title, body.skin-karumnekia .player-name, body.skin-karumnekia .card-title, body.skin-karumnekia .section-title, body.skin-karumnekia .option-main {
+  font-family: 'Cinzel', serif !important;
+  color: #4ade80 !important;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.7) !important;
+}
+
+body.skin-karumnekia .app-header { border-bottom: 2px solid #22c55e !important; }
+body.skin-karumnekia .active-player-chip {
+  background: linear-gradient(135deg, #14532d 0%, #052e16 100%) !important;
+  border: 1.5px solid #22c55e !important;
+  color: #bbf7d0 !important;
+}
+
+body.skin-karumnekia .player-card { background: linear-gradient(145deg, #09130d 0%, #030805 100%) !important; }
+
+body.skin-karumnekia button:not(.header-action-btn), body.skin-karumnekia .btn, body.skin-karumnekia .action-btn {
+  background: linear-gradient(135deg, #15803d 0%, #052e16 100%) !important;
+  border: 1.5px solid #4ade80 !important;
+  color: #f0fdf4 !important;
+}
+
+/* --------------------------------------------------------------------------
+   SETTINGS MODIFIER CLASSES (VIGNETTE, STANDARD FONT & COMPACT DENSITY)
+   -------------------------------------------------------------------------- */
+body.grimdark-vignette-off::after {
+  display: none !important;
+}
+
+body.standard-font-mode h1,
+body.standard-font-mode h2,
+body.standard-font-mode h3,
+body.standard-font-mode h4,
+body.standard-font-mode h5,
+body.standard-font-mode h6,
+body.standard-font-mode .header-title,
+body.standard-font-mode .player-name,
+body.standard-font-mode .card-title,
+body.standard-font-mode .section-title,
+body.standard-font-mode .option-main {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+body.compact-density-mode .items-table th,
+body.compact-density-mode .items-table td,
+body.compact-density-mode .mods-table th,
+body.compact-density-mode .mods-table td {
+  padding-top: 2px !important;
+  padding-bottom: 2px !important;
+  font-size: 0.76rem !important;
+}
+
+body.compact-density-mode .section-block,
+body.compact-density-mode .category-block {
+  margin-top: 3px !important;
+  margin-bottom: 3px !important;
+}
+
+/* ABSOLUTE OVERRIDE FOR CATEGORY TAB BAR (KILL DARK GREY RECTANGLE ON ALL MODES) */
+.items-tab-bar,
+body.dark-theme .items-tab-bar,
+body[class*="skin-"] .items-tab-bar {
+  background: transparent !important;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+}
+
+
+
+
+
+
+
+

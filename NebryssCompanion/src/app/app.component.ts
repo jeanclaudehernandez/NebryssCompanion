@@ -19,6 +19,8 @@ import { CampaignService } from './campaign.service';
 
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
+import { SettingsModalComponent } from './settings-modal/settings-modal.component';
+import { SoundService } from './sound.service';
 
 @Component({
   selector: 'app-root',
@@ -27,7 +29,8 @@ import { ToastService } from './toast.service';
     CommonModule,
     HttpClientModule,
     SidebarComponent,
-    AppViewHostComponent
+    AppViewHostComponent,
+    SettingsModalComponent
   ],
   template: `
     <!-- Top App Bar Header -->
@@ -70,8 +73,14 @@ import { ToastService } from './toast.service';
           </div>
         }
 
-        <button type="button" class="header-action-btn" (click)="themeService.toggleTheme()" [attr.aria-label]="(themeService.darkMode$ | async) ? 'Light mode' : 'Dark mode'">
-          <span class="material-icons">{{ (themeService.darkMode$ | async) ? 'light_mode' : 'dark_mode' }}</span>
+        <button
+          type="button"
+          class="header-action-btn settings-btn"
+          (click)="openSettingsModal()"
+          title="App Settings & Customization"
+          aria-label="Open Settings"
+        >
+          <span class="material-icons">settings</span>
         </button>
       </div>
     </header>
@@ -225,6 +234,12 @@ import { ToastService } from './toast.service';
         </button>
       </div>
     }
+
+    <!-- ⚙️ App Settings & Customization Modal -->
+    <app-settings-modal
+      *ngIf="isSettingsModalOpen"
+      (close)="closeSettingsModal()"
+    ></app-settings-modal>
   `,
   styleUrls: ['./app.component.css']
 })
@@ -233,6 +248,7 @@ export class AppComponent {
   @ViewChild('campaignPromptDialog') campaignPromptDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
 
+  isSettingsModalOpen = false;
   currentView: AppView = 'players';
   selectedLocationName: string | null = null;
   selectedLocationBackTarget: string | null = null;
@@ -269,7 +285,8 @@ export class AppComponent {
     private activePlayerService: ActivePlayerService,
     private bestiaryMaterialsService: BestiaryMaterialsService,
     private modalService: ModalService,
-    public campaignService: CampaignService
+    public campaignService: CampaignService,
+    private soundService: SoundService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -283,6 +300,8 @@ export class AppComponent {
     combineLatest([this.activePlayerService.activePlayer$, this.dataService.letters$])
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(([player, letters]) => {
+        this.themeService.setActivePlayerSkin(player);
+
         if (!player) {
           this.letterUnreadCount = 0;
           return;
@@ -307,6 +326,15 @@ export class AppComponent {
 
     this.initPullToRefreshListeners();
     this.initShakeToRickroll();
+  }
+
+  openSettingsModal(): void {
+    this.soundService.playThump();
+    this.isSettingsModalOpen = true;
+  }
+
+  closeSettingsModal(): void {
+    this.isSettingsModalOpen = false;
   }
 
   private shakeCount = 0;
