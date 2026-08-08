@@ -22,6 +22,28 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 
 Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
+## Local Full-Stack Development (No Ngrok / No DuckDNS)
+
+For team development when working on separate machines without tunnel conflicts:
+
+```bash
+# Start DB, WS, API and build Frontend for local development
+npm run start:local
+
+# Or with live rebuild watch mode
+npm run start:local -- --watch
+
+# Or on Windows using batch script
+start-local.bat
+```
+
+This launches:
+- **Database**: Local MongoDB instance (or automatic Local JSON Filesystem fallback)
+- **API Server**: Express REST API on `http://localhost:8080/api`
+- **WebSocket Server**: Real-time sync on `ws://localhost:8080/ws`
+- **Frontend App**: Unified local PWA served on `http://localhost:8080` (and on LAN IP for testing across local mobile devices)
+
 ## Further help
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+
