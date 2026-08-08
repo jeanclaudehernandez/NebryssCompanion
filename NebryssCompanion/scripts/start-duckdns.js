@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
-const { spawn } = require('child_process');
+const net = require('net');
+const { spawn, spawnSync } = require('child_process');
 
 // Load .env.duckdns
 const envPath = path.join(__dirname, '../.env.duckdns');
@@ -32,11 +33,102 @@ if (ngrokDomain) {
 }
 console.log('====================================================');
 
-// Start DuckDNS Updater
-require('./duckdns-updater');
+function isPortOpen(checkPort, host = '127.0.0.1', timeout = 1000) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(timeout);
+    socket.once('connect', () => {
+      socket.destroy();
+      resolve(true);
+    });
+    socket.once('timeout', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.once('error', () => {
+      socket.destroy();
+      resolve(false);
+    });
+    socket.connect(checkPort, host);
+  });
+}
 
-// Start API, WebSockets & Static Frontend Server
-require('../api/index.js');
+function findMongodExecutable() {
+  const isWin = process.platform === 'win32';
+  const checkCmd = isWin ? 'where mongod' : 'which mongod';
+  try {
+    const stdout = spawnSync(isWin ? 'cmd.exe' : 'sh', [isWin ? '/c' : '-c', checkCmd], { encoding: 'utf8' });
+    if (stdout.stdout) {
+      const line = stdout.stdout.trim().split(/\r?\n/)[0].trim();
+      if (line && fs.existsSync(line)) {
+        return line;
+      }
+    }
+  } catch (e) {}
+
+  if (isWin) {
+    const basePath = 'C:\\Program Files\\MongoDB\\Server';
+    if (fs.existsSync(basePath)) {
+      try {
+        const versions = fs.readdirSync(basePath);
+        for (const ver of versions.sort().reverse()) {
+          const binPath = path.join(basePath, ver, 'bin', 'mongod.exe');
+          if (fs.existsSync(binPath)) {
+            return binPath;
+          }
+        }
+      } catch (e) {}
+    }
+  } else {
+    const unixPaths = ['/usr/local/bin/mongod', '/usr/bin/mongod', '/opt/homebrew/bin/mongod'];
+    for (const candidate of unixPaths) {
+      if (fs.existsSync(candidate)) {
+        return candidate;
+      }
+    }
+  }
+  return null;
+}
+
+async function ensureDatabase() {
+  const mongoPort = 27017;
+  const isRunning = await isPortOpen(mongoPort);
+
+  if (isRunning) {
+    console.log('[DB] MongoDB service is already running on port 27017.');
+    return true;
+  }
+
+  const mongodExe = findMongodExecutable();
+  if (mongodExe) {
+    const dbPath = path.join(__dirname, '../local-db/mongodb_data');
+    if (!fs.existsSync(dbPath)) {
+      fs.mkdirSync(dbPath, { recursive: true });
+    }
+
+    console.log(`[DB] Starting background MongoDB instance (${mongodExe})...`);
+    const bgMongod = spawn(mongodExe, ['--dbpath', dbPath, '--port', String(mongoPort)], {
+      detached: true,
+      stdio: 'ignore',
+      windowsHide: true
+    });
+    bgMongod.unref();
+
+    // Wait up to 5 seconds for MongoDB to accept connections
+    for (let i = 0; i < 10; i++) {
+      await new Promise(r => setTimeout(r, 500));
+      if (await isPortOpen(mongoPort)) {
+        console.log('[DB] MongoDB started successfully in background on port 27017!\n');
+        return true;
+      }
+    }
+    console.warn('[DB] MongoDB process spawned, proceeding with connection attempts...');
+    return true;
+  }
+
+  console.log('[DB] MongoDB binary not found on local path. Using local JSON database (local-db/).\n');
+  return false;
+}
 
 // Establish HTTPS Tunnel
 function startTunnel() {
@@ -188,5 +280,20 @@ function startCloudflareTunnel() {
   });
 }
 
-setTimeout(startTunnel, 1000);
+async function main() {
+  // 1. Start / Verify Background DB (keeps running when this script is stopped)
+  await ensureDatabase();
 
+  // 2. Start DuckDNS Updater
+  require('./duckdns-updater');
+
+  // 3. Start API, WebSockets & Static Frontend Server
+  require('../api/index.js');
+
+  // 4. Establish HTTPS Tunnel
+  setTimeout(startTunnel, 1000);
+}
+
+main().catch(err => {
+  console.error('[Error] Failed to start DuckDNS server:', err);
+});
