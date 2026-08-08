@@ -9,7 +9,7 @@ import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
 import { WORLD_MAP_PIN_COORDINATES } from './world-map-pin-coordinates';
 import { WorldMapStateService } from './world-map-state.service';
-import { FACTION_COLORS, DEFAULT_FACTION_COLOR } from './world-map-faction-colors';
+import { FACTION_COLORS, DEFAULT_FACTION_COLOR, getFactionColor } from './world-map-faction-colors';
 
 export interface MapPin {
   location: Location;
@@ -278,7 +278,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       animationDelay: `${index * 70}ms`,
       locationIconSrc: this.getLocationIconSrc(location.category, location.categorySize),
       hasFaction: !!location.faction?.trim(),
-      factionColor: FACTION_COLORS[location.faction] ?? DEFAULT_FACTION_COLOR
+      factionColor: getFactionColor(location.faction)
     };
   }
 
