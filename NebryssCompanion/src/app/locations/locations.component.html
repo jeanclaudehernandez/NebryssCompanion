@@ -1,15 +1,16 @@
 <div class="locations-page" [class.no-location-selected]="!selectedLocation"
-  [class.has-selected-location]="selectedLocation"
-  [class.full-screen]="!!selectedLocation">
+  [class.has-selected-location]="selectedLocation" [class.full-screen]="!!selectedLocation">
   <!-- Sidebar with location cards -->
   <div class="locations-sidebar">
     <!-- Group locations by faction -->
-    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section" [class.is-collapsed]="isFactionCollapsed(faction)" [ngStyle]="getFactionSectionStyles(faction)">
+    <div *ngFor="let faction of uniqueFactions; trackBy: trackByFaction" class="faction-section"
+      [class.is-collapsed]="isFactionCollapsed(faction)" [ngStyle]="getFactionSectionStyles(faction)">
       <div class="faction-header" (click)="toggleFactionCollapse(faction)">
         <div class="faction-header-main">
           <div class="faction-emblem sidebar-emblem" *ngIf="hasFactionName(faction) && getFactionThumbnail(faction)"
             (click)="onFactionEmblemClick($event, faction)" title="Click to view {{faction}} in Lore">
-            <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy" (load)="onFactionEmblemLoad($event, faction)" crossorigin="anonymous">
+            <img [src]="getFactionThumbnail(faction)" [alt]="faction" loading="lazy"
+              (load)="onFactionEmblemLoad($event, faction)" crossorigin="anonymous">
           </div>
           <div class="faction-emblem sidebar-emblem text-emblem"
             *ngIf="hasFactionName(faction) && !getFactionThumbnail(faction)"
@@ -18,7 +19,8 @@
           </div>
           <h3>{{ faction }}</h3>
         </div>
-        <button type="button" class="faction-collapse-btn" (click)="toggleFactionCollapse(faction, $event)" aria-label="Toggle section">
+        <button type="button" class="faction-collapse-btn" (click)="toggleFactionCollapse(faction, $event)"
+          aria-label="Toggle section">
           <span class="material-icons">{{ isFactionCollapsed(faction) ? 'expand_more' : 'expand_less' }}</span>
         </button>
       </div>
@@ -83,8 +85,12 @@
       <div class="location-description">
         <div class="description-header-row">
           <h3>Description</h3>
-          <button *ngIf="isAdmin" type="button" class="gm-discovered-btn" [class.is-discovered]="selectedLocation.discovered !== false" (click)="toggleLocationDiscovered(selectedLocation, $event)" [title]="selectedLocation.discovered !== false ? 'Location is Discovered by players. Click to mark Undiscovered.' : 'Location is Undiscovered. Click to mark Discovered.'">
-            <span class="material-icons">{{ selectedLocation.discovered !== false ? 'visibility' : 'visibility_off' }}</span>
+          <button *ngIf="isAdmin" type="button" class="gm-discovered-btn"
+            [class.is-discovered]="selectedLocation.discovered !== false"
+            (click)="toggleLocationDiscovered(selectedLocation, $event)"
+            [title]="selectedLocation.discovered !== false ? 'Location is Discovered by players. Click to mark Undiscovered.' : 'Location is Undiscovered. Click to mark Discovered.'">
+            <span class="material-icons">{{ selectedLocation.discovered !== false ? 'visibility' : 'visibility_off'
+              }}</span>
           </button>
         </div>
         <p>{{ selectedLocation.description }}</p>
@@ -110,7 +116,8 @@
       <div class="location-associated-section" *ngIf="getNpcsForSelectedLocation().length > 0">
         <h3>NPCs at {{ selectedLocation.name }}</h3>
         <div class="associated-grid">
-          <div *ngFor="let npc of getNpcsForSelectedLocation()" class="associated-card npc-card-link" (click)="onNpcClick(npc)">
+          <div *ngFor="let npc of getNpcsForSelectedLocation()" class="associated-card npc-card-link"
+            (click)="onNpcClick(npc)">
             <div class="assoc-thumb" *ngIf="npc.thumbnail || npc.imgUrl">
               <img [src]="npc.thumbnail || npc.imgUrl" [alt]="npc.name">
             </div>
@@ -133,7 +140,8 @@
       <div class="location-associated-section" *ngIf="getShopsForSelectedLocation().length > 0">
         <h3>Shops & Merchants at {{ selectedLocation.name }}</h3>
         <div class="associated-grid">
-          <div *ngFor="let shop of getShopsForSelectedLocation()" class="associated-card shop-card-link" (click)="onShopClick(shop)">
+          <div *ngFor="let shop of getShopsForSelectedLocation()" class="associated-card shop-card-link"
+            (click)="onShopClick(shop)">
             <div class="assoc-thumb" *ngIf="shop.thumbnail || shop.imgUrl">
               <img [src]="shop.thumbnail || shop.imgUrl" [alt]="shop.name">
             </div>
@@ -169,7 +177,7 @@
       <!-- GM Private Campaign Vault Blocks (Visible exclusively to Admin/GM, placed at the bottom below all features) -->
       <div class="gm-vault-section-wrapper"
         *ngIf="isAdmin && (getLocationSecrets(selectedLocation).length > 0 || selectedLocation.rpgMapLayout)">
-        <h3>GM Campaign Secret Vaults</h3>
+        <h3>Location Secrets</h3>
         <div class="gm-vault-card" *ngFor="let secret of getLocationSecrets(selectedLocation); let i = index">
           <div class="gm-vault-header">
             <div class="gm-vault-title">
@@ -192,7 +200,7 @@
           <div class="gm-vault-header">
             <div class="gm-vault-title">
               <span class="material-icons">map</span>
-              <h4>Internal RPG Map Layout & Visual Prompts</h4>
+              <h4>GM Guide</h4>
             </div>
           </div>
           <div class="gm-vault-content">

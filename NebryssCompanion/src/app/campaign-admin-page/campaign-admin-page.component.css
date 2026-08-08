@@ -192,12 +192,7 @@
 }
 
 /* Form Section */
-.form-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 24px;
-}
+.form-card {}
 
 .form-title {
   display: flex;

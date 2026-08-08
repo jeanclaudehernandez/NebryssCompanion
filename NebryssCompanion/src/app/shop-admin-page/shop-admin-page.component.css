@@ -247,10 +247,6 @@
 }
 
 .form-card {
-  background: var(--card-bg, rgba(30, 41, 59, 0.7));
-  backdrop-filter: blur(12px);
-  border-radius: 12px;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
   min-width: 0;
 }
 
@@ -1056,4 +1052,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+}
