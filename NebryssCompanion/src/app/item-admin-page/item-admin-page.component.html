@@ -503,18 +503,22 @@
       </section>
 
       <div class="actions dialog-buttons">
-        <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
-          {{ submitLabel }}
-        </button>
       </div>
+
+      <!-- Floating Save Button -->
+      <button
+        type="submit"
+        class="floating-save-btn"
+        [disabled]="!canSubmit"
+        [title]="isSaving ? 'Saving...' : (editingItemId !== null || editingWeaponId !== null || editingLetterId !== null ? 'Save changes' : 'Create entry')"
+        [attr.aria-label]="isSaving ? 'Saving...' : (editingItemId !== null || editingWeaponId !== null || editingLetterId !== null ? 'Save changes' : 'Create entry')"
+      >
+        <span class="material-icons" *ngIf="!isSaving">save</span>
+        <span class="spinner-small-btn" *ngIf="isSaving"></span>
+      </button>
     </form>
 
     <aside class="player-detail-container">
-      <section class="admin-section">
-        <h3>{{ creatorMode === 'item' ? 'Item' : creatorMode === 'weapon' ? 'Weapon' : 'Letter' }} JSON Preview</h3>
-        <pre class="admin-preview-json">{{ previewJson }}</pre>
-      </section>
-
       <section class="admin-section" *ngIf="creatorMode === 'item' && lastCreatedItem">
         <h3>{{ editingItemId !== null ? 'Last Saved Item' : 'Last Created Item' }}</h3>
         <div class="summary-list">

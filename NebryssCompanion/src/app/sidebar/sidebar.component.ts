@@ -69,9 +69,9 @@ export class SidebarComponent {
     if (this.isOpen && !this.isClickInside(event)) {
       this.isOpen = false;
     }
-    
+
     this.matDialog.openDialogs.forEach((dialog) => {
-      if(!dialog.disableClose) {
+      if (!dialog.disableClose) {
         dialog.close();
       }
     });
@@ -171,6 +171,17 @@ export class SidebarComponent {
     });
   }
 
+  openAdminRulesEditor(): void {
+    if (this.isAdmin) {
+      this.changeView('adminRulesEditor');
+      return;
+    }
+
+    this.openAdminDialog(this.adminDialogTemplate, () => {
+      this.changeView('adminRulesEditor');
+    });
+  }
+
   forceUpdate() {
     this.updateService.unregisterAndReload();
   }
@@ -185,7 +196,7 @@ export class SidebarComponent {
         this.modalService.close();
       }
     };
-    
+
     this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
   }
 

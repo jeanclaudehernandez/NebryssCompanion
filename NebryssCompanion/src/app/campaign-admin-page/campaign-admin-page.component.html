@@ -111,15 +111,6 @@
           <!-- Form Actions -->
           <div class="form-actions">
             <button
-              type="submit"
-              class="btn-primary"
-              [disabled]="isSaving || !name.trim()"
-            >
-              <span class="material-icons">save</span>
-              <span>{{ isSaving ? 'Saving...' : (id ? 'Update Campaign' : 'Create Campaign') }}</span>
-            </button>
-
-            <button
               *ngIf="id"
               type="button"
               class="btn-secondary"
@@ -149,6 +140,18 @@
               <span>Delete</span>
             </button>
           </div>
+
+          <!-- Floating Save Button -->
+          <button
+            type="submit"
+            class="floating-save-btn"
+            [disabled]="isSaving || !name.trim()"
+            [title]="isSaving ? 'Saving...' : (id ? 'Save changes' : 'Create campaign')"
+            [attr.aria-label]="isSaving ? 'Saving...' : (id ? 'Save changes' : 'Create campaign')"
+          >
+            <span class="material-icons" *ngIf="!isSaving">save</span>
+            <span class="spinner-small-btn" *ngIf="isSaving"></span>
+          </button>
         </form>
 
         <!-- Delete Confirmation Overlay / Banner -->

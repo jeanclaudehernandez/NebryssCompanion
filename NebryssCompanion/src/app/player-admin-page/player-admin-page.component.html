@@ -302,23 +302,27 @@
           </ng-template>
         </section>
 
-        <div class="actions dialog-buttons" style="display: flex; gap: 12px; justify-content: space-between; align-items: center;">
-          <button class="btn-confirm" type="submit" [disabled]="!canSave">
-            {{ isSaving ? 'Saving...' : 'Save Player' }}
-          </button>
+        <div class="actions dialog-buttons" style="display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
           <button type="button" class="remove-btn" (click)="deletePlayer()" style="background: #ef4444; color: white; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 600; cursor: pointer;">
             Delete Player
           </button>
         </div>
+
+        <!-- Floating Save Button -->
+        <button
+          type="submit"
+          class="floating-save-btn"
+          [disabled]="!canSave"
+          [title]="isSaving ? 'Saving...' : 'Save Player'"
+          [attr.aria-label]="isSaving ? 'Saving...' : 'Save Player'"
+        >
+          <span class="material-icons" *ngIf="!isSaving">save</span>
+          <span class="spinner-small-btn" *ngIf="isSaving"></span>
+        </button>
       </ng-container>
     </form>
 
     <aside class="player-detail-container">
-      <section class=" admin-section">
-        <h3>Player JSON Preview</h3>
-        <pre class="admin-preview-json">{{ previewJson }}</pre>
-      </section>
-
       <section class="item admin-section" *ngIf="lastSavedPlayer">
         <h3>Last Saved Player</h3>
         <div class="summary-list">

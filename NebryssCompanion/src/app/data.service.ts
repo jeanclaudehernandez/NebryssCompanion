@@ -914,6 +914,182 @@ export class DataService {
     return this.terrainsCache$;
   }
 
+  // --- Altered States CRUD ---
+  refreshAlteredStates(): Observable<AlteredState[]> {
+    this.alteredStatesCache$ = this.http.get<AlteredState[]>(`${this.apiUrl}/status`).pipe(
+      catchError(() => this.http.get<AlteredState[]>('assets/alteredStates.json')),
+      tap(states => {
+        this.alteredStates = states;
+        this.alteredStatesSubject.next([...this.alteredStates]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.alteredStatesCache$;
+  }
+
+  createAlteredState(state: AlteredState): Observable<AlteredState> {
+    return this.http.post<AlteredState>(`${this.apiUrl}/status`, state).pipe(
+      tap(created => {
+        this.updateArrayCollection(this.alteredStates, created, 'create', s => s.id);
+        this.alteredStatesSubject.next([...this.alteredStates]);
+        this.refreshAlteredStates().subscribe();
+      })
+    );
+  }
+
+  updateAlteredState(state: AlteredState): Observable<AlteredState> {
+    return this.http.put<AlteredState>(`${this.apiUrl}/status`, state).pipe(
+      tap(updated => {
+        this.updateArrayCollection(this.alteredStates, updated, 'update', s => s.id);
+        this.alteredStatesSubject.next([...this.alteredStates]);
+        this.refreshAlteredStates().subscribe();
+      })
+    );
+  }
+
+  deleteAlteredState(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/status/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.alteredStates, { id }, 'delete', s => s.id);
+        this.alteredStatesSubject.next([...this.alteredStates]);
+        this.refreshAlteredStates().subscribe();
+      })
+    );
+  }
+
+  // --- Weapon Rules CRUD ---
+  refreshWeaponRules(): Observable<WeaponRule[]> {
+    this.weaponRulesCache$ = this.http.get<WeaponRule[]>(`${this.apiUrl}/weaponRule`).pipe(
+      catchError(() => this.http.get<WeaponRule[]>('assets/weaponRules.json')),
+      tap(rules => {
+        this.weaponsRules = rules;
+        this.weaponRulesSubject.next([...this.weaponsRules]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.weaponRulesCache$;
+  }
+
+  createWeaponRule(rule: WeaponRule): Observable<WeaponRule> {
+    return this.http.post<WeaponRule>(`${this.apiUrl}/weaponRule`, rule).pipe(
+      tap(created => {
+        this.updateArrayCollection(this.weaponsRules, created, 'create', r => r.id);
+        this.weaponRulesSubject.next([...this.weaponsRules]);
+        this.refreshWeaponRules().subscribe();
+      })
+    );
+  }
+
+  updateWeaponRule(rule: WeaponRule): Observable<WeaponRule> {
+    return this.http.put<WeaponRule>(`${this.apiUrl}/weaponRule`, rule).pipe(
+      tap(updated => {
+        this.updateArrayCollection(this.weaponsRules, updated, 'update', r => r.id);
+        this.weaponRulesSubject.next([...this.weaponsRules]);
+        this.refreshWeaponRules().subscribe();
+      })
+    );
+  }
+
+  deleteWeaponRule(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/weaponRule/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.weaponsRules, { id }, 'delete', r => r.id);
+        this.weaponRulesSubject.next([...this.weaponsRules]);
+        this.refreshWeaponRules().subscribe();
+      })
+    );
+  }
+
+  // --- Mist Effects CRUD ---
+  refreshMistEffects(): Observable<MistEffect[]> {
+    this.mistEffectsCache$ = this.http.get<MistEffect[]>(`${this.apiUrl}/mistEffect`).pipe(
+      catchError(() => this.http.get<MistEffect[]>('assets/mistEffects.json')),
+      tap(effects => {
+        this.mistEffects = effects;
+        this.mistEffectsSubject.next([...this.mistEffects]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.mistEffectsCache$;
+  }
+
+  createMistEffect(effect: MistEffect): Observable<MistEffect> {
+    return this.http.post<MistEffect>(`${this.apiUrl}/mistEffect`, effect).pipe(
+      tap(created => {
+        this.updateArrayCollection(this.mistEffects, created, 'create', m => m.id || m.effectName);
+        this.mistEffectsSubject.next([...this.mistEffects]);
+        this.refreshMistEffects().subscribe();
+      })
+    );
+  }
+
+  updateMistEffect(effect: MistEffect): Observable<MistEffect> {
+    return this.http.put<MistEffect>(`${this.apiUrl}/mistEffect`, effect).pipe(
+      tap(updated => {
+        this.updateArrayCollection(this.mistEffects, updated, 'update', m => m.id || m.effectName);
+        this.mistEffectsSubject.next([...this.mistEffects]);
+        this.refreshMistEffects().subscribe();
+      })
+    );
+  }
+
+  deleteMistEffect(id: number | string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/mistEffect/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.mistEffects, { id }, 'delete', m => m.id || m.effectName);
+        this.mistEffectsSubject.next([...this.mistEffects]);
+        this.refreshMistEffects().subscribe();
+      })
+    );
+  }
+
+  // --- Terrains CRUD ---
+  refreshTerrains(): Observable<Terrain[]> {
+    this.terrainsCache$ = this.http.get<Terrain[]>(`${this.apiUrl}/terrainRule`).pipe(
+      catchError(() => this.http.get<Terrain[]>('assets/terrainRules.json')),
+      tap(terrains => {
+        this.terrains = terrains;
+        this.terrainsSubject.next([...this.terrains]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.terrainsCache$;
+  }
+
+  createTerrain(terrain: Terrain): Observable<Terrain> {
+    return this.http.post<Terrain>(`${this.apiUrl}/terrainRule`, terrain).pipe(
+      tap(created => {
+        this.updateArrayCollection(this.terrains, created, 'create', t => t.id);
+        this.terrainsSubject.next([...this.terrains]);
+        this.refreshTerrains().subscribe();
+      })
+    );
+  }
+
+  updateTerrain(terrain: Terrain): Observable<Terrain> {
+    return this.http.put<Terrain>(`${this.apiUrl}/terrainRule`, terrain).pipe(
+      tap(updated => {
+        this.updateArrayCollection(this.terrains, updated, 'update', t => t.id);
+        this.terrainsSubject.next([...this.terrains]);
+        this.refreshTerrains().subscribe();
+      })
+    );
+  }
+
+  deleteTerrain(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/terrainRule/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.terrains, { id }, 'delete', t => t.id);
+        this.terrainsSubject.next([...this.terrains]);
+        this.refreshTerrains().subscribe();
+      })
+    );
+  }
+
   getLetters(): Observable<Letter[]> {
     if (!this.lettersCache$) {
       this.lettersCache$ = this.http.get<Letter[]>(`${this.apiUrl}/letter`).pipe(

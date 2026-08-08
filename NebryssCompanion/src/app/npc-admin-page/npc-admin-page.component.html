@@ -240,18 +240,21 @@
             >
               Clear / New
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="saveNpc()"
-              [disabled]="!canSubmit"
-            >
-              <span class="material-icons" *ngIf="!isSaving">save</span>
-              <span class="spinner-small" *ngIf="isSaving"></span>
-              <span>{{ isSaving ? 'Saving...' : (isEditing ? 'Update NPC' : 'Create NPC') }}</span>
-            </button>
           </div>
         </div>
+
+        <!-- Floating Save Button -->
+        <button
+          type="button"
+          class="floating-save-btn"
+          (click)="saveNpc()"
+          [disabled]="!canSubmit"
+          [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create NPC')"
+          [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create NPC')"
+        >
+          <span class="material-icons" *ngIf="!isSaving">save</span>
+          <span class="spinner-small-btn" *ngIf="isSaving"></span>
+        </button>
       </div>
     </main>
   </div>

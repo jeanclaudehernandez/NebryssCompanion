@@ -1,0 +1,326 @@
+<div class="rules-admin-container">
+  <div *ngIf="!isAdmin" class="admin-locked">
+    <h3>Admin Access Required</h3>
+    <p>Please log in with GM permissions to access the Rules Editor.</p>
+  </div>
+
+  <ng-container *ngIf="isAdmin">
+    <!-- Header Banner -->
+    <header class="admin-header">
+      <div class="header-title-group">
+        <span class="material-icons header-icon">auto_fix_high</span>
+        <div>
+          <h2>Rules Editor</h2>
+          <p class="header-sub">Manage Altered States, Weapon Rules, Terrains, and Mist Effects.</p>
+        </div>
+      </div>
+      <button type="button" class="btn-new" (click)="resetForm()">
+        <span class="material-icons">add</span>
+        <span>New Entry</span>
+      </button>
+    </header>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button
+      *ngFor="let tab of tabs"
+      type="button"
+      class="tab-btn"
+      [class.active]="activeTab === tab.key"
+      (click)="switchTab(tab.key)"
+    >
+      <span class="material-icons">{{ tab.icon }}</span>
+      <span class="tab-label">{{ tab.label }}</span>
+    </button>
+  </div>
+
+  <div class="admin-layout" [class.sidebar-collapsed]="isSelectorCollapsed">
+    <!-- Sidebar / Entry List -->
+    <aside class="entry-sidebar" [class.collapsed]="isSelectorCollapsed">
+      <div class="sidebar-header" (click)="toggleSelectorCollapse()">
+        <div class="sidebar-title">
+          <span class="material-icons sidebar-icon">list</span>
+          <span>Entries ({{ filteredList.length }})</span>
+        </div>
+        <button
+          type="button"
+          class="btn-toggle-collapse"
+          [attr.aria-label]="isSelectorCollapsed ? 'Expand list' : 'Collapse list'"
+          [title]="isSelectorCollapsed ? 'Expand list' : 'Collapse list'"
+        >
+          <span class="material-icons">{{ isSelectorCollapsed ? 'expand_more' : 'expand_less' }}</span>
+        </button>
+      </div>
+
+      <div class="sidebar-content" *ngIf="!isSelectorCollapsed">
+        <div class="search-box">
+          <span class="material-icons search-icon">search</span>
+          <input
+            type="text"
+            placeholder="Filter entries..."
+            [(ngModel)]="searchTerm"
+            class="search-input"
+          />
+          <button *ngIf="searchTerm" type="button" class="btn-clear-search" (click)="searchTerm = ''">
+            <span class="material-icons">close</span>
+          </button>
+        </div>
+
+        <div *ngIf="isLoading" class="loading-state">
+          <div class="spinner-small"></div>
+          <span>Loading data...</span>
+        </div>
+
+        <div *ngIf="!isLoading && filteredList.length === 0" class="empty-state">
+          <span class="material-icons">folder_off</span>
+          <p>No entries found.</p>
+        </div>
+
+        <ul *ngIf="!isLoading && filteredList.length > 0" class="entry-list">
+          <li
+            *ngFor="let item of filteredList"
+            class="entry-item"
+            [class.selected]="selectedId === item.id"
+            (click)="selectEntry(item)"
+          >
+            <div class="entry-item-info">
+              <span class="entry-name">{{ getDisplayName(item) }}</span>
+              <span class="entry-subtitle">{{ getSubtitle(item) }}</span>
+            </div>
+            <span class="entry-id-badge">#{{ item.id }}</span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Form Section -->
+    <main class="form-section">
+      <div class="form-card">
+        <h3 class="form-title">
+          <span class="material-icons">{{ formIcon }}</span>
+          <span>{{ formTitle }}</span>
+        </h3>
+
+        <form (ngSubmit)="save()" #rulesForm="ngForm">
+          <!-- Altered States Form -->
+          <ng-container *ngIf="activeTab === 'alteredStates'">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="asName">Name <span class="required">*</span></label>
+                <input
+                  id="asName"
+                  type="text"
+                  name="asName"
+                  [(ngModel)]="asName"
+                  required
+                  placeholder="e.g., Burning"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label for="asEffect">Effect</label>
+                <textarea
+                  id="asEffect"
+                  name="asEffect"
+                  [(ngModel)]="asEffect"
+                  placeholder="Describe the effect (supports HTML)"
+                  class="form-control form-textarea"
+                  rows="5"
+                ></textarea>
+                <span class="field-hint">Supports HTML markup for rich formatting.</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Weapon Rules Form -->
+          <ng-container *ngIf="activeTab === 'weaponRules'">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="wrName">Name <span class="required">*</span></label>
+                <input
+                  id="wrName"
+                  type="text"
+                  name="wrName"
+                  [(ngModel)]="wrName"
+                  required
+                  placeholder="e.g., Blast &lt;X&gt;"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label for="wrPrModifier">PR Modifier</label>
+                <input
+                  id="wrPrModifier"
+                  type="number"
+                  name="wrPrModifier"
+                  [(ngModel)]="wrPrModifier"
+                  placeholder="e.g., 1"
+                  class="form-control"
+                />
+                <span class="field-hint">Power Rating modifier applied by this rule. Leave empty for no modifier.</span>
+              </div>
+              <div class="form-group">
+                <label for="wrEffect">Effect</label>
+                <textarea
+                  id="wrEffect"
+                  name="wrEffect"
+                  [(ngModel)]="wrEffect"
+                  placeholder="Describe the weapon rule effect (supports HTML)"
+                  class="form-control form-textarea"
+                  rows="5"
+                ></textarea>
+                <span class="field-hint">Supports HTML markup. Use /status/:ID/ to reference altered states.</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Terrains Form -->
+          <ng-container *ngIf="activeTab === 'terrains'">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="trName">Name <span class="required">*</span></label>
+                <input
+                  id="trName"
+                  type="text"
+                  name="trName"
+                  [(ngModel)]="trName"
+                  required
+                  placeholder="e.g., Heavy Cover"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="trImageUrl">Image URL</label>
+                  <input
+                    id="trImageUrl"
+                    type="text"
+                    name="trImageUrl"
+                    [(ngModel)]="trImageUrl"
+                    placeholder="https://..."
+                    class="form-control"
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="trThumbnailUrl">Thumbnail URL</label>
+                  <input
+                    id="trThumbnailUrl"
+                    type="text"
+                    name="trThumbnailUrl"
+                    [(ngModel)]="trThumbnailUrl"
+                    placeholder="https://..."
+                    class="form-control"
+                  />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="trDescription">Description</label>
+                <textarea
+                  id="trDescription"
+                  name="trDescription"
+                  [(ngModel)]="trDescription"
+                  placeholder="Describe terrain rules and effects (supports HTML)"
+                  class="form-control form-textarea"
+                  rows="5"
+                ></textarea>
+                <span class="field-hint">Supports HTML markup for rich formatting.</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Mist Effects Form -->
+          <ng-container *ngIf="activeTab === 'mistEffects'">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="meEffectName">Effect Name <span class="required">*</span></label>
+                <input
+                  id="meEffectName"
+                  type="text"
+                  name="meEffectName"
+                  [(ngModel)]="meEffectName"
+                  required
+                  placeholder="e.g., Hallucinations"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label for="meDensityLevel">Density Level</label>
+                <input
+                  id="meDensityLevel"
+                  type="text"
+                  name="meDensityLevel"
+                  [(ngModel)]="meDensityLevel"
+                  placeholder="e.g., Dense, Light, Extreme"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group">
+                <label for="meDescription">Description</label>
+                <textarea
+                  id="meDescription"
+                  name="meDescription"
+                  [(ngModel)]="meDescription"
+                  placeholder="Describe the mist effect (supports HTML)"
+                  class="form-control form-textarea"
+                  rows="5"
+                ></textarea>
+                <span class="field-hint">Supports HTML markup for rich formatting.</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn-ghost"
+              (click)="resetForm()"
+            >
+              <span class="material-icons">clear</span>
+              <span>Reset</span>
+            </button>
+
+            <button
+              *ngIf="isEditing"
+              type="button"
+              class="btn-danger"
+              (click)="confirmDelete()"
+              [disabled]="isDeleting"
+            >
+              <span class="material-icons">delete</span>
+              <span>Delete</span>
+            </button>
+          </div>
+
+          <!-- Floating Save Button -->
+          <button
+            type="submit"
+            class="floating-save-btn"
+            [disabled]="!canSubmit"
+            [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create entry')"
+            [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create entry')"
+          >
+            <span class="material-icons" *ngIf="!isSaving">save</span>
+            <span class="spinner-small-btn" *ngIf="isSaving"></span>
+          </button>
+        </form>
+
+        <!-- Delete Confirmation Banner -->
+        <div *ngIf="showDeleteConfirm" class="delete-confirm-banner">
+          <span class="material-icons warning-icon">warning</span>
+          <div class="confirm-text">
+            <h4>Delete this entry?</h4>
+            <p>This action cannot be undone.</p>
+          </div>
+          <div class="confirm-buttons">
+            <button type="button" class="btn-cancel" (click)="cancelDelete()">Cancel</button>
+            <button type="button" class="btn-confirm-delete" (click)="deleteEntry()" [disabled]="isDeleting">
+              {{ isDeleting ? 'Deleting...' : 'Confirm Delete' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  </ng-container>
+</div>

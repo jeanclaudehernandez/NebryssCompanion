@@ -115,6 +115,10 @@
       <span class="material-icons">flag</span>
       <span>Campaigns</span>
     </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="openAdminRulesEditor()">
+      <span class="material-icons">auto_fix_high</span>
+      <span>Rules</span>
+    </div>
 
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
@@ -124,12 +128,8 @@
         <label for="campaign-select" class="campaign-select-label">
           <span class="material-icons">flag</span> Campaign
         </label>
-        <select
-          id="campaign-select"
-          class="sidebar-campaign-select"
-          [ngModel]="selectedCampaign?.id"
-          (change)="onCampaignSelect($event)"
-        >
+        <select id="campaign-select" class="sidebar-campaign-select" [ngModel]="selectedCampaign?.id"
+          (change)="onCampaignSelect($event)">
           <option [ngValue]="null" disabled>Select Campaign...</option>
           <option *ngFor="let camp of campaigns" [value]="camp.id">
             {{ camp.name }}

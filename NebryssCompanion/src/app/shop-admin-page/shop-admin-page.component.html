@@ -372,17 +372,18 @@
             >
               Clear / New
             </button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              (click)="saveShop()"
-              [disabled]="!canSubmit"
-            >
-              <span class="material-icons" *ngIf="!isSaving">save</span>
-              <span class="spinner-small" *ngIf="isSaving"></span>
-              <span>{{ isSaving ? 'Saving...' : (isEditing ? 'Update Shop' : 'Create Shop') }}</span>
-            </button>
-          </div>
+          <!-- Floating Save Button -->
+          <button
+            type="button"
+            class="floating-save-btn"
+            (click)="saveShop()"
+            [disabled]="isSaving || !name.trim() || !faction.trim()"
+            [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
+            [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
+          >
+            <span class="material-icons" *ngIf="!isSaving">save</span>
+            <span class="spinner-small-btn" *ngIf="isSaving"></span>
+          </button>
         </div>
       </div>
     </main>

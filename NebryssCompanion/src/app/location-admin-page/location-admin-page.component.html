@@ -292,18 +292,22 @@
       </section>
 
       <div class="actions dialog-buttons">
-        <button class="btn-confirm" type="submit" [disabled]="!canSubmit">
-          {{ submitLabel }}
-        </button>
       </div>
+
+      <!-- Floating Save Button -->
+      <button
+        type="submit"
+        class="floating-save-btn"
+        [disabled]="!canSubmit"
+        [title]="isSaving ? 'Saving...' : (editingLocationId !== null ? 'Save changes' : 'Create location')"
+        [attr.aria-label]="isSaving ? 'Saving...' : (editingLocationId !== null ? 'Save changes' : 'Create location')"
+      >
+        <span class="material-icons" *ngIf="!isSaving">save</span>
+        <span class="spinner-small-btn" *ngIf="isSaving"></span>
+      </button>
     </form>
 
     <aside class="player-detail-container">
-      <section class="admin-section">
-        <h3>Location JSON Preview</h3>
-        <pre class="admin-preview-json">{{ previewJson }}</pre>
-      </section>
-
       <section class="admin-section" *ngIf="lastCreatedLocation">
         <h3>Last Saved Location</h3>
         <div class="summary-list">

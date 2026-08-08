@@ -79,7 +79,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     adminNpcEditor: () => import('./npc-admin-page/npc-admin-page.component').then(m => m.NpcAdminPageComponent),
     adminShopEditor: () => import('./shop-admin-page/shop-admin-page.component').then(m => m.ShopAdminPageComponent),
     adminCreatureEditor: () => import('./creature-admin-page/creature-admin-page.component').then(m => m.CreatureAdminPageComponent),
-    adminCampaignEditor: () => import('./campaign-admin-page/campaign-admin-page.component').then(m => m.CampaignAdminPageComponent)
+    adminCampaignEditor: () => import('./campaign-admin-page/campaign-admin-page.component').then(m => m.CampaignAdminPageComponent),
+    adminRulesEditor: () => import('./rules-admin-page/rules-admin-page.component').then(m => m.RulesAdminPageComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {

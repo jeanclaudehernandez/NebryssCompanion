@@ -306,19 +306,23 @@
             [disabled]="isSaving || isDeleting">
             Delete Creature
           </button>
-          <button class="btn-confirm" type="submit" [disabled]="!canSave">
-            {{ isSaving ? 'Saving...' : (isEditing ? 'Update Creature' : 'Create Creature') }}
-          </button>
         </div>
+
+        <!-- Floating Save Button -->
+        <button
+          type="submit"
+          class="floating-save-btn"
+          [disabled]="!canSave"
+          [title]="isSaving ? 'Saving...' : (isEditing ? 'Update Creature' : 'Create Creature')"
+          [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Update Creature' : 'Create Creature')"
+        >
+          <span class="material-icons" *ngIf="!isSaving">save</span>
+          <span class="spinner-small-btn" *ngIf="isSaving"></span>
+        </button>
       </ng-container>
     </form>
 
     <aside class="player-detail-container">
-      <section class="admin-section">
-        <h3>Creature JSON Preview</h3>
-        <pre class="admin-preview-json">{{ previewJson }}</pre>
-      </section>
-
       <section class="item admin-section" *ngIf="lastSavedCreature">
         <h3>Last Saved Creature</h3>
         <div class="summary-list">

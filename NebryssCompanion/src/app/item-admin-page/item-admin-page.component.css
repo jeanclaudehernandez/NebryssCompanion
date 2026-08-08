@@ -248,6 +248,62 @@
   border-color: currentColor;
 }
 
+/* Floating Save Button */
+.floating-save-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #a855f7, #7c3aed);
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-save-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(135deg, #b86bfc, #8b5cf6);
+}
+
+.floating-save-btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
+}
+
+.floating-save-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+  background: #475569;
+}
+
+.floating-save-btn .material-icons {
+  font-size: 26px;
+}
+
+.spinner-small-btn {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .selection-item-header {
   display: flex;
   justify-content: space-between;
