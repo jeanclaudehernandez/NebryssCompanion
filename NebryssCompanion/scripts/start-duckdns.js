@@ -116,11 +116,11 @@ function startTunnel() {
 
     if (ngrokAuthToken && ngrokAuthToken !== 'your-ngrok-authtoken') {
       try {
-        spawn(npxCmd, ['-y', '@ngrok/ngrok', 'config', 'add-authtoken', ngrokAuthToken], { shell: isWin, windowsHide: true });
+        spawn(npxCmd, ['-y', '-p', '@ngrok/ngrok', 'ngrok', 'config', 'add-authtoken', ngrokAuthToken], { shell: isWin, windowsHide: true });
       } catch (e) {}
     }
 
-    const tunnelProc = spawn(npxCmd, ['-y', '@ngrok/ngrok', 'http', String(port), `--url=${ngrokDomain}`, `--authtoken=${ngrokAuthToken}`], {
+    const tunnelProc = spawn(npxCmd, ['-y', '-p', '@ngrok/ngrok', 'ngrok', 'http', String(port), `--url=${ngrokDomain}`, `--authtoken=${ngrokAuthToken}`], {
       shell: isWin,
       windowsHide: true
     });
