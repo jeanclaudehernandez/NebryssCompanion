@@ -1,5 +1,4 @@
 .campaign-admin-container {
-  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
   color: #f8fafc;
@@ -12,7 +11,6 @@
   margin-bottom: 24px;
   background: rgba(30, 41, 59, 0.7);
   backdrop-filter: blur(12px);
-  padding: 16px 24px;
   border-radius: 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -78,7 +76,6 @@
   background: rgba(30, 41, 59, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
-  padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -268,7 +265,10 @@
   gap: 12px;
 }
 
-.btn-primary, .btn-secondary, .btn-ghost, .btn-danger {
+.btn-primary,
+.btn-secondary,
+.btn-ghost,
+.btn-danger {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -354,7 +354,8 @@
   gap: 8px;
 }
 
-.btn-cancel, .btn-confirm-delete {
+.btn-cancel,
+.btn-confirm-delete {
   padding: 8px 14px;
   min-height: 40px;
   border-radius: 8px;
@@ -423,7 +424,8 @@
   animation: spin 0.8s linear infinite;
 }
 
-.loading-state, .empty-state {
+.loading-state,
+.empty-state {
   padding: 24px;
   text-align: center;
   color: #94a3b8;

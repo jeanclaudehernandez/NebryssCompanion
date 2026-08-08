@@ -299,8 +299,8 @@
         type="submit"
         class="floating-save-btn"
         [disabled]="!canSubmit"
-        [title]="isSaving ? 'Saving...' : (editingLocationId !== null ? 'Save changes' : 'Create location')"
-        [attr.aria-label]="isSaving ? 'Saving...' : (editingLocationId !== null ? 'Save changes' : 'Create location')"
+        [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create location')"
+        [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create location')"
       >
         <span class="material-icons" *ngIf="!isSaving">save</span>
         <span class="spinner-small-btn" *ngIf="isSaving"></span>

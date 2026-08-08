@@ -372,22 +372,24 @@
             >
               Clear / New
             </button>
-          <!-- Floating Save Button -->
-          <button
-            type="button"
-            class="floating-save-btn"
-            (click)="saveShop()"
-            [disabled]="isSaving || !name.trim() || !faction.trim()"
-            [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
-            [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
-          >
-            <span class="material-icons" *ngIf="!isSaving">save</span>
-            <span class="spinner-small-btn" *ngIf="isSaving"></span>
-          </button>
+          </div>
         </div>
       </div>
     </main>
   </div>
+
+  <!-- Floating Save Button -->
+  <button
+    type="button"
+    class="floating-save-btn"
+    (click)="saveShop()"
+    [disabled]="!canSubmit"
+    [title]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
+    [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save changes' : 'Create shop')"
+  >
+    <span class="material-icons" *ngIf="!isSaving">save</span>
+    <span class="spinner-small-btn" *ngIf="isSaving"></span>
+  </button>
 
   <!-- Price Edit Modal -->
   <div class="modal-overlay" *ngIf="priceEdit" (click)="cancelPriceEdit()">

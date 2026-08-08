@@ -386,7 +386,10 @@ export class AppComponent {
   }
 
   get showFooterMenu(): boolean {
-    return this.currentView !== 'bestiary';
+    if (this.currentView === 'bestiary') {
+      return false;
+    }
+    return !this.currentView.startsWith('admin');
   }
 
   get showHeaderPlayerTitle(): boolean {

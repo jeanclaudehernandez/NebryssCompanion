@@ -361,43 +361,43 @@
 
 /* Floating Save Button */
 .floating-save-btn {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #a855f7, #7c3aed);
-  color: #ffffff;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  z-index: 1000;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #a855f7, #7c3aed) !important;
+  color: #ffffff !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 16px rgba(168, 85, 247, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer !important;
+  z-index: 1000 !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .floating-save-btn:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(135deg, #b86bfc, #8b5cf6);
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.6), 0 4px 10px rgba(0, 0, 0, 0.4) !important;
+  background: linear-gradient(135deg, #b86bfc, #8b5cf6) !important;
 }
 
 .floating-save-btn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(1px) scale(0.98) !important;
 }
 
 .floating-save-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  box-shadow: none;
-  background: #475569;
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  background: #475569 !important;
 }
 
 .floating-save-btn .material-icons {
-  font-size: 26px;
+  font-size: 26px !important;
 }
 
 .spinner-small-btn {
