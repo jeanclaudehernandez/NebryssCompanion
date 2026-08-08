@@ -267,5 +267,17 @@
     "backstory": "Once known as the Terror of Maledictum Prime, Mother Morvath was an ancient witch whose curses decimated Nebryssian Liberation Republic garrisons for decades. Recognized as an unsanctioned alpha-level threat, she was hunted down by an Ordo Hereticus strike team, bound in null-field stasis chains, and dragged to an Imperial black site. Decades later, a cataclysmic mist-surge shattered the black vault, allowing her to break her stasis locks. Now unbound and unaligned, she wanders the fog-choked wastes, selling forbidden spell-craft to those bold enough to pay her price.",
     "description": "A withered hag cloaked in tattered, mist-stained robes interwoven with runic bones and silver null-chain links. Her eyes glow with pale ethereal flame, and her hands end in blackened, sigil-carved claws.",
     "discovered": false
+  },
+  {
+    "id": 29,
+    "name": "Archmagus Explorator Vaelen Kor",
+    "faction": "Imperium of Man",
+    "subgroup": "Adeptus Mechanicus",
+    "role": "Chief Xeno-Archeological Inquisitor of the Mechanicus on Nebryss, researching eldritch relics and xenotech anomalies.",
+    "methods": "Employs logic-driven cogitation, cybernetic servo-skulls, and heavy energy weaponry to secure forbidden technologies.",
+    "personality": "Calculating, cold, and fascinated by forbidden xeno-biological transmutation.",
+    "location": "Saint Veil's Hollow, Subterranean Vaults",
+    "bestiaryId": 73,
+    "discovered": true
   }
 ]

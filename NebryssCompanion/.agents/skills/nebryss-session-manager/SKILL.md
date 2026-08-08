@@ -163,19 +163,24 @@ graph TD
      node ./scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Captain Drake" --faction="Crimson Corsairs" --subgroup="Pirate" --weapons="2,31" --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":2,"body":["human"]}' --abilities='[{"name":"Boarding Fury","effect":"Reroll 1s in melee","prModifier":8}]' --role="Pirate Captain" --personality="Ruthless and cunning" --location="Zephyria"
      ```
 
-4. **Present Ideas & Entities for User Review:**
-   Present structured session options along with any proposed NPCs and Bestiary stats for user approval.
+4. **Present Ideas & Entities for User Review in Chat:**
+   Print structured session options along with any proposed NPCs and Bestiary stat blocks directly in the chat message for user review. Never use interactive modals or assume automatic writes.
 
-5. **Draft Full Narrative Session Content:**
-   Once the concept is approved, draft the full session text with standard sections:
+5. **Draft Full Narrative Session Content in Chat:**
+   Once the concept is agreed upon, print the drafted narrative session text directly in the chat for the user to review:
    - **Session Header & Overview:** Thematic mission title and overview hook.
    - **Act I: The Briefing & Departure:** Setting the stage, NPC interactions at `@location[<id>]`, supply stops at `@shop[<id>]`.
    - **Act II: The Journey & Encounters:** Mist hazards, skirmishes against `@bestiary[<id>]`, NPC dialogues with `@npc[<id>]`.
    - **Act III: The Climax & Branching Choices:** High-stakes confrontation against boss `@bestiary[<id>]` / `@npc[<id>]` with tactical choices.
    - **Objectives & Rewards:** Primary, secondary, and investigation objectives with salvage.
 
-6. **Save to MongoDB:**
+6. **Insert & Persist upon Chat Approval:**
+   Only when the user provides feedback and explicitly states **"approve"** (or gives affirmative approval in chat):
    ```bash
+   # Persist proposed Combat NPC / Bestiary entry
+   node ./scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="..." ...
+
+   # Persist session content to MongoDB & local storage
    node ./scripts/campaign-session-tool.js save --campaignId=<id> --sessionId=<num> --content="<approved content>"
    ```
 
@@ -190,7 +195,7 @@ Triggered when the user asks to conclude, finalize, or record the outcome of a s
    node ./scripts/campaign-session-tool.js get-latest [campaignId] --expand
    ```
 
-2. **Debrief Q&A with the User:**
+2. **Debrief Q&A with the User in Chat:**
    Ask 3-5 concise, specific questions based directly on what was planned:
    - *Exploration:* Which locations from `@location[<id>]` were explored?
    - *Combat:* How did skirmishes against `@bestiary[<id>]` resolve? (Victories, wounds, casualties, retreats?)
@@ -198,14 +203,15 @@ Triggered when the user asks to conclude, finalize, or record the outcome of a s
    - *Decisions & Forks:* Which choices did the players make at key narrative branches?
    - *Loot & Upgrades:* Any gear purchased at `@shop[<id>]` or salvaged from combat?
 
-3. **Draft the Narrative Conclusion:**
-   Synthesize answers into standard conclusion sections:
+3. **Print Narrative Conclusion Draft in Chat:**
+   Synthesize answers into standard conclusion sections and print in chat for user feedback:
    - **Summary of Action:** Concise recap of journey and skirmishes.
    - **Combat Aftermath:** Character performance, casualties, defeated enemies.
    - **Decisions & Consequences:** The path chosen and its immediate world impact.
    - **Current State:** Resting location, player wounds/afflictions, next hooks.
 
-4. **Save Conclusion to MongoDB:**
+4. **Insert & Finalize Conclusion upon Chat Approval:**
+   Only when the user explicitly says **"approve"** in chat:
    ```bash
    node ./scripts/campaign-session-tool.js finalize --campaignId=<id> --sessionId=<num> --conclussion="<approved conclusion>"
    ```

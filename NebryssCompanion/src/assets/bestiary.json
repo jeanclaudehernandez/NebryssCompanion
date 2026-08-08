@@ -1,2656 +1,2360 @@
-[{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894a"
-  },
-  "id": 20,
-  "name": "Fellgor Mist Shaman",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "Fellgor",
-  "pr": 104,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human",
-      "fellgor",
-      "spell"
-    ]
-  },
-  "weapons": [
-    5,
-    50
-  ],
-  "abilities": [
-    {
-      "name": "Tidal Surge",
-      "effect": "Psychic, 1AP: Push 2 inches all enemies within 6 inches. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894d"
-  },
-  "id": 41,
-  "name": "NLR Mistborn Soldier",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "Human",
-  "pr": 116,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    2,
-    24
-  ],
-  "abilities": [
-    {
-      "name": "Mistborn Reflexes",
-      "effect": "Gain +1 Save when in mist zones. Can dash through light terrain.",
-      "prModifier": 5
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894c"
-  },
-  "id": 22,
-  "name": "T'au Pathfinder",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 84,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    27
-  ],
-  "abilities": [
-    {
-      "name": "Markerlight",
-      "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
-      "prModifier": 7
-    }
-  ],
-  "items": [],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894b"
-  },
-  "id": 21,
-  "name": "NLR Sergeant",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "Human",
-  "pr": 118,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    35,
-    2
-  ],
-  "abilities": [
-    {
-      "name": "Inspiring Presence",
-      "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c08950"
-  },
-  "id": 44,
-  "name": "T'au Pathfinder Drone Controller",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 84,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    27
-  ],
-  "abilities": [
-    {
-      "name": "Drone Uplink",
-      "effect": "1AP: Select one friendly operative within 6 inches. Until the end of the Turning Point, when that operative performs a Shoot action, it gains Balanced and Ceaseless against targets that are visible to both operatives.",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c08952"
-  },
-  "id": 46,
-  "name": "T'au Pathfinder Grenadier",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 87,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    27,
-    73
-  ],
-  "abilities": [
-    {
-      "name": "Grenade Specialist",
-      "effect": "When this operative performs a Shoot action with a weapon that has Blast or Shockwave, it can re-roll up to two attack dice.",
-      "prModifier": 4
-    },
-    {
-      "name": "Photon Saturation",
-      "effect": "1AP: Select a point within 6 inches. Until the end of the Turning Point, enemy operatives within 3 inches of that point worsen their Save by 1 against ranged attacks made by your kill team.",
-      "prModifier": 6
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c08948"
-  },
-  "id": 18,
-  "name": "NLR Soldier",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "Human",
-  "pr": 76,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    23,
-    1
-  ],
-  "abilities": [
-    {
-      "name": "Mist Resilience",
-      "effect": "In mist zones, gain Cover against ranged attacks."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c08949"
-  },
-  "id": 19,
-  "name": "NLR Field Medic",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "Human",
-  "pr": 83,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 6,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    25
-  ],
-  "abilities": [
-    {
-      "name": "Combat Triage",
-      "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3 inches. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894e"
-  },
-  "id": 42,
-  "name": "T'au Mist Pathfinder",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 139,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    38
-  ],
-  "abilities": [
-    {
-      "name": "Mist Synergy",
-      "effect": "Allies within 6 inches gain Mist-Accuracy rule when shooting targets in mist",
-      "prModifier": 3
-    },
-    {
-      "name": "Markerlight",
-      "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
-      "prModifier": 7
-    }
-  ],
-  "items": [],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c0894f"
-  },
-  "id": 43,
-  "name": "T'au Pathfinder Medic",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 86,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    27
-  ],
-  "abilities": [
-    {
-      "name": "Nano-Triage",
-      "effect": "1AP: Heal 2D3 wounds to a friendly operative within 3 inches and remove one non-/status/:7/ status effect.",
-      "prModifier": 7
-    },
-    {
-      "name": "Pathfinder Support",
-      "effect": "While within 6 inches of another T'au operative, this operative re-rolls 1s on defense rolls.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5aaf7703abfb2c08951"
-  },
-  "id": 45,
-  "name": "T'au Pathfinder Team Leader",
-  "faction": "Nebryssian Liberation Republic",
-  "subgroup": "T'au",
-  "pr": 107,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    27
-  ],
-  "abilities": [
-    {
-      "name": "Coordinated Volley",
-      "effect": "1AP: Until the end of the Turning Point, friendly T'au operatives within 6 inches can re-roll one attack die when performing a Shoot action against a Markerlighted target.",
-      "prModifier": 7
-    },
-    {
-      "name": "Markerlight",
-      "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08955"
-  },
-  "id": 13,
-  "name": "Screecher Purple",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Daemon",
-  "pr": 71,
-  "attributes": {
-    "Movement": 8,
-    "Wounds": 1,
-    "Save": 3,
-    "APL": 1,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [],
-  "abilities": [
-    {
-      "name": "Daemonic Flight",
-      "effect": "Fly over terrain. ",
-      "prModifier": 3
-    },
-    {
-      "name": "Arcane Bargain",
-      "effect": "\"Psychic, Once per activation: roll 1d6 and an enemy visible and within control range suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative or the other operative, restore result/2 wounds rounded up from Summoner.",
-      "prModifier": 7
-    },
-    {
-      "name": "Ethereal Form",
-      "effect": "Remove this operative from the killzone at the end of the turning point."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08957"
-  },
-  "id": 15,
-  "name": "Legionary Aspiring Champion",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Chaos Space Marine",
-  "pr": 202,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 16,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    30,
-    8
-  ],
-  "abilities": [
-    {
-      "name": "Dark Zeal",
-      "effect": "Psychic, Re-roll one attack or defense die per turning point. ",
-      "prModifier": 4
-    },
-    {
-      "name": "Inspiring Terror",
-      "effect": "Worsen the WS 1 of Enemy operatives within 6 inches. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08958"
-  },
-  "id": 16,
-  "name": "Balefire Acolyte",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Chaos Space Marine",
-  "pr": 153,
-  "attributes": {
-    "Movement": 4,
-    "Wounds": 14,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes",
-      "spell"
-    ]
-  },
-  "weapons": [
-    46,
-    14
-  ],
-  "abilities": [
-    {
-      "name": "Psychic Smite",
-      "effect": "Psychic, 1AP: target operative visible and within 10 inches suffers 1D3 mortal wounds. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Warpfire",
-      "effect": "Psychic, Create a 3 inch hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08959"
-  },
-  "id": 17,
-  "name": "Legionary Gunner",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Chaos Space Marine",
-  "pr": 159,
-  "attributes": {
-    "Movement": 4,
-    "Wounds": 15,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    29,
-    32,
-    2,
-    31
-  ],
-  "abilities": [
-    {
-      "name": "Overcharge",
-      "effect": "1AP: +1 Damage to next attack, but suffer 1 wound for each hit roll of 1."
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08954"
-  },
-  "id": 12,
-  "name": "Screecher Green",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Daemon",
-  "pr": 68,
-  "attributes": {
-    "Movement": 8,
-    "Wounds": 1,
-    "Save": 3,
-    "APL": 1,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [],
-  "abilities": [
-    {
-      "name": "Daemonic Flight",
-      "effect": "Fly over terrain. ",
-      "prModifier": 3
-    },
-    {
-      "name": "Aegis of the Ninefold Deceit",
-      "effect": "Psychic, Reduces damage by 1 (to a min of 2) received by visible friendly operatives within 6 inches. ",
-      "prModifier": 4
-    },
-    {
-      "name": "Ethereal Form",
-      "effect": "Remove this operative from the killzone at the end of the turning point."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c0895a"
-  },
-  "id": 23,
-  "name": "Nurgling",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Daemon",
-  "pr": 39,
-  "attributes": {
-    "Movement": 4,
-    "Wounds": 4,
-    "Save": 6,
-    "APL": 1,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [
-    54,
-    55
-  ],
-  "abilities": [
-    {
-      "name": "Disgustingly Resilient",
-      "effect": "Psychic, Roll 1D6 each time this operative loses a wound. On a 5+, ignore that wound.",
-      "prModifier": 2
-    },
-    {
-      "name": "Swarm of Filth",
-      "effect": "If another Nurgling is within 2 inches, improve WS by 1 of melee attacks.",
-      "prModifier": 1
-    },
-    {
-      "name": "Nurgle’s Gift",
-      "effect": "Psychic, When this operative is destroyed, all enemies within 2 inches suffer 1 wound.",
-      "prModifier": null
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c0895d"
-  },
-  "id": 27,
-  "name": "Mandrake Soulrend",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Mandrake",
-  "pr": 110,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [
-    58,
-    59
-  ],
-  "abilities": [
-    {
-      "name": "Veil of Darkness",
-      "effect": "Psychic, 1AP: Create a 3 inch mist zone. Allies within it gain <strong>Silent</strong>.",
-      "prModifier": 3
-    },
-    {
-      "name": "Siphon Essence",
-      "effect": "Psychic, 1AP: Target enemy <strong>within 12 inches</strong> suffers <strong>1D3 wounds</strong>. Heal equal to the damage dealt.",
-      "prModifier": 4
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08953"
-  },
-  "id": 11,
-  "name": "Screamer",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Daemon",
-  "pr": 82,
-  "attributes": {
-    "Movement": 8,
-    "Wounds": 5,
-    "Save": 6,
-    "APL": 1,
-    "body": [
-      "universal",
-      "screamer",
-      "spell"
-    ]
-  },
-  "weapons": [
-    21,
-    45
-  ],
-  "abilities": [
-    {
-      "name": "Daemonic Flight",
-      "effect": "Fly over terrain. ",
-      "prModifier": 3
-    },
-    {
-      "name": "Warpfire Trail",
-      "effect": "Psychic, After moving, leave a 1 inch-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. ",
-      "prModifier": 4
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c0895c"
-  },
-  "id": 26,
-  "name": "Mandrake Nightfiend",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Mandrake",
-  "pr": 126,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 8,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [
-    58,
-    59
-  ],
-  "abilities": [
-    {
-      "name": "Umbral Aura",
-      "effect": "Enemies <strong>within 6 inches</strong> worsen their Save by 1 in mist zones.",
-      "prModifier": 4
-    },
-    {
-      "name": "Terrifying Visage",
-      "effect": "Once per battle: All enemies <strong>within 6 inches</strong> gain <strong>Disoriented</strong> until the end of the Turning Point.",
-      "prModifier": 3
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c08956"
-  },
-  "id": 14,
-  "name": "Khorne Berzerker",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Chaos Space Marine",
-  "pr": 159,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 14,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    31,
-    2,
-    8
-  ],
-  "abilities": [
-    {
-      "name": "Mark of Khorne",
-      "effect": "Re-roll one attack die per activation in melee.",
-      "prModifier": 3
-    },
-    {
-      "name": "Warp-fueled Rage",
-      "effect": "After defeating an enemy, gain +1 Attack on melee weapons until the end of the next activation.",
-      "prModifier": 4
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b0f7703abfb2c0895b"
-  },
-  "id": 25,
-  "name": "Mandrake Shadowstalker",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Mandrake",
-  "pr": 101,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 6,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [
-    58
-  ],
-  "abilities": [
-    {
-      "name": "Shadow Step",
-      "effect": "Psychic, 1AP: <strong>Teleport 6 inches</strong> through shadows or mist zones. Treat as <strong>Concealed</strong> after teleporting.",
-      "prModifier": 3
-    },
-    {
-      "name": "Soul Hunger",
-      "effect": "Psychic, After defeating an enemy, heal 1D3 wounds.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08961"
-  },
-  "id": 4,
-  "name": "Aetherwing",
-  "faction": "Forces of nature",
-  "subgroup": "Tzaangor",
-  "pr": 114,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "aetherwing"
-    ]
-  },
-  "weapons": [
-    19,
-    20
-  ],
-  "abilities": [
-    {
-      "name": "Aether Dive",
-      "effect": "1AP: Fly over terrain."
-    },
-    {
-      "name": "Primal Strength",
-      "effect": "+1 Damage to successful Fight actions. ",
-      "prModifier": 7
-    }
-  ],
-  "items": []
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c0895f"
-  },
-  "id": 2,
-  "name": "Murloc Tidecaller",
-  "faction": "Forces of nature",
-  "subgroup": "Murloc",
-  "pr": 88,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "spell"
-    ]
-  },
-  "weapons": [
-    12,
-    42
-  ],
-  "abilities": [
-    {
-      "name": "Tidal Surge",
-      "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Primitive Cunning",
-      "effect": "Free Dash when within 6 inches of Murloc King."
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08963"
-  },
-  "id": 6,
-  "name": "Aetherwing Flutist",
-  "faction": "Forces of nature",
-  "subgroup": "Tzaangor",
-  "pr": 114,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "aetherwing"
-    ]
-  },
-  "weapons": [
-    19,
-    20,
-    44
-  ],
-  "abilities": [
-    {
-      "name": "Aether Dive",
-      "effect": "1AP: Fly over terrain."
-    },
-    {
-      "name": "Flute of Fury",
-      "effect": "Friendly operatives within 6 inches gain +1 to WS until the end of the Turning Point. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08964"
-  },
-  "id": 7,
-  "name": "Windblast Aetherwing",
-  "faction": "Forces of nature",
-  "subgroup": "Tzaangor",
-  "pr": 121,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 10,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "universal",
-      "aetherwing",
-      "spell"
-    ]
-  },
-  "weapons": [
-    19,
-    44
-  ],
-  "abilities": [
-    {
-      "name": "Aether Dive",
-      "effect": "1AP: Fly over terrain."
-    },
-    {
-      "name": "Primal Strength",
-      "effect": "+1 Damage to successful Fight actions. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08966"
-  },
-  "id": 29,
-  "name": "Mistborn Wisp",
-  "faction": "Forces of nature",
-  "subgroup": "Mistborn",
-  "pr": 86,
-  "attributes": {
-    "Movement": 8,
-    "Wounds": 8,
-    "Save": 6,
-    "APL": 2,
-    "body": [
-      "universal",
-      "mist",
-      "spirit"
-    ]
-  },
-  "weapons": [
-    62
-  ],
-  "abilities": [
-    {
-      "name": "Mistform",
-      "effect": "Psychic, This operative is always treated as <strong>in Cover while in a mist zone</strong>. Can move through terrain and other operatives."
-    },
-    {
-      "name": "Density Shift",
-      "effect": "Psychic, 1AP: Increase mist density level in a <strong>6-inch</strong> radius for one Turning Point. All operatives in the area are <strong>Obscured</strong>.",
-      "prModifier": 4
-    },
-    {
-      "name": "Ethereal Strike",
-      "effect": "Psychic, Critical hits inflict the <strong>Bleeding</strong> status. If the target is already Bleeding, worsen it to <strong>Corrupted</strong>."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08967"
-  },
-  "id": 30,
-  "name": "Grove Sentinel",
-  "faction": "Forces of nature",
-  "subgroup": "Ent",
-  "pr": 145,
-  "attributes": {
-    "Movement": 4,
-    "Wounds": 18,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "universal",
-      "plant"
-    ]
-  },
-  "weapons": [
-    63
-  ],
-  "abilities": [
-    {
-      "name": "Guardian's Call",
-      "effect": "Psychic, Once per battle, <strong>summon 1D3 Sylvan Saplings</strong>  within 6 inches. Saplings activate after this operative."
-    },
-    {
-      "name": "Thorn Burst",
-      "effect": "When this operative is <strong>destroyed</strong>, all enemies <strong>within 3 inches</strong> suffer <strong>1D3</strong> wounds and gain <strong>Bleeding</strong>."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c0895e"
-  },
-  "id": 1,
-  "name": "Murloc",
-  "faction": "Forces of nature",
-  "subgroup": "Murloc",
-  "pr": 87,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 6,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal"
-    ]
-  },
-  "weapons": [
-    10,
-    11,
-    40,
-    41
-  ],
-  "abilities": [
-    {
-      "name": "Amphibious Assault",
-      "effect": "1AP: Swim 6 inches through water or mist."
-    },
-    {
-      "name": "Pack Tactics",
-      "effect": "+1 to WS/BS within 3 inches of another Murloc. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Primitive Cunning",
-      "effect": "Free Dash  when within 6 inches of Murloc King."
-    },
-    {
-      "name": "Crab Shell Shield",
-      "effect": "Improve Save by 1. When retaliating, retain one failed attack dice as a success."
-    }
-  ]
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08960"
-  },
-  "id": 3,
-  "name": "Murloc King",
-  "faction": "Forces of nature",
-  "subgroup": "Murloc",
-  "pr": 146,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 12,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "universal",
-      "spell",
-      "human"
-    ]
-  },
-  "weapons": [
-    13,
-    43
-  ],
-  "abilities": [
-    {
-      "name": "King’s Command",
-      "effect": "Re-roll attack dice with result of 1 for Murlocs within 6 inches. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Tidal Surge",
-      "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08962"
-  },
-  "id": 5,
-  "name": "Aetherwing Bannerbearer",
-  "faction": "Forces of nature",
-  "subgroup": "Tzaangor",
-  "pr": 121,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 10,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "universal",
-      "aetherwing"
-    ]
-  },
-  "weapons": [
-    19,
-    20
-  ],
-  "abilities": [
-    {
-      "name": "Aether Dive",
-      "effect": "1AP: Fly 7 over terrain."
-    },
-    {
-      "name": "Banner of Resilience",
-      "effect": "Friendly operatives within 6 inches reduce incoming damage by 1 (to a minimum of 2). ",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08965"
-  },
-  "id": 28,
-  "name": "Elder Treant",
-  "faction": "Forces of nature",
-  "subgroup": "Ent",
-  "pr": 168,
-  "attributes": {
-    "Movement": 3,
-    "Wounds": 25,
-    "Save": 3,
-    "APL": 2,
-    "body": [
-      "universal",
-      "plant"
-    ]
-  },
-  "weapons": [
-    60,
-    61
-  ],
-  "abilities": [
-    {
-      "name": "Living Roots",
-      "effect": "1AP: Create a 3-inch hazardous terrain of entangling roots. Enemies moving through become <strong>Entangled</strong>."
-    },
-    {
-      "name": "Bark Armor",
-      "effect": "Reduce incoming damage by 1 (to a minimum of 2). <strong>Critical hits against this operative are scored on unmodified rolls of 5+</strong>.",
-      "prModifier": 5
-    },
-    {
-      "name": "Sylvan Regrowth",
-      "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+2 instead."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5b9f7703abfb2c08968"
-  },
-  "id": 31,
-  "name": "Mistborn Leviathan",
-  "faction": "Forces of nature",
-  "subgroup": "Mistborn",
-  "pr": 251,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 30,
-    "Save": 2,
-    "APL": 3,
-    "body": [
-      "universal",
-      "mist",
-      "behemoth"
-    ]
-  },
-  "weapons": [
-    64,
-    65
-  ],
-  "abilities": [
-    {
-      "name": "Mist Vortex",
-      "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 5+, they suffer 1 wound.",
-      "prModifier": 3
-    },
-    {
-      "name": "Reality Tear",
-      "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift on a place visible and within 12 inches. Enemies entering or starting their activation roll 1d6, on a <strong>1-5</strong> they suffer result wounds.",
-      "prModifier": 7
-    },
-    {
-      "name": "Unyielding Fog",
-      "effect": "Mist zones within 12 inches cannot be dispersed. All mist effects are treated as Dense density."
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896a"
-  },
-  "id": 8,
-  "name": "Intercessor Warrior",
-  "faction": "Imperium",
-  "subgroup": "Space Marine",
-  "pr": 158,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 14,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    33,
-    2,
-    8,
-    52
-  ],
-  "abilities": [
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08970"
-  },
-  "id": 34,
-  "name": "Witchseeker",
-  "faction": "Imperium",
-  "subgroup": "Sisters of Silence",
-  "pr": 124,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "null",
-      "universal"
-    ]
-  },
-  "weapons": [
-    3,
-    71
-  ],
-  "abilities": [
-    {
-      "name": "Cleansing Flame",
-      "effect": "When attacking [spell] operatives, critical hits apply <strong>/status/:3/</strong> status automatically.",
-      "prModifier": 3
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08974"
-  },
-  "id": 38,
-  "name": "Inquisitorial Interrogator",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 123,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 9,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    23,
-    2
-  ],
-  "abilities": [
-    {
-      "name": "Authority of the Ordos",
-      "effect": "Once per Turning Point, one friendly operative within 6 inches can reroll a failed dice",
-      "prModifier": 3
-    }
-  ],
-  "items": [
-    {
-      "id": 62,
-      "quant": 1
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08975"
-  },
-  "id": 39,
-  "name": "Inquisitorial Acolyte",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 87,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    24,
-    1
-  ],
-  "abilities": [
-    {
-      "name": "Sanctioned Vigilance",
-      "effect": "When within 3 inches of another Inquisitorial Agent, gain +1 to Save rolls",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08971"
-  },
-  "id": 35,
-  "name": "Inquisitor Alaric Dresdan",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 172,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 14,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "human",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    70,
-    100
-  ],
-  "abilities": [
-    {
-      "name": "Psychic Dominion",
-      "effect": "1AP: Select visible enemy within 12 inches. Until next activation, their [spell] attacks targeting this operative automatically fail.",
-      "prModifier": 8
-    },
-    {
-      "name": "Inquisitorial Mandate",
-      "effect": "2AP: friendly operatives within 6 inches can immediately perform a free Fight or Shoot action after this operative's activation.",
-      "prModifier": 10
-    }
-  ],
-  "items": [
-    {
-      "id": 62,
-      "quant": 1
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08973"
-  },
-  "id": 37,
-  "name": "Daemonhost",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 129,
-  "attributes": {
-    "Movement": 8,
-    "Wounds": 12,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "daemon",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    72
-  ],
-  "abilities": [
-    {
-      "name": "Bound Wrath",
-      "effect": "Each time this operative suffers wounds, add +1 to its Attack characteristic (max +3). If controller is killed, roll 1D6 each activation - on 1-3 it attacks nearest operative.",
-      "prModifier": -5
-    },
-    {
-      "name": "Warp Flux",
-      "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/status/:7/</strong> status.",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08976"
-  },
-  "id": 40,
-  "name": "Sanctioned Psyker",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 74,
-  "attributes": {
-    "Movement": 5,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    50
-  ],
-  "abilities": [
-    {
-      "name": "Warp Insight",
-      "effect": "1AP: Roll 1D6 - on 4+ remove change to engange enemies within 12 inches.",
-      "prModifier": 4
-    },
-    {
-      "name": "Unstable Connection",
-      "effect": "When using [spell] weapons, suffer 1 wound on hit rolls of 1",
-      "prModifier": -2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896b"
-  },
-  "id": 9,
-  "name": "Apothecary Biologis",
-  "faction": "Imperium",
-  "subgroup": "Space Marine",
-  "pr": 169,
-  "attributes": {
-    "Movement": 4,
-    "Wounds": 18,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    9,
-    52
-  ],
-  "abilities": [
-    {
-      "name": "Combat Medicae",
-      "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3 inches."
-    },
-    {
-      "name": "Genetic Augmentation",
-      "effect": "1AP: Friendly operative within 6 inches +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Revitalizing Aura",
-      "effect": "All friendly operatives within 3 inches reduce incoming damage by 1 (to a minimum of 1). ",
-      "prModifier": 7
-    },
-    {
-      "name": "Desperate Charge",
-      "effect": "Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order."
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896c"
-  },
-  "id": 10,
-  "name": "Captain Marcus Valen",
-  "faction": "Imperium",
-  "subgroup": "Space Marine",
-  "pr": 231,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 18,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    15,
-    47
-  ],
-  "abilities": [
-    {
-      "name": "Mistforged Precision",
-      "effect": "Re-roll one attack roll in mist zones."
-    },
-    {
-      "name": "Lancer’s Charge",
-      "effect": "1AP: Free Charge + Fight action. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Inspiring Presence",
-      "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
-      "prModifier": 7
-    },
-    {
-      "name": "Astartes",
-      "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896d"
-  },
-  "id": 24,
-  "name": "Mini-Terminator",
-  "faction": "Imperium",
-  "subgroup": "Space Marine",
-  "pr": 72,
-  "attributes": {
-    "Movement": 3,
-    "Wounds": 5,
-    "Save": 3,
-    "APL": 1,
-    "body": [
-      "universal",
-      "astartes"
-    ]
-  },
-  "weapons": [
-    57,
-    56
-  ],
-  "abilities": [
-    {
-      "name": "Terminator Armor",
-      "effect": "Ignore movement penalties from terrain. Reduce damage taken from Blast weapons by 1 (to a min of 1).",
-      "prModifier": 2
-    },
-    {
-      "name": "Overclocked Systems",
-      "effect": "Once per battle: Gain +1 APL for one activation. After this activation, suffer 1 wound.",
-      "prModifier": 1
-    },
-    {
-      "name": "Bulky Frame",
-      "effect": "Cannot climb or perform Dash actions. Enemy operatives cannot move through this operative.",
-      "prModifier": -1
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896e"
-  },
-  "id": 32,
-  "name": "Sister Superior",
-  "faction": "Imperium",
-  "subgroup": "Sisters of Silence",
-  "pr": 144,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 11,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "human",
-      "null",
-      "universal"
-    ]
-  },
-  "weapons": [
-    69,
-    70
-  ],
-  "abilities": [
-    {
-      "name": "Psychic Abomination",
-      "effect": "Enemy operatives within 6 inches cannot use Psychic actions and worsen WS by 1 of <strong>spell</strong> operatives.",
-      "prModifier": 6
-    },
-    {
-      "name": "Silent Judge",
-      "effect": "Once per Turning Point, select an enemy within 12 inches. Until your next activation, all attacks against this target gain +1 WS.",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c08972"
-  },
-  "id": 36,
-  "name": "Inquisitorial Body guard",
-  "faction": "Imperium",
-  "subgroup": "Inquisition",
-  "pr": 114,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    71,
-    2
-  ],
-  "abilities": [
-    {
-      "name": "Sanctioned Tactics",
-      "effect": "When within 3 inches of an Inquisitor, improve WS by 1.",
-      "prModifier": 3
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6999e5c3f7703abfb2c0896f"
-  },
-  "id": 33,
-  "name": "Vigilator",
-  "faction": "Imperium",
-  "subgroup": "Sisters of Silence",
-  "pr": 132,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 10,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "null",
-      "universal"
-    ]
-  },
-  "weapons": [
-    69
-  ],
-  "abilities": [
-    {
-      "name": "Null Charge",
-      "effect": "If charging a [spell] operative, melee weapons gain accurate 1.",
-      "prModifier": 5
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699f9d06ac9c1cc3b21d8304"
-  },
-  "id": 47,
-  "name": "Deathkorps Snipers",
-  "faction": "Imperium",
-  "subgroup": "Human",
-  "pr": 136,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "human"
-    ]
-  },
-  "weapons": [
-    26,
-    1,
-    80
-  ],
-  "abilities": [
-    {
-      "name": "Grim Determination",
-      "effect": "Ignore penalties from being injured.",
-      "prModifier": 5
-    },
-    {
-      "name": "Calculated Shot",
-      "effect": "If this operative has not performed a Move, Charge or Fall Back action during this activation, improve WS by 1 for shoot actions.",
-      "prModifier": 8
-    },
-    {
-      "name": "Camouflage Cloak",
-      "effect": "While in Cover, improve Save characteristic by 1.",
-      "prModifier": 5
-    }
-  ],
-  "items": [],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d8306"
-  },
-  "id": 48,
-  "name": "Kommando Nob",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 150,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 13,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    87,
-    88
-  ],
-  "abilities": [
-    {
-      "name": "Get it Done!",
-      "effect": "0AP: Pick a friendly Kommando within 6 inches. They get +1 APL.",
-      "prModifier": 5
-    },
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d8307"
-  },
-  "id": 49,
-  "name": "Kommando Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 116,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    89,
-    88
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d8308"
-  },
-  "id": 50,
-  "name": "Kommando Grot",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 70,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 5,
-    "Save": 6,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    90
-  ],
-  "abilities": [
-    {
-      "name": "Nimble",
-      "effect": "Can move through small gaps and climb without penalty.",
-      "prModifier": 2
-    },
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d8309"
-  },
-  "id": 51,
-  "name": "Kommando Snipa Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 119,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    91,
-    98
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830a"
-  },
-  "id": 52,
-  "name": "Kommando Dakka Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 110,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    92,
-    98
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    },
-    {
-      "name": "More Dakka",
-      "effect": "Can shoot twice if he hasn't moved.",
-      "prModifier": 4
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830b"
-  },
-  "id": 53,
-  "name": "Kommando Burna Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 118,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    93,
-    98
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830c"
-  },
-  "id": 54,
-  "name": "Kommando Breacha Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 120,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    94,
-    88
-  ],
-  "abilities": [
-    {
-      "name": "Breach",
-      "effect": "Can move through walls as if they were not there.",
-      "prModifier": 5
-    },
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830d"
-  },
-  "id": 55,
-  "name": "Kommando Slasha Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 137,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    95,
-    88
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    },
-    {
-      "name": "Throwing Knives",
-      "effect": "Can perform a free shoot action with a 6 inch range (3A, 4+, 2/3).",
-      "prModifier": 3
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830e"
-  },
-  "id": 56,
-  "name": "Kommando Rokkit Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 120,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    96,
-    89
-  ],
-  "abilities": [
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d830f"
-  },
-  "id": 57,
-  "name": "Kommando Comms Boy",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 120,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "universal",
-      "ork"
-    ]
-  },
-  "weapons": [
-    89,
-    88
-  ],
-  "abilities": [
-    {
-      "name": "Signal",
-      "effect": "1AP: Select a friendly operative within 6 inches. Add 1 to their APL.",
-      "prModifier": 4
-    },
-    {
-      "name": "Throat Slittas",
-      "effect": "Can perform charge action in conceal.",
-      "prModifier": 2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "699fa2c2ac9c1cc3b21d8310"
-  },
-  "id": 58,
-  "name": "Bomb Squig",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Ork Kommandos",
-  "pr": 123,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 4,
-    "Save": 6,
-    "APL": 2,
-    "body": [
-      "universal",
-      "squig"
-    ]
-  },
-  "weapons": [
-    99
-  ],
-  "abilities": [
-    {
-      "name": "Seek",
-      "effect": "Must move towards the nearest enemy.",
-      "prModifier": -2
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "69aa31f11d3387484b352160"
-  },
-  "id": 59,
-  "name": "Mother Morvath, the Maledictum Hag",
-  "faction": "Abyssal Cabal",
-  "subgroup": "Witch",
-  "pr": 165,
-  "attributes": {
-    "Movement": 5,
-    "Wounds": 14,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "human",
-      "universal",
-      "spell"
-    ]
-  },
-  "weapons": [
-    112,
-    113,
-    46,
-    106,
-    45
-  ],
-  "abilities": [
-    {
-      "name": "Ancient Hexcraft",
-      "effect": "Psychic, 1AP: Select an enemy operative within 8 inches. Until the end of the Turning Point, that operative cannot perform Dash actions and worsens its Save characteristic by 1.",
-      "prModifier": 8
-    },
-    {
-      "name": "Gloom-Woven Foresight",
-      "effect": "Once per Turning Point, when targeted by a Shoot or Fight action, Morvath can re-roll all of her Defense or Parry dice, drawing upon centuries of preternatural instinct.",
-      "prModifier": 10
-    },
-    {
-      "name": "Curse of the Maledictum",
-      "effect": "When Morvath incapacitates an enemy operative with a spell action, all other enemy operatives within 4 inches of that target suffer 1D3 mortal wounds from psychic backlash.",
-      "prModifier": 9
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a71070172780b3a20b4e037"
-  },
-  "id": 60,
-  "name": "Vale Seneschal",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Human",
-  "pr": 120,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 9,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    111,
-    3
-  ],
-  "abilities": [
-    {
-      "name": "Steward of House Voss",
-      "effect": "1AP: Select one friendly Seneschal or Voss operative within 6 inches. That operative gains +1 APL and can re-roll one attack die until the end of the Turning Point.",
-      "prModifier": 4
-    },
-    {
-      "name": "Iron-Clad Authority",
-      "effect": "Enemy operatives within 3 inches of this operative worsen their HIT by 1 when making attacks or shoots against this operative.",
-      "prModifier": 7
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a71070172780b3a20b4e038"
-  },
-  "id": 61,
-  "name": "Seneschal Enforcer",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Human",
-  "pr": 110,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    111,
-    2
-  ],
-  "abilities": [
-    {
-      "name": "Voss Family Oath",
-      "effect": "When a friendly Seneschal officer or Voss noble within 3 inches is targeted by a shoot action, reduce damage taken from each die by 1.",
-      "prModifier": 4
-    },
-    {
-      "name": "Bulwark of the Seneschal",
-      "effect": "Gain +1 Save when in light or heavy cover, and enemy operatives cannot land critical hits against this operative in melee.",
-      "prModifier": 112
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a71070172780b3a20b4e039"
-  },
-  "id": 62,
-  "name": "Seneschal Cipher Agent",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Human",
-  "pr": 110,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 7,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    33,
-    25
-  ],
-  "abilities": [
-    {
-      "name": "Shadow Retainer",
-      "effect": "When concealed or standing in mist zones, enemy operatives cannot target this operative at a range greater than 6.",
-      "prModifier": 4
-    },
-    {
-      "name": "Ledger Concealment",
-      "effect": "1AP: Target an enemy operative within 9 inches. That operative loses 1 APL until the end of its next activation.",
-      "prModifier": 6
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a71070172780b3a20b4e03a"
-  },
-  "id": 63,
-  "name": "Seneschal Quartermaster",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Human",
-  "pr": 110,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    35,
-    108
-  ],
-  "abilities": [
-    {
-      "name": "Supply Coordinator",
-      "effect": "1AP: Friendly operative within 3 inches gains Ceaseless on its ranged attacks until the end of the Turning Point.",
-      "prModifier": 4
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897070"
-  },
-  "id": 64,
-  "name": "Zidane Tribal",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 168,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 11,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    114
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Grand Lethal",
-      "effect": "1AP: Gain +1 APL, +2 Movement, and all melee attacks gain Relentless until the end of the Turning Point.",
-      "prModifier": 15
-    },
-    {
-      "name": "Steal & Shift",
-      "effect": "1AP: Target enemy operative within 3 inches loses 1 APL and Zidane dashes up to 3 inches without provoking retaliation.",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897071"
-  },
-  "id": 65,
-  "name": "Vivi Ornitier",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 172,
-  "attributes": {
-    "Movement": 5,
-    "Wounds": 9,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "spell",
-      "automata",
-      "universal"
-    ]
-  },
-  "weapons": [
-    115,
-    116
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Double Black Magic",
-      "effect": "1AP: Perform two offensive spell weapon attacks during this activation without paying additional APL.",
-      "prModifier": 16
-    },
-    {
-      "name": "Focus Arcana",
-      "effect": "1AP: Next spell attack gains +1 WS and Lethal 5+ until the end of the activation.",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897073"
-  },
-  "id": 67,
-  "name": "Garnet Til Alexandros XVII",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 177,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 10,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "human",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    118,
-    119
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Eidolon Trance",
-      "effect": "1AP: Offensive spell attacks gain Lethal 4+ and Relentless until the end of the Turning Point.",
-      "prModifier": 14
-    },
-    {
-      "name": "Curaga Light",
-      "effect": "1AP: Restore 6 Wounds to a friendly operative within 6 inches.",
-      "prModifier": 9
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897076"
-  },
-  "id": 70,
-  "name": "General Beatrix",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 248,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 13,
-    "Save": 3,
-    "APL": 3,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    123
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Seiken Absolute",
-      "effect": "1AP: Save the Queen gains Critical Strike & Executioner for the remainder of the battle.",
-      "prModifier": 16
-    },
-    {
-      "name": "Climhazzard Shock",
-      "effect": "1AP: Deal 4 mortal wounds to all enemy operatives within 3 inches.",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897072"
-  },
-  "id": 66,
-  "name": "Adelbert Steiner",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 190,
-  "attributes": {
-    "Movement": 5,
-    "Wounds": 14,
-    "Save": 3,
-    "APL": 2,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    117
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Iron Will & Stock Break",
-      "effect": "1AP: Gain +2 Save (to a maximum of 2+) and Retaliation against all incoming melee attacks until the end of the Turning Point.",
-      "prModifier": 14
-    },
-    {
-      "name": "Sworn Protector",
-      "effect": "Friendly Tantalus operatives within 3 inches gain Light Cover bonuses even when positioned in open ground.",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897074"
-  },
-  "id": 68,
-  "name": "Eiko Carol",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 157,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 8,
-    "Save": 5,
-    "APL": 2,
-    "body": [
-      "human",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    120,
-    121
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Double White Arcana",
-      "effect": "1AP: Activate two support or healing abilities during a single activation.",
-      "prModifier": 14
-    },
-    {
-      "name": "Phoenix Blessing",
-      "effect": "1AP: Restore 5 Wounds to target friendly operative and grant them +1 Save for 1 Turning Point.",
-      "prModifier": 10
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897075"
-  },
-  "id": 69,
-  "name": "Freya Crescent",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 175,
-  "attributes": {
-    "Movement": 7,
-    "Wounds": 11,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "fellgor",
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    122
-  ],
-  "abilities": [
-    {
-      "name": "Trance: High Dragon Jump",
-      "effect": "1AP: Leap over terrain up to 8 inches, execute an immediate melee fight with +2 damage, and gain Concealed status until next turn.",
-      "prModifier": 14
-    },
-    {
-      "name": "Reis's Wind",
-      "effect": "1AP: Grant regeneration to all friendly Tantalus operatives within 4 inches (restore 2 Wounds at start of their activation).",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897077"
-  },
-  "id": 71,
-  "name": "Quina Quen",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 172,
-  "attributes": {
-    "Movement": 5,
-    "Wounds": 14,
-    "Save": 4,
-    "APL": 2,
-    "body": [
-      "abhuman",
-      "spell",
-      "universal"
-    ]
-  },
-  "weapons": [
-    124,
-    125
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Devour & Cook",
-      "effect": "1AP: Instantly devour an enemy operative under 6 Wounds or restore 8 Wounds to self and gain Stun Immunity.",
-      "prModifier": 15
-    },
-    {
-      "name": "Mighty Guard",
-      "effect": "1AP: All friendly operatives within 3 inches gain +1 Save until the end of the Turning Point.",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-},
-{
-  "_id": {
-    "$oid": "6a7fdeb982914f49f3897078"
-  },
-  "id": 72,
-  "name": "Amarant Coral",
-  "faction": "Crimson Corsairs",
-  "subgroup": "Tantalus Crew",
-  "pr": 187,
-  "attributes": {
-    "Movement": 6,
-    "Wounds": 12,
-    "Save": 4,
-    "APL": 3,
-    "body": [
-      "human",
-      "universal"
-    ]
-  },
-  "weapons": [
-    126,
-    127
-  ],
-  "abilities": [
-    {
-      "name": "Trance: Elan Unleashed",
-      "effect": "1AP: Gain +1 APL, +2 Movement, and Relentless on all attacks until the end of the Turning Point.",
-      "prModifier": 14
-    },
-    {
-      "name": "Curative Chakra",
-      "effect": "1AP: Restore 4 Wounds to self or an adjacent ally and remove all negative status conditions.",
-      "prModifier": 8
-    }
-  ],
-  "isDiscovered": false
-}]
+[
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894a"
+    },
+    "id": 20,
+    "name": "Fellgor Mist Shaman",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Fellgor",
+    "pr": 104,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human",
+        "fellgor",
+        "spell"
+      ]
+    },
+    "weapons": [
+      5,
+      50
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "Psychic, 1AP: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894d"
+    },
+    "id": 41,
+    "name": "NLR Mistborn Soldier",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 116,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      2,
+      24
+    ],
+    "abilities": [
+      {
+        "name": "Mistborn Reflexes",
+        "effect": "Gain +1 Save when in mist zones. Can dash through light terrain.",
+        "prModifier": 5
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894c"
+    },
+    "id": 22,
+    "name": "T'au Pathfinder",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 84,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ],
+    "items": [],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894b"
+    },
+    "id": 21,
+    "name": "NLR Sergeant",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 118,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      35,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c08950"
+    },
+    "id": 44,
+    "name": "T'au Pathfinder Drone Controller",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 84,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Drone Uplink",
+        "effect": "1AP: Select one friendly operative within 6 inches. Until the end of the Turning Point, when that operative performs a Shoot action, it gains Balanced and Ceaseless against targets that are visible to both operatives.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c08952"
+    },
+    "id": 46,
+    "name": "T'au Pathfinder Grenadier",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27,
+      73
+    ],
+    "abilities": [
+      {
+        "name": "Grenade Specialist",
+        "effect": "When this operative performs a Shoot action with a weapon that has Blast or Shockwave, it can re-roll up to two attack dice.",
+        "prModifier": 4
+      },
+      {
+        "name": "Photon Saturation",
+        "effect": "1AP: Select a point within 6 inches. Until the end of the Turning Point, enemy operatives within 3 inches of that point worsen their Save by 1 against ranged attacks made by your kill team.",
+        "prModifier": 6
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c08948"
+    },
+    "id": 18,
+    "name": "NLR Soldier",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 76,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      23,
+      1
+    ],
+    "abilities": [
+      {
+        "name": "Mist Resilience",
+        "effect": "In mist zones, gain Cover against ranged attacks."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c08949"
+    },
+    "id": 19,
+    "name": "NLR Field Medic",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Human",
+    "pr": 83,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      25
+    ],
+    "abilities": [
+      {
+        "name": "Combat Triage",
+        "effect": "1AP: Heal 2D3 +1 wounds to a friendly operative within 3 inches. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894e"
+    },
+    "id": 42,
+    "name": "T'au Mist Pathfinder",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 139,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      38
+    ],
+    "abilities": [
+      {
+        "name": "Mist Synergy",
+        "effect": "Allies within 6 inches gain Mist-Accuracy rule when shooting targets in mist",
+        "prModifier": 3
+      },
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ],
+    "items": [],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c0894f"
+    },
+    "id": 43,
+    "name": "T'au Pathfinder Medic",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 86,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Nano-Triage",
+        "effect": "1AP: Heal 2D3 wounds to a friendly operative within 3 inches and remove one non-/status/:7/ status effect.",
+        "prModifier": 7
+      },
+      {
+        "name": "Pathfinder Support",
+        "effect": "While within 6 inches of another T'au operative, this operative re-rolls 1s on defense rolls.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5aaf7703abfb2c08951"
+    },
+    "id": 45,
+    "name": "T'au Pathfinder Team Leader",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "T'au",
+    "pr": 107,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      27
+    ],
+    "abilities": [
+      {
+        "name": "Coordinated Volley",
+        "effect": "1AP: Until the end of the Turning Point, friendly T'au operatives within 6 inches can re-roll one attack die when performing a Shoot action against a Markerlighted target.",
+        "prModifier": 7
+      },
+      {
+        "name": "Markerlight",
+        "effect": "1AP: Designate a visible enemy. Allies gain Balanced against it until the end of the Turning Point.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08955"
+    },
+    "id": 13,
+    "name": "Screecher Purple",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 71,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 1,
+      "Save": 3,
+      "APL": 1,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
+      },
+      {
+        "name": "Arcane Bargain",
+        "effect": "\"Psychic, Once per activation: roll 1d6 and an enemy visible and within control range suffers result wounds and restore result wounds from friendly operative that it's both visible and within 4 inches, if an operative other than Summoner recovered wounds this way and Summoner is both visible and within 4 inches of this operative or the other operative, restore result/2 wounds rounded up from Summoner.",
+        "prModifier": 7
+      },
+      {
+        "name": "Ethereal Form",
+        "effect": "Remove this operative from the killzone at the end of the turning point."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08957"
+    },
+    "id": 15,
+    "name": "Legionary Aspiring Champion",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 202,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 16,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      30,
+      8
+    ],
+    "abilities": [
+      {
+        "name": "Dark Zeal",
+        "effect": "Psychic, Re-roll one attack or defense die per turning point. ",
+        "prModifier": 4
+      },
+      {
+        "name": "Inspiring Terror",
+        "effect": "Worsen the WS 1 of Enemy operatives within 6 inches. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08958"
+    },
+    "id": 16,
+    "name": "Balefire Acolyte",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 153,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 14,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes",
+        "spell"
+      ]
+    },
+    "weapons": [
+      46,
+      14
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Smite",
+        "effect": "Psychic, 1AP: target operative visible and within 10 inches suffers 1D3 mortal wounds. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Warpfire",
+        "effect": "Psychic, Create a 3 inch hazardous zone within 12 inches and visible. Enemies in or moving through Warpfire suffer 1D3 wounds. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08959"
+    },
+    "id": 17,
+    "name": "Legionary Gunner",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 159,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 15,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      29,
+      32,
+      2,
+      31
+    ],
+    "abilities": [
+      {
+        "name": "Overcharge",
+        "effect": "1AP: +1 Damage to next attack, but suffer 1 wound for each hit roll of 1."
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08954"
+    },
+    "id": 12,
+    "name": "Screecher Green",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 68,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 1,
+      "Save": 3,
+      "APL": 1,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
+      },
+      {
+        "name": "Aegis of the Ninefold Deceit",
+        "effect": "Psychic, Reduces damage by 1 (to a min of 2) received by visible friendly operatives within 6 inches. ",
+        "prModifier": 4
+      },
+      {
+        "name": "Ethereal Form",
+        "effect": "Remove this operative from the killzone at the end of the turning point."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c0895a"
+    },
+    "id": 23,
+    "name": "Nurgling",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 39,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 4,
+      "Save": 6,
+      "APL": 1,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      54,
+      55
+    ],
+    "abilities": [
+      {
+        "name": "Disgustingly Resilient",
+        "effect": "Psychic, Roll 1D6 each time this operative loses a wound. On a 5+, ignore that wound.",
+        "prModifier": 2
+      },
+      {
+        "name": "Swarm of Filth",
+        "effect": "If another Nurgling is within 2 inches, improve WS by 1 of melee attacks.",
+        "prModifier": 1
+      },
+      {
+        "name": "Nurgle’s Gift",
+        "effect": "Psychic, When this operative is destroyed, all enemies within 2 inches suffer 1 wound.",
+        "prModifier": null
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c0895d"
+    },
+    "id": 27,
+    "name": "Mandrake Soulrend",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 110,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      58,
+      59
+    ],
+    "abilities": [
+      {
+        "name": "Veil of Darkness",
+        "effect": "Psychic, 1AP: Create a 3 inch mist zone. Allies within it gain <strong>Silent</strong>.",
+        "prModifier": 3
+      },
+      {
+        "name": "Siphon Essence",
+        "effect": "Psychic, 1AP: Target enemy <strong>within 12 inches</strong> suffers <strong>1D3 wounds</strong>. Heal equal to the damage dealt.",
+        "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08953"
+    },
+    "id": 11,
+    "name": "Screamer",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Daemon",
+    "pr": 82,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 5,
+      "Save": 6,
+      "APL": 1,
+      "body": [
+        "universal",
+        "screamer",
+        "spell"
+      ]
+    },
+    "weapons": [
+      21,
+      45
+    ],
+    "abilities": [
+      {
+        "name": "Daemonic Flight",
+        "effect": "Fly over terrain. ",
+        "prModifier": 3
+      },
+      {
+        "name": "Warpfire Trail",
+        "effect": "Psychic, After moving, leave a 1 inch-wide trail of warpfire. Enemies crossing it suffer 1D3 wounds. ",
+        "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c0895c"
+    },
+    "id": 26,
+    "name": "Mandrake Nightfiend",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 126,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      58,
+      59
+    ],
+    "abilities": [
+      {
+        "name": "Umbral Aura",
+        "effect": "Enemies <strong>within 6 inches</strong> worsen their Save by 1 in mist zones.",
+        "prModifier": 4
+      },
+      {
+        "name": "Terrifying Visage",
+        "effect": "Once per battle: All enemies <strong>within 6 inches</strong> gain <strong>Disoriented</strong> until the end of the Turning Point.",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c08956"
+    },
+    "id": 14,
+    "name": "Khorne Berzerker",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Chaos Space Marine",
+    "pr": 159,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      31,
+      2,
+      8
+    ],
+    "abilities": [
+      {
+        "name": "Mark of Khorne",
+        "effect": "Re-roll one attack die per activation in melee.",
+        "prModifier": 3
+      },
+      {
+        "name": "Warp-fueled Rage",
+        "effect": "After defeating an enemy, gain +1 Attack on melee weapons until the end of the next activation.",
+        "prModifier": 4
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b0f7703abfb2c0895b"
+    },
+    "id": 25,
+    "name": "Mandrake Shadowstalker",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Mandrake",
+    "pr": 101,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      58
+    ],
+    "abilities": [
+      {
+        "name": "Shadow Step",
+        "effect": "Psychic, 1AP: <strong>Teleport 6 inches</strong> through shadows or mist zones. Treat as <strong>Concealed</strong> after teleporting.",
+        "prModifier": 3
+      },
+      {
+        "name": "Soul Hunger",
+        "effect": "Psychic, After defeating an enemy, heal 1D3 wounds.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08961"
+    },
+    "id": 4,
+    "name": "Aetherwing",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
+      }
+    ],
+    "items": [],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c0895f"
+    },
+    "id": 2,
+    "name": "Murloc Tidecaller",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 88,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "spell"
+      ]
+    },
+    "weapons": [
+      12,
+      42
+    ],
+    "abilities": [
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash when within 6 inches of Murloc King."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08963"
+    },
+    "id": 6,
+    "name": "Aetherwing Flutist",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 114,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20,
+      44
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Flute of Fury",
+        "effect": "Friendly operatives within 6 inches gain +1 to WS until the end of the Turning Point. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08964"
+    },
+    "id": 7,
+    "name": "Windblast Aetherwing",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 121,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing",
+        "spell"
+      ]
+    },
+    "weapons": [
+      19,
+      44
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly over terrain."
+      },
+      {
+        "name": "Primal Strength",
+        "effect": "+1 Damage to successful Fight actions. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08966"
+    },
+    "id": 29,
+    "name": "Mistborn Wisp",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 86,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 8,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "mist",
+        "spirit"
+      ]
+    },
+    "weapons": [
+      62
+    ],
+    "abilities": [
+      {
+        "name": "Mistform",
+        "effect": "Psychic, This operative is always treated as <strong>in Cover while in a mist zone</strong>. Can move through terrain and other operatives."
+      },
+      {
+        "name": "Density Shift",
+        "effect": "Psychic, 1AP: Increase mist density level in a <strong>6-inch</strong> radius for one Turning Point. All operatives in the area are <strong>Obscured</strong>.",
+        "prModifier": 4
+      },
+      {
+        "name": "Ethereal Strike",
+        "effect": "Psychic, Critical hits inflict the <strong>Bleeding</strong> status. If the target is already Bleeding, worsen it to <strong>Corrupted</strong>."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08967"
+    },
+    "id": 30,
+    "name": "Grove Sentinel",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 145,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 18,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "plant"
+      ]
+    },
+    "weapons": [
+      63
+    ],
+    "abilities": [
+      {
+        "name": "Guardian's Call",
+        "effect": "Psychic, Once per battle, <strong>summon 1D3 Sylvan Saplings</strong>  within 6 inches. Saplings activate after this operative."
+      },
+      {
+        "name": "Thorn Burst",
+        "effect": "When this operative is <strong>destroyed</strong>, all enemies <strong>within 3 inches</strong> suffer <strong>1D3</strong> wounds and gain <strong>Bleeding</strong>."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c0895e"
+    },
+    "id": 1,
+    "name": "Murloc",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 6,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal"
+      ]
+    },
+    "weapons": [
+      10,
+      11,
+      40,
+      41
+    ],
+    "abilities": [
+      {
+        "name": "Amphibious Assault",
+        "effect": "1AP: Swim 6 inches through water or mist."
+      },
+      {
+        "name": "Pack Tactics",
+        "effect": "+1 to WS/BS within 3 inches of another Murloc. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Primitive Cunning",
+        "effect": "Free Dash  when within 6 inches of Murloc King."
+      },
+      {
+        "name": "Crab Shell Shield",
+        "effect": "Improve Save by 1. When retaliating, retain one failed attack dice as a success."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08960"
+    },
+    "id": 3,
+    "name": "Murloc King",
+    "faction": "Forces of nature",
+    "subgroup": "Murloc",
+    "pr": 146,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "spell",
+        "human"
+      ]
+    },
+    "weapons": [
+      13,
+      43
+    ],
+    "abilities": [
+      {
+        "name": "King’s Command",
+        "effect": "Re-roll attack dice with result of 1 for Murlocs within 6 inches. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Tidal Surge",
+        "effect": "1AP, Psychic: Push 2 inches all enemies within 6 inches. ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08962"
+    },
+    "id": 5,
+    "name": "Aetherwing Bannerbearer",
+    "faction": "Forces of nature",
+    "subgroup": "Tzaangor",
+    "pr": 121,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "aetherwing"
+      ]
+    },
+    "weapons": [
+      19,
+      20
+    ],
+    "abilities": [
+      {
+        "name": "Aether Dive",
+        "effect": "1AP: Fly 7 over terrain."
+      },
+      {
+        "name": "Banner of Resilience",
+        "effect": "Friendly operatives within 6 inches reduce incoming damage by 1 (to a minimum of 2). ",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08965"
+    },
+    "id": 28,
+    "name": "Elder Treant",
+    "faction": "Forces of nature",
+    "subgroup": "Ent",
+    "pr": 168,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 25,
+      "Save": 3,
+      "APL": 2,
+      "body": [
+        "universal",
+        "plant"
+      ]
+    },
+    "weapons": [
+      60,
+      61
+    ],
+    "abilities": [
+      {
+        "name": "Living Roots",
+        "effect": "1AP: Create a 3-inch hazardous terrain of entangling roots. Enemies moving through become <strong>Entangled</strong>."
+      },
+      {
+        "name": "Bark Armor",
+        "effect": "Reduce incoming damage by 1 (to a minimum of 2). <strong>Critical hits against this operative are scored on unmodified rolls of 5+</strong>.",
+        "prModifier": 5
+      },
+      {
+        "name": "Sylvan Regrowth",
+        "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+2 instead."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5b9f7703abfb2c08968"
+    },
+    "id": 31,
+    "name": "Mistborn Leviathan",
+    "faction": "Forces of nature",
+    "subgroup": "Mistborn",
+    "pr": 251,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 30,
+      "Save": 2,
+      "APL": 3,
+      "body": [
+        "universal",
+        "mist",
+        "behemoth"
+      ]
+    },
+    "weapons": [
+      64,
+      65
+    ],
+    "abilities": [
+      {
+        "name": "Mist Vortex",
+        "effect": "At the start of its activation, pull all operatives within 6 inches 2 inches closer. Roll 1D6 for each; on a 5+, they suffer 1 wound.",
+        "prModifier": 3
+      },
+      {
+        "name": "Reality Tear",
+        "effect": "PSYCHIC: 1AP: Create a 4-inch hazardous warp rift on a place visible and within 12 inches. Enemies entering or starting their activation roll 1d6, on a <strong>1-5</strong> they suffer result wounds.",
+        "prModifier": 7
+      },
+      {
+        "name": "Unyielding Fog",
+        "effect": "Mist zones within 12 inches cannot be dispersed. All mist effects are treated as Dense density."
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896a"
+    },
+    "id": 8,
+    "name": "Intercessor Warrior",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 158,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      33,
+      2,
+      8,
+      52
+    ],
+    "abilities": [
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08970"
+    },
+    "id": 34,
+    "name": "Witchseeker",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 124,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      3,
+      71
+    ],
+    "abilities": [
+      {
+        "name": "Cleansing Flame",
+        "effect": "When attacking [spell] operatives, critical hits apply <strong>/status/:3/</strong> status automatically.",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08974"
+    },
+    "id": 38,
+    "name": "Inquisitorial Interrogator",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 123,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      23,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Authority of the Ordos",
+        "effect": "Once per Turning Point, one friendly operative within 6 inches can reroll a failed dice",
+        "prModifier": 3
+      }
+    ],
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08975"
+    },
+    "id": 39,
+    "name": "Inquisitorial Acolyte",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 87,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      24,
+      1
+    ],
+    "abilities": [
+      {
+        "name": "Sanctioned Vigilance",
+        "effect": "When within 3 inches of another Inquisitorial Agent, gain +1 to Save rolls",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08971"
+    },
+    "id": 35,
+    "name": "Inquisitor Alaric Dresdan",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 172,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      70,
+      100
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Dominion",
+        "effect": "1AP: Select visible enemy within 12 inches. Until next activation, their [spell] attacks targeting this operative automatically fail.",
+        "prModifier": 8
+      },
+      {
+        "name": "Inquisitorial Mandate",
+        "effect": "2AP: friendly operatives within 6 inches can immediately perform a free Fight or Shoot action after this operative's activation.",
+        "prModifier": 10
+      }
+    ],
+    "items": [
+      {
+        "id": 62,
+        "quant": 1
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08973"
+    },
+    "id": 37,
+    "name": "Daemonhost",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 129,
+    "attributes": {
+      "Movement": 8,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "daemon",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      72
+    ],
+    "abilities": [
+      {
+        "name": "Bound Wrath",
+        "effect": "Each time this operative suffers wounds, add +1 to its Attack characteristic (max +3). If controller is killed, roll 1D6 each activation - on 1-3 it attacks nearest operative.",
+        "prModifier": -5
+      },
+      {
+        "name": "Warp Flux",
+        "effect": "In mist zones, gain Fly 8 inches but suffer 1 wound at end of each activation. Critical hits apply <strong>/status/:7/</strong> status.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08976"
+    },
+    "id": 40,
+    "name": "Sanctioned Psyker",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 74,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "spell",
+        "universal"
+      ]
+    },
+    "weapons": [
+      50
+    ],
+    "abilities": [
+      {
+        "name": "Warp Insight",
+        "effect": "1AP: Roll 1D6 - on 4+ remove change to engange enemies within 12 inches.",
+        "prModifier": 4
+      },
+      {
+        "name": "Unstable Connection",
+        "effect": "When using [spell] weapons, suffer 1 wound on hit rolls of 1",
+        "prModifier": -2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896b"
+    },
+    "id": 9,
+    "name": "Apothecary Biologis",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 169,
+    "attributes": {
+      "Movement": 4,
+      "Wounds": 18,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      9,
+      52
+    ],
+    "abilities": [
+      {
+        "name": "Combat Medicae",
+        "effect": "1AP: Heal 2D3 +2 wounds to a friendly operative within 3 inches."
+      },
+      {
+        "name": "Genetic Augmentation",
+        "effect": "1AP: Friendly operative within 6 inches +1 to WS until the end of apothecary next activation. Does not stack with other WS/BS modifiers. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Revitalizing Aura",
+        "effect": "All friendly operatives within 3 inches reduce incoming damage by 1 (to a minimum of 1). ",
+        "prModifier": 7
+      },
+      {
+        "name": "Desperate Charge",
+        "effect": "Can perform two dash actions if it doesn't perform any actions other than dash and reposition during this activation and it has the engage order."
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896c"
+    },
+    "id": 10,
+    "name": "Captain Marcus Valen",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 231,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 18,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      15,
+      47
+    ],
+    "abilities": [
+      {
+        "name": "Mistforged Precision",
+        "effect": "Re-roll one attack roll in mist zones."
+      },
+      {
+        "name": "Lancer’s Charge",
+        "effect": "1AP: Free Charge + Fight action. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Inspiring Presence",
+        "effect": "Friendly operatives within 6 inches re-roll 1s on attack rolls. ",
+        "prModifier": 7
+      },
+      {
+        "name": "Astartes",
+        "effect": "This operative can perform shoot and fight actions twice per turning point, and can counteract regardless of order",
+        "prModifier": 10
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896d"
+    },
+    "id": 24,
+    "name": "Mini-Terminator",
+    "faction": "Imperium",
+    "subgroup": "Space Marine",
+    "pr": 72,
+    "attributes": {
+      "Movement": 3,
+      "Wounds": 5,
+      "Save": 3,
+      "APL": 1,
+      "body": [
+        "universal",
+        "astartes"
+      ]
+    },
+    "weapons": [
+      57,
+      56
+    ],
+    "abilities": [
+      {
+        "name": "Terminator Armor",
+        "effect": "Ignore movement penalties from terrain. Reduce damage taken from Blast weapons by 1 (to a min of 1).",
+        "prModifier": 2
+      },
+      {
+        "name": "Overclocked Systems",
+        "effect": "Once per battle: Gain +1 APL for one activation. After this activation, suffer 1 wound.",
+        "prModifier": 1
+      },
+      {
+        "name": "Bulky Frame",
+        "effect": "Cannot climb or perform Dash actions. Enemy operatives cannot move through this operative.",
+        "prModifier": -1
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896e"
+    },
+    "id": 32,
+    "name": "Sister Superior",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 144,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 11,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      69,
+      70
+    ],
+    "abilities": [
+      {
+        "name": "Psychic Abomination",
+        "effect": "Enemy operatives within 6 inches cannot use Psychic actions and worsen WS by 1 of <strong>spell</strong> operatives.",
+        "prModifier": 6
+      },
+      {
+        "name": "Silent Judge",
+        "effect": "Once per Turning Point, select an enemy within 12 inches. Until your next activation, all attacks against this target gain +1 WS.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c08972"
+    },
+    "id": 36,
+    "name": "Inquisitorial Body guard",
+    "faction": "Imperium",
+    "subgroup": "Inquisition",
+    "pr": 114,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      71,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Sanctioned Tactics",
+        "effect": "When within 3 inches of an Inquisitor, improve WS by 1.",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "6999e5c3f7703abfb2c0896f"
+    },
+    "id": 33,
+    "name": "Vigilator",
+    "faction": "Imperium",
+    "subgroup": "Sisters of Silence",
+    "pr": 132,
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "null",
+        "universal"
+      ]
+    },
+    "weapons": [
+      69
+    ],
+    "abilities": [
+      {
+        "name": "Null Charge",
+        "effect": "If charging a [spell] operative, melee weapons gain accurate 1.",
+        "prModifier": 5
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699f9d06ac9c1cc3b21d8304"
+    },
+    "id": 47,
+    "name": "Deathkorps Snipers",
+    "faction": "Imperium",
+    "subgroup": "Human",
+    "pr": 136,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      26,
+      1,
+      80
+    ],
+    "abilities": [
+      {
+        "name": "Grim Determination",
+        "effect": "Ignore penalties from being injured.",
+        "prModifier": 5
+      },
+      {
+        "name": "Calculated Shot",
+        "effect": "If this operative has not performed a Move, Charge or Fall Back action during this activation, improve WS by 1 for shoot actions.",
+        "prModifier": 8
+      },
+      {
+        "name": "Camouflage Cloak",
+        "effect": "While in Cover, improve Save characteristic by 1.",
+        "prModifier": 5
+      }
+    ],
+    "items": [],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d8306"
+    },
+    "id": 48,
+    "name": "Kommando Nob",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 150,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 13,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      87,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Get it Done!",
+        "effect": "0AP: Pick a friendly Kommando within 6 inches. They get +1 APL.",
+        "prModifier": 5
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d8307"
+    },
+    "id": 49,
+    "name": "Kommando Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 116,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      89,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d8308"
+    },
+    "id": 50,
+    "name": "Kommando Grot",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 70,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 5,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      90
+    ],
+    "abilities": [
+      {
+        "name": "Nimble",
+        "effect": "Can move through small gaps and climb without penalty.",
+        "prModifier": 2
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d8309"
+    },
+    "id": 51,
+    "name": "Kommando Snipa Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 119,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      91,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830a"
+    },
+    "id": 52,
+    "name": "Kommando Dakka Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      92,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      },
+      {
+        "name": "More Dakka",
+        "effect": "Can shoot twice if he hasn't moved.",
+        "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830b"
+    },
+    "id": 53,
+    "name": "Kommando Burna Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 118,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      93,
+      98
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830c"
+    },
+    "id": 54,
+    "name": "Kommando Breacha Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      94,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Breach",
+        "effect": "Can move through walls as if they were not there.",
+        "prModifier": 5
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830d"
+    },
+    "id": 55,
+    "name": "Kommando Slasha Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 137,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      95,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      },
+      {
+        "name": "Throwing Knives",
+        "effect": "Can perform a free shoot action with a 6 inch range (3A, 4+, 2/3).",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830e"
+    },
+    "id": 56,
+    "name": "Kommando Rokkit Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      96,
+      89
+    ],
+    "abilities": [
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d830f"
+    },
+    "id": 57,
+    "name": "Kommando Comms Boy",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "universal",
+        "ork"
+      ]
+    },
+    "weapons": [
+      89,
+      88
+    ],
+    "abilities": [
+      {
+        "name": "Signal",
+        "effect": "1AP: Select a friendly operative within 6 inches. Add 1 to their APL.",
+        "prModifier": 4
+      },
+      {
+        "name": "Throat Slittas",
+        "effect": "Can perform charge action in conceal.",
+        "prModifier": 2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "699fa2c2ac9c1cc3b21d8310"
+    },
+    "id": 58,
+    "name": "Bomb Squig",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Ork Kommandos",
+    "pr": 123,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 4,
+      "Save": 6,
+      "APL": 2,
+      "body": [
+        "universal",
+        "squig"
+      ]
+    },
+    "weapons": [
+      99
+    ],
+    "abilities": [
+      {
+        "name": "Seek",
+        "effect": "Must move towards the nearest enemy.",
+        "prModifier": -2
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "$oid": "69aa31f11d3387484b352160"
+    },
+    "id": 59,
+    "name": "Mother Morvath, the Maledictum Hag",
+    "faction": "Abyssal Cabal",
+    "subgroup": "Witch",
+    "pr": 165,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 14,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal",
+        "spell"
+      ]
+    },
+    "weapons": [
+      112,
+      113,
+      46,
+      106,
+      45
+    ],
+    "abilities": [
+      {
+        "name": "Ancient Hexcraft",
+        "effect": "Psychic, 1AP: Select an enemy operative within 8 inches. Until the end of the Turning Point, that operative cannot perform Dash actions and worsens its Save characteristic by 1.",
+        "prModifier": 8
+      },
+      {
+        "name": "Gloom-Woven Foresight",
+        "effect": "Once per Turning Point, when targeted by a Shoot or Fight action, Morvath can re-roll all of her Defense or Parry dice, drawing upon centuries of preternatural instinct.",
+        "prModifier": 10
+      },
+      {
+        "name": "Curse of the Maledictum",
+        "effect": "When Morvath incapacitates an enemy operative with a spell action, all other enemy operatives within 4 inches of that target suffer 1D3 mortal wounds from psychic backlash.",
+        "prModifier": 9
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897060"
+    },
+    "id": 60,
+    "name": "Vale Seneschal",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 120,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 9,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      111,
+      3
+    ],
+    "abilities": [
+      {
+        "name": "Steward of House Voss",
+        "effect": "1AP: Select one friendly Seneschal or Voss operative within 6 inches. That operative gains +1 APL and can re-roll one attack die until the end of the Turning Point.",
+        "prModifier": 4
+      },
+      {
+        "name": "Iron-Clad Authority",
+        "effect": "Enemy operatives within 3 inches of this operative worsen their HIT by 1 when making attacks or shoots against this operative.",
+        "prModifier": 7
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897061"
+    },
+    "id": 61,
+    "name": "Seneschal Enforcer",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      111,
+      2
+    ],
+    "abilities": [
+      {
+        "name": "Voss Family Oath",
+        "effect": "When a friendly Seneschal officer or Voss noble within 3 inches is targeted by a shoot action, reduce damage taken from each die by 1.",
+        "prModifier": 4
+      },
+      {
+        "name": "Bulwark of the Seneschal",
+        "effect": "Gain +1 Save when in light or heavy cover, and enemy operatives cannot land critical hits against this operative in melee.",
+        "prModifier": 112
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897062"
+    },
+    "id": 62,
+    "name": "Seneschal Cipher Agent",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 7,
+      "Save": 5,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      33,
+      25
+    ],
+    "abilities": [
+      {
+        "name": "Shadow Retainer",
+        "effect": "When concealed or standing in mist zones, enemy operatives cannot target this operative at a range greater than 6.",
+        "prModifier": 4
+      },
+      {
+        "name": "Ledger Concealment",
+        "effect": "1AP: Target an enemy operative within 9 inches. That operative loses 1 APL until the end of its next activation.",
+        "prModifier": 6
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "_id": {
+      "": "6a7fdeb982914f49f3897063"
+    },
+    "id": 63,
+    "name": "Seneschal Quartermaster",
+    "faction": "Crimson Corsairs",
+    "subgroup": "Human",
+    "pr": 110,
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 8,
+      "Save": 4,
+      "APL": 2,
+      "body": [
+        "human",
+        "universal"
+      ]
+    },
+    "weapons": [
+      35,
+      108
+    ],
+    "abilities": [
+      {
+        "name": "Supply Coordinator",
+        "effect": "1AP: Friendly operative within 3 inches gains Ceaseless on its ranged attacks until the end of the Turning Point.",
+        "prModifier": 4
+      }
+    ],
+    "isDiscovered": true
+  },
+  {
+    "id": 73,
+    "name": "Archmagus Explorator Vaelen Kor",
+    "faction": "Imperium of Man",
+    "subgroup": "Adeptus Mechanicus",
+    "pr": 168,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "human"
+      ]
+    },
+    "weapons": [
+      100,
+      30
+    ],
+    "abilities": [
+      {
+        "name": "Bionic Resilience",
+        "effect": "Ignore the first wound suffered in each turning point.",
+        "prModifier": 4
+      },
+      {
+        "name": "Omnissian Logic",
+        "effect": "Reroll one attack dice or save dice per activation.",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
+  }
+]

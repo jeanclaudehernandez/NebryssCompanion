@@ -2323,5 +2323,38 @@
       }
     ],
     "isDiscovered": true
+  },
+  {
+    "id": 73,
+    "name": "Archmagus Explorator Vaelen Kor",
+    "faction": "Imperium of Man",
+    "subgroup": "Adeptus Mechanicus",
+    "pr": 168,
+    "attributes": {
+      "Movement": 5,
+      "Wounds": 14,
+      "Save": 3,
+      "APL": 3,
+      "body": [
+        "human"
+      ]
+    },
+    "weapons": [
+      100,
+      30
+    ],
+    "abilities": [
+      {
+        "name": "Bionic Resilience",
+        "effect": "Ignore the first wound suffered in each turning point.",
+        "prModifier": 4
+      },
+      {
+        "name": "Omnissian Logic",
+        "effect": "Reroll one attack dice or save dice per activation.",
+        "prModifier": 3
+      }
+    ],
+    "isDiscovered": true
   }
 ]
