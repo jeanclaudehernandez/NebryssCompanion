@@ -425,6 +425,7 @@ export class AppComponent {
       case 'adminCreatureEditor': return 'Creature Editor';
       case 'adminCampaignEditor': return 'Campaign Editor';
       case 'adminRulesEditor': return 'Rules Editor';
+      case 'campaignSessions': return 'Campaign Sessions';
       default: return 'Nebryss Companion';
     }
   }

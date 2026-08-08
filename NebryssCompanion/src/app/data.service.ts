@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, shareReplay, map, tap, catchError, of } from 'rxjs';
-import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter, Campaign } from './model';
+import { Player, Weapon, BestiaryEntry, WeaponRule, Items, Shop, ItemCategory, NPC, TalentCategory, AlteredState, Lore, MistEffect, Locations, Terrain, Location, Talent, Affliction, Letter, Campaign, CampaignSession } from './model';
 import { SKIP_LOADING_HEADER } from './loading.interceptor';
 import { WebSocketService, EntityUpdateEvent } from './websocket.service';
 import { CampaignService } from './campaign.service';
@@ -19,6 +19,7 @@ export class DataService {
   }
 
   private campaigns: Campaign[] = [];
+  private campaignSessions: CampaignSession[] = [];
   private players: Player[] = [];
   private weapons: Weapon[] = [];
   private bestiary: BestiaryEntry[] = [];
@@ -38,6 +39,9 @@ export class DataService {
 
   private campaignsSubject = new BehaviorSubject<Campaign[]>([]);
   readonly campaigns$ = this.campaignsSubject.asObservable();
+
+  private campaignSessionsSubject = new BehaviorSubject<CampaignSession[]>([]);
+  readonly campaignSessions$ = this.campaignSessionsSubject.asObservable();
 
   private playersSubject = new BehaviorSubject<Player[]>([]);
   readonly players$ = this.playersSubject.asObservable();
@@ -88,6 +92,7 @@ export class DataService {
   readonly locations$ = this.locationsSubject.asObservable();
 
   private campaignsCache$: Observable<Campaign[]> | null = null;
+  private campaignSessionsCache$: Observable<CampaignSession[]> | null = null;
   private playersCache$: Observable<Player[]> | null = null;
   private npcsCache$: Observable<NPC[]> | null = null;
   private bestiaryCache$: Observable<BestiaryEntry[]> | null = null;
@@ -171,6 +176,10 @@ export class DataService {
       this.updateArrayCollection(this.campaigns, data, action, c => c.id);
       this.campaignsSubject.next([...this.campaigns]);
       this.campaignsCache$ = of(this.campaigns);
+    } else if (normalizedEntity === 'campaignsession' || normalizedEntity === 'campaignsessions') {
+      this.updateArrayCollection(this.campaignSessions, data, action, s => s.id || s.sessionId);
+      this.campaignSessionsSubject.next([...this.campaignSessions]);
+      this.campaignSessionsCache$ = of(this.campaignSessions);
     } else if (normalizedEntity === 'weapon' || normalizedEntity === 'weapons') {
       this.updateArrayCollection(this.weapons, data, action, w => w.id);
       this.weaponsSubject.next([...this.weapons]);
@@ -1449,6 +1458,70 @@ export class DataService {
     );
   }
 
+  getCampaignSessions(campaignId?: number): Observable<CampaignSession[]> {
+    if (!this.campaignSessionsCache$) {
+      this.campaignSessionsCache$ = this.http.get<CampaignSession[]>(`${this.apiUrl}/campaignSessions`).pipe(
+        catchError(() => this.http.get<CampaignSession[]>('assets/campaignSessions.json')),
+        tap(sessions => {
+          this.campaignSessions = sessions || [];
+          this.campaignSessionsSubject.next([...this.campaignSessions]);
+        }),
+        shareReplay(1)
+      );
+    }
+    return this.campaignSessionsCache$.pipe(
+      map(sessions => campaignId ? (sessions || []).filter(s => s.campaignId === campaignId) : (sessions || []))
+    );
+  }
+
+  refreshCampaignSessions(campaignId?: number): Observable<CampaignSession[]> {
+    this.campaignSessionsCache$ = this.http.get<CampaignSession[]>(`${this.apiUrl}/campaignSessions`).pipe(
+      catchError(() => this.http.get<CampaignSession[]>('assets/campaignSessions.json')),
+      tap(sessions => {
+        this.campaignSessions = sessions || [];
+        this.campaignSessionsSubject.next([...this.campaignSessions]);
+      }),
+      shareReplay(1)
+    );
+    this.allDataCache$ = null;
+    return this.campaignSessionsCache$.pipe(
+      map(sessions => campaignId ? (sessions || []).filter(s => s.campaignId === campaignId) : (sessions || []))
+    );
+  }
+
+  createCampaignSession(session: CampaignSession): Observable<CampaignSession> {
+    return this.http.post<CampaignSession>(`${this.apiUrl}/campaignSession`, session).pipe(
+      tap(newSession => {
+        this.updateArrayCollection(this.campaignSessions, newSession, 'create', s => s.id || s.sessionId);
+        this.campaignSessionsSubject.next([...this.campaignSessions]);
+        this.campaignSessionsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  updateCampaignSession(session: CampaignSession): Observable<CampaignSession> {
+    return this.http.put<CampaignSession>(`${this.apiUrl}/campaignSession`, session).pipe(
+      tap(updatedSession => {
+        this.updateArrayCollection(this.campaignSessions, updatedSession, 'update', s => s.id || s.sessionId);
+        this.campaignSessionsSubject.next([...this.campaignSessions]);
+        this.campaignSessionsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
+  deleteCampaignSession(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/campaignSession/${id}`).pipe(
+      tap(() => {
+        this.updateArrayCollection(this.campaignSessions, { id }, 'delete', s => s.id || s.sessionId);
+        this.campaignSessionsSubject.next([...this.campaignSessions]);
+        this.campaignSessionsCache$ = null;
+        this.allDataCache$ = null;
+      })
+    );
+  }
+
   markLetterAsRead(letterId: number, playerId: number): Observable<Letter> {
     return this.http.post<Letter>(`${this.apiUrl}/letter/${letterId}/read`, { playerId }).pipe(
       tap(updatedLetter => {
@@ -1473,3 +1546,4 @@ export class DataService {
     };
   }
 }
+

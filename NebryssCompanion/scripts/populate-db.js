@@ -29,6 +29,7 @@ const collectionsMap = [
   { jsonFile: 'alteredStates.json', collection: 'status', usePlayersDb: false },
   { jsonFile: 'bestiary.json', collection: 'bestiary', usePlayersDb: false },
   { jsonFile: 'campaigns.json', collection: 'campaign', usePlayersDb: false },
+  { jsonFile: 'campaignSessions.json', collection: 'campaignSession', usePlayersDb: false },
   { jsonFile: 'itemCategories.json', collection: 'itemCategory', usePlayersDb: false },
   { jsonFile: 'items.json', collection: 'item', usePlayersDb: false },
   { jsonFile: 'letters.json', collection: 'letters', usePlayersDb: false },

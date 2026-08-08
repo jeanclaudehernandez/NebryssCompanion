@@ -80,7 +80,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     adminShopEditor: () => import('./shop-admin-page/shop-admin-page.component').then(m => m.ShopAdminPageComponent),
     adminCreatureEditor: () => import('./creature-admin-page/creature-admin-page.component').then(m => m.CreatureAdminPageComponent),
     adminCampaignEditor: () => import('./campaign-admin-page/campaign-admin-page.component').then(m => m.CampaignAdminPageComponent),
-    adminRulesEditor: () => import('./rules-admin-page/rules-admin-page.component').then(m => m.RulesAdminPageComponent)
+    adminRulesEditor: () => import('./rules-admin-page/rules-admin-page.component').then(m => m.RulesAdminPageComponent),
+    campaignSessions: () => import('./campaign-sessions/campaign-sessions.component').then(m => m.CampaignSessionsComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -168,6 +169,13 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
+        subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
+        break;
+      case 'campaignSessions':
+        subscribeToOutput('viewChange', view => this.viewChange.emit(view));
+        subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
+        subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
         break;
       case 'worldMap':

@@ -5,6 +5,14 @@ export interface Campaign {
   prefix: string;
 }
 
+export interface CampaignSession {
+  id?: number;
+  campaignId: number;
+  sessionId: number;
+  content: string;
+  conclussion: string;
+}
+
 export interface AlteredState {
   id: number;
   name: string;

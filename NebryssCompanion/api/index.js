@@ -164,6 +164,8 @@ const COLLECTION_TO_JSON_FILE = {
   'afflictions': 'afflictions',
   'letter': 'letters',
   'letters': 'letters',
+  'campaignSession': 'campaignSessions',
+  'campaignSessions': 'campaignSessions',
 };
 
 function resolveLocalJsonFile(collectionName) {
@@ -909,15 +911,18 @@ const collectionAliases = [
   { singular: '/api/weaponRule', plural: '/api/weaponRules', usePlayersDb: false, collectionName: 'weaponRule' },
   { singular: '/api/itemCategory', plural: '/api/itemCategories', usePlayersDb: false, collectionName: 'itemCategory' },
   { singular: '/api/campaign', plural: '/api/campaigns', usePlayersDb: false, collectionName: 'campaign' },
+  { singular: '/api/campaignSession', plural: '/api/campaignSessions', usePlayersDb: false, collectionName: 'campaignSession' },
   { singular: '/api/status', plural: '/api/alteredStates', usePlayersDb: false, collectionName: 'status' }
 ];
 
 for (const alias of collectionAliases) {
-  // Register the other variant
   createCollectionRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createCollectionRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createUpdateRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createUpdateRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createInsertRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createInsertRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createDeleteRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createDeleteRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
 }
 

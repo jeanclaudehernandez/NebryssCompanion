@@ -63,7 +63,12 @@ NebryssCompanion is a responsive companion Progressive Web Application (PWA) bui
 4. **Clickable References**: Include `file:///` markdown links for any referenced code files in final responses.
 5. **English Language UI**: All user-facing UI text, headers, menu titles, category names, dialogs, tooltips, and aria attributes MUST be strictly in English.
 6. **No Automatic Builds**: Do NOT run build commands (`ng build`, `npm run build`, `npm run build:prod`, etc.) after making changes unless explicitly requested by the user.
-7. **No constant git  checks**: Do NOT run commands (`git status`, `git diff`, `git log`, etc.) unless explicitly requested by the user or if the task at hand requires checking work history.
+7. **No constant git checks**: Do NOT run commands (`git status`, `git diff`, `git log`, etc.) unless explicitly requested by the user or if the task at hand requires checking work history.
+8. **Campaign Session Management & Entity Tagging**:
+   - Play sessions are stored in the `campaignSession` MongoDB collection with schema `{ campaignId: number, sessionId: number, content: string, conclussion: string }`.
+   - When drafting `content` or `conclussion`, ALWAYS tag entities using their unique numeric IDs: `@player[<id>]`, `@npc[<id>]`, `@location[<id>]`, `@shop[<id>]`, and `@bestiary[<id>]` for automated parsing and relational integrity.
+   - When creating sessions: Read DB previous sessions, generate and pitch structured ideas for approval, draft the session with entity ID tags, present for approval, and write to MongoDB.
+   - When concluding sessions: Fetch the latest session, ask debrief questions about exploration, battles, choices, and NPC interactions, synthesize the conclusion draft with entity ID tags, and update MongoDB.
 
 ---
 name: deploy

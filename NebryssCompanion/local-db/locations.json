@@ -1,8 +1,6 @@
 [
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c08886"
-    },
+    "_id": "6999dcf6f7703abfb2c08886",
     "name": "Fortress Sanctus",
     "description": "A heavily fortified island with towering walls, gun emplacements, and a massive cathedral dedicated to the Emperor.",
     "faction": "The Imperium of Man",
@@ -15,7 +13,7 @@
         "id": "sec-sanctus-1",
         "title": "Subterranean Inquisitorial Vault",
         "content": "Inquisitor Vontis Mortis maintains a subterranean interrogation chamber beneath the Cathedral. Interrogation logs confirm that rogue trader warrants associated with the Voss lineage were blacklisted here under Ordo Hereticus Decree #42-B.",
-        "isRevealed": true
+        "isRevealed": false
       },
       {
         "id": "sec-sanctus-2",
@@ -41,9 +39,7 @@
     "isSecretRevealed": true
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c0888d"
-    },
+    "_id": "6999dcf6f7703abfb2c0888d",
     "name": "Aurelia Nexus",
     "description": "A glittering artificial island constructed from repurposed ship hulls and mist-forged alloys. It serves as a neutral trading outpost and mist-engine research facility, attracting merchants, inventors, and spies from all factions.",
     "faction": "The Gilded Accord",
@@ -81,9 +77,7 @@
     "discovered": false
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c08887"
-    },
+    "_id": "6999dcf6f7703abfb2c08887",
     "name": "Stormwatch",
     "description": "A storm-wracked island with towering cliffs and constant lightning strikes. Chosen by Inquisitor Alaric Dresdan as a research site due to the unique interaction between violent storms and mist phenomena. The perpetual tempests amplify mist anomalies, allowing the Imperium to study their warp-resistant properties and potential military applications.",
     "faction": "The Imperium of Man",
@@ -121,9 +115,7 @@
     "discovered": false
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c08888"
-    },
+    "_id": "6999dcf6f7703abfb2c08888",
     "name": "Zephyria",
     "description": "A massive floating island-ship and the crown jewel of the Gilded Accord.",
     "imgUrl": "https://iili.io/fvZP8AX.jpg",
@@ -202,9 +194,7 @@
     "discovered": true
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c0888a"
-    },
+    "_id": "6999dcf6f7703abfb2c0888a",
     "name": "Maledictum Prime",
     "description": "A sprawling, mist-shrouded landmass dominated by jagged cliffs, corrupted vegetation, and warp-tainted ruins.",
     "faction": "The Abyssal Cabal",
@@ -242,9 +232,7 @@
     "discovered": true
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c0888c"
-    },
+    "_id": "6999dcf6f7703abfb2c0888c",
     "name": "Verdant Veil",
     "description": "A mist-shrouded island where ancient forests merge with swirling vapors. The NLR uses it as a sanctuary for training Mistweavers and cultivating mist-resistant crops. Commander Elara Voss personally oversees the perilous transport of Mistweaver neophytes to this island, braving Abyssal Cabal patrols and warp anomalies to ensure recruits reach the Grove of Echoes alive. Her leadership has turned Verdant Veil into a symbol of NLR resilience. Its central \"Whispering Stones\" amplify mist-weaving rituals but slowly drain the life force of those who use them.",
     "faction": "The Nebryssian Liberation Republic",
@@ -282,9 +270,7 @@
     "mapY": 57.23
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c08889"
-    },
+    "_id": "6999dcf6f7703abfb2c08889",
     "name": "Luminos",
     "description": "A glowing island illuminated by bioluminescent plants and crystals, known for its art and culture. Home to the Nebryssian Reserve—the central bank controlling Mistral coins. The Reserve’s vaults are embedded within crystalline structures that shift color to indicate market stability, visible across the island as an economic barometer.",
     "imgUrl": "https://iili.io/3YDnziX.jpg",
@@ -330,9 +316,7 @@
     "discovered": false
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c0888b"
-    },
+    "_id": "6999dcf6f7703abfb2c0888b",
     "name": "Misthaven",
     "description": "A hidden island entirely shrouded in dense mist, making it nearly impossible for outsiders to locate..",
     "faction": "The Nebryssian Liberation Republic",
@@ -370,9 +354,7 @@
     "mapY": 50.46
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c0888e"
-    },
+    "_id": "6999dcf6f7703abfb2c0888e",
     "name": "Emberreach",
     "description": "A jagged, volcanic island perpetually cloaked in ash and warpfire. The Cabal uses it to mine \"soul-embers\"—crystallized fragments of corrupted mist energy—to fuel daemonic rituals. The air reeks of sulfur and despair.",
     "faction": "The Abyssal Cabal",
@@ -404,9 +386,7 @@
     "discovered": false
   },
   {
-    "_id": {
-      "$oid": "6999dcf6f7703abfb2c08885"
-    },
+    "_id": "6999dcf6f7703abfb2c08885",
     "name": "Nebryss",
     "description": "A vast ocean dotted with islands; mist zones hover above the water, shaping trade and warfare. Located at the edge of the Imperium Nihilus, making warp travel and reinforcements difficult. The mist is a warp phenomenon that is not Chaos-aligned but carries dangers such as monsters, anomalies, and reality distortions.",
     "imgUrl": "https://iili.io/CUqpCXe.jpg",
@@ -422,5 +402,61 @@
     "isworldMap": true,
     "id": 0,
     "discovered": true
+  },
+  {
+    "_id": "6a76ba179a266372f32ddd60",
+    "name": "Brinewake Island",
+    "description": "rocky, low island sitting beneath unstable mist banks and ringed by broken reefs, wreckage, and tidal caverns.\n- It was once used as a discreet resupply point by merchant surveyors and smugglers, making it a believable place for Seraphine's people to have hidden charts, coded manifests, or a dead-drop.",
+    "isCapital": false,
+    "mapX": 0,
+    "mapY": 0,
+    "id": 10,
+    "category": "island",
+    "categorySize": 1,
+    "discovered": true,
+    "secrets": [],
+    "faction": "Planet"
+  },
+  {
+    "_id": "6a76bfe7d5b0e72ef8245f84",
+    "name": "Griewater Cay",
+    "description": "- Salt-bleached stone.\n- Broken mooring posts hammered into coral.\n- Collapsed storage pits lined with rotted planks.\n- Rusted pulley frames and half-buried supply crates.\n- A hidden cistern or storm cellar beneath a ruined signal hut.\nWhat Happened Here",
+    "faction": "Planet",
+    "discovered": true,
+    "isCapital": false,
+    "isWorldMap": false,
+    "isSecret": false,
+    "secrets": [],
+    "category": "swamp",
+    "categorySize": "1",
+    "id": 11
+  },
+  {
+    "_id": "6a76c03ad5b0e72ef8245f85",
+    "name": "Widow's Lantern",
+    "description": "Tall black cliffs.\n- A dead iron beacon tower bent by lightning or shellfire.\n- Narrow ledges, rope ascents, and a hidden inland basin.\n- Old signal mechanisms and weather-eaten watch structures.",
+    "faction": "Planet",
+    "discovered": true,
+    "isCapital": false,
+    "isWorldMap": false,
+    "isSecret": false,
+    "secrets": [],
+    "category": "mountain",
+    "categorySize": "2",
+    "id": 12
+  },
+  {
+    "_id": "6a76c075d5b0e72ef8245f86",
+    "name": "Saint Veil's Hollow",
+    "description": "- Cracked chapel facades.\n- Flooded catacombs and crypt stairs.\n- Moss-covered saint statues with broken faces.\n- Subterranean vault chambers sealed with ecclesiarchal script.\n- Tidal pools reflecting too much light in thick mist.\nWhat Happened Here",
+    "faction": "Planet",
+    "discovered": true,
+    "isCapital": false,
+    "isWorldMap": false,
+    "isSecret": false,
+    "secrets": [],
+    "category": "shrine",
+    "categorySize": "2",
+    "id": 13
   }
 ]

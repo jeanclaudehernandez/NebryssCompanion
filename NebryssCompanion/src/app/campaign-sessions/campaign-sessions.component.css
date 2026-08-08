@@ -1,0 +1,992 @@
+/* ===================================================================
+   Campaign Sessions — "Ancient Journal / Tome" Aesthetic
+   =================================================================== */
+
+.sessions-page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* --- Page Header --- */
+.sessions-header {
+  text-align: center;
+  padding: 24px 0 8px;
+}
+
+.sessions-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: linear-gradient(135deg, #c9a84c 0%, #f0d98c 40%, #c9a84c 70%, #a37e2c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.sessions-title-icon {
+  font-size: 28px;
+  -webkit-text-fill-color: #c9a84c;
+}
+
+.sessions-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: #8a8a8a;
+  font-style: italic;
+  letter-spacing: 0.03em;
+}
+
+/* Ornamental divider */
+.sessions-header-ornament {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.5), transparent);
+  margin: 8px auto;
+  max-width: 320px;
+}
+
+/* --- Loading State --- */
+.sessions-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 64px 0;
+  color: #8a8a8a;
+  font-size: 0.95rem;
+}
+
+.sessions-loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid rgba(201, 168, 76, 0.2);
+  border-top-color: #c9a84c;
+  border-radius: 50%;
+  animation: sessionSpin 0.8s linear infinite;
+}
+
+@keyframes sessionSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Empty State --- */
+.sessions-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 64px 24px;
+  gap: 12px;
+}
+
+.sessions-empty-icon {
+  font-size: 64px;
+  color: rgba(201, 168, 76, 0.3);
+}
+
+.sessions-empty h3 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #c9a84c;
+}
+
+.sessions-empty p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #8a8a8a;
+  max-width: 360px;
+  line-height: 1.6;
+}
+
+/* --- Expand/Collapse Controls --- */
+.sessions-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.sessions-ctrl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border: 1px solid rgba(201, 168, 76, 0.25);
+  border-radius: 8px;
+  background: rgba(201, 168, 76, 0.08);
+  color: #c9a84c;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sessions-ctrl-btn .material-icons {
+  font-size: 18px;
+}
+
+.sessions-ctrl-btn:hover {
+  background: rgba(201, 168, 76, 0.18);
+  border-color: rgba(201, 168, 76, 0.45);
+  transform: translateY(-1px);
+}
+
+/* --- Session Cards --- */
+.sessions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.session-card {
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.session-card:hover {
+  border-color: rgba(201, 168, 76, 0.35);
+}
+
+.session-card--expanded {
+  border-color: rgba(201, 168, 76, 0.4);
+  box-shadow: 0 4px 24px rgba(201, 168, 76, 0.1);
+}
+
+.session-card--draft {
+  border-style: dashed;
+}
+
+/* --- Card Header --- */
+.session-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  transition: background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.session-card-header:hover {
+  background: rgba(201, 168, 76, 0.06);
+}
+
+.session-card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.session-number-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #c9a84c 0%, #a37e2c 100%);
+  color: #1a1a1a;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(201, 168, 76, 0.3);
+}
+
+.session-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.session-header-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.4;
+}
+
+.session-label {
+  color: #c9a84c;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.session-title-parsed {
+  color: #e2e8f0;
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.session-header-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.session-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.session-badge .material-icons {
+  font-size: 14px;
+}
+
+.session-badge--concluded {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.session-badge--draft {
+  background: rgba(251, 191, 36, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.25);
+}
+
+.session-expand-icon {
+  font-size: 24px;
+  color: #c9a84c;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.session-expand-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* --- Card Body (collapsible) --- */
+.session-card-body {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 0.35s ease;
+}
+
+.session-card-body--visible {
+  max-height: 10000px;
+  opacity: 1;
+}
+
+.session-body-inner {
+  padding: 4px 24px 28px;
+}
+
+/* --- Section Headers --- */
+.session-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.session-section-icon {
+  font-size: 20px;
+  color: #c9a84c;
+}
+
+.session-section-header h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #c9a84c;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* --- Narrative Text & Markdown Typography --- */
+:host ::ng-deep .session-narrative {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #cbd5e1;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+:host ::ng-deep .narrative-p {
+  margin: 0 0 14px;
+  line-height: 1.8;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+:host ::ng-deep .narrative-p:last-child {
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .narrative-h2 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f1f5f9;
+  margin: 22px 0 10px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+:host ::ng-deep .narrative-h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 22px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.25);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+:host ::ng-deep .narrative-h3 .h3-icon {
+  font-size: 18px;
+  color: #c9a84c;
+}
+
+:host ::ng-deep .narrative-h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #c9a84c;
+  margin: 18px 0 8px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.02em;
+}
+
+:host ::ng-deep .h4-ornament {
+  display: inline-block;
+  width: 4px;
+  height: 14px;
+  background: #c9a84c;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .narrative-h5 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 14px 0 6px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+:host ::ng-deep .conclusion-subtitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #e2e8f0;
+  text-transform: none;
+  letter-spacing: normal;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+:host ::ng-deep .conclusion-sep {
+  color: #c9a84c;
+  margin: 0 4px;
+}
+
+:host ::ng-deep .heading--act,
+:host ::ng-deep .heading--branch,
+:host ::ng-deep .heading--overview,
+:host ::ng-deep .heading--objectives,
+:host ::ng-deep .heading--combat,
+:host ::ng-deep .heading--summary,
+:host ::ng-deep .heading--state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+}
+
+:host ::ng-deep .act-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.25) 0%, rgba(163, 126, 44, 0.25) 100%);
+  border: 1px solid rgba(201, 168, 76, 0.5);
+  color: #f0d98c;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+:host ::ng-deep .branch-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 1px solid rgba(168, 85, 247, 0.45);
+  color: #c084fc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  margin-right: 4px;
+}
+
+:host ::ng-deep .heading-icon {
+  font-size: 18px;
+  color: #c9a84c;
+  flex-shrink: 0;
+}
+
+:host ::ng-deep .heading-text {
+  color: #f1f5f9;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+:host ::ng-deep .narrative-bold {
+  color: #f8fafc;
+  font-weight: 700;
+}
+
+:host ::ng-deep .narrative-italic {
+  font-style: italic;
+  color: #e2e8f0;
+}
+
+/* --- Narrative Callout Tags & Objective Badges in Lists --- */
+:host ::ng-deep .narrative-list {
+  margin: 8px 0 16px 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+:host ::ng-deep .narrative-list-item {
+  position: relative;
+  margin-bottom: 8px;
+  line-height: 1.7;
+  padding-left: 6px;
+}
+
+:host ::ng-deep .narrative-list-item::before {
+  content: '◆';
+  position: absolute;
+  left: -16px;
+  top: 1px;
+  font-size: 9px;
+  color: #c9a84c;
+}
+
+:host ::ng-deep .narrative-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+:host ::ng-deep .narrative-tag .tag-icon {
+  font-size: 14px;
+}
+
+:host ::ng-deep .tag--phase {
+  background: rgba(201, 168, 76, 0.18);
+  color: #f0d98c;
+  border: 1px solid rgba(201, 168, 76, 0.35);
+}
+
+:host ::ng-deep .tag--primary {
+  background: rgba(239, 68, 68, 0.18);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+:host ::ng-deep .tag--secondary {
+  background: rgba(59, 130, 246, 0.18);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.35);
+}
+
+:host ::ng-deep .tag--branching {
+  background: rgba(168, 85, 247, 0.18);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+}
+
+:host ::ng-deep .tag--investigation {
+  background: rgba(20, 184, 166, 0.18);
+  color: #2dd4bf;
+  border: 1px solid rgba(20, 184, 166, 0.35);
+}
+
+:host ::ng-deep .tag--outcome-a {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+:host ::ng-deep .tag--outcome-b {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+:host ::ng-deep .item-body {
+  color: #cbd5e1;
+}
+
+:host ::ng-deep .callout-label {
+  color: #f0d98c;
+  font-weight: 700;
+}
+
+:host ::ng-deep .narrative-hr {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px 0;
+  position: relative;
+}
+
+:host ::ng-deep .narrative-hr::before,
+:host ::ng-deep .narrative-hr::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.3), transparent);
+}
+
+:host ::ng-deep .hr-diamond {
+  width: 6px;
+  height: 6px;
+  background: #c9a84c;
+  transform: rotate(45deg);
+  margin: 0 10px;
+  flex-shrink: 0;
+}
+
+/* --- Ornamental Divider between Content & Conclusion --- */
+.session-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 0;
+  position: relative;
+}
+
+.session-divider::before,
+.session-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(201, 168, 76, 0.4), transparent);
+}
+
+.session-divider-diamond {
+  width: 8px;
+  height: 8px;
+  background: #c9a84c;
+  transform: rotate(45deg);
+  margin: 0 12px;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(201, 168, 76, 0.5);
+}
+
+/* --- Pending Conclusion Notice --- */
+.session-pending-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  background: rgba(251, 191, 36, 0.06);
+  border: 1px dashed rgba(251, 191, 36, 0.25);
+  color: #fbbf24;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-top: 16px;
+}
+
+.session-pending-notice .material-icons {
+  font-size: 20px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ===================================================================
+   Entity References (Borderless & Clean Text)
+   =================================================================== */
+
+:host ::ng-deep .entity-chip {
+  display: inline;
+  padding: 0;
+  margin: 0 1px;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-decoration: none !important;
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  vertical-align: baseline;
+  line-height: inherit;
+  white-space: normal;
+  word-break: normal;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s ease, filter 0.15s ease, text-shadow 0.15s ease;
+}
+
+:host ::ng-deep .entity-chip:hover {
+  transform: none;
+  filter: brightness(1.25);
+  text-decoration: none !important;
+}
+
+:host ::ng-deep .entity-chip:active {
+  transform: none;
+  opacity: 0.8;
+}
+
+/* --- Player References (Purple) --- */
+:host ::ng-deep .entity-chip--player {
+  color: #c084fc;
+}
+
+:host ::ng-deep .entity-chip--player:hover {
+  color: #d8b4fe;
+  text-shadow: 0 0 8px rgba(192, 132, 252, 0.4);
+}
+
+/* --- NPC References (Amber) --- */
+:host ::ng-deep .entity-chip--npc {
+  color: #fbbf24;
+}
+
+:host ::ng-deep .entity-chip--npc:hover {
+  color: #fcd34d;
+  text-shadow: 0 0 8px rgba(251, 191, 36, 0.4);
+}
+
+/* --- Location References (Emerald) --- */
+:host ::ng-deep .entity-chip--location {
+  color: #34d399;
+}
+
+:host ::ng-deep .entity-chip--location:hover {
+  color: #6ee7b7;
+  text-shadow: 0 0 8px rgba(52, 211, 153, 0.4);
+}
+
+/* --- Shop References (Blue) --- */
+:host ::ng-deep .entity-chip--shop {
+  color: #60a5fa;
+}
+
+:host ::ng-deep .entity-chip--shop:hover {
+  color: #93c5fd;
+  text-shadow: 0 0 8px rgba(96, 165, 250, 0.4);
+}
+
+/* --- Bestiary References (Red/Crimson) --- */
+:host ::ng-deep .entity-chip--bestiary {
+  color: #f87171;
+}
+
+:host ::ng-deep .entity-chip--bestiary:hover {
+  color: #fca5a5;
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
+}
+
+/* ===================================================================
+   Light Theme Overrides
+   =================================================================== */
+
+:host-context(body:not(.dark-theme)) .sessions-title {
+  background: linear-gradient(135deg, #8b6914 0%, #c9a84c 40%, #8b6914 70%, #6b5010 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+:host-context(body:not(.dark-theme)) .sessions-title-icon {
+  -webkit-text-fill-color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) .sessions-subtitle {
+  color: #6b7280;
+}
+
+:host-context(body:not(.dark-theme)) .session-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(139, 105, 20, 0.2);
+}
+
+:host-context(body:not(.dark-theme)) .session-card--expanded {
+  box-shadow: 0 4px 20px rgba(139, 105, 20, 0.1);
+  border-color: rgba(139, 105, 20, 0.35);
+}
+
+:host-context(body:not(.dark-theme)) .session-card-header:hover {
+  background: rgba(139, 105, 20, 0.04);
+}
+
+:host-context(body:not(.dark-theme)) .session-header-title {
+  color: #2c3e50;
+}
+
+:host-context(body:not(.dark-theme)) .session-narrative {
+  color: #374151;
+}
+
+:host-context(body:not(.dark-theme)) .session-number-badge {
+  color: #fff;
+}
+
+:host-context(body:not(.dark-theme)) .session-section-header h4 {
+  color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) .session-section-icon {
+  color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) .session-expand-icon {
+  color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) .sessions-empty-icon {
+  color: rgba(139, 105, 20, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) .sessions-empty h3 {
+  color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) .sessions-empty p {
+  color: #6b7280;
+}
+
+:host-context(body:not(.dark-theme)) .sessions-ctrl-btn {
+  color: #8b6914;
+  border-color: rgba(139, 105, 20, 0.25);
+  background: rgba(139, 105, 20, 0.06);
+}
+
+:host-context(body:not(.dark-theme)) .sessions-ctrl-btn:hover {
+  background: rgba(139, 105, 20, 0.12);
+}
+
+/* Light theme reference overrides */
+:host-context(body:not(.dark-theme)) ::ng-deep .entity-chip--player {
+  color: #7c3aed;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .entity-chip--npc {
+  color: #d97706;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .entity-chip--location {
+  color: #059669;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .entity-chip--shop {
+  color: #2563eb;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .entity-chip--bestiary {
+  color: #dc2626;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .narrative-h2 {
+  color: #1e293b;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .narrative-h3 {
+  color: #334155;
+  border-color: rgba(139, 105, 20, 0.2);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .heading-text {
+  color: #1e293b;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .narrative-bold {
+  color: #0f172a;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .narrative-italic {
+  color: #334155;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .item-body {
+  color: #374151;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .conclusion-subtitle {
+  color: #334155;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .callout-label {
+  color: #8b6914;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .act-badge {
+  background: rgba(139, 105, 20, 0.12);
+  color: #8b6914;
+  border-color: rgba(139, 105, 20, 0.35);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .branch-badge {
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.3);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .tag--phase {
+  background: rgba(139, 105, 20, 0.1);
+  color: #8b6914;
+  border-color: rgba(139, 105, 20, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .tag--primary {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .tag--secondary {
+  background: rgba(37, 99, 235, 0.1);
+  color: #2563eb;
+  border-color: rgba(37, 99, 235, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .tag--branching {
+  background: rgba(124, 58, 237, 0.1);
+  color: #7c3aed;
+  border-color: rgba(124, 58, 237, 0.25);
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .tag--investigation {
+  background: rgba(13, 148, 136, 0.1);
+  color: #0d9488;
+  border-color: rgba(13, 148, 136, 0.25);
+}
+
+/* ===================================================================
+   Mobile Responsive
+   =================================================================== */
+
+@media (max-width: 768px) {
+  .sessions-page {
+    gap: 14px;
+  }
+
+  .sessions-title {
+    font-size: 1.3rem;
+  }
+
+  .sessions-title-icon {
+    font-size: 24px;
+  }
+
+  .session-card-header {
+    padding: 14px 16px;
+  }
+
+  .session-number-badge {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  .session-header-title {
+    font-size: 1rem;
+  }
+
+  .session-body-inner {
+    padding: 4px 16px 24px;
+  }
+
+  .session-narrative {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+
+  :host ::ng-deep .entity-chip {
+    font-size: 0.78rem;
+    padding: 2px 8px 2px 5px;
+  }
+
+  :host ::ng-deep .entity-chip-name {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 400px) {
+  .sessions-title {
+    font-size: 1.15rem;
+  }
+
+  .session-number-badge {
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+  }
+
+  .session-card-header-left {
+    gap: 10px;
+  }
+
+  :host ::ng-deep .entity-chip-name {
+    max-width: 120px;
+  }
+}

@@ -1,0 +1,120 @@
+<!-- Campaign Sessions Page -->
+<div class="sessions-page">
+
+  <!-- Page Header -->
+  <div class="sessions-header">
+    <div class="sessions-header-ornament"></div>
+    <h2 class="sessions-title">
+      <span class="material-icons sessions-title-icon">menu_book</span>
+      Campaign Chronicles
+    </h2>
+    <p class="sessions-subtitle">A chronicle of your adventures across Nebryss</p>
+    <div class="sessions-header-ornament"></div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="sessions-loading" *ngIf="isLoading">
+    <div class="sessions-loading-spinner"></div>
+    <span>Loading chronicles...</span>
+  </div>
+
+  <!-- Empty State -->
+  <div class="sessions-empty" *ngIf="!isLoading && !hasSessions">
+    <span class="material-icons sessions-empty-icon">auto_stories</span>
+    <h3>No Chronicles Yet</h3>
+    <p>The pages of this campaign journal remain blank. Your story has yet to be written.</p>
+  </div>
+
+  <!-- Expand / Collapse Controls -->
+  <div class="sessions-controls" *ngIf="!isLoading && hasSessions">
+    <button type="button" class="sessions-ctrl-btn" (click)="expandAll()" aria-label="Expand all sessions">
+      <span class="material-icons">unfold_more</span>
+      <span>Expand All</span>
+    </button>
+    <button type="button" class="sessions-ctrl-btn" (click)="collapseAll()" aria-label="Collapse all sessions">
+      <span class="material-icons">unfold_less</span>
+      <span>Collapse All</span>
+    </button>
+  </div>
+
+  <!-- Session Cards -->
+  <div class="sessions-list" *ngIf="!isLoading && hasSessions">
+    <div
+      *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId"
+      class="session-card"
+      [class.session-card--expanded]="entry.expanded"
+      [class.session-card--draft]="!entry.isConcluded"
+    >
+      <!-- Session Header -->
+      <button
+        type="button"
+        class="session-card-header"
+        (click)="toggleSession(i)"
+        [attr.aria-expanded]="entry.expanded"
+        [attr.aria-label]="'Toggle Session ' + entry.session.sessionId"
+      >
+        <div class="session-card-header-left">
+          <span class="session-number-badge">{{ entry.session.sessionId }}</span>
+          <div class="session-header-text">
+            <h3 class="session-header-title">
+              <span class="session-label">Session {{ entry.session.sessionId }}:</span>
+              <span class="session-title-parsed" [innerHTML]="entry.titleHtml"></span>
+            </h3>
+            <div class="session-header-badges">
+              <span class="session-badge session-badge--concluded" *ngIf="entry.isConcluded">
+                <span class="material-icons">check_circle</span> Concluded
+              </span>
+              <span class="session-badge session-badge--draft" *ngIf="!entry.isConcluded && isAdmin">
+                <span class="material-icons">edit_note</span> Draft — GM Only
+              </span>
+            </div>
+          </div>
+        </div>
+        <span class="material-icons session-expand-icon" [class.rotated]="entry.expanded">expand_more</span>
+      </button>
+
+      <!-- Session Body (expandable) -->
+      <div class="session-card-body" [class.session-card-body--visible]="entry.expanded">
+        <div class="session-body-inner">
+
+          <!-- Content Section -->
+          <div class="session-section" *ngIf="entry.session.content">
+            <div class="session-section-header">
+              <span class="material-icons session-section-icon">description</span>
+              <h4>Session Plan</h4>
+            </div>
+            <div class="session-narrative" [innerHTML]="entry.parsedContent"></div>
+          </div>
+
+          <!-- Ornamental Divider -->
+          <div class="session-divider" *ngIf="entry.session.content && (entry.isConcluded || (isAdmin && entry.session.conclussion))">
+            <span class="session-divider-diamond"></span>
+          </div>
+
+          <!-- Conclusion Section -->
+          <div class="session-section" *ngIf="entry.isConcluded || (isAdmin && entry.session.conclussion)">
+            <div class="session-section-header">
+              <span class="material-icons session-section-icon">auto_stories</span>
+              <h4>
+                Conclusion
+                <span class="conclusion-subtitle" *ngIf="entry.conclusionTitleHtml">
+                  <span class="conclusion-sep">—</span>
+                  <span [innerHTML]="entry.conclusionTitleHtml"></span>
+                </span>
+              </h4>
+            </div>
+            <div class="session-narrative" [innerHTML]="entry.parsedConclusion"></div>
+          </div>
+
+          <!-- Pending conclusion notice (GM only) -->
+          <div class="session-pending-notice" *ngIf="!entry.isConcluded && isAdmin && !entry.session.conclussion">
+            <span class="material-icons">hourglass_empty</span>
+            <span>This session has not been concluded yet. The conclusion will appear here once finalized.</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
