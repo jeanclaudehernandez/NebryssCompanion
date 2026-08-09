@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Output, ViewChild, ElementRef, HostListener, TemplateRef } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { UpdateService } from '../update.service';
 import { ModalService } from '../modal.service';
 import { ThemeService } from '../theme.service';
 import { AdminService } from '../admin.service';
@@ -19,7 +18,6 @@ import { DataService } from '../data.service';
 export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
-  @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<AppView>();
   @Output() openSettings = new EventEmitter<void>();
@@ -28,7 +26,6 @@ export class SidebarComponent {
 
   constructor(
     private matDialog: MatDialog,
-    public updateService: UpdateService,
     private modalService: ModalService,
     public themeService: ThemeService,
     private adminService: AdminService,
@@ -160,24 +157,6 @@ export class SidebarComponent {
     this.openAdminDialog(this.adminDialogTemplate, () => {
       this.changeView('adminRulesEditor');
     });
-  }
-
-  forceUpdate() {
-    this.updateService.unregisterAndReload();
-  }
-
-  clearStorageAndUpdate() {
-    const dialogContext = {
-      confirm: () => {
-        this.modalService.close();
-        this.updateService.clearStorageAndReload();
-      },
-      cancel: () => {
-        this.modalService.close();
-      }
-    };
-
-    this.modalService.openFromTemplate(this.confirmDialogTemplate, dialogContext);
   }
 
   openAdminDialog(template: TemplateRef<any>, onSuccess?: () => void) {

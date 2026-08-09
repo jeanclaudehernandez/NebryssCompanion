@@ -131,27 +131,8 @@
       <span>Settings</span>
     </div>
 
-    <div class="update-section">
-      <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
-        <span class="material-icons">refresh</span> Refresh Data
-      </button>
-    </div>
-    <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
-      <span class="material-icons">lock</span> Admin Access
-    </button>
   </div>
 </nav>
-
-<ng-template #confirmDialog let-confirm="confirm" let-cancel="cancel">
-  <div class="confirmation-dialog">
-    <h3>Warning</h3>
-    <p>This will clear all locally stored changes. Make sure you have saved your characters before proceeding.</p>
-    <div class="dialog-buttons">
-      <button class="btn-cancel" (click)="cancel()">Cancel</button>
-      <button class="btn-confirm" (click)="confirm()">Continue</button>
-    </div>
-  </div>
-</ng-template>
 
 <ng-template #adminDialog let-check="check" let-cancel="cancel">
   <div class="confirmation-dialog">

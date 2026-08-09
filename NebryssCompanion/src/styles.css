@@ -1474,44 +1474,362 @@ body.dark-theme .admin-dialog-modal p {
   color: #cbd5e1;
 }
 
-/* Password Input inside Admin Modal */
-.admin-password-input,
-.confirmation-dialog input[type="password"],
-.confirmation-dialog input[type="text"] {
+/* Settings-style Modal Dialog Container (Matches Settings Modal) */
+.settings-style-dialog {
+  padding: 0 !important;
+  background: var(--header-bg, linear-gradient(145deg, #181926 0%, #0d0e17 100%)) !important;
+  border: 1px solid #535353 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95), inset 0 0 15px rgba(0, 0, 0, 0.6) !important;
+  color: #f8fafc !important;
+  overflow: hidden !important;
+  max-width: 530px !important;
+  width: 92% !important;
+  box-sizing: border-box !important;
+}
+
+.gm-modal-wrapper {
+  display: flex;
+  flex-direction: column;
   width: 100%;
+}
+
+.gm-modal-wrapper .settings-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.gm-modal-wrapper .settings-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gm-modal-wrapper .settings-header-icon {
+  color: var(--accent-color, #d4af37);
+  font-size: 24px;
+}
+
+.gm-modal-wrapper .settings-header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--header-fg, #f8fafc);
+}
+
+.gm-modal-wrapper .settings-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.gm-modal-wrapper .settings-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.gm-modal-wrapper .settings-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gm-modal-wrapper .action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
   box-sizing: border-box;
-  padding: 12px 16px;
-  margin-bottom: 20px;
-  border-radius: 10px;
-  border: 1.5px solid #cbd5e1;
-  font-size: 1rem;
-  background: #f8fafc;
-  color: #0f172a;
-  outline: none;
   transition: all 0.2s ease;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.admin-password-input:focus,
-.confirmation-dialog input:focus {
-  border-color: #0d9488;
-  background: #ffffff;
-  box-shadow: 0 0 0 3.5px rgba(13, 148, 136, 0.2);
+.gm-modal-wrapper .action-card.gm-active {
+  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(212, 175, 55, 0.05);
 }
 
-body.dark-theme .admin-password-input,
-body.dark-theme .confirmation-dialog input[type="password"],
-body.dark-theme .confirmation-dialog input[type="text"] {
-  background: #1e293b;
+.gm-modal-wrapper .action-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gm-modal-wrapper .action-icon {
+  font-size: 22px;
+  color: var(--accent-color, #d4af37);
+  flex-shrink: 0;
+}
+
+.gm-modal-wrapper .action-card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.gm-modal-wrapper .action-card-info strong {
+  font-size: 0.84rem;
   color: #f8fafc;
-  border-color: #334155;
+  line-height: 1.2;
 }
 
-body.dark-theme .admin-password-input:focus,
-body.dark-theme .confirmation-dialog input:focus {
-  border-color: #2dd4bf;
-  background: #0f172a;
-  box-shadow: 0 0 0 3.5px rgba(45, 212, 191, 0.25);
+.gm-modal-wrapper .action-card-info small {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.25;
+  margin-top: 2px;
+}
+
+.gm-modal-wrapper .admin-input-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.gm-modal-wrapper .password-field-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+  display: flex;
+  align-items: center;
+}
+
+.gm-modal-wrapper .password-field-wrapper .input-icon {
+  position: absolute;
+  left: 10px;
+  color: var(--accent-color, #d4af37);
+  font-size: 18px;
+  pointer-events: none;
+}
+
+.gm-modal-wrapper .settings-input {
+  width: 100%;
+  padding: 10px 38px 10px 36px;
+  min-height: 44px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 0.88rem;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.2s;
+}
+
+.gm-modal-wrapper .settings-input:focus {
+  border-color: var(--accent-color, #d4af37);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+}
+
+.gm-modal-wrapper .btn-toggle-eye {
+  position: absolute;
+  right: 6px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.gm-modal-wrapper .btn-toggle-eye:hover {
+  color: #ffffff;
+}
+
+.gm-modal-wrapper .btn-accent-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 20px;
+  min-height: 44px;
+  background: var(--accent-color, #d4af37);
+  color: #0f172a;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.86rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.gm-modal-wrapper .btn-accent-action:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 10px var(--accent-color, #d4af37);
+}
+
+.gm-modal-wrapper .btn-accent-action:active {
+  transform: scale(0.98);
+}
+
+.gm-modal-wrapper .status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.gm-modal-wrapper .status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  flex-shrink: 0;
+}
+
+.gm-modal-wrapper .action-card.gm-active .status-dot {
+  background: var(--accent-color, #d4af37);
+  box-shadow: 0 0 8px var(--accent-color, #d4af37);
+}
+
+.gm-modal-wrapper .status-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+}
+
+.gm-modal-wrapper .status-badge.badge-active {
+  background: rgba(212, 175, 55, 0.2);
+  color: var(--accent-color, #d4af37);
+  border: 1px solid rgba(212, 175, 55, 0.4);
+}
+
+.gm-modal-wrapper .admin-actions-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.gm-modal-wrapper .mode-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  min-height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: #cbd5e1;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.gm-modal-wrapper .mode-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.gm-modal-wrapper .mode-card.active {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: var(--accent-color, #d4af37);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.25);
+}
+
+.gm-modal-wrapper .mode-card .material-icons {
+  font-size: 20px;
+  color: var(--accent-color, #d4af37);
+  flex-shrink: 0;
+}
+
+.gm-modal-wrapper .mode-card-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gm-modal-wrapper .mode-card-info strong {
+  font-size: 0.82rem;
+  line-height: 1.2;
+}
+
+.gm-modal-wrapper .mode-card-info small {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  line-height: 1.1;
+  margin-top: 2px;
+}
+
+.gm-modal-wrapper .btn-subtle-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  min-height: 44px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.gm-modal-wrapper .btn-subtle-danger:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #fca5a5;
+}
+
+.gm-modal-wrapper .settings-footer {
+  padding: 12px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.gm-modal-wrapper .btn-done {
+  background: var(--accent-color, #d4af37);
+  color: #0f172a;
+  border: none;
+  padding: 10px 24px;
+  min-height: 44px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.gm-modal-wrapper .btn-done:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 10px var(--accent-color, #d4af37);
 }
 
 /* Dialog Action Buttons Row / Stack */

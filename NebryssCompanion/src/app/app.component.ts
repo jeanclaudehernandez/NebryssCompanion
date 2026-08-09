@@ -172,30 +172,88 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
     }
 
     <ng-template #adminDialog let-check="check" let-toggleGm="toggleGm" let-logout="logout" let-cancel="cancel" let-hasAccess="hasAccess" let-isAdmin="isAdmin">
-      <div class="confirmation-dialog admin-dialog-modal">
-        <h3>GM & Admin Access</h3>
-        <ng-container *ngIf="!hasAccess">
-          <p>Enter admin password to unlock GM features:</p>
-          <input #passwordInput type="password" autofocus style="margin-bottom: 12px; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem;" (keyup.enter)="check(passwordInput.value)">
-          <div class="dialog-buttons">
-            <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
-            <button class="btn-confirm" type="button" (click)="check(passwordInput.value)">Submit</button>
+      <div class="gm-modal-wrapper">
+        <header class="settings-header">
+          <div class="settings-title-wrap">
+            <span class="material-icons settings-header-icon">security</span>
+            <h2>GM & Admin Access</h2>
           </div>
-        </ng-container>
-        <ng-container *ngIf="hasAccess">
-          <p style="margin-bottom: 16px; line-height: 1.5;">GM Mode is currently <strong>{{ isAdmin ? 'ACTIVE (GM ON)' : 'INACTIVE (Player View)' }}</strong>.</p>
-          <div class="dialog-buttons" style="flex-direction: column; gap: 10px;">
-            <button class="btn-confirm" type="button" (click)="toggleGm()">
-              {{ isAdmin ? 'Switch to Player View (GM OFF)' : 'Activate GM Mode (GM ON)' }}
-            </button>
-            <button class="btn-cancel" type="button" (click)="logout()">
-              Logout GM Access
-            </button>
-            <button class="btn-cancel" type="button" (click)="cancel()">
-              Close
-            </button>
+          <button type="button" class="settings-close-btn" (click)="cancel()" aria-label="Close">
+            <span class="material-icons">close</span>
+          </button>
+        </header>
+
+        <div class="settings-body">
+          <!-- When NOT authenticated -->
+          <div class="action-card" *ngIf="!hasAccess">
+            <div class="action-card-header">
+              <span class="material-icons action-icon">lock</span>
+              <div class="action-card-info">
+                <strong>Unlock GM Mode</strong>
+                <small>Unlock Game Master tools, admin editors, and secret campaign content</small>
+              </div>
+            </div>
+            <div class="admin-input-group">
+              <div class="password-field-wrapper">
+                <span class="material-icons input-icon">key</span>
+                <input
+                  #passwordInput
+                  [type]="showAdminPasswordHeader ? 'text' : 'password'"
+                  class="settings-input"
+                  placeholder="Enter admin password..."
+                  (keyup.enter)="check(passwordInput.value)"
+                  autofocus
+                />
+                <button
+                  type="button"
+                  class="btn-toggle-eye"
+                  (click)="showAdminPasswordHeader = !showAdminPasswordHeader"
+                  aria-label="Toggle password visibility"
+                >
+                  <span class="material-icons">{{ showAdminPasswordHeader ? 'visibility_off' : 'visibility' }}</span>
+                </button>
+              </div>
+              <button type="button" class="btn-accent-action" (click)="check(passwordInput.value)">
+                <span class="material-icons">vpn_key</span>
+                <span>Unlock</span>
+              </button>
+            </div>
           </div>
-        </ng-container>
+
+          <!-- When authenticated -->
+          <div class="action-card gm-active" *ngIf="hasAccess">
+            <div class="action-card-header">
+              <div class="status-indicator">
+                <span class="status-dot"></span>
+                <div class="action-card-info">
+                  <strong>{{ isAdmin ? 'GM Mode ACTIVE' : 'Player View (GM OFF)' }}</strong>
+                  <small>{{ isAdmin ? 'Secret vaults, NPC secrets, and entity editors are visible.' : 'Admin tools and secrets are hidden.' }}</small>
+                </div>
+              </div>
+              <span class="status-badge" [class.badge-active]="isAdmin">
+                {{ isAdmin ? 'GM ON' : 'GM OFF' }}
+              </span>
+            </div>
+            <div class="admin-actions-row">
+              <button
+                type="button"
+                class="mode-card"
+                [class.active]="isAdmin"
+                (click)="toggleGm()"
+              >
+                <span class="material-icons">{{ isAdmin ? 'visibility_off' : 'visibility' }}</span>
+                <div class="mode-card-info">
+                  <strong>{{ isAdmin ? 'Switch to Player View' : 'Activate GM Mode' }}</strong>
+                  <small>{{ isAdmin ? 'Hide GM tools' : 'Show GM secrets' }}</small>
+                </div>
+              </button>
+              <button type="button" class="btn-subtle-danger" (click)="logout()">
+                <span class="material-icons">lock</span>
+                <span>Lock GM Access</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </ng-template>
 
@@ -261,6 +319,7 @@ export class AppComponent {
   bestiaryMaterialsCount = 0;
   bestiaryMaterialsSidebarOpen = false;
   rickrollVisible = false;
+  showAdminPasswordHeader = false;
 
   // Shake detection state
   private shakeLastX = 0;
@@ -749,6 +808,7 @@ export class AppComponent {
     if (!this.adminDialogTemplate) {
       return;
     }
+    this.showAdminPasswordHeader = false;
 
     const dialogContext = {
       hasAccess: this.adminService.hasAdminAccess,
@@ -778,9 +838,12 @@ export class AppComponent {
       }
     };
 
-    this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext);
+    this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext, {
+      showCloseButton: false,
+      contentClass: 'settings-style-dialog'
+    });
     setTimeout(() => {
-      const input = document.querySelector<HTMLInputElement>('.admin-dialog-modal input[type="password"]');
+      const input = document.querySelector<HTMLInputElement>('.gm-modal-wrapper input[type="password"]');
       input?.focus();
     }, 50);
   }

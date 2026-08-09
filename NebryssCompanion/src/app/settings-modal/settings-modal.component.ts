@@ -5,6 +5,9 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
 import { DataService } from '../data.service';
 import { CampaignService } from '../campaign.service';
 import { ActivePlayerService } from '../active-player.service';
+import { AdminService } from '../admin.service';
+import { UpdateService } from '../update.service';
+import { ToastService } from '../toast.service';
 import { Campaign } from '../model';
 
 @Component({
@@ -33,9 +36,6 @@ import { Campaign } from '../model';
             </h3>
 
             <div class="campaign-select-box">
-              <label for="settings-campaign-select" class="campaign-label">
-                Current Campaign:
-              </label>
               <div class="custom-select-wrapper">
                 <select
                   id="settings-campaign-select"
@@ -51,7 +51,7 @@ import { Campaign } from '../model';
                 <span class="material-icons select-arrow">expand_more</span>
               </div>
               <small class="campaign-help-text" *ngIf="selectedCampaign">
-                Switching campaigns updates available players, story logs, npcs, locations and locations.
+                Switch available players, story logs, npcs, shops and locations.
               </small>
             </div>
           </section>
@@ -123,13 +123,130 @@ import { Campaign } from '../model';
             </div>
           </section>
 
-        </div>
+          <!-- SECTION 3: GM & ADMIN ACCESS -->
+          <section class="settings-section">
+            <h3 class="section-title">
+              <span class="material-icons">security</span>
+              GM & Admin Access
+            </h3>
 
-        <footer class="settings-footer">
-          <button type="button" class="btn-done" (click)="onClose()">
-            Done
-          </button>
-        </footer>
+            <!-- When not authenticated -->
+            <div class="action-card" *ngIf="!adminService.hasAdminAccess">
+              <div class="action-card-header">
+                <span class="material-icons action-icon">lock</span>
+                <div class="action-card-info">
+                  <strong>Unlock GM Mode</strong>
+                  <small>Unlock Game Master tools, admin editors, and secret campaign content</small>
+                </div>
+              </div>
+              <div class="admin-input-group">
+                <div class="password-field-wrapper">
+                  <span class="material-icons input-icon">key</span>
+                  <input
+                    [type]="showAdminPassword ? 'text' : 'password'"
+                    class="settings-input"
+                    placeholder="Enter admin password..."
+                    [(ngModel)]="adminPassword"
+                    (keyup.enter)="onUnlockAdmin()"
+                  />
+                  <button
+                    type="button"
+                    class="btn-toggle-eye"
+                    (click)="showAdminPassword = !showAdminPassword"
+                    aria-label="Toggle password visibility"
+                  >
+                    <span class="material-icons">{{ showAdminPassword ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                </div>
+                <button type="button" class="btn-accent-action" (click)="onUnlockAdmin()">
+                  <span class="material-icons">vpn_key</span>
+                  <span>Unlock</span>
+                </button>
+              </div>
+              <div class="input-error" *ngIf="adminPasswordError">
+                <span class="material-icons">error_outline</span>
+                <span>{{ adminPasswordError }}</span>
+              </div>
+            </div>
+
+            <!-- When authenticated -->
+            <div class="action-card gm-active" *ngIf="adminService.hasAdminAccess">
+              <div class="action-card-header">
+                <div class="status-indicator">
+                  <span class="status-dot"></span>
+                  <div class="action-card-info">
+                    <strong>{{ adminService.isAdmin ? 'GM Mode ACTIVE' : 'Player View (GM OFF)' }}</strong>
+                    <small>{{ adminService.isAdmin ? 'Secret vaults, NPC secrets, and entity editors are visible.' : 'Admin tools and secrets are hidden.' }}</small>
+                  </div>
+                </div>
+                <span class="status-badge" [class.badge-active]="adminService.isAdmin">
+                  {{ adminService.isAdmin ? 'GM ON' : 'GM OFF' }}
+                </span>
+              </div>
+              <div class="admin-actions-row">
+                <button
+                  type="button"
+                  class="mode-card"
+                  [class.active]="adminService.isAdmin"
+                  (click)="onToggleGmMode()"
+                >
+                  <span class="material-icons">{{ adminService.isAdmin ? 'visibility_off' : 'visibility' }}</span>
+                  <div class="mode-card-info">
+                    <strong>{{ adminService.isAdmin ? 'Switch to Player View' : 'Activate GM Mode' }}</strong>
+                    <small>{{ adminService.isAdmin ? 'Hide GM tools' : 'Show GM secrets' }}</small>
+                  </div>
+                </button>
+                <button type="button" class="btn-subtle-danger" (click)="onLogoutAdmin()">
+                  <span class="material-icons">lock</span>
+                  <span>Lock GM Access</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- SECTION 4: DATA & STORAGE MANAGEMENT -->
+          <section class="settings-section">
+            <h3 class="section-title">
+              <span class="material-icons">sync</span>
+              Data & Storage
+            </h3>
+
+            <!-- Normal State -->
+            <div class="action-card" *ngIf="!isConfirmingRefresh">
+              <div class="action-card-header">
+                <span class="material-icons action-icon">refresh</span>
+                <div class="action-card-info">
+                  <strong>Refresh Data & Cache</strong>
+                  <small>Clear locally cached data and force-sync the latest content from the server</small>
+                </div>
+              </div>
+              <button type="button" class="btn-accent-action btn-full-width" (click)="onPromptRefresh()">
+                <span class="material-icons">refresh</span>
+                <span>Refresh Data</span>
+              </button>
+            </div>
+
+            <!-- Confirming State -->
+            <div class="action-card confirm-card" *ngIf="isConfirmingRefresh">
+              <div class="confirm-warning">
+                <span class="material-icons warning-icon">warning</span>
+                <div class="confirm-text-wrap">
+                  <strong>Clear Local Cache & Refresh?</strong>
+                  <p>This will reset local storage and reload the application. Ensure your character sheets are saved.</p>
+                </div>
+              </div>
+              <div class="confirm-actions">
+                <button type="button" class="btn-cancel-action" (click)="onCancelRefresh()">
+                  Cancel
+                </button>
+                <button type="button" class="btn-accent-action" (click)="onConfirmRefresh()" [disabled]="isRefreshingData">
+                  <span class="material-icons">refresh</span>
+                  <span>{{ isRefreshingData ? 'Refreshing...' : 'Yes, Refresh' }}</span>
+                </button>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
     </div>
   `,
@@ -319,7 +436,8 @@ import { Campaign } from '../model';
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 5px;
+      padding: 8px 12px;
+      min-height: 44px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.12);
       background: rgba(255, 255, 255, 0.04);
@@ -327,6 +445,7 @@ import { Campaign } from '../model';
       cursor: pointer;
       text-align: left;
       transition: all 0.2s ease;
+      box-sizing: border-box;
     }
 
     .mode-card:hover {
@@ -344,6 +463,7 @@ import { Campaign } from '../model';
     .mode-card .material-icons {
       font-size: 20px;
       color: var(--accent-color, #d4af37);
+      flex-shrink: 0;
     }
 
     .mode-card-info {
@@ -388,6 +508,7 @@ import { Campaign } from '../model';
       align-items: center;
       gap: 8px;
       padding: 8px 10px;
+      min-height: 44px;
       border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-left-width: 4px;
@@ -397,6 +518,7 @@ import { Campaign } from '../model';
       font-size: 0.8rem;
       transition: all 0.18s;
       text-align: left;
+      box-sizing: border-box;
     }
 
     .skin-chip:hover {
@@ -410,71 +532,291 @@ import { Campaign } from '../model';
       box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
 
-    .toggle-row {
+    /* Action Cards & Unified Modal Actions */
+    .action-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
+    }
+
+    .action-card.gm-active {
+      border-color: rgba(212, 175, 55, 0.35);
+      background: rgba(212, 175, 55, 0.05);
+    }
+
+    .action-card.confirm-card {
+      border-color: rgba(212, 175, 55, 0.4);
+      background: rgba(212, 175, 55, 0.08);
+      animation: fadeIn 0.2s ease;
+    }
+
+    .action-card-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 8px 10px;
-      border-radius: 6px;
-      background: rgba(255, 255, 255, 0.03);
+      gap: 10px;
     }
 
-    .toggle-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .toggle-info strong {
-      font-size: 0.85rem;
-    }
-
-    .toggle-info small {
-      font-size: 0.7rem;
-      color: #94a3b8;
-    }
-
-    /* CSS Switch Toggle */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 44px;
-      height: 24px;
+    .action-icon {
+      font-size: 22px;
+      color: var(--accent-color, #d4af37);
       flex-shrink: 0;
     }
 
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
+    .action-card-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
     }
 
-    .slider {
+    .action-card-info strong {
+      font-size: 0.84rem;
+      color: #f8fafc;
+      line-height: 1.2;
+    }
+
+    .action-card-info small {
+      font-size: 0.7rem;
+      color: #94a3b8;
+      line-height: 1.25;
+      margin-top: 2px;
+    }
+
+    .admin-input-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .password-field-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 180px;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-field-wrapper .input-icon {
       position: absolute;
+      left: 10px;
+      color: var(--accent-color, #d4af37);
+      font-size: 18px;
+      pointer-events: none;
+    }
+
+    .settings-input {
+      width: 100%;
+      padding: 10px 38px 10px 36px;
+      min-height: 44px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.88rem;
+      outline: none;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    .settings-input:focus {
+      border-color: var(--accent-color, #d4af37);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+    }
+
+    .btn-toggle-eye {
+      position: absolute;
+      right: 6px;
+      background: transparent;
+      border: none;
+      color: #94a3b8;
       cursor: pointer;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: #334155;
-      transition: .2s;
-      border-radius: 24px;
+      padding: 6px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      min-height: 32px;
     }
 
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px;
-      width: 18px;
-      left: 3px;
-      bottom: 3px;
-      background-color: white;
-      transition: .2s;
+    .btn-toggle-eye:hover {
+      color: #ffffff;
+    }
+
+    .btn-accent-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 20px;
+      min-height: 44px;
+      background: var(--accent-color, #d4af37);
+      color: #0f172a;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      box-sizing: border-box;
+    }
+
+    .btn-accent-action:hover {
+      filter: brightness(1.15);
+      box-shadow: 0 0 10px var(--accent-color, #d4af37);
+    }
+
+    .btn-accent-action:active {
+      transform: scale(0.98);
+    }
+
+    .btn-accent-action:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-full-width {
+      width: 100%;
+    }
+
+    .btn-subtle-danger {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      min-height: 44px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #94a3b8;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+
+    .btn-subtle-danger:hover {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #fca5a5;
+    }
+
+    .input-error {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #ef4444;
+      font-size: 0.75rem;
+      font-weight: 500;
+      margin-top: 2px;
+    }
+
+    .input-error .material-icons {
+      font-size: 16px;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
+      background: #94a3b8;
+      flex-shrink: 0;
     }
 
-    input:checked + .slider {
-      background-color: var(--accent-color, #d4af37);
+    .action-card.gm-active .status-dot {
+      background: var(--accent-color, #d4af37);
+      box-shadow: 0 0 8px var(--accent-color, #d4af37);
     }
 
-    input:checked + .slider:before {
-      transform: translateX(20px);
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      letter-spacing: 0.5px;
+    }
+
+    .status-badge.badge-active {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--accent-color, #d4af37);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .admin-actions-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 8px;
+    }
+
+    .confirm-warning {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .warning-icon {
+      color: var(--accent-color, #d4af37);
+      font-size: 22px;
+      margin-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .confirm-text-wrap strong {
+      font-size: 0.85rem;
+      color: #f8fafc;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .confirm-text-wrap p {
+      margin: 0;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      line-height: 1.35;
+    }
+
+    .confirm-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .btn-cancel-action {
+      padding: 8px 16px;
+      min-height: 44px;
+      background: rgba(255, 255, 255, 0.06);
+      color: #cbd5e1;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cancel-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
     }
 
     .settings-footer {
@@ -483,35 +825,18 @@ import { Campaign } from '../model';
       background: rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
-      justify-content: space-between;
-    }
-
-    .btn-reset {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: transparent;
-      border: 1px solid #475569;
-      color: #94a3b8;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.78rem;
-      transition: all 0.2s;
-    }
-
-    .btn-reset:hover {
-      color: #f8fafc;
-      border-color: #94a3b8;
+      justify-content: flex-end;
     }
 
     .btn-done {
       background: var(--accent-color, #d4af37);
       color: #0f172a;
       border: none;
-      padding: 7px 22px;
+      padding: 10px 24px;
+      min-height: 44px;
       border-radius: 6px;
       font-weight: bold;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -528,6 +853,12 @@ export class SettingsModalComponent {
   campaigns: Campaign[] = [];
   selectedCampaign: Campaign | null = null;
 
+  adminPassword = '';
+  showAdminPassword = false;
+  adminPasswordError = '';
+  isConfirmingRefresh = false;
+  isRefreshingData = false;
+
   skins: { id: CharacterSkin; name: string; emoji: string; accent: string }[] = [
     { id: 'skin-wendy', name: 'Wendy (Field Medic)', emoji: '🪖', accent: '#4e7c41' },
     { id: 'skin-thennur', name: 'Thennur (Fellgor Shaman)', emoji: '📯', accent: '#00e676' },
@@ -543,7 +874,10 @@ export class SettingsModalComponent {
     public themeService: ThemeService,
     private dataService: DataService,
     public campaignService: CampaignService,
-    private activePlayerService: ActivePlayerService
+    private activePlayerService: ActivePlayerService,
+    public adminService: AdminService,
+    private updateService: UpdateService,
+    private toastService: ToastService
   ) {
     this.dataService.getCampaigns().subscribe(campaigns => {
       this.campaigns = campaigns;
@@ -575,11 +909,43 @@ export class SettingsModalComponent {
     this.themeService.setManualSkin(skin);
   }
 
-  onToggleVignette(enabled: boolean): void {
-    this.themeService.setVignetteEnabled(enabled);
+  onUnlockAdmin(): void {
+    if (this.adminPassword.trim() === '2602') {
+      this.adminService.setAdminAuthenticated(true);
+      this.adminPassword = '';
+      this.adminPasswordError = '';
+      this.toastService.show('GM Access Granted! GM Mode is ON.', 'success');
+    } else {
+      this.adminPasswordError = 'Incorrect admin password';
+      this.toastService.show('Incorrect admin password', 'error');
+    }
   }
 
-  onReset(): void {
-    this.themeService.resetToDefaults();
+  onToggleGmMode(): void {
+    const nextState = !this.adminService.isAdmin;
+    this.adminService.setAdminStatus(nextState);
+    this.toastService.show(
+      nextState ? 'GM Mode ON (Secret Vaults & GM Tools visible)' : 'Player View Active (GM OFF)',
+      'info'
+    );
+  }
+
+  onLogoutAdmin(): void {
+    this.adminService.setAdminAuthenticated(false);
+    this.toastService.show('Logged out of GM mode', 'info');
+  }
+
+  onPromptRefresh(): void {
+    this.isConfirmingRefresh = true;
+  }
+
+  onCancelRefresh(): void {
+    this.isConfirmingRefresh = false;
+  }
+
+  onConfirmRefresh(): void {
+    this.isRefreshingData = true;
+    this.toastService.show('Clearing storage and refreshing data...', 'info');
+    this.updateService.clearStorageAndReload();
   }
 }
