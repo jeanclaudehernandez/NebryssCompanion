@@ -259,8 +259,8 @@ export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
   private updateTabBarHeight() {
     if (this.tabBarRef?.nativeElement) {
       const h = this.tabBarRef.nativeElement.offsetHeight;
-      if (h > 0 && Math.abs(h + 8 - this.tabBarHeight) > 1) {
-        this.tabBarHeight = h + 8;
+      if (h > 0 && this.tabBarHeight !== h) {
+        this.tabBarHeight = h;
       }
     }
   }

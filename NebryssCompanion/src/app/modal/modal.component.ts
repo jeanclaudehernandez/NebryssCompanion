@@ -26,18 +26,6 @@ import { ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef 
       z-index: 2000;
     }
     
-    .modal-content {
-      background-color: white;
-      padding: 2rem;
-      border-radius: 8px;
-      max-width: 98vw;
-      width: 90%;
-      max-height: 98vh;
-      overflow-y: auto;
-      position: relative;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
     .modal-close {
       position: absolute;
       top: 0.5rem;
@@ -62,14 +50,14 @@ import { ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef 
 })
 export class ModalComponent {
   @ViewChild('modalContent', { read: ViewContainerRef }) viewContainerRef!: ViewContainerRef;
-  close: () => void = () => {};
+  close: () => void = () => { };
   width: string = '90%';
   height: string = 'auto';
   overlayClass = '';
   contentClass = '';
   showCloseButton = true;
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef) { }
 
   getOverlayClasses(): string {
     return ['modal-overlay', this.overlayClass].filter(Boolean).join(' ');

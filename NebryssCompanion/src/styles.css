@@ -1370,8 +1370,8 @@ body.dark-theme .wallet-cancel-button {
 .modal-content {
   background: #ffffff;
   color: #1e293b;
-  padding: 24px;
-  border-radius: 16px;
+  padding: 10px;
+  border-radius: 6px;
   max-width: 480px;
   width: 90%;
   max-height: 90vh;

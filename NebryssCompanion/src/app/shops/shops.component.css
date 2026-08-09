@@ -551,54 +551,54 @@ body.dark-theme .shop-total {
 }
 
 .shop-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
 }
 
 .shop-title-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
 }
 
 .shop-gm-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .gm-discovered-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid rgba(239, 68, 68, 0.4);
-  background: rgba(239, 68, 68, 0.12);
-  color: #f87171;
-  transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    background: rgba(239, 68, 68, 0.12);
+    color: #f87171;
+    transition: all 0.2s ease;
 }
 
 .gm-discovered-btn .material-icons {
-  font-size: 18px;
+    font-size: 18px;
 }
 
 .gm-discovered-btn.is-discovered {
-  border-color: rgba(52, 211, 153, 0.4);
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
+    border-color: rgba(52, 211, 153, 0.4);
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
 }
 
 .gm-discovered-btn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.15);
+    transform: translateY(-1px);
+    filter: brightness(1.15);
 }
 
 .payment-badge {
@@ -653,10 +653,6 @@ body.dark-theme .payment-badge.physical {
 }
 
 /* Modal Styles */
-.confirm-purchase-modal {
-    padding: 20px;
-    max-width: 500px;
-}
 
 .confirm-purchase-modal h3 {
     margin-top: 0;

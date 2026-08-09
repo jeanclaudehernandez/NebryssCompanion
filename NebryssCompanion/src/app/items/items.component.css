@@ -19,12 +19,12 @@ h2 {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    padding: 8px 12px 10px 12px;
+    padding: 8px 12px 8px 12px;
     margin-left: -12px;
     margin-right: -12px;
     background: #f5f5f5;
     border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 10px;
+    margin-bottom: 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.07);
 }
 
