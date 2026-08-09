@@ -31,23 +31,7 @@ export class ThemeService {
   private vignetteEnabled = new BehaviorSubject<boolean>(this.getInitialBool('vignetteEnabled', true));
   vignetteEnabled$ = this.vignetteEnabled.asObservable();
 
-  private gothicFontEnabled = new BehaviorSubject<boolean>(this.getInitialBool('gothicFontEnabled', true));
-  gothicFontEnabled$ = this.gothicFontEnabled.asObservable();
 
-  private compactDensityEnabled = new BehaviorSubject<boolean>(this.getInitialBool('compactDensityEnabled', false));
-  compactDensityEnabled$ = this.compactDensityEnabled.asObservable();
-
-  private soundEffectsEnabled = new BehaviorSubject<boolean>(this.getInitialBool('soundEffectsEnabled', true));
-  soundEffectsEnabled$ = this.soundEffectsEnabled.asObservable();
-
-  private soundVolume = new BehaviorSubject<number>(this.getInitialNumber('soundVolume', 0.8));
-  soundVolume$ = this.soundVolume.asObservable();
-
-  private ambientParticlesEnabled = new BehaviorSubject<boolean>(this.getInitialBool('ambientParticlesEnabled', true));
-  ambientParticlesEnabled$ = this.ambientParticlesEnabled.asObservable();
-
-  private animationsEnabled = new BehaviorSubject<boolean>(this.getInitialBool('animationsEnabled', true));
-  animationsEnabled$ = this.animationsEnabled.asObservable();
 
   private currentSkin = new BehaviorSubject<CharacterSkin>(null);
   currentSkin$ = this.currentSkin.asObservable();
@@ -75,7 +59,7 @@ export class ThemeService {
   private getInitialSkinMode(): SkinMode {
     const saved = localStorage.getItem('skinMode');
     if (saved === 'manual' || saved === 'off' || saved === 'auto') return saved;
-    return 'auto';
+    return 'off';
   }
 
   private getInitialManualSkin(): CharacterSkin {
@@ -97,13 +81,6 @@ export class ThemeService {
     return defaultVal;
   }
 
-  getSoundEnabled(): boolean {
-    return this.soundEffectsEnabled.value;
-  }
-
-  getSoundVolume(): number {
-    return this.soundVolume.value;
-  }
 
   setSkinMode(mode: SkinMode): void {
     this.skinMode.next(mode);
@@ -124,41 +101,6 @@ export class ThemeService {
     localStorage.setItem('vignetteEnabled', String(enabled));
     document.body.classList.toggle('grimdark-vignette-off', !enabled);
   }
-
-  setGothicFontEnabled(enabled: boolean): void {
-    this.gothicFontEnabled.next(enabled);
-    localStorage.setItem('gothicFontEnabled', String(enabled));
-    document.body.classList.toggle('standard-font-mode', !enabled);
-  }
-
-  setCompactDensityEnabled(enabled: boolean): void {
-    this.compactDensityEnabled.next(enabled);
-    localStorage.setItem('compactDensityEnabled', String(enabled));
-    document.body.classList.toggle('compact-density-mode', enabled);
-  }
-
-  setSoundEffectsEnabled(enabled: boolean): void {
-    this.soundEffectsEnabled.next(enabled);
-    localStorage.setItem('soundEffectsEnabled', String(enabled));
-  }
-
-  setSoundVolume(val: number): void {
-    this.soundVolume.next(val);
-    localStorage.setItem('soundVolume', String(val));
-  }
-
-  setAmbientParticlesEnabled(enabled: boolean): void {
-    this.ambientParticlesEnabled.next(enabled);
-    localStorage.setItem('ambientParticlesEnabled', String(enabled));
-    document.body.classList.toggle('ambient-particles-off', !enabled);
-  }
-
-  setAnimationsEnabled(enabled: boolean): void {
-    this.animationsEnabled.next(enabled);
-    localStorage.setItem('animationsEnabled', String(enabled));
-    document.body.classList.toggle('reduce-motion-mode', !enabled);
-  }
-
   setActivePlayerSkin(player: Player | null): void {
     this.lastActivePlayer = player;
     this.updateSkinState();
@@ -217,22 +159,12 @@ export class ThemeService {
 
   private applyVisualPreferences(): void {
     document.body.classList.toggle('grimdark-vignette-off', !this.vignetteEnabled.value);
-    document.body.classList.toggle('standard-font-mode', !this.gothicFontEnabled.value);
-    document.body.classList.toggle('compact-density-mode', this.compactDensityEnabled.value);
-    document.body.classList.toggle('ambient-particles-off', !this.ambientParticlesEnabled.value);
-    document.body.classList.toggle('reduce-motion-mode', !this.animationsEnabled.value);
   }
 
   resetToDefaults(): void {
     this.setSkinMode('auto');
     this.setManualSkin('skin-akrina');
     this.setVignetteEnabled(true);
-    this.setGothicFontEnabled(true);
-    this.setCompactDensityEnabled(false);
-    this.setSoundEffectsEnabled(true);
-    this.setSoundVolume(0.8);
-    this.setAmbientParticlesEnabled(true);
-    this.setAnimationsEnabled(true);
   }
 
   exportDataBackup(): void {
@@ -264,8 +196,7 @@ export class ThemeService {
         window.location.reload();
         return true;
       }
-    } catch (e) {}
+    } catch (e) { }
     return false;
   }
 }
- 

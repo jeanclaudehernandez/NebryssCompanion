@@ -20,7 +20,6 @@ import { CampaignService } from './campaign.service';
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
 import { SettingsModalComponent } from './settings-modal/settings-modal.component';
-import { SoundService } from './sound.service';
 
 @Component({
   selector: 'app-root',
@@ -285,8 +284,7 @@ export class AppComponent {
     private activePlayerService: ActivePlayerService,
     private bestiaryMaterialsService: BestiaryMaterialsService,
     private modalService: ModalService,
-    public campaignService: CampaignService,
-    private soundService: SoundService
+    public campaignService: CampaignService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -329,7 +327,6 @@ export class AppComponent {
   }
 
   openSettingsModal(): void {
-    this.soundService.playThump();
     this.isSettingsModalOpen = true;
   }
 

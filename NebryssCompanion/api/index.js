@@ -170,8 +170,8 @@ const COLLECTION_TO_JSON_FILE = {
 
 function resolveLocalJsonFile(collectionName) {
   // Strip campaign prefix (e.g. 'nebryss-voss-succession-location' -> 'location')
-  const baseName = collectionName.includes('-') 
-    ? collectionName.split('-').pop() 
+  const baseName = collectionName.includes('-')
+    ? collectionName.split('-').pop()
     : collectionName;
   const mapped = COLLECTION_TO_JSON_FILE[baseName] || COLLECTION_TO_JSON_FILE[collectionName] || collectionName;
   return path.join(assetsDir, `${mapped}.json`);
@@ -852,7 +852,7 @@ createDeleteRoute('/api/letter', {
 
 app.post('/api/letter/:id/read', async (req, res) => {
   const idParam = req.params.id;
-  const { playerId } = req.body ?? {};
+  const { playerId } = req.body.payload ?? {};
 
   if (!idParam) {
     return res.status(400).json({ error: 'Letter id is required' });

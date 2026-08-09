@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, TemplateRef, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, TemplateRef, Output, EventEmitter, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
@@ -24,7 +24,7 @@ interface ItemsTab {
   standalone: true,
   imports: [CommonModule, FormsModule, WeaponTableComponent, GenericTableComponent, ScrollNavComponent],
   template: `
-    <div class="items-container">
+    <div class="items-container" [style.--items-tab-bar-height.px]="tabBarHeight">
       <!-- Search Bar (always visible) -->
       <div class="items-search-container">
         <div class="search-input-wrapper">
@@ -44,7 +44,7 @@ interface ItemsTab {
 
       <!-- Category Tab Bar -->
       <ng-container *ngIf="visibleTabs.length > 0">
-        <div class="items-tab-bar">
+        <div class="items-tab-bar" #tabBar>
           <button
             *ngFor="let tab of visibleTabs"
             class="items-tab"
@@ -178,7 +178,7 @@ interface ItemsTab {
   `,
   styleUrls: ['./items.component.css']
 })
-export class ItemsComponent implements OnInit {
+export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
 
   itemsData!: Items; // Use Items interface
@@ -206,6 +206,10 @@ export class ItemsComponent implements OnInit {
   private categoryBuildInProgress = new Set<string>();
   private categoryBuildToken = 0;
   
+  @ViewChild('tabBar') tabBarRef?: ElementRef<HTMLElement>;
+  private tabBarResizeObserver?: ResizeObserver;
+  tabBarHeight = 90;
+
   @ViewChild('craftConfirmModal') craftConfirmModal!: TemplateRef<any>;
   @ViewChild('cloneModal') cloneModal!: TemplateRef<any>;
   @ViewChild('deleteModal') deleteModal!: TemplateRef<any>;
@@ -234,6 +238,31 @@ export class ItemsComponent implements OnInit {
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+  }
+
+  ngAfterViewInit() {
+    this.updateTabBarHeight();
+    if (typeof ResizeObserver !== 'undefined') {
+      this.tabBarResizeObserver = new ResizeObserver(() => {
+        this.updateTabBarHeight();
+      });
+      if (this.tabBarRef?.nativeElement) {
+        this.tabBarResizeObserver.observe(this.tabBarRef.nativeElement);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    this.tabBarResizeObserver?.disconnect();
+  }
+
+  private updateTabBarHeight() {
+    if (this.tabBarRef?.nativeElement) {
+      const h = this.tabBarRef.nativeElement.offsetHeight;
+      if (h > 0 && Math.abs(h + 8 - this.tabBarHeight) > 1) {
+        this.tabBarHeight = h + 8;
+      }
+    }
   }
 
   ngOnInit() {

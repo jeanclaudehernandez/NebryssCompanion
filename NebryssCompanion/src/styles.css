@@ -5,494 +5,509 @@ html {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f5f5f5;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
-    min-height: 100vh;
-    min-height: 100dvh;
-    overscroll-behavior-y: auto;
-  }
-  
-  h1, h2, h3, h4, h5, h6 {
-    color: #2c3e50;
-    transition: color 0.3s;
-  }
-  
-  /* Global CSS Variables for Mobile & App Layout */
-  :root {
-    --mat-dialog-container-color: white;
-    --mat-dialog-text-color: #333;
-    --mat-dialog-title-color: #2c3e50;
-    --mat-dialog-border-color: #333;
-    --mat-dialog-button-color: #3498db;
-    --safe-area-top: env(safe-area-inset-top, 0px);
-    --safe-area-bottom: env(safe-area-inset-bottom, 0px);
-    --app-header-height: 56px;
-    --footer-menu-height: 60px;
-    --header-bg: rgba(255, 255, 255, 0.92);
-    --header-border: rgba(0, 0, 0, 0.08);
-    --header-fg: #2c3e50;
-    --footer-menu-bg: rgba(245, 245, 245, 0.92);
-    --footer-menu-border: rgba(0, 0, 0, 0.08);
-    --footer-menu-fg: #455a64;
-    --footer-menu-active: #1976d2;
-    --accent-color: #1976d2;
-  }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+  transition: background-color 0.3s, color 0.3s;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior-y: auto;
+}
 
-  /* Mobile Touch Optimization */
-  button, a, [role="button"] {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: #2c3e50;
+  transition: color 0.3s;
+}
 
-  input, select, textarea {
-    -webkit-tap-highlight-color: transparent;
-  }
+/* Global CSS Variables for Mobile & App Layout */
+:root {
+  --mat-dialog-container-color: white;
+  --mat-dialog-text-color: #333;
+  --mat-dialog-title-color: #2c3e50;
+  --mat-dialog-border-color: #333;
+  --mat-dialog-button-color: #3498db;
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+  --app-header-height: 56px;
+  --footer-menu-height: 60px;
+  --header-bg: rgba(255, 255, 255, 0.92);
+  --header-border: rgba(0, 0, 0, 0.08);
+  --header-fg: #2c3e50;
+  --footer-menu-bg: rgba(245, 245, 245, 0.92);
+  --footer-menu-border: rgba(0, 0, 0, 0.08);
+  --footer-menu-fg: #455a64;
+  --footer-menu-active: #1976d2;
+  --accent-color: #1976d2;
+}
 
-  /* Responsive Table Container Utility */
-  .mobile-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin: 8px 0;
-    border-radius: 8px;
-  }
-  
-  /* Dark Theme */
-  body.dark-theme {
-    background-color: #121212;
-    color: #e0e0e0;
-    --header-bg: rgba(24, 24, 24, 0.92);
-    --header-border: rgba(255, 255, 255, 0.08);
-    --header-fg: #f0f0f0;
-    --footer-menu-bg: rgba(18, 18, 18, 0.92);
-    --footer-menu-border: rgba(255, 255, 255, 0.08);
-    --footer-menu-fg: #b0bec5;
-    --footer-menu-active: #64b5f6;
-    --accent-color: #64b5f6;
-  }
-  
-  body.dark-theme h1, 
-  body.dark-theme h2, 
-  body.dark-theme h3, 
-  body.dark-theme h4, 
-  body.dark-theme h5, 
-  body.dark-theme h6 {
-    color: #e0e0e0;
-  }
-  
-  body.dark-theme .player-card,
-  body.dark-theme .player-detail-container {
-    background-color: transparent;
-    color: #e0e0e0;
-    box-shadow: none;
-    border: none;
-  }
-  
-  body.dark-theme .profile,
-  body.dark-theme .ability, 
-  body.dark-theme .item {
-    background-color: #1f1f1f;
-    color: #e0e0e0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-  }
-  
-  body.dark-theme .player-card:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-  }
-  
-  body.dark-theme .player-card.selected {
-    border-left: 4px solid #64b5f6;
-    background-color: #2d2d2d;
-  }
-  
-  body.dark-theme .attributes th,
-  body.dark-theme .profile-table th {
-    background-color: #2d2d2d;
-  }
-  
-  body.dark-theme .attributes td,
-  body.dark-theme .profile-table td,
-  body.dark-theme .special-rules li {
-    border-color: #444;
-  }
-  
-  body.dark-theme .weapon-card {
-    background-color: #1e1e1e;
-  }
-  
-  body.dark-theme .ability h4, 
-  body.dark-theme .item h4 {
-    color: #64b5f6;
-  }
-  
-  /* Theme Switch Styles */
-  .theme-switch {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    cursor: pointer;
-    padding: 8px;
-    border-radius: 4px;
-    transition: background-color 0.3s;
-  }
-  
-  .theme-switch:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-  
-  .theme-icon {
-    font-size: 1.2rem;
-  }
-  
-  .theme-text {
-    font-size: 0.9rem;
-  }
-  
-  /* Player List */
-  .player-list-container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-  
-  .player-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
-  }
-  
-  .player-card {
-    background: white;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-  
-  .player-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-  }
-  
-  .player-card.selected {
-    border-left: 4px solid #3498db;
-    background-color: #f8f9fa;
-  }
-  
-  /* Player Detail */
-  .player-detail-container {
-    background: transparent;
-    border-radius: 0;
-    padding: 0;
-    box-shadow: none;
-  }
-  
-  .player-info {
-    margin-bottom: 20px;
-  }
-  
-  .attributes table, .profile-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 10px 0;
-  }
-  
-  .attributes th, .attributes td, 
-  .profile-table th, .profile-table td {
-    padding: 8px;
-    /*text-align: left;*/
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .attributes th, .profile-table th {
-    background-color: #f2f2f2;
-  }
+/* Mobile Touch Optimization */
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
 
-  .attributes table {
-    background-color: #d7e7f2;
-    border: 1px solid #b6cfe0;
-    border-radius: 6px;
-    overflow: hidden;
-    box-shadow: 0 8px 24px rgba(21, 61, 93, 0.18);
-  }
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
 
-  .attributes-table {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr) max-content;
-  }
+/* Responsive Table Container Utility */
+.mobile-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 8px 0;
+  border-radius: 8px;
+}
 
-  .attributes-table tr {
-    display: contents;
-  }
+/* Dark Theme */
+body.dark-theme {
+  background-color: #121212;
+  color: #e0e0e0;
+  --header-bg: rgba(24, 24, 24, 0.92);
+  --header-border: rgba(255, 255, 255, 0.08);
+  --header-fg: #f0f0f0;
+  --footer-menu-bg: rgba(18, 18, 18, 0.92);
+  --footer-menu-border: rgba(255, 255, 255, 0.08);
+  --footer-menu-fg: #b0bec5;
+  --footer-menu-active: #64b5f6;
+  --accent-color: #64b5f6;
+}
 
-  .attributes-table th,
-  .attributes-table td {
-    min-width: 0;
-  }
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6 {
+  color: #e0e0e0;
+}
 
-  .attributes th {
-    background-color: #c7ddeb;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-  }
+body.dark-theme .player-card,
+body.dark-theme .player-detail-container {
+  background-color: transparent;
+  color: #e0e0e0;
+  box-shadow: none;
+  border: none;
+}
 
-  .attributes th,
-  .attributes td {
-    text-align: center;
-    vertical-align: middle !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+body.dark-theme .profile,
+body.dark-theme .ability,
+body.dark-theme .item {
+  background-color: #1f1f1f;
+  color: #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
 
-  .attributes th:last-child,
-  .attributes td:last-child {
-    white-space: nowrap;
-  }
+body.dark-theme .player-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
 
-  .attributes td {
-    font-size: 1.05rem;
-    font-weight: 600;
-  }
+body.dark-theme .player-card.selected {
+  border-left: 4px solid #64b5f6;
+  background-color: #2d2d2d;
+}
 
-  .attr-header-cell {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    line-height: 1;
-    vertical-align: middle;
-    white-space: nowrap;
-    margin: auto 0;
-  }
+body.dark-theme .attributes th,
+body.dark-theme .profile-table th {
+  background-color: #2d2d2d;
+}
 
-  .attr-header-cell span {
-    display: inline-block;
-    line-height: 1;
-    vertical-align: middle;
-  }
+body.dark-theme .attributes td,
+body.dark-theme .profile-table td,
+body.dark-theme .special-rules li {
+  border-color: #444;
+}
 
-  .attr-icon {
-    flex-shrink: 0;
-    display: block;
-    margin: 0;
-    vertical-align: middle;
-  }
+body.dark-theme .weapon-card {
+  background-color: #1e1e1e;
+}
 
-  .attr-icon.attr-mov {
-    color: #1976d2;
-  }
+body.dark-theme .ability h4,
+body.dark-theme .item h4 {
+  color: #64b5f6;
+}
 
-  .attr-icon.attr-wnd {
-    color: #e53935;
-  }
+/* Theme Switch Styles */
+.theme-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
 
-  .attr-icon.attr-sv {
-    color: #2e7d32;
-  }
+.theme-switch:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
 
-  .attr-icon.attr-apl {
-    color: #f59e0b;
-  }
+.theme-icon {
+  font-size: 1.2rem;
+}
 
-  .attr-icon.attr-body {
-    color: #7c3aed;
-  }
+.theme-text {
+  font-size: 0.9rem;
+}
 
-  body.dark-theme .attr-icon.attr-mov {
-    color: #60a5fa;
-  }
+/* Player List */
+.player-list-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
-  body.dark-theme .attr-icon.attr-wnd {
-    color: #f87171;
-  }
+.player-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
 
-  body.dark-theme .attr-icon.attr-sv {
-    color: #4ade80;
-  }
+.player-card {
+  background: white;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
 
-  body.dark-theme .attr-icon.attr-apl {
-    color: #fbbf24;
-  }
+.player-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
 
-  body.dark-theme .attr-icon.attr-body {
-    color: #a78bfa;
-  }
+.player-card.selected {
+  border-left: 4px solid #3498db;
+  background-color: #f8f9fa;
+}
 
-  /* Body Type Badge Icons (Human, Astartes, Universal) */
-  .body-icons-container {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    flex-wrap: nowrap;
-    line-height: 1;
-    vertical-align: middle;
-  }
+/* Player Detail */
+.player-detail-container {
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+}
 
-  .body-icon-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    padding: 0;
-    line-height: 1;
-    vertical-align: middle;
-    transition: transform 0.15s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  }
+.player-info {
+  margin-bottom: 20px;
+}
 
-  .body-icon-badge:hover {
-    transform: scale(1.15);
-  }
+.attributes table,
+.profile-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+}
 
-  .body-icon-badge.human {
-    background-color: #c4ad8b;
-    color: #ffffff;
-  }
+.attributes th,
+.attributes td,
+.profile-table th,
+.profile-table td {
+  padding: 8px;
+  /*text-align: left;*/
+  border-bottom: 1px solid #ddd;
+}
 
-  .body-icon-badge.astartes {
-    background-color: #1e3a8a;
-    color: #ffffff;
-  }
+.attributes th,
+.profile-table th {
+  background-color: #f2f2f2;
+}
 
-  .body-icon-badge.spell {
-    background-color: #7c3aed;
-    color: #ffffff;
-  }
+.attributes table {
+  background-color: #d7e7f2;
+  border: 1px solid #b6cfe0;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(21, 61, 93, 0.18);
+}
 
-  .body-icon-badge.fellgor {
-    background-color: #556b2f;
-    color: #ffffff;
-  }
+.attributes-table {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr) max-content;
+}
 
-  .body-icon-badge.ork {
-    background-color: #2f7d32;
-    color: #ffffff;
-  }
+.attributes-table tr {
+  display: contents;
+}
 
-  .body-icon-badge.aethering,
-  .body-icon-badge.aetherwing {
-    background-color: #d7a4a4;
-    color: #ffffff;
-  }
+.attributes-table th,
+.attributes-table td {
+  min-width: 0;
+}
 
-  .body-icon-badge.plant {
-    background-color: #a7c7a2;
-    color: #ffffff;
-  }
+.attributes th {
+  background-color: #c7ddeb;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
 
-  .body-icon-badge.universal {
-    background-color: #6b7280;
-    color: #ffffff;
-  }
+.attributes th,
+.attributes td {
+  text-align: center;
+  vertical-align: middle !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  body.dark-theme .body-icon-badge.human {
-    background-color: #b79c77;
-    color: #ffffff;
-  }
+.attributes th:last-child,
+.attributes td:last-child {
+  white-space: nowrap;
+}
 
-  body.dark-theme .body-icon-badge.astartes {
-    background-color: #2563eb;
-    color: #ffffff;
-  }
+.attributes td {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
 
-  body.dark-theme .body-icon-badge.universal {
-    background-color: #9ca3af;
-    color: #ffffff;
-  }
+.attr-header-cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  line-height: 1;
+  vertical-align: middle;
+  white-space: nowrap;
+  margin: auto 0;
+}
 
-  body.dark-theme .body-icon-badge.spell {
-    background-color: #8b5cf6;
-    color: #ffffff;
-  }
+.attr-header-cell span {
+  display: inline-block;
+  line-height: 1;
+  vertical-align: middle;
+}
 
-  body.dark-theme .body-icon-badge.ork {
-    background-color: #22c55e;
-    color: #ffffff;
-  }
+.attr-icon {
+  flex-shrink: 0;
+  display: block;
+  margin: 0;
+  vertical-align: middle;
+}
 
-  body.dark-theme .body-icon-badge.aethering,
-  body.dark-theme .body-icon-badge.aetherwing {
-    background-color: #c98c8c;
-    color: #ffffff;
-  }
+.attr-icon.attr-mov {
+  color: #1976d2;
+}
 
-  body.dark-theme .body-icon-badge.plant {
-    background-color: #86a981;
-    color: #ffffff;
-  }
+.attr-icon.attr-wnd {
+  color: #e53935;
+}
 
-  .body-icon-badge svg {
-    display: block;
-    margin: auto;
-    flex-shrink: 0;
-    stroke: #ffffff !important;
-  }
+.attr-icon.attr-sv {
+  color: #2e7d32;
+}
 
-  body.dark-theme .attributes table {
-    background-color: #1b2a33;
-    border-color: #2b4452;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-  }
+.attr-icon.attr-apl {
+  color: #f59e0b;
+}
 
-  body.dark-theme .attributes th {
-    background-color: #22323c;
-  }
-  
-  /* Weapon Display */
-  .weapon-card {
-    background: #f8f9fa;
-    border-radius: 6px;
-    padding: 15px;
-    margin-bottom: 15px;
-  }
-  
-  .profile {
-    margin-top: 10px;
-    padding: 10px;
-    background: white;
-    border-radius: 4px;
-    border-left: 3px solid #3498db;
-  }
-  
-  .special-rules {
-    margin-top: 10px;
-  }
-  
-  .special-rules ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .special-rules li {
-    padding: 5px 0;
-    border-bottom: 1px dashed #eee;
-  }
-  
-  /* Abilities and Items */
-  .ability, .item {
-    background: white;
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  }
-  
-  .ability h4, .item h4 {
-    margin-top: 0;
-    color: #3498db;
-  }
+.attr-icon.attr-body {
+  color: #7c3aed;
+}
+
+body.dark-theme .attr-icon.attr-mov {
+  color: #60a5fa;
+}
+
+body.dark-theme .attr-icon.attr-wnd {
+  color: #f87171;
+}
+
+body.dark-theme .attr-icon.attr-sv {
+  color: #4ade80;
+}
+
+body.dark-theme .attr-icon.attr-apl {
+  color: #fbbf24;
+}
+
+body.dark-theme .attr-icon.attr-body {
+  color: #a78bfa;
+}
+
+/* Body Type Badge Icons (Human, Astartes, Universal) */
+.body-icons-container {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.body-icon-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  padding: 0;
+  line-height: 1;
+  vertical-align: middle;
+  transition: transform 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.body-icon-badge:hover {
+  transform: scale(1.15);
+}
+
+.body-icon-badge.human {
+  background-color: #c4ad8b;
+  color: #ffffff;
+}
+
+.body-icon-badge.astartes {
+  background-color: #1e3a8a;
+  color: #ffffff;
+}
+
+.body-icon-badge.spell {
+  background-color: #7c3aed;
+  color: #ffffff;
+}
+
+.body-icon-badge.fellgor {
+  background-color: #556b2f;
+  color: #ffffff;
+}
+
+.body-icon-badge.ork {
+  background-color: #2f7d32;
+  color: #ffffff;
+}
+
+.body-icon-badge.aethering,
+.body-icon-badge.aetherwing {
+  background-color: #d7a4a4;
+  color: #ffffff;
+}
+
+.body-icon-badge.plant {
+  background-color: #a7c7a2;
+  color: #ffffff;
+}
+
+.body-icon-badge.universal {
+  background-color: #6b7280;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.human {
+  background-color: #b79c77;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.astartes {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.universal {
+  background-color: #9ca3af;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.spell {
+  background-color: #8b5cf6;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.ork {
+  background-color: #22c55e;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.aethering,
+body.dark-theme .body-icon-badge.aetherwing {
+  background-color: #c98c8c;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.plant {
+  background-color: #86a981;
+  color: #ffffff;
+}
+
+.body-icon-badge svg {
+  display: block;
+  margin: auto;
+  flex-shrink: 0;
+  stroke: #ffffff !important;
+}
+
+body.dark-theme .attributes table {
+  background-color: #1b2a33;
+  border-color: #2b4452;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+body.dark-theme .attributes th {
+  background-color: #22323c;
+}
+
+/* Weapon Display */
+.weapon-card {
+  background: #f8f9fa;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.profile {
+  margin-top: 10px;
+  padding: 10px;
+  background: white;
+  border-radius: 4px;
+  border-left: 3px solid #3498db;
+}
+
+.special-rules {
+  margin-top: 10px;
+}
+
+.special-rules ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.special-rules li {
+  padding: 5px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+/* Abilities and Items */
+.ability,
+.item {
+  background: white;
+  padding: 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.ability h4,
+.item h4 {
+  margin-top: 0;
+  color: #3498db;
+}
 
 /* Mobile Table Fitting Optimization */
 table {
@@ -501,12 +516,17 @@ table {
 }
 
 @media (max-width: 600px) {
-  th, td {
+
+  th,
+  td {
     padding: 6px 3px !important;
     font-size: 0.82rem !important;
   }
-  
-  .attributes table, .profile-table, .weapons-table, .items-table {
+
+  .attributes table,
+  .profile-table,
+  .weapons-table,
+  .items-table {
     width: 100% !important;
     min-width: 100% !important;
   }
@@ -536,57 +556,94 @@ table {
 
 /* Compact Layout Adjustments */
 body {
-  line-height: 1.3; /* Reduced from default 1.5 */
+  line-height: 1.3;
+  /* Reduced from default 1.5 */
 }
 
 /* Player Cards */
 .player-card {
-  padding: 0.5rem; /* Reduced from 1rem */
-  margin-bottom: 0.5rem; /* Reduced from 1rem */
+  padding: 0.5rem;
+  /* Reduced from 1rem */
+  margin-bottom: 0.5rem;
+  /* Reduced from 1rem */
 }
 
 /* Tables */
 table {
   border-collapse: collapse;
-  margin: 0.25rem 0; /* Reduced from 0.5rem */
+  margin: 0.25rem 0;
+  /* Reduced from 0.5rem */
 }
 
-th, td {
-  padding: 0.25rem 0.5rem; /* Reduced from 0.5rem */
+th,
+td {
+  padding: 0.25rem 0.5rem;
+  /* Reduced from 0.5rem */
   text-align: center;
 }
 
 /* Weapon Cards */
 .weapon-card {
-  padding: 0.5rem; /* Reduced from 1rem */
-  margin-bottom: 0.5rem; /* Reduced from 1rem */
+  padding: 0.5rem;
+  /* Reduced from 1rem */
+  margin-bottom: 0.5rem;
+  /* Reduced from 1rem */
 }
 
 .profile {
-  padding: 0.5rem; /* Reduced from 1rem */
-  margin-bottom: 0.5rem; /* Reduced from 1rem */
+  padding: 0.5rem;
+  /* Reduced from 1rem */
+  margin-bottom: 0.5rem;
+  /* Reduced from 1rem */
 }
 
 /* Lists */
-ul, ol {
-  padding-left: 1rem; /* Reduced from 1.5rem */
+ul,
+ol {
+  padding-left: 1rem;
+  /* Reduced from 1.5rem */
 }
 
 li {
-  margin-bottom: 0.25rem; /* Reduced from 0.5rem */
+  margin-bottom: 0.25rem;
+  /* Reduced from 0.5rem */
 }
 
 /* Headings */
-h1 { font-size: 1.5rem; margin: 0.5rem 0; }
-h2 { font-size: 1.3rem; margin: 0.4rem 0; }
-h3 { font-size: 1.1rem; margin: 0.3rem 0; }
-h4 { font-size: 1rem; margin: 0.2rem 0; }
-h5 { font-size: 0.9rem; margin: 0.2rem 0; }
-h6 { font-size: 0.8rem; margin: 0.1rem 0; }
+h1 {
+  font-size: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+h2 {
+  font-size: 1.3rem;
+  margin: 0.4rem 0;
+}
+
+h3 {
+  font-size: 1.1rem;
+  margin: 0.3rem 0;
+}
+
+h4 {
+  font-size: 1rem;
+  margin: 0.2rem 0;
+}
+
+h5 {
+  font-size: 0.9rem;
+  margin: 0.2rem 0;
+}
+
+h6 {
+  font-size: 0.8rem;
+  margin: 0.1rem 0;
+}
 
 /* Grid Gaps */
 .player-grid {
-  gap: 0.5rem; /* Reduced from 1rem */
+  gap: 0.5rem;
+  /* Reduced from 1rem */
 }
 
 .cdk-overlay-container {
@@ -710,17 +767,23 @@ body.dark-theme .cdk-overlay-pane .weapon-rules-panel[role="listbox"] .mdc-list-
 }
 
 /* Global Table Cell Vertical Centering & Separation */
-.items-table th.col-name, .items-table td.col-name,
-.weapons-table th.col-name, .weapons-table td.col-name,
-.mods-table th.col-name, .mods-table td.col-name {
+.items-table th.col-name,
+.items-table td.col-name,
+.weapons-table th.col-name,
+.weapons-table td.col-name,
+.mods-table th.col-name,
+.mods-table td.col-name {
   padding-right: 12px !important;
   text-align: left !important;
   vertical-align: middle !important;
 }
 
-.items-table th.col-description, .items-table td.col-description,
-.weapons-table th.col-description, .weapons-table td.col-description,
-.mods-table th.col-description, .mods-table td.col-description {
+.items-table th.col-description,
+.items-table td.col-description,
+.weapons-table th.col-description,
+.weapons-table td.col-description,
+.mods-table th.col-description,
+.mods-table td.col-description {
   padding-left: 8px !important;
   vertical-align: middle !important;
 }
@@ -1294,8 +1357,13 @@ body.dark-theme .wallet-cancel-button {
 }
 
 @keyframes modalOverlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* Modal Content Card */
@@ -1315,8 +1383,15 @@ body.dark-theme .wallet-cancel-button {
 }
 
 @keyframes modalContentScaleIn {
-  from { opacity: 0; transform: scale(0.94) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* Dark theme modal content card */
@@ -1807,7 +1882,7 @@ body.akrina-theme::after {
    -------------------------------------------------------------------------- */
 body.skin-wendy {
   background-color: #10190f !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(46, 117, 89, 0.25) 0%, transparent 60%),
     linear-gradient(135deg, rgba(20, 32, 18, 0.95) 0%, rgba(8, 14, 8, 0.98) 100%),
     repeating-linear-gradient(45deg, rgba(78, 124, 65, 0.03) 0px, rgba(78, 124, 65, 0.03) 2px, transparent 2px, transparent 8px) !important;
@@ -1822,24 +1897,40 @@ body.skin-wendy {
   --card-bg: #142213;
 }
 
-body.skin-wendy h1, body.skin-wendy h2, body.skin-wendy h3, body.skin-wendy h4, body.skin-wendy h5, body.skin-wendy h6,
-body.skin-wendy .header-title, body.skin-wendy .player-name, body.skin-wendy .card-title, body.skin-wendy .section-title, body.skin-wendy .option-main {
+body.skin-wendy h1,
+body.skin-wendy h2,
+body.skin-wendy h3,
+body.skin-wendy h4,
+body.skin-wendy h5,
+body.skin-wendy h6,
+body.skin-wendy .header-title,
+body.skin-wendy .player-name,
+body.skin-wendy .card-title,
+body.skin-wendy .section-title,
+body.skin-wendy .option-main {
   font-family: 'Cinzel', 'Roboto', sans-serif !important;
   color: #a2e091 !important;
   text-shadow: 0 0 8px rgba(162, 224, 145, 0.4) !important;
   letter-spacing: 0.5px;
 }
 
-body.skin-wendy .app-header { border-bottom: 2px solid #4e7c41 !important; }
+body.skin-wendy .app-header {
+  border-bottom: 2px solid #4e7c41 !important;
+}
+
 body.skin-wendy .active-player-chip {
   background: linear-gradient(135deg, #1b4d24 0%, #0d2912 100%) !important;
   border: 1.5px solid #4e7c41 !important;
   color: #d5e8cf !important;
 }
 
-body.skin-wendy .player-card { background: linear-gradient(145deg, #162415 0%, #0c150c 100%) !important; }
+body.skin-wendy .player-card {
+  background: linear-gradient(145deg, #162415 0%, #0c150c 100%) !important;
+}
 
-body.skin-wendy button:not(.header-action-btn), body.skin-wendy .btn, body.skin-wendy .action-btn {
+body.skin-wendy button:not(.header-action-btn),
+body.skin-wendy .btn,
+body.skin-wendy .action-btn {
   background: linear-gradient(135deg, #2e5a27 0%, #153311 100%) !important;
   border: 1px solid #62a353 !important;
   color: #e2f5de !important;
@@ -1850,7 +1941,7 @@ body.skin-wendy button:not(.header-action-btn), body.skin-wendy .btn, body.skin-
    -------------------------------------------------------------------------- */
 body.skin-thennur {
   background-color: #05140d !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(0, 230, 118, 0.22) 0%, transparent 60%),
     linear-gradient(135deg, rgba(10, 36, 24, 0.95) 0%, rgba(4, 15, 10, 0.98) 100%) !important;
   color: #e0e0ce !important;
@@ -1863,23 +1954,39 @@ body.skin-thennur {
   --accent-color: #00e676;
 }
 
-body.skin-thennur h1, body.skin-thennur h2, body.skin-thennur h3, body.skin-thennur h4, body.skin-thennur h5, body.skin-thennur h6,
-body.skin-thennur .header-title, body.skin-thennur .player-name, body.skin-thennur .card-title, body.skin-thennur .section-title, body.skin-thennur .option-main {
+body.skin-thennur h1,
+body.skin-thennur h2,
+body.skin-thennur h3,
+body.skin-thennur h4,
+body.skin-thennur h5,
+body.skin-thennur h6,
+body.skin-thennur .header-title,
+body.skin-thennur .player-name,
+body.skin-thennur .card-title,
+body.skin-thennur .section-title,
+body.skin-thennur .option-main {
   font-family: 'Cinzel', serif !important;
   color: #69f0ae !important;
   text-shadow: 0 0 10px rgba(0, 230, 118, 0.6) !important;
 }
 
-body.skin-thennur .app-header { border-bottom: 2px solid #00e676 !important; }
+body.skin-thennur .app-header {
+  border-bottom: 2px solid #00e676 !important;
+}
+
 body.skin-thennur .active-player-chip {
   background: linear-gradient(135deg, #1b5e20 0%, #0a3810 100%) !important;
   border: 1.5px solid #00e676 !important;
   color: #b9f6ca !important;
 }
 
-body.skin-thennur .player-card { background: linear-gradient(145deg, #0b2217 0%, #05120c 100%) !important; }
+body.skin-thennur .player-card {
+  background: linear-gradient(145deg, #0b2217 0%, #05120c 100%) !important;
+}
 
-body.skin-thennur button:not(.header-action-btn), body.skin-thennur .btn, body.skin-thennur .action-btn {
+body.skin-thennur button:not(.header-action-btn),
+body.skin-thennur .btn,
+body.skin-thennur .action-btn {
   background: linear-gradient(135deg, #1b5e20 0%, #0d3b13 100%) !important;
   border: 1px solid #00e676 !important;
   color: #e8f5e9 !important;
@@ -1888,9 +1995,10 @@ body.skin-thennur button:not(.header-action-btn), body.skin-thennur .btn, body.s
 /* --------------------------------------------------------------------------
    3. AKRINA V. - Rogue Trader (Warhammer 40k Imperial Gold & Crimson)
    -------------------------------------------------------------------------- */
-body.skin-akrina, body.akrina-theme {
+body.skin-akrina,
+body.akrina-theme {
   background-color: #0a070a !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(139, 0, 0, 0.35) 0%, transparent 60%),
     radial-gradient(circle at 50% 100%, rgba(212, 175, 55, 0.15) 0%, transparent 50%),
     linear-gradient(135deg, rgba(20, 11, 21, 0.95) 0%, rgba(8, 4, 8, 0.98) 100%),
@@ -1906,28 +2014,58 @@ body.skin-akrina, body.akrina-theme {
   --accent-color: #d4af37;
 }
 
-body.skin-akrina h1, body.skin-akrina h2, body.skin-akrina h3, body.skin-akrina h4, body.skin-akrina h5, body.skin-akrina h6,
-body.skin-akrina .header-title, body.skin-akrina .player-name, body.skin-akrina .card-title, body.skin-akrina .section-title, body.skin-akrina .option-main,
-body.akrina-theme h1, body.akrina-theme h2, body.akrina-theme h3, body.akrina-theme h4, body.akrina-theme h5, body.akrina-theme h6,
-body.akrina-theme .header-title, body.akrina-theme .player-name, body.akrina-theme .card-title, body.akrina-theme .section-title, body.akrina-theme .option-main {
+body.skin-akrina h1,
+body.skin-akrina h2,
+body.skin-akrina h3,
+body.skin-akrina h4,
+body.skin-akrina h5,
+body.skin-akrina h6,
+body.skin-akrina .header-title,
+body.skin-akrina .player-name,
+body.skin-akrina .card-title,
+body.skin-akrina .section-title,
+body.skin-akrina .option-main,
+body.akrina-theme h1,
+body.akrina-theme h2,
+body.akrina-theme h3,
+body.akrina-theme h4,
+body.akrina-theme h5,
+body.akrina-theme h6,
+body.akrina-theme .header-title,
+body.akrina-theme .player-name,
+body.akrina-theme .card-title,
+body.akrina-theme .section-title,
+body.akrina-theme .option-main {
   font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
   color: #f3ca40 !important;
   text-shadow: 0 0 10px rgba(212, 175, 55, 0.4), 0 2px 4px rgba(0, 0, 0, 0.9) !important;
   letter-spacing: 0.6px;
 }
 
-body.skin-akrina .app-header, body.akrina-theme .app-header { border-bottom: 2px solid #d4af37 !important; }
-body.skin-akrina .active-player-chip, body.akrina-theme .active-player-chip {
+body.skin-akrina .app-header,
+body.akrina-theme .app-header {
+  border-bottom: 2px solid #d4af37 !important;
+}
+
+body.skin-akrina .active-player-chip,
+body.akrina-theme .active-player-chip {
   background: linear-gradient(135deg, #7a0c0c 0%, #300000 100%) !important;
   border: 1.5px solid #d4af37 !important;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.5), inset 0 0 8px rgba(252, 211, 77, 0.2) !important;
   color: #fff3d1 !important;
 }
 
-body.skin-akrina .player-card, body.akrina-theme .player-card { background: linear-gradient(145deg, #180d19 0%, #0d060e 100%) !important; }
+body.skin-akrina .player-card,
+body.akrina-theme .player-card {
+  background: linear-gradient(145deg, #180d19 0%, #0d060e 100%) !important;
+}
 
-body.skin-akrina button:not(.header-action-btn), body.skin-akrina .btn, body.skin-akrina .action-btn,
-body.akrina-theme button:not(.header-action-btn), body.akrina-theme .btn, body.akrina-theme .action-btn {
+body.skin-akrina button:not(.header-action-btn),
+body.skin-akrina .btn,
+body.skin-akrina .action-btn,
+body.akrina-theme button:not(.header-action-btn),
+body.akrina-theme .btn,
+body.akrina-theme .action-btn {
   background: linear-gradient(135deg, #7a0c0c 0%, #300000 100%) !important;
   border: 1px solid #d4af37 !important;
   color: #ffe89e !important;
@@ -1938,7 +2076,7 @@ body.akrina-theme button:not(.header-action-btn), body.akrina-theme .btn, body.a
    -------------------------------------------------------------------------- */
 body.skin-xarion {
   background-color: #060c18 !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(0, 245, 212, 0.25) 0%, transparent 60%),
     radial-gradient(circle at 50% 100%, rgba(128, 90, 213, 0.2) 0%, transparent 50%),
     linear-gradient(135deg, rgba(12, 20, 38, 0.95) 0%, rgba(5, 9, 18, 0.98) 100%) !important;
@@ -1952,23 +2090,39 @@ body.skin-xarion {
   --accent-color: #00f5d4;
 }
 
-body.skin-xarion h1, body.skin-xarion h2, body.skin-xarion h3, body.skin-xarion h4, body.skin-xarion h5, body.skin-xarion h6,
-body.skin-xarion .header-title, body.skin-xarion .player-name, body.skin-xarion .card-title, body.skin-xarion .section-title, body.skin-xarion .option-main {
+body.skin-xarion h1,
+body.skin-xarion h2,
+body.skin-xarion h3,
+body.skin-xarion h4,
+body.skin-xarion h5,
+body.skin-xarion h6,
+body.skin-xarion .header-title,
+body.skin-xarion .player-name,
+body.skin-xarion .card-title,
+body.skin-xarion .section-title,
+body.skin-xarion .option-main {
   font-family: 'Cinzel', serif !important;
   color: #00f5d4 !important;
   text-shadow: 0 0 12px rgba(0, 245, 212, 0.6) !important;
 }
 
-body.skin-xarion .app-header { border-bottom: 2px solid #00f5d4 !important; }
+body.skin-xarion .app-header {
+  border-bottom: 2px solid #00f5d4 !important;
+}
+
 body.skin-xarion .active-player-chip {
   background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%) !important;
   border: 1.5px solid #00f5d4 !important;
   color: #ccfbf1 !important;
 }
 
-body.skin-xarion .player-card { background: linear-gradient(145deg, #0e1b33 0%, #070e1b 100%) !important; }
+body.skin-xarion .player-card {
+  background: linear-gradient(145deg, #0e1b33 0%, #070e1b 100%) !important;
+}
 
-body.skin-xarion button:not(.header-action-btn), body.skin-xarion .btn, body.skin-xarion .action-btn {
+body.skin-xarion button:not(.header-action-btn),
+body.skin-xarion .btn,
+body.skin-xarion .action-btn {
   background: linear-gradient(135deg, #1e40af 0%, #1e1b4b 100%) !important;
   border: 1px solid #00f5d4 !important;
   color: #e0f2fe !important;
@@ -1979,7 +2133,7 @@ body.skin-xarion button:not(.header-action-btn), body.skin-xarion .btn, body.ski
    -------------------------------------------------------------------------- */
 body.skin-tellurius {
   background-color: #0b0c12 !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(157, 78, 221, 0.25) 0%, transparent 60%),
     linear-gradient(135deg, rgba(18, 20, 28, 0.95) 0%, rgba(8, 9, 13, 0.98) 100%) !important;
   color: #e2e8f0 !important;
@@ -1992,23 +2146,39 @@ body.skin-tellurius {
   --accent-color: #9f7aea;
 }
 
-body.skin-tellurius h1, body.skin-tellurius h2, body.skin-tellurius h3, body.skin-tellurius h4, body.skin-tellurius h5, body.skin-tellurius h6,
-body.skin-tellurius .header-title, body.skin-tellurius .player-name, body.skin-tellurius .card-title, body.skin-tellurius .section-title, body.skin-tellurius .option-main {
+body.skin-tellurius h1,
+body.skin-tellurius h2,
+body.skin-tellurius h3,
+body.skin-tellurius h4,
+body.skin-tellurius h5,
+body.skin-tellurius h6,
+body.skin-tellurius .header-title,
+body.skin-tellurius .player-name,
+body.skin-tellurius .card-title,
+body.skin-tellurius .section-title,
+body.skin-tellurius .option-main {
   font-family: 'Cinzel', serif !important;
   color: #d8b4fe !important;
   text-shadow: 0 0 10px rgba(157, 78, 221, 0.6) !important;
 }
 
-body.skin-tellurius .app-header { border-bottom: 2px solid #9f7aea !important; }
+body.skin-tellurius .app-header {
+  border-bottom: 2px solid #9f7aea !important;
+}
+
 body.skin-tellurius .active-player-chip {
   background: linear-gradient(135deg, #4c1d95 0%, #2e1065 100%) !important;
   border: 1.5px solid #9f7aea !important;
   color: #f3e8ff !important;
 }
 
-body.skin-tellurius .player-card { background: linear-gradient(145deg, #171a26 0%, #0a0b10 100%) !important; }
+body.skin-tellurius .player-card {
+  background: linear-gradient(145deg, #171a26 0%, #0a0b10 100%) !important;
+}
 
-body.skin-tellurius button:not(.header-action-btn), body.skin-tellurius .btn, body.skin-tellurius .action-btn {
+body.skin-tellurius button:not(.header-action-btn),
+body.skin-tellurius .btn,
+body.skin-tellurius .action-btn {
   background: linear-gradient(135deg, #581c87 0%, #2e1065 100%) !important;
   border: 1px solid #c084fc !important;
   color: #f3e8ff !important;
@@ -2019,7 +2189,7 @@ body.skin-tellurius button:not(.header-action-btn), body.skin-tellurius .btn, bo
    -------------------------------------------------------------------------- */
 body.skin-varek {
   background-color: #140606 !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(255, 152, 0, 0.25) 0%, transparent 60%),
     linear-gradient(135deg, rgba(36, 9, 9, 0.95) 0%, rgba(15, 4, 4, 0.98) 100%),
     repeating-linear-gradient(0deg, rgba(255, 183, 3, 0.02) 0px, rgba(255, 183, 3, 0.02) 1px, transparent 1px, transparent 4px) !important;
@@ -2033,23 +2203,39 @@ body.skin-varek {
   --accent-color: #ff9800;
 }
 
-body.skin-varek h1, body.skin-varek h2, body.skin-varek h3, body.skin-varek h4, body.skin-varek h5, body.skin-varek h6,
-body.skin-varek .header-title, body.skin-varek .player-name, body.skin-varek .card-title, body.skin-varek .section-title, body.skin-varek .option-main {
+body.skin-varek h1,
+body.skin-varek h2,
+body.skin-varek h3,
+body.skin-varek h4,
+body.skin-varek h5,
+body.skin-varek h6,
+body.skin-varek .header-title,
+body.skin-varek .player-name,
+body.skin-varek .card-title,
+body.skin-varek .section-title,
+body.skin-varek .option-main {
   font-family: 'Cinzel', sans-serif !important;
   color: #ffb703 !important;
   text-shadow: 0 0 10px rgba(255, 183, 3, 0.6) !important;
 }
 
-body.skin-varek .app-header { border-bottom: 2px solid #ff9800 !important; }
+body.skin-varek .app-header {
+  border-bottom: 2px solid #ff9800 !important;
+}
+
 body.skin-varek .active-player-chip {
   background: linear-gradient(135deg, #7c2d12 0%, #451a03 100%) !important;
   border: 1.5px solid #ff9800 !important;
   color: #fef3c7 !important;
 }
 
-body.skin-varek .player-card { background: linear-gradient(145deg, #220a0a 0%, #100404 100%) !important; }
+body.skin-varek .player-card {
+  background: linear-gradient(145deg, #220a0a 0%, #100404 100%) !important;
+}
 
-body.skin-varek button:not(.header-action-btn), body.skin-varek .btn, body.skin-varek .action-btn {
+body.skin-varek button:not(.header-action-btn),
+body.skin-varek .btn,
+body.skin-varek .action-btn {
   background: linear-gradient(135deg, #9a3412 0%, #431407 100%) !important;
   border: 1px solid #ffb703 !important;
   color: #fff7ed !important;
@@ -2060,7 +2246,7 @@ body.skin-varek button:not(.header-action-btn), body.skin-varek .btn, body.skin-
    -------------------------------------------------------------------------- */
 body.skin-cassios {
   background-color: #080e1f !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(234, 179, 8, 0.25) 0%, transparent 60%),
     linear-gradient(135deg, rgba(12, 18, 34, 0.95) 0%, rgba(6, 9, 17, 0.98) 100%) !important;
   color: #f8fafc !important;
@@ -2073,23 +2259,39 @@ body.skin-cassios {
   --accent-color: #eab308;
 }
 
-body.skin-cassios h1, body.skin-cassios h2, body.skin-cassios h3, body.skin-cassios h4, body.skin-cassios h5, body.skin-cassios h6,
-body.skin-cassios .header-title, body.skin-cassios .player-name, body.skin-cassios .card-title, body.skin-cassios .section-title, body.skin-cassios .option-main {
+body.skin-cassios h1,
+body.skin-cassios h2,
+body.skin-cassios h3,
+body.skin-cassios h4,
+body.skin-cassios h5,
+body.skin-cassios h6,
+body.skin-cassios .header-title,
+body.skin-cassios .player-name,
+body.skin-cassios .card-title,
+body.skin-cassios .section-title,
+body.skin-cassios .option-main {
   font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
   color: #fef08a !important;
   text-shadow: 0 0 10px rgba(234, 179, 8, 0.6) !important;
 }
 
-body.skin-cassios .app-header { border-bottom: 2px solid #eab308 !important; }
+body.skin-cassios .app-header {
+  border-bottom: 2px solid #eab308 !important;
+}
+
 body.skin-cassios .active-player-chip {
   background: linear-gradient(135deg, #1e3a8a 0%, #172554 100%) !important;
   border: 1.5px solid #eab308 !important;
   color: #fef08a !important;
 }
 
-body.skin-cassios .player-card { background: linear-gradient(145deg, #152033 0%, #0a101a 100%) !important; }
+body.skin-cassios .player-card {
+  background: linear-gradient(145deg, #152033 0%, #0a101a 100%) !important;
+}
 
-body.skin-cassios button:not(.header-action-btn), body.skin-cassios .btn, body.skin-cassios .action-btn {
+body.skin-cassios button:not(.header-action-btn),
+body.skin-cassios .btn,
+body.skin-cassios .action-btn {
   background: linear-gradient(135deg, #1d4ed8 0%, #1e1b4b 100%) !important;
   border: 1px solid #fef08a !important;
   color: #fefce8 !important;
@@ -2100,7 +2302,7 @@ body.skin-cassios button:not(.header-action-btn), body.skin-cassios .btn, body.s
    -------------------------------------------------------------------------- */
 body.skin-karumnekia {
   background-color: #02050e !important;
-  background-image: 
+  background-image:
     radial-gradient(circle at 50% 0%, rgba(34, 197, 94, 0.25) 0%, transparent 60%),
     linear-gradient(135deg, rgba(8, 12, 20, 0.95) 0%, rgba(3, 5, 10, 0.98) 100%) !important;
   color: #f0fdf4 !important;
@@ -2113,23 +2315,39 @@ body.skin-karumnekia {
   --accent-color: #22c55e;
 }
 
-body.skin-karumnekia h1, body.skin-karumnekia h2, body.skin-karumnekia h3, body.skin-karumnekia h4, body.skin-karumnekia h5, body.skin-karumnekia h6,
-body.skin-karumnekia .header-title, body.skin-karumnekia .player-name, body.skin-karumnekia .card-title, body.skin-karumnekia .section-title, body.skin-karumnekia .option-main {
+body.skin-karumnekia h1,
+body.skin-karumnekia h2,
+body.skin-karumnekia h3,
+body.skin-karumnekia h4,
+body.skin-karumnekia h5,
+body.skin-karumnekia h6,
+body.skin-karumnekia .header-title,
+body.skin-karumnekia .player-name,
+body.skin-karumnekia .card-title,
+body.skin-karumnekia .section-title,
+body.skin-karumnekia .option-main {
   font-family: 'Cinzel', serif !important;
   color: #4ade80 !important;
   text-shadow: 0 0 12px rgba(34, 197, 94, 0.7) !important;
 }
 
-body.skin-karumnekia .app-header { border-bottom: 2px solid #22c55e !important; }
+body.skin-karumnekia .app-header {
+  border-bottom: 2px solid #22c55e !important;
+}
+
 body.skin-karumnekia .active-player-chip {
   background: linear-gradient(135deg, #14532d 0%, #052e16 100%) !important;
   border: 1.5px solid #22c55e !important;
   color: #bbf7d0 !important;
 }
 
-body.skin-karumnekia .player-card { background: linear-gradient(145deg, #09130d 0%, #030805 100%) !important; }
+body.skin-karumnekia .player-card {
+  background: linear-gradient(145deg, #09130d 0%, #030805 100%) !important;
+}
 
-body.skin-karumnekia button:not(.header-action-btn), body.skin-karumnekia .btn, body.skin-karumnekia .action-btn {
+body.skin-karumnekia button:not(.header-action-btn),
+body.skin-karumnekia .btn,
+body.skin-karumnekia .action-btn {
   background: linear-gradient(135deg, #15803d 0%, #052e16 100%) !important;
   border: 1.5px solid #4ade80 !important;
   color: #f0fdf4 !important;
@@ -2171,19 +2389,53 @@ body.compact-density-mode .category-block {
   margin-bottom: 3px !important;
 }
 
-/* ABSOLUTE OVERRIDE FOR CATEGORY TAB BAR (KILL DARK GREY RECTANGLE ON ALL MODES) */
-.items-tab-bar,
-body.dark-theme .items-tab-bar,
-body[class*="skin-"] .items-tab-bar {
-  background: transparent !important;
-  border-bottom: 1px dashed rgba(255, 255, 255, 0.15) !important;
-  box-shadow: none !important;
+/* Items Page Sticky Tab Bar Themes */
+.items-tab-bar {
+  background-color: #f5f5f5 !important;
 }
 
+body.dark-theme .items-tab-bar {
+  background-color: #121212 !important;
+  border-bottom-color: #1e293b !important;
+}
 
+body.skin-thennur .items-tab-bar {
+  background-color: #05140d !important;
+  border-bottom-color: rgba(0, 230, 118, 0.25) !important;
+}
 
+body.skin-wendy .items-tab-bar {
+  background-color: #10190f !important;
+  border-bottom-color: rgba(78, 124, 65, 0.3) !important;
+}
 
+body.skin-akrina .items-tab-bar,
+body.akrina-theme .items-tab-bar {
+  background-color: #0a070a !important;
+  border-bottom-color: rgba(212, 175, 55, 0.3) !important;
+}
 
+body.skin-xarion .items-tab-bar {
+  background-color: #060c18 !important;
+  border-bottom-color: rgba(0, 245, 212, 0.25) !important;
+}
 
+body.skin-tellurius .items-tab-bar {
+  background-color: #0b0c12 !important;
+  border-bottom-color: rgba(157, 78, 221, 0.25) !important;
+}
 
+body.skin-varek .items-tab-bar {
+  background-color: #140606 !important;
+  border-bottom-color: rgba(255, 152, 0, 0.25) !important;
+}
 
+body.skin-cassios .items-tab-bar {
+  background-color: #080e1f !important;
+  border-bottom-color: rgba(234, 179, 8, 0.25) !important;
+}
+
+body.skin-karumnekia .items-tab-bar {
+  background-color: #02050e !important;
+  border-bottom-color: rgba(34, 197, 94, 0.25) !important;
+}

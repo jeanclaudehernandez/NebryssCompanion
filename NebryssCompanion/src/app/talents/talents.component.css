@@ -1,5 +1,10 @@
 .talents-container {
     position: relative;
+    --talent-header-height: 0px;
+}
+
+.talents-container.has-active-player {
+    --talent-header-height: 48px;
 }
 
 .sticky-talent-header {
@@ -8,7 +13,13 @@
     z-index: 50;
     padding: 6px 0;
     margin-bottom: 10px;
-    background: transparent;
+    background: var(--header-bg, rgba(245, 245, 245, 0.95));
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+body.dark-theme .sticky-talent-header {
+    background: var(--header-bg, rgba(18, 18, 18, 0.95));
 }
 
 .talent-points-pill {
@@ -88,7 +99,7 @@ body.dark-theme .talent-points-pill {
 
 .sticky-category-header {
     position: sticky;
-    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 46px);
+    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + var(--talent-header-height, 0px));
     z-index: 20;
     background: #e2e8f0;
     color: #1e293b;

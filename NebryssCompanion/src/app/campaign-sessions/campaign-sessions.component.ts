@@ -185,13 +185,6 @@ export class CampaignSessionsComponent implements OnInit {
     this.parsedSessions[index].expanded = !this.parsedSessions[index].expanded;
   }
 
-  expandAll(): void {
-    this.parsedSessions.forEach(s => s.expanded = true);
-  }
-
-  collapseAll(): void {
-    this.parsedSessions.forEach(s => s.expanded = false);
-  }
 
   // --- Branch Extraction & Matching ---
 

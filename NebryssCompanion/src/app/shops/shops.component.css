@@ -1,5 +1,5 @@
 .shops-container {
-    --shop-location-floating-space: clamp(150px, 24vw, 240px);
+    --table-header-top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + 38px);
 }
 
 .shop-location-group {
@@ -78,23 +78,23 @@
     text-align: left;
 }
 
-.shop-location-header.floating-open {
+.shops-container .table-header {
     position: sticky;
     top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px));
-    z-index: 30;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    z-index: 20;
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 4px;
+    padding: 9px 14px;
+    background: #e2e8f0;
+    color: #1e293b;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
-.shops-container .table-header {
-    top: calc(var(--app-header-height, 56px) + var(--safe-area-top, 0px) + var(--shop-location-floating-space));
-    border-radius: 0;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 9px 14px;
-    background: rgba(var(--shop-group-color-rgb, 27, 42, 51), 0.96);
+body.dark-theme .shops-container .table-header {
+    background: rgba(var(--shop-group-color-rgb, 27, 42, 51), 0.98);
     color: #f0f5f8;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
 }
 

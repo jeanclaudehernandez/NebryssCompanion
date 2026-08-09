@@ -24,18 +24,6 @@
     <p>The pages of this campaign journal remain blank. Your story has yet to be written.</p>
   </div>
 
-  <!-- Expand / Collapse Controls -->
-  <div class="sessions-controls" *ngIf="!isLoading && hasSessions">
-    <button type="button" class="sessions-ctrl-btn" (click)="expandAll()" aria-label="Expand all sessions">
-      <span class="material-icons">unfold_more</span>
-      <span>Expand All</span>
-    </button>
-    <button type="button" class="sessions-ctrl-btn" (click)="collapseAll()" aria-label="Collapse all sessions">
-      <span class="material-icons">unfold_less</span>
-      <span>Collapse All</span>
-    </button>
-  </div>
-
   <!-- Session Cards -->
   <div class="sessions-list" *ngIf="!isLoading && hasSessions">
     <div *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId" class="session-card"

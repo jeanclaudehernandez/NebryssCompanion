@@ -1,4 +1,4 @@
-<div class="talents-container">
+<div class="talents-container" [class.has-active-player]="!!activePlayer">
     <div class="sticky-talent-header" *ngIf="activePlayer">
       <div class="talent-points-pill">
         <span class="pts-label"><strong>Talent Points:&nbsp;</strong>{{ activePlayer.progression.talentPoints || 0 }}</span>

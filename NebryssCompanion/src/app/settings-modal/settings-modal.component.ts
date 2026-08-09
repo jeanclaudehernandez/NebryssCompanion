@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output, ElementRef, ViewChild } from '@angular
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
-import { SoundService } from '../sound.service';
 
 @Component({
   selector: 'app-settings-modal',
@@ -89,51 +88,6 @@ import { SoundService } from '../sound.service';
             </div>
           </section>
 
-          <!-- SECTION 2: AUDIO & SOUND EFFECTS -->
-          <section class="settings-section">
-            <h3 class="section-title">
-              <span class="material-icons">volume_up</span>
-              Synthesized Audio Feedback
-            </h3>
-
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <strong>Tactical UI Sound Effects</strong>
-                <small>Audio clicks & feedback synthesized via Web Audio</small>
-              </div>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="themeService.soundEffectsEnabled$ | async"
-                  (change)="onToggleSound($any($event.target).checked)"
-                />
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <div class="volume-slider-row" *ngIf="themeService.soundEffectsEnabled$ | async">
-              <div class="volume-label-row">
-                <label>Sound Volume:</label>
-                <span>{{ ((themeService.soundVolume$ | async) || 0.8) * 100 | number:'1.0-0' }}%</span>
-              </div>
-              <div class="slider-controls">
-                <input
-                  type="range"
-                  min="0.1"
-                  max="1"
-                  step="0.05"
-                  [value]="themeService.soundVolume$ | async"
-                  (input)="onVolumeChange($any($event.target).value)"
-                  class="volume-range-input"
-                />
-                <button type="button" class="btn-test-sound" (click)="testSound()">
-                  <span class="material-icons">graphic_eq</span>
-                  Test Sound
-                </button>
-              </div>
-            </div>
-          </section>
-
           <!-- SECTION 3: VISUAL ATMOSPHERE -->
           <section class="settings-section">
             <h3 class="section-title">
@@ -155,73 +109,6 @@ import { SoundService } from '../sound.service';
                 <span class="slider"></span>
               </label>
             </div>
-
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <strong>High Gothic Typography</strong>
-                <small>Use Cinzel Decorative headers</small>
-              </div>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="themeService.gothicFontEnabled$ | async"
-                  (change)="onToggleGothicFont($any($event.target).checked)"
-                />
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <strong>Compact Density Mode</strong>
-                <small>Tighter table padding & smaller fonts for dense viewports</small>
-              </div>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="themeService.compactDensityEnabled$ | async"
-                  (change)="onToggleCompactDensity($any($event.target).checked)"
-                />
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <strong>Smooth UI Animations</strong>
-                <small>Enable transitions and micro-animations</small>
-              </div>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="themeService.animationsEnabled$ | async"
-                  (change)="onToggleAnimations($any($event.target).checked)"
-                />
-                <span class="slider"></span>
-              </label>
-            </div>
-          </section>
-
-          <!-- SECTION 4: BACKUP & DATA MANAGEMENT -->
-          <section class="settings-section">
-            <h3 class="section-title">
-              <span class="material-icons">save_alt</span>
-              Data Backup & Restore
-            </h3>
-
-            <div class="backup-actions">
-              <button type="button" class="btn-backup-action" (click)="themeService.exportDataBackup()">
-                <span class="material-icons">download</span>
-                Export Backup (.json)
-              </button>
-
-              <button type="button" class="btn-backup-action" (click)="fileInput.click()">
-                <span class="material-icons">upload</span>
-                Import Backup (.json)
-              </button>
-              <input #fileInput type="file" accept=".json" style="display: none;" (change)="onFileSelected($event)" />
-            </div>
-            <span *ngIf="importError" class="import-error">{{ importError }}</span>
           </section>
         </div>
 
@@ -492,35 +379,6 @@ import { SoundService } from '../sound.service';
       color: #cbd5e1;
     }
 
-    .slider-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .volume-range-input {
-      flex: 1;
-      accent-color: var(--accent-color, #d4af37);
-      cursor: pointer;
-    }
-
-    .btn-test-sound {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      font-size: 0.75rem;
-      border-radius: 4px;
-      border: 1px solid var(--accent-color, #d4af37);
-      background: rgba(212, 175, 55, 0.15);
-      color: #ffffff;
-      cursor: pointer;
-    }
-
-    .btn-test-sound:hover {
-      background: rgba(212, 175, 55, 0.3);
-    }
-
     .backup-actions {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -661,65 +519,26 @@ export class SettingsModalComponent {
   ];
 
   constructor(
-    public themeService: ThemeService,
-    private soundService: SoundService
-  ) {}
+    public themeService: ThemeService
+  ) { }
 
   onClose(): void {
-    this.soundService.playClick();
     this.close.emit();
   }
 
   onSelectSkinMode(mode: SkinMode): void {
-    this.soundService.playTab();
     this.themeService.setSkinMode(mode);
   }
 
   onSelectManualSkin(skin: CharacterSkin): void {
-    this.soundService.playClick();
     this.themeService.setManualSkin(skin);
   }
 
-  onToggleSound(enabled: boolean): void {
-    this.themeService.setSoundEffectsEnabled(enabled);
-    if (enabled) {
-      this.soundService.playToggle();
-    }
-  }
-
-  onVolumeChange(val: string): void {
-    const num = parseFloat(val);
-    if (!isNaN(num)) {
-      this.themeService.setSoundVolume(num);
-    }
-  }
-
-  testSound(): void {
-    this.soundService.playTab();
-  }
-
   onToggleVignette(enabled: boolean): void {
-    this.soundService.playToggle();
     this.themeService.setVignetteEnabled(enabled);
   }
 
-  onToggleGothicFont(enabled: boolean): void {
-    this.soundService.playToggle();
-    this.themeService.setGothicFontEnabled(enabled);
-  }
-
-  onToggleCompactDensity(enabled: boolean): void {
-    this.soundService.playToggle();
-    this.themeService.setCompactDensityEnabled(enabled);
-  }
-
-  onToggleAnimations(enabled: boolean): void {
-    this.soundService.playToggle();
-    this.themeService.setAnimationsEnabled(enabled);
-  }
-
   onReset(): void {
-    this.soundService.playThump();
     this.themeService.resetToDefaults();
   }
 
