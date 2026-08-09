@@ -195,14 +195,27 @@ export class CampaignSessionsComponent implements OnInit {
 
   // --- Branch Extraction & Matching ---
 
+  private normalizeNewlines(text: string): string {
+    if (!text) {
+      return '';
+    }
+    return text
+      .replace(/\\r\\n/g, '\n')
+      .replace(/\\n/g, '\n')
+      .replace(/\\r/g, '\n')
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n');
+  }
+
   extractBranches(content: string): string[] {
     if (!content) {
       return [];
     }
+    const text = this.normalizeNewlines(content);
     const branches: string[] = [];
     const regex = /#{1,5}\s*(?:Act\s+[IVXLCDM]+\s*[—–-]\s*)?Branch\s*([A-Z0-9]+)\b/gi;
     let match: RegExpExecArray | null;
-    while ((match = regex.exec(content)) !== null) {
+    while ((match = regex.exec(text)) !== null) {
       const branchCode = match[1].toUpperCase();
       const branchName = `Branch ${branchCode}`;
       if (!branches.includes(branchName)) {
@@ -239,8 +252,9 @@ export class CampaignSessionsComponent implements OnInit {
     if (!content) {
       return `Session ${sessionId}`;
     }
+    const text = this.normalizeNewlines(content);
     // Match line like "### Session 1: Title" or "### Title"
-    const match = content.match(/^#{1,3}\s*(?:Session\s*\d+\s*:\s*)?(.*)$/m);
+    const match = text.match(/^#{1,3}\s*(?:Session\s*\d+\s*:\s*)?(.*)$/m);
     if (match && match[1]?.trim()) {
       return match[1].trim();
     }
@@ -251,8 +265,9 @@ export class CampaignSessionsComponent implements OnInit {
     if (!conclussion) {
       return '';
     }
+    const text = this.normalizeNewlines(conclussion);
     // Match line like "### Conclusion: Title"
-    const match = conclussion.match(/^#{1,3}\s*(?:Conclusion\s*:\s*)(.*)$/m);
+    const match = text.match(/^#{1,3}\s*(?:Conclusion\s*:\s*)(.*)$/m);
     if (match && match[1]?.trim()) {
       return match[1].trim();
     }
@@ -269,7 +284,7 @@ export class CampaignSessionsComponent implements OnInit {
       return this.sanitizer.bypassSecurityTrustHtml('');
     }
 
-    let text = rawText.trim();
+    let text = this.normalizeNewlines(rawText).trim();
 
     // Strip redundant leading Session/Conclusion header if present
     if (stripMainHeader) {
@@ -371,8 +386,8 @@ export class CampaignSessionsComponent implements OnInit {
         continue;
       }
 
-      // Bullet List Items
-      const listMatch = trimmed.match(/^[-*]\s+(.*)$/);
+      // Bullet & Numbered List Items
+      const listMatch = trimmed.match(/^(?:[-*]|\d+\.)\s+(.*)$/);
       if (listMatch) {
         const itemContent = listMatch[1];
         // Check if list item specifies a branch (e.g. Outcome A, Branch A Combat Objectives)
