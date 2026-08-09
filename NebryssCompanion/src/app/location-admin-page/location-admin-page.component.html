@@ -1,8 +1,5 @@
 <div class="admin-page">
   <div *ngIf="isAdmin" class="player-detail-container admin-header">
-    <div>
-      <h2>{{ pageTitle }}</h2>
-    </div>
     <div class="admin-header-actions">
       <button *ngIf="name.trim()" type="button" class="icon-btn view-map-btn" (click)="openLocationOnWorldMap()"
         aria-label="View location on World Map" title="View location focused on World Map">

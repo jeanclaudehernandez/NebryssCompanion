@@ -6,11 +6,6 @@
   overflow-x: hidden;
 }
 
-.admin-header,
-.admin-locked {
-  margin-bottom: 20px;
-}
-
 .admin-header {
   display: flex;
   align-items: center;
@@ -33,7 +28,7 @@
   max-width: 100%;
 }
 
-.layout > * {
+.layout>* {
   min-width: 0;
   max-width: 100%;
 }
@@ -545,8 +540,13 @@
 }
 
 @keyframes pulsePin {
-  from { transform: translate(-50%, -50%) scale(1); }
-  to { transform: translate(-50%, -50%) scale(1.1); }
+  from {
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 }
 
 .checkbox-field {
