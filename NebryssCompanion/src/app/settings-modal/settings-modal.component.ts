@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, ElementRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
@@ -88,7 +88,7 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
             </div>
           </section>
 
-          <!-- SECTION 3: VISUAL ATMOSPHERE -->
+          <!-- SECTION 2: VISUAL ATMOSPHERE -->
           <section class="settings-section">
             <h3 class="section-title">
               <span class="material-icons">auto_fix_high</span>
@@ -363,56 +363,6 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
       color: #94a3b8;
     }
 
-    .volume-slider-row {
-      padding: 10px;
-      border-radius: 6px;
-      background: rgba(0, 0, 0, 0.25);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .volume-label-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      color: #cbd5e1;
-    }
-
-    .backup-actions {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
-
-    .btn-backup-action {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 9px 12px;
-      border-radius: 6px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(255, 255, 255, 0.05);
-      color: #e2e8f0;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-backup-action:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--accent-color, #d4af37);
-      color: #ffffff;
-    }
-
-    .import-error {
-      color: #f87171;
-      font-size: 0.75rem;
-      margin-top: 4px;
-    }
-
     /* CSS Switch Toggle */
     .switch {
       position: relative;
@@ -505,8 +455,6 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
 export class SettingsModalComponent {
   @Output() close = new EventEmitter<void>();
 
-  importError: string | null = null;
-
   skins: { id: CharacterSkin; name: string; emoji: string; accent: string }[] = [
     { id: 'skin-wendy', name: 'Wendy (Field Medic)', emoji: '🪖', accent: '#4e7c41' },
     { id: 'skin-thennur', name: 'Thennur (Fellgor Shaman)', emoji: '📯', accent: '#00e676' },
@@ -540,22 +488,5 @@ export class SettingsModalComponent {
 
   onReset(): void {
     this.themeService.resetToDefaults();
-  }
-
-  onFileSelected(event: Event): void {
-    this.importError = null;
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result as string;
-        const success = this.themeService.importDataBackup(text);
-        if (!success) {
-          this.importError = 'Invalid backup file structure.';
-        }
-      };
-      reader.readAsText(file);
-    }
   }
 }

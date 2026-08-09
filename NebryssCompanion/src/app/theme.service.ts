@@ -72,16 +72,6 @@ export class ThemeService {
     return saved !== null ? saved === 'true' : defaultVal;
   }
 
-  private getInitialNumber(key: string, defaultVal: number): number {
-    const saved = localStorage.getItem(key);
-    if (saved !== null) {
-      const parsed = parseFloat(saved);
-      if (!isNaN(parsed)) return parsed;
-    }
-    return defaultVal;
-  }
-
-
   setSkinMode(mode: SkinMode): void {
     this.skinMode.next(mode);
     localStorage.setItem('skinMode', mode);
@@ -165,38 +155,5 @@ export class ThemeService {
     this.setSkinMode('auto');
     this.setManualSkin('skin-akrina');
     this.setVignetteEnabled(true);
-  }
-
-  exportDataBackup(): void {
-    const backup: Record<string, string | null> = {};
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        backup[key] = localStorage.getItem(key);
-      }
-    }
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `NebryssCompanion_Backup_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  importDataBackup(jsonText: string): boolean {
-    try {
-      const data = JSON.parse(jsonText);
-      if (typeof data === 'object' && data !== null) {
-        Object.keys(data).forEach(k => {
-          if (typeof data[k] === 'string') {
-            localStorage.setItem(k, data[k]);
-          }
-        });
-        window.location.reload();
-        return true;
-      }
-    } catch (e) { }
-    return false;
   }
 }
