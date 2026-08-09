@@ -47,6 +47,11 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
   @Output() navigateToBestiary = new EventEmitter<number>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
+  @Output() pinSelected = new EventEmitter<string | null>();
+  @Output() locationSelected = new EventEmitter<string | null>();
+  @Output() npcSelected = new EventEmitter<string | null>();
+  @Output() creatureSelected = new EventEmitter<number | null>();
+  @Output() shopSelected = new EventEmitter<string | null>();
 
   @ViewChild('viewHost', { read: ViewContainerRef, static: true })
   private viewHost!: ViewContainerRef;
@@ -140,6 +145,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         break;
       case 'bestiary':
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        subscribeToOutput('creatureSelected', id => this.creatureSelected.emit(id));
         break;
       case 'items':
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
@@ -150,6 +156,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         );
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
+        subscribeToOutput('shopSelected', shopName => this.shopSelected.emit(shopName));
         break;
       case 'lore':
         subscribeToOutput('navigateToLocation', locationName =>
@@ -162,6 +169,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
+        subscribeToOutput('locationSelected', locName => this.locationSelected.emit(locName));
         break;
       case 'npcs':
         subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
@@ -170,6 +178,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToLore', factionName => this.navigateToLore.emit(factionName));
         subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
+        subscribeToOutput('npcSelected', npcName => this.npcSelected.emit(npcName));
         break;
       case 'campaignSessions':
         subscribeToOutput('viewChange', view => this.viewChange.emit(view));
@@ -186,6 +195,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToAdminLocationCreator', coords =>
           this.navigateToAdminLocationCreator.emit(coords)
         );
+        subscribeToOutput('pinSelected', pinName => this.pinSelected.emit(pinName));
         break;
       case 'adminLocationCreator':
         subscribeToOutput('navigateToWorldMap', locationName => this.navigateToWorldMap.emit(locationName));

@@ -1,14 +1,18 @@
 // modal.component.ts
 import { ChangeDetectorRef, Component, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-modal',
   standalone: true,
+  imports: [CommonModule],
   template: `
     <div class="modal-overlay" [class]="getOverlayClasses()" (click)="close()">
       <div class="modal-content" [class]="getContentClasses()" (click)="$event.stopPropagation()" [style.width]="width" [style.height]="height">
         <ng-container #modalContent></ng-container>
-        <button *ngIf="showCloseButton" class="modal-close" (click)="close()">&times;</button>
+        @if (showCloseButton) {
+          <button class="modal-close" (click)="close()">&times;</button>
+        }
       </div>
     </div>
   `,

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
@@ -30,7 +30,7 @@ export interface NpcGroup {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class NpcsComponent implements OnInit {
+export class NpcsComponent implements OnInit, OnChanges {
   @Input() initialNpcName: string | null = null;
   @Input() backTarget: string | null = null;
 
@@ -40,6 +40,7 @@ export class NpcsComponent implements OnInit {
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   @Output() navigateToBestiary = new EventEmitter<number>();
+  @Output() npcSelected = new EventEmitter<string | null>();
 
   private readonly destroyRef = inject(DestroyRef);
   private readonly STORAGE_KEY = 'selectedNpcName';
@@ -159,11 +160,29 @@ export class NpcsComponent implements OnInit {
     return true;
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialNpcName']) {
+      if (this.initialNpcName && this.npcs.length > 0) {
+        const target = this.npcs.find(n => n.name.toLowerCase() === this.initialNpcName?.toLowerCase());
+        if (target) {
+          this.selectedNpc = target;
+          this.deepLinkMode = true;
+          this.cdr.markForCheck();
+        }
+      } else if (!this.initialNpcName) {
+        this.selectedNpc = null;
+        this.deepLinkMode = false;
+        this.cdr.markForCheck();
+      }
+    }
+  }
+
   selectNpc(npc: NPC): void {
     if (this.selectedNpc === npc) {
       this.clearSelectedNpc();
     } else {
       this.selectedNpc = npc;
+      this.npcSelected.emit(npc.name);
       this.saveToLocalStorage();
     }
     this.cdr.markForCheck();
@@ -172,6 +191,7 @@ export class NpcsComponent implements OnInit {
   clearSelectedNpc(): void {
     this.selectedNpc = null;
     this.deepLinkMode = false;
+    this.npcSelected.emit(null);
     localStorage.removeItem(this.STORAGE_KEY);
     this.cdr.markForCheck();
   }

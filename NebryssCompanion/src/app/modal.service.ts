@@ -47,7 +47,12 @@ export class ModalService {
     this.modalComponentRef.changeDetectorRef.detectChanges();
   }
 
-  close() {
+  isOpen(): boolean {
+    return this.modalComponentRef !== null;
+  }
+
+  close(): boolean {
+    const wasOpen = this.modalComponentRef !== null;
     const callback = this.onCloseCallback;
     this.onCloseCallback = null;
 
@@ -64,5 +69,6 @@ export class ModalService {
     }
 
     callback?.();
+    return wasOpen;
   }
 }

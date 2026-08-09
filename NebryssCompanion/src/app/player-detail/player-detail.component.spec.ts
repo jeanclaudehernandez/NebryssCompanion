@@ -72,7 +72,7 @@ describe('PlayerDetailComponent', () => {
     ]);
     mockActivePlayerService = jasmine.createSpyObj('ActivePlayerService', ['updateActivePlayer']);
     mockToastService = jasmine.createSpyObj('ToastService', ['show']);
-    mockModalService = jasmine.createSpyObj('ModalService', ['openFromTemplate', 'close']);
+    mockModalService = jasmine.createSpyObj('ModalService', ['openFromTemplate', 'close', 'isOpen']);
 
     mockDataService.getBestiaryById.and.returnValue(null);
     mockDataService.getTalentById.and.returnValue(null);

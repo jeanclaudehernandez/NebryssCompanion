@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy, ChangeDetectorRef, Output, EventEmitter, Input, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AdminService } from '../admin.service';
@@ -19,7 +19,7 @@ import { Location, Lore, SecretBlock, NPC, Shop } from '../model';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LocationsComponent implements OnInit {
+export class LocationsComponent implements OnInit, OnChanges {
   @Input() initialLocationName: string | null = null;
   @Input() backTarget: string | null = null;
   @Output() navigateTo = new EventEmitter<any>();
@@ -27,6 +27,7 @@ export class LocationsComponent implements OnInit {
   @Output() navigateToWorldMap = new EventEmitter<string>();
   @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
+  @Output() locationSelected = new EventEmitter<string | null>();
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -264,17 +265,36 @@ export class LocationsComponent implements OnInit {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialLocationName']) {
+      if (this.initialLocationName && this.locations.length > 0) {
+        const location = this.locations.find(l => l.name === this.initialLocationName);
+        if (location) {
+          this.selectedLocation = location;
+          this.deepLinkMode = true;
+          this.cdr.markForCheck();
+        }
+      } else if (!this.initialLocationName) {
+        this.selectedLocation = null;
+        this.deepLinkMode = false;
+        this.cdr.markForCheck();
+      }
+    }
+  }
+
   selectLocation(location: Location): void {
     if (this.selectedLocation === location) {
       this.clearSelectedLocation();
     } else {
       this.selectedLocation = location;
+      this.locationSelected.emit(location.name);
       this.saveToLocalStorage();
     }
     this.cdr.markForCheck();
   }
 
   clearSelectedLocation(): void {
+    this.locationSelected.emit(null);
     if (this.deepLinkMode && this.backTarget) {
       this.navigateTo.emit(this.backTarget);
       return;

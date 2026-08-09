@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnDestroy, OnInit, OnChanges, SimpleChanges, ViewEncapsulation, Output, EventEmitter, TemplateRef, ViewChild, ChangeDetectorRef, Input, inject, DestroyRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ToastService } from '../toast.service';
 import { ModalService } from '../modal.service';
 import { AdminService } from '../admin.service';
+import { NavigationHistoryService } from '../navigation-history.service';
 
 import { AdminEditorSession } from '../admin-editor.models';
 
@@ -53,11 +54,12 @@ interface ShopLocationGroup {
   styleUrls: ['./shops.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class ShopsComponent implements OnInit, OnDestroy {
+export class ShopsComponent implements OnInit, OnDestroy, OnChanges {
   @Input() initialShopName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
+  @Output() shopSelected = new EventEmitter<string | null>();
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | Player | null= null;
   factions: string[] = [];
@@ -96,6 +98,7 @@ export class ShopsComponent implements OnInit, OnDestroy {
   shopImageLandscapeMode = false;
   selectedShopImageNaturalWidth = 0;
   selectedShopImageNaturalHeight = 0;
+  private readonly destroyRef = inject(DestroyRef);
 
   constructor(
     private dataService: DataService,
@@ -105,10 +108,19 @@ export class ShopsComponent implements OnInit, OnDestroy {
     private modalService: ModalService,
     private cartService: CartService,
     public adminService: AdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private navigationHistory: NavigationHistoryService
   ) {}
 
   ngOnInit() {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.showCartSidebar) {
+        this.showCartSidebar = false;
+        this.cdr.markForCheck();
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
     this.themeSubscription = this.themeService.darkMode$.subscribe(isDark => {
       this.isDarkMode = isDark;
     });
@@ -187,6 +199,30 @@ export class ShopsComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialShopName'] && this.initialShopName && this.shops.length > 0) {
+      this.scrollToShopByName(this.initialShopName);
+    }
+  }
+
+  private scrollToShopByName(shopName: string): void {
+    const targetShop = this.shops.find(s => s.name.toLowerCase() === shopName.toLowerCase());
+    if (targetShop) {
+      const matchedGroup = this.processedShopGroups.find(g => g.shops.some(s => s.id === targetShop.id));
+      if (matchedGroup) {
+        localStorage.setItem(`${matchedGroup.key}-collapsed`, 'false');
+      }
+      setTimeout(() => {
+        const el = document.getElementById(`shop-${targetShop.id}`);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          el.classList.add('highlight-shop');
+          setTimeout(() => el.classList.remove('highlight-shop'), 2500);
+        }
+      }, 200);
+    }
   }
 
   ngOnDestroy() {

@@ -9,6 +9,7 @@ import { Item, ItemCategory, Location, NPC, Shop, ShopItem, Weapon, WeaponRule, 
 import { forkJoin } from 'rxjs';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
+import { NavigationHistoryService } from '../navigation-history.service';
 
 export interface LocationShopGroup {
   locationName: string;
@@ -37,6 +38,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   private readonly dataService = inject(DataService);
   private readonly adminService = inject(AdminService);
   private readonly toastService = inject(ToastService);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   isAdmin = false;
   isLoading = true;
@@ -257,6 +259,18 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   // ── Lifecycle ───────────────────────────────────────────────────────────────
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.priceEdit) {
+        this.priceEdit = null;
+        return true;
+      }
+      if (this.showDeleteConfirm) {
+        this.showDeleteConfirm = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

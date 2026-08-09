@@ -7,6 +7,7 @@ import { DataService } from '../data.service';
 import { Location } from '../model';
 import { ModalService } from '../modal.service';
 import { ToastService } from '../toast.service';
+import { NavigationHistoryService } from '../navigation-history.service';
 import { WORLD_MAP_PIN_COORDINATES } from './world-map-pin-coordinates';
 import { WorldMapStateService } from './world-map-state.service';
 import { FACTION_COLORS, DEFAULT_FACTION_COLOR, getFactionColor } from './world-map-faction-colors';
@@ -34,6 +35,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
   @Output() navigateToLocation = new EventEmitter<string>();
   @Output() navigateToLore = new EventEmitter<string>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
+  @Output() pinSelected = new EventEmitter<string | null>();
   @ViewChild('mapViewport') mapViewportRef?: ElementRef<HTMLDivElement>;
   @ViewChild('mapSurface') mapSurfaceRef?: ElementRef<HTMLDivElement>;
   @ViewChild('createLocationConfirmDialog') createLocationConfirmDialog?: TemplateRef<any>;
@@ -84,10 +86,19 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     private mapState: WorldMapStateService,
     private adminService: AdminService,
     private modalService: ModalService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private navigationHistory: NavigationHistoryService
   ) {}
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.selectedPin) {
+        this.closePopup();
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.scale = this.mapState.scale;
     this.translateX = this.mapState.translateX;
     this.translateY = this.mapState.translateY;
@@ -394,11 +405,13 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
       return;
     }
     this.selectedPin = pin;
+    this.pinSelected.emit(pin.name);
     this.cdr.markForCheck();
   }
 
   closePopup(): void {
     this.selectedPin = null;
+    this.pinSelected.emit(null);
     this.cdr.markForCheck();
   }
 
@@ -658,6 +671,7 @@ export class WorldMapComponent implements OnInit, OnChanges, AfterViewInit, OnDe
     this.translateX = viewportWidth / 2 - baseLeft - (targetX * this.scale);
     this.translateY = viewportHeight / 2 - baseTop - (targetY * this.scale);
     this.selectedPin = pin.location;
+    this.pinSelected.emit(pin.location.name);
     this.clampPan();
     this.cdr.markForCheck();
   }

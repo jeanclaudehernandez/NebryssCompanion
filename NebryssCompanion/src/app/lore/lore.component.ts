@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef, OnInit, DestroyRef, HostListener, inject } from '@angular/core';
+import { Component, ViewEncapsulation, Output, EventEmitter, Input, ChangeDetectorRef, OnInit, OnChanges, SimpleChanges, DestroyRef, HostListener, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataService } from '../data.service';
@@ -31,7 +31,7 @@ export interface BookChapter {
   styleUrls: ['./lore.component.css'],
   encapsulation: ViewEncapsulation.None
 })
-export class LoreComponent implements OnInit {
+export class LoreComponent implements OnInit, OnChanges {
   @Input() initialFactionName: string | null = null;
   @Output() navigateToLocation = new EventEmitter<string>();
 
@@ -126,6 +126,12 @@ export class LoreComponent implements OnInit {
       },
       error: (err) => console.error('Error loading locations:', err)
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialFactionName'] && this.initialFactionName && this.loreData) {
+      this.scrollToFaction(this.initialFactionName);
+    }
   }
 
   @HostListener('window:keydown', ['$event'])

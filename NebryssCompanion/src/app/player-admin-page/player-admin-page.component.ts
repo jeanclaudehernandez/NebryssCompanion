@@ -12,6 +12,7 @@ import { getEffectiveTalentApplications } from '../talent-stacks';
 import { AlteredState, Items, Player, Weapon, WeaponRule } from '../model';
 import { ToastService } from '../toast.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
+import { NavigationHistoryService } from '../navigation-history.service';
 
 type EditableStatKey = 'Movement' | 'Wounds' | 'Save' | 'APL';
 type EquipmentTableRow = {
@@ -33,6 +34,7 @@ type TalentTableRow = {
 })
 export class PlayerAdminPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   @ViewChild('bodyEditor') bodyEditorRef?: ElementRef<HTMLElement>;
 
@@ -77,6 +79,14 @@ export class PlayerAdminPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.isBodySelectorOpen) {
+        this.isBodySelectorOpen = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

@@ -10,6 +10,7 @@ import { GenericTableComponent } from '../generic-table/generic-table.component'
 import { AlteredState, BestiaryEntry, ItemCategory, Items, Weapon, WeaponRule } from '../model';
 import { ToastService } from '../toast.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
+import { NavigationHistoryService } from '../navigation-history.service';
 
 type EditableStatKey = 'Movement' | 'Wounds' | 'Save' | 'APL';
 
@@ -37,6 +38,7 @@ type ItemTableRow = {
 })
 export class CreatureAdminPageComponent implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   @ViewChild('bodyEditor') bodyEditorRef?: ElementRef<HTMLElement>;
   @Input() initialCreature?: BestiaryEntry;
@@ -104,6 +106,18 @@ export class CreatureAdminPageComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.isBodySelectorOpen) {
+        this.isBodySelectorOpen = false;
+        return true;
+      }
+      if (this.showDeleteConfirm) {
+        this.showDeleteConfirm = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

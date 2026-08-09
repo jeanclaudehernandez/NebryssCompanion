@@ -20,6 +20,7 @@ import { CampaignService } from './campaign.service';
 import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
 import { SettingsModalComponent } from './settings-modal/settings-modal.component';
+import { NavigationHistoryService, AppNavigationSelectionState } from './navigation-history.service';
 
 @Component({
   selector: 'app-root',
@@ -119,6 +120,11 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
         (navigateToNpc)="onNavigateToNpc($event)"
         (navigateToBestiary)="onNavigateToBestiary($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
+        (pinSelected)="onPinSelected($event)"
+        (locationSelected)="onLocationSelected($event)"
+        (npcSelected)="onNpcSelected($event)"
+        (creatureSelected)="onCreatureSelected($event)"
+        (shopSelected)="onShopSelected($event)"
       ></app-view-host>
     </div>
 
@@ -298,6 +304,7 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  @ViewChild('sidebarComp') sidebarComp?: SidebarComponent;
   @ViewChild('adminDialog') adminDialogTemplate?: TemplateRef<any>;
   @ViewChild('campaignPromptDialog') campaignPromptDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
@@ -340,10 +347,54 @@ export class AppComponent {
     private activePlayerService: ActivePlayerService,
     private bestiaryMaterialsService: BestiaryMaterialsService,
     private modalService: ModalService,
-    public campaignService: CampaignService
+    public campaignService: CampaignService,
+    private navigationHistory: NavigationHistoryService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
+
+    this.navigationHistory.init(this.getCurrentNavigationState());
+    this.navigationHistory.registerRestoreCallback(state => this.restoreNavigationState(state));
+
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.isSettingsModalOpen) {
+        this.closeSettingsModal();
+        return true;
+      }
+      return false;
+    });
+
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.rickrollVisible) {
+        this.dismissRickroll();
+        return true;
+      }
+      return false;
+    });
+
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.sidebarComp?.isOpen) {
+        this.sidebarComp.isOpen = false;
+        return true;
+      }
+      return false;
+    });
+
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.modalService.isOpen()) {
+        this.modalService.close();
+        return true;
+      }
+      return false;
+    });
+
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.bestiaryMaterialsService.isOpen) {
+        this.bestiaryMaterialsService.close();
+        return true;
+      }
+      return false;
+    });
 
     this.checkAndPromptCampaign();
 
@@ -675,6 +726,85 @@ export class AppComponent {
     return view !== null && APP_VIEWS.includes(view as AppView);
   }
 
+  getCurrentNavigationState(): AppNavigationSelectionState {
+    return {
+      view: this.currentView,
+      selectedLocationName: this.selectedLocationName,
+      selectedLocationBackTarget: this.selectedLocationBackTarget,
+      selectedWorldMapLocationName: this.selectedWorldMapLocationName,
+      selectedFactionName: this.selectedFactionName,
+      selectedRuleName: this.selectedRuleName,
+      selectedStateName: this.selectedStateName,
+      selectedNpcName: this.selectedNpcName,
+      selectedShopName: this.selectedShopName,
+      selectedBestiaryId: this.selectedBestiaryId,
+      adminEditSession: this.adminEditSession,
+      adminLocationDraft: this.adminLocationDraft
+    };
+  }
+
+  restoreNavigationState(state: AppNavigationSelectionState): void {
+    this.currentView = state.view;
+    this.selectedLocationName = state.selectedLocationName;
+    this.selectedLocationBackTarget = state.selectedLocationBackTarget;
+    this.selectedWorldMapLocationName = state.selectedWorldMapLocationName;
+    this.selectedFactionName = state.selectedFactionName;
+    this.selectedRuleName = state.selectedRuleName;
+    this.selectedStateName = state.selectedStateName;
+    this.selectedNpcName = state.selectedNpcName;
+    this.selectedShopName = state.selectedShopName;
+    this.selectedBestiaryId = state.selectedBestiaryId;
+    this.adminEditSession = state.adminEditSession;
+    this.adminLocationDraft = state.adminLocationDraft;
+    localStorage.setItem('lastView', state.view);
+    window.scrollTo({ top: 0 });
+  }
+
+  onPinSelected(pinName: string | null): void {
+    this.selectedWorldMapLocationName = pinName;
+    if (pinName) {
+      this.navigationHistory.pushState(this.getCurrentNavigationState());
+    } else {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
+  }
+
+  onLocationSelected(locName: string | null): void {
+    this.selectedLocationName = locName;
+    if (locName) {
+      this.navigationHistory.pushState(this.getCurrentNavigationState());
+    } else {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
+  }
+
+  onNpcSelected(npcName: string | null): void {
+    this.selectedNpcName = npcName;
+    if (npcName) {
+      this.navigationHistory.pushState(this.getCurrentNavigationState());
+    } else {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
+  }
+
+  onCreatureSelected(id: number | null): void {
+    this.selectedBestiaryId = id;
+    if (id) {
+      this.navigationHistory.pushState(this.getCurrentNavigationState());
+    } else {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
+  }
+
+  onShopSelected(shopName: string | null): void {
+    this.selectedShopName = shopName;
+    if (shopName) {
+      this.navigationHistory.pushState(this.getCurrentNavigationState());
+    } else {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
+  }
+
   onViewChange(view: AppView) {
     this.currentView = view;
     if (view === 'adminItemCreator') {
@@ -683,11 +813,6 @@ export class AppComponent {
     if (view === 'adminLocationCreator') {
       this.adminLocationDraft = null;
     }
-    // Reset selectedLocationName when manually changing views, unless we are navigating specifically
-    // Ideally this logic should be more granular, but for now this is fine.
-    // Actually, if we just clicked sidebar, we probably want to reset it.
-    // But if it's coming from LocationsComponent navigating to Shops, we don't need to reset it (it's for Locations component input).
-    // Let's just set it to null here, and have a separate method for location navigation.
     this.selectedLocationName = null;
     this.selectedLocationBackTarget = null;
     this.selectedWorldMapLocationName = null;
@@ -703,6 +828,7 @@ export class AppComponent {
 
     // Save current view
     localStorage.setItem('lastView', view);
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -725,6 +851,7 @@ export class AppComponent {
     this.selectedRuleName = null;
     this.selectedStateName = null;
     localStorage.setItem('lastView', this.currentView);
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -742,6 +869,7 @@ export class AppComponent {
     this.selectedRuleName = null;
     this.selectedStateName = null;
     localStorage.setItem('lastView', 'adminLocationCreator');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -752,6 +880,7 @@ export class AppComponent {
     this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'locations');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -765,6 +894,7 @@ export class AppComponent {
     this.selectedStateName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'worldMap');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -774,6 +904,7 @@ export class AppComponent {
     this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -782,6 +913,7 @@ export class AppComponent {
     this.selectedShopName = shopName;
     this.currentView = 'shops';
     localStorage.setItem('lastView', 'shops');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -790,6 +922,7 @@ export class AppComponent {
     this.selectedNpcName = npcName;
     this.currentView = 'npcs';
     localStorage.setItem('lastView', 'npcs');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -797,6 +930,7 @@ export class AppComponent {
     this.selectedBestiaryId = bestiaryId;
     this.currentView = 'bestiary';
     localStorage.setItem('lastView', 'bestiary');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
 
@@ -940,5 +1074,7 @@ export class AppComponent {
   navigateToStatus(stateName: string) {
     this.selectedStateName = stateName;
     this.currentView = 'alteredStates';
+    localStorage.setItem('lastView', 'alteredStates');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
   }
 }

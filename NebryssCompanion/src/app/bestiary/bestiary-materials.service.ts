@@ -37,6 +37,14 @@ export class BestiaryMaterialsService {
     this.setOpen(!this.openSubject.value);
   }
 
+  close(): boolean {
+    const wasOpen = this.openSubject.value;
+    if (wasOpen) {
+      this.openSubject.next(false);
+    }
+    return wasOpen;
+  }
+
   reset(): void {
     this.countSubject.next(0);
     this.openSubject.next(false);

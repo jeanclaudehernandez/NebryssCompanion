@@ -30,6 +30,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   @ViewChild('mobDetailContainer') mobDetailContainer!: ElementRef;
   @Input() initialBestiaryId: number | null = null;
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
+  @Output() creatureSelected = new EventEmitter<number | null>();
 
   bestiary: BestiaryEntry[] = [];
   npcs: NPC[] = [];
@@ -247,6 +248,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
 
     this.syncCreatureScrollSections();
     this.updateDroppedMaterials();
+    this.creatureSelected.emit(creature.id);
     this.scrollToMob(creature.id);
   }
 

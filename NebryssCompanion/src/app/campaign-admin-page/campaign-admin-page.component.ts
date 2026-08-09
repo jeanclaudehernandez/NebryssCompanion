@@ -6,6 +6,7 @@ import { DataService } from '../data.service';
 import { CampaignService } from '../campaign.service';
 import { AdminService } from '../admin.service';
 import { ToastService } from '../toast.service';
+import { NavigationHistoryService } from '../navigation-history.service';
 import { Campaign } from '../model';
 
 @Component({
@@ -21,6 +22,7 @@ export class CampaignAdminPageComponent implements OnInit {
   public readonly campaignService = inject(CampaignService);
   private readonly adminService = inject(AdminService);
   private readonly toastService = inject(ToastService);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   isAdmin = false;
   isLoading = true;
@@ -50,6 +52,14 @@ export class CampaignAdminPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.showDeleteConfirm) {
+        this.showDeleteConfirm = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

@@ -6,6 +6,7 @@ import { forkJoin } from 'rxjs';
 import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { ToastService } from '../toast.service';
+import { NavigationHistoryService } from '../navigation-history.service';
 import { AlteredState, WeaponRule, MistEffect, Terrain } from '../model';
 
 type RuleTab = 'alteredStates' | 'weaponRules' | 'terrains' | 'mistEffects';
@@ -28,6 +29,7 @@ export class RulesAdminPageComponent implements OnInit {
   private readonly dataService = inject(DataService);
   private readonly adminService = inject(AdminService);
   private readonly toastService = inject(ToastService);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   isAdmin = false;
   isLoading = true;
@@ -182,6 +184,14 @@ export class RulesAdminPageComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.showDeleteConfirm) {
+        this.showDeleteConfirm = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
 import { ToastService } from '../toast.service';
+import { NavigationHistoryService } from '../navigation-history.service';
 import { NPC } from '../model';
 
 @Component({
@@ -21,6 +22,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   private readonly dataService = inject(DataService);
   private readonly adminService = inject(AdminService);
   private readonly toastService = inject(ToastService);
+  private readonly navigationHistory = inject(NavigationHistoryService);
 
   isAdmin = false;
   isLoading = true;
@@ -144,6 +146,14 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   }
 
   ngOnInit(): void {
+    this.navigationHistory.registerModalHandler(() => {
+      if (this.showDeleteConfirm) {
+        this.showDeleteConfirm = false;
+        return true;
+      }
+      return false;
+    }, this.destroyRef);
+
     this.adminService.isAdmin$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {

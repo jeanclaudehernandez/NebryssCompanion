@@ -17,7 +17,8 @@ describe('AppComponent', () => {
 
     mockModalService = jasmine.createSpyObj('ModalService', [
       'openFromTemplate',
-      'close'
+      'close',
+      'isOpen'
     ]);
 
     mockThemeService = jasmine.createSpyObj('ThemeService', [
