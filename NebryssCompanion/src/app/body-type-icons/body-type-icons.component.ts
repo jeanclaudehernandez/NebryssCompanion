@@ -41,7 +41,8 @@ export class BodyTypeIconsComponent {
     { type: 'fellgor', aliases: ['fellgor'] },
     { type: 'ork', aliases: ['ork'] },
     { type: 'aetherwing', aliases: ['aetherwing', 'aethering'] },
-    { type: 'plant', aliases: ['plant'] }
+    { type: 'plant', aliases: ['plant'] },
+    { type: 'rat', aliases: ['rat', 'skaven', 'rodent'] }
   ];
 
   get iconTypes(): BodyTypeKey[] {

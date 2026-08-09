@@ -1096,6 +1096,11 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
       'astartes',
       'construct',
       'spell',
+      'fellgor',
+      'ork',
+      'aetherwing',
+      'plant',
+      'rat',
       ...itemBodies,
       ...weaponBodies,
       ...creatureBodies

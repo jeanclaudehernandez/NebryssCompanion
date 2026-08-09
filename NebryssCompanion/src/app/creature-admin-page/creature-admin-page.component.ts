@@ -83,7 +83,8 @@ export class CreatureAdminPageComponent implements OnInit {
     'spell',
     'ork',
     'aetherwing',
-    'plant'
+    'plant',
+    'rat'
   ] as const;
 
   // Collapsible Sections (Abilities & Catalog Picker collapsed by default)

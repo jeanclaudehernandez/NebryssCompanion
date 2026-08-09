@@ -68,7 +68,8 @@ export class PlayerAdminPageComponent implements OnInit {
     'spell',
     'ork',
     'aetherwing',
-    'plant'
+    'plant',
+    'rat'
   ] as const;
 
   constructor(

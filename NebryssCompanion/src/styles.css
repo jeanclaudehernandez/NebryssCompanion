@@ -28,11 +28,11 @@ h6 {
 
 /* Global CSS Variables for Mobile & App Layout */
 :root {
-  --mat-dialog-container-color: white;
-  --mat-dialog-text-color: #333;
-  --mat-dialog-title-color: #2c3e50;
-  --mat-dialog-border-color: #333;
-  --mat-dialog-button-color: #3498db;
+  --mat-dialog-container-color: #1e1e1e;
+  --mat-dialog-text-color: #e0e0e0;
+  --mat-dialog-title-color: #64b5f6;
+  --mat-dialog-border-color: rgba(255, 255, 255, 0.15);
+  --mat-dialog-button-color: #64b5f6;
   --safe-area-top: env(safe-area-inset-top, 0px);
   --safe-area-bottom: env(safe-area-inset-bottom, 0px);
   --app-header-height: 56px;
@@ -82,6 +82,11 @@ body.dark-theme {
   --footer-menu-fg: #b0bec5;
   --footer-menu-active: #64b5f6;
   --accent-color: #64b5f6;
+  --mat-dialog-container-color: #1e1e1e;
+  --mat-dialog-text-color: #e0e0e0;
+  --mat-dialog-title-color: #64b5f6;
+  --mat-dialog-border-color: rgba(255, 255, 255, 0.15);
+  --mat-dialog-button-color: #64b5f6;
 }
 
 body.dark-theme h1,
@@ -404,6 +409,11 @@ body.dark-theme .attr-icon.attr-body {
   color: #ffffff;
 }
 
+.body-icon-badge.rat {
+  background-color: #8d6e63;
+  color: #ffffff;
+}
+
 .body-icon-badge.universal {
   background-color: #6b7280;
   color: #ffffff;
@@ -442,6 +452,11 @@ body.dark-theme .body-icon-badge.aetherwing {
 
 body.dark-theme .body-icon-badge.plant {
   background-color: #86a981;
+  color: #ffffff;
+}
+
+body.dark-theme .body-icon-badge.rat {
+  background-color: #a1887f;
   color: #ffffff;
 }
 
@@ -672,31 +687,33 @@ h6 {
 
 /* MatDialog overrides */
 .mat-mdc-dialog-surface {
-  border-radius: 6px !important;
-  border: solid 1px var(--mat-dialog-border-color, #333) !important;
-  background-color: var(--mat-dialog-container-color, white) !important;
-  color: var(--mat-dialog-text-color, #333) !important;
+  border-radius: 8px !important;
+  border: solid 1.5px var(--mat-dialog-border-color, rgba(255, 255, 255, 0.15)) !important;
+  background-color: var(--mat-dialog-container-color, #1e1e1e) !important;
+  background: var(--mat-dialog-container-color, #1e1e1e) !important;
+  color: var(--mat-dialog-text-color, #e0e0e0) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.7) !important;
 }
 
 .mat-mdc-dialog-title {
-  color: var(--mat-dialog-title-color, #2c3e50) !important;
+  color: var(--mat-dialog-title-color, #64b5f6) !important;
 }
 
 .mat-mdc-dialog-content {
-  color: var(--mat-dialog-text-color, #333) !important;
+  color: var(--mat-dialog-text-color, #e0e0e0) !important;
 }
 
 .mat-mdc-dialog-actions button {
-  color: var(--mat-dialog-button-color, #3498db) !important;
+  color: var(--mat-dialog-button-color, #64b5f6) !important;
 }
 
 /* Theme-specific dialog styles */
 .dark-theme-dialog .mat-mdc-dialog-surface {
-  --mat-dialog-container-color: #2c3e50;
-  --mat-dialog-text-color: #ecf0f1;
-  --mat-dialog-title-color: #3498db;
-  --mat-dialog-border-color: #34495e;
-  --mat-dialog-button-color: #3498db;
+  --mat-dialog-container-color: #1e1e1e;
+  --mat-dialog-text-color: #e0e0e0;
+  --mat-dialog-title-color: #64b5f6;
+  --mat-dialog-border-color: rgba(255, 255, 255, 0.15);
+  --mat-dialog-button-color: #64b5f6;
 }
 
 .light-theme-dialog .mat-mdc-dialog-surface {
@@ -705,6 +722,130 @@ h6 {
   --mat-dialog-title-color: #2c3e50;
   --mat-dialog-border-color: #3498db;
   --mat-dialog-button-color: #3498db;
+}
+
+/* Skin-specific dialog overrides */
+body.skin-wendy .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #162415 0%, #0c150c 100%) !important;
+  border: 1.5px solid #4e7c41 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(78, 124, 65, 0.25) !important;
+  color: #e2e8f0 !important;
+}
+body.skin-wendy .mat-mdc-dialog-title {
+  color: #a2e091 !important;
+  font-family: 'Cinzel', 'Roboto', sans-serif !important;
+  text-shadow: 0 0 8px rgba(162, 224, 145, 0.4) !important;
+}
+body.skin-wendy .mat-mdc-dialog-actions button {
+  color: #a2e091 !important;
+}
+
+body.skin-thennur .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #0b2217 0%, #05120c 100%) !important;
+  border: 1.5px solid #00e676 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 230, 118, 0.25) !important;
+  color: #e0e0ce !important;
+}
+body.skin-thennur .mat-mdc-dialog-title {
+  color: #69f0ae !important;
+  font-family: 'Cinzel', serif !important;
+  text-shadow: 0 0 10px rgba(0, 230, 118, 0.6) !important;
+}
+body.skin-thennur .mat-mdc-dialog-actions button {
+  color: #00e676 !important;
+}
+
+body.skin-akrina .mat-mdc-dialog-surface,
+body.akrina-theme .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #180d19 0%, #0d060e 100%) !important;
+  border: 1.5px solid #d4af37 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(212, 175, 55, 0.3) !important;
+  color: #f3e9d2 !important;
+}
+body.skin-akrina .mat-mdc-dialog-title,
+body.akrina-theme .mat-mdc-dialog-title {
+  color: #f3ca40 !important;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  text-shadow: 0 0 10px rgba(212, 175, 55, 0.4) !important;
+}
+body.skin-akrina .mat-mdc-dialog-actions button,
+body.akrina-theme .mat-mdc-dialog-actions button {
+  color: #f3ca40 !important;
+}
+
+body.skin-xarion .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #0e1b33 0%, #070e1b 100%) !important;
+  border: 1.5px solid #00f5d4 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 245, 212, 0.25) !important;
+  color: #e2e8f0 !important;
+}
+body.skin-xarion .mat-mdc-dialog-title {
+  color: #00f5d4 !important;
+  font-family: 'Cinzel', serif !important;
+  text-shadow: 0 0 12px rgba(0, 245, 212, 0.6) !important;
+}
+body.skin-xarion .mat-mdc-dialog-actions button {
+  color: #00f5d4 !important;
+}
+
+body.skin-tellurius .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #171a26 0%, #0a0b10 100%) !important;
+  border: 1.5px solid #9f7aea !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(157, 78, 221, 0.25) !important;
+  color: #e2e8f0 !important;
+}
+body.skin-tellurius .mat-mdc-dialog-title {
+  color: #d8b4fe !important;
+  font-family: 'Cinzel', serif !important;
+  text-shadow: 0 0 10px rgba(157, 78, 221, 0.6) !important;
+}
+body.skin-tellurius .mat-mdc-dialog-actions button {
+  color: #c084fc !important;
+}
+
+body.skin-varek .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #220a0a 0%, #100404 100%) !important;
+  border: 1.5px solid #ff9800 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(255, 152, 0, 0.25) !important;
+  color: #fef3c7 !important;
+}
+body.skin-varek .mat-mdc-dialog-title {
+  color: #ffb703 !important;
+  font-family: 'Cinzel', sans-serif !important;
+  text-shadow: 0 0 10px rgba(255, 183, 3, 0.6) !important;
+}
+body.skin-varek .mat-mdc-dialog-actions button {
+  color: #ffb703 !important;
+}
+
+body.skin-cassios .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #152033 0%, #0a101a 100%) !important;
+  border: 1.5px solid #eab308 !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(234, 179, 8, 0.25) !important;
+  color: #f8fafc !important;
+}
+body.skin-cassios .mat-mdc-dialog-title {
+  color: #fef08a !important;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif !important;
+  text-shadow: 0 0 10px rgba(234, 179, 8, 0.6) !important;
+}
+body.skin-cassios .mat-mdc-dialog-actions button {
+  color: #fef08a !important;
+}
+
+body.skin-karumnekia .mat-mdc-dialog-surface {
+  background: linear-gradient(145deg, #09130d 0%, #030805 100%) !important;
+  border: 1.5px solid #22c55e !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8), 0 0 15px rgba(34, 197, 94, 0.25) !important;
+  color: #f0fdf4 !important;
+}
+body.skin-karumnekia .mat-mdc-dialog-title {
+  color: #4ade80 !important;
+  font-family: 'Cinzel', serif !important;
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.7) !important;
+}
+body.skin-karumnekia .mat-mdc-dialog-actions button {
+  color: #4ade80 !important;
 }
 
 /* Admin weapon rules select overlay */
@@ -2213,6 +2354,11 @@ body.skin-wendy {
   --footer-menu-active: #a2e091;
   --accent-color: #4e7c41;
   --card-bg: #142213;
+  --mat-dialog-container-color: #142213;
+  --mat-dialog-text-color: #e2e8f0;
+  --mat-dialog-title-color: #a2e091;
+  --mat-dialog-border-color: #4e7c41;
+  --mat-dialog-button-color: #a2e091;
 }
 
 body.skin-wendy h1,
@@ -2270,6 +2416,11 @@ body.skin-thennur {
   --footer-menu-border: #00e676;
   --footer-menu-active: #00e676;
   --accent-color: #00e676;
+  --mat-dialog-container-color: #081a12;
+  --mat-dialog-text-color: #e0e0ce;
+  --mat-dialog-title-color: #69f0ae;
+  --mat-dialog-border-color: #00e676;
+  --mat-dialog-button-color: #00e676;
 }
 
 body.skin-thennur h1,
@@ -2330,6 +2481,11 @@ body.akrina-theme {
   --footer-menu-border: #d4af37;
   --footer-menu-active: #ffe89e;
   --accent-color: #d4af37;
+  --mat-dialog-container-color: #180d19;
+  --mat-dialog-text-color: #f3e9d2;
+  --mat-dialog-title-color: #f3ca40;
+  --mat-dialog-border-color: #d4af37;
+  --mat-dialog-button-color: #d4af37;
 }
 
 body.skin-akrina h1,
@@ -2406,6 +2562,11 @@ body.skin-xarion {
   --footer-menu-border: #00f5d4;
   --footer-menu-active: #00f5d4;
   --accent-color: #00f5d4;
+  --mat-dialog-container-color: #0e1b33;
+  --mat-dialog-text-color: #e2e8f0;
+  --mat-dialog-title-color: #00f5d4;
+  --mat-dialog-border-color: #00f5d4;
+  --mat-dialog-button-color: #00f5d4;
 }
 
 body.skin-xarion h1,
@@ -2462,6 +2623,11 @@ body.skin-tellurius {
   --footer-menu-border: #9f7aea;
   --footer-menu-active: #c084fc;
   --accent-color: #9f7aea;
+  --mat-dialog-container-color: #171a26;
+  --mat-dialog-text-color: #e2e8f0;
+  --mat-dialog-title-color: #d8b4fe;
+  --mat-dialog-border-color: #9f7aea;
+  --mat-dialog-button-color: #9f7aea;
 }
 
 body.skin-tellurius h1,
@@ -2519,6 +2685,11 @@ body.skin-varek {
   --footer-menu-border: #ff9800;
   --footer-menu-active: #ffb703;
   --accent-color: #ff9800;
+  --mat-dialog-container-color: #220a0a;
+  --mat-dialog-text-color: #fef3c7;
+  --mat-dialog-title-color: #ffb703;
+  --mat-dialog-border-color: #ff9800;
+  --mat-dialog-button-color: #ff9800;
 }
 
 body.skin-varek h1,
@@ -2575,6 +2746,11 @@ body.skin-cassios {
   --footer-menu-border: #eab308;
   --footer-menu-active: #fef08a;
   --accent-color: #eab308;
+  --mat-dialog-container-color: #152033;
+  --mat-dialog-text-color: #f8fafc;
+  --mat-dialog-title-color: #fef08a;
+  --mat-dialog-border-color: #eab308;
+  --mat-dialog-button-color: #eab308;
 }
 
 body.skin-cassios h1,
@@ -2631,6 +2807,11 @@ body.skin-karumnekia {
   --footer-menu-border: #22c55e;
   --footer-menu-active: #4ade80;
   --accent-color: #22c55e;
+  --mat-dialog-container-color: #09130d;
+  --mat-dialog-text-color: #f0fdf4;
+  --mat-dialog-title-color: #4ade80;
+  --mat-dialog-border-color: #22c55e;
+  --mat-dialog-button-color: #22c55e;
 }
 
 body.skin-karumnekia h1,

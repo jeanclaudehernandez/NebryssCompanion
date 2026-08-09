@@ -9,7 +9,8 @@ export type BodyTypeKey =
   | 'fellgor'
   | 'ork'
   | 'aetherwing'
-  | 'plant';
+  | 'plant'
+  | 'rat';
 
 @Component({
   selector: 'app-body-type-icon',
@@ -137,6 +138,16 @@ export type BodyTypeKey =
           <path d="M12 12c-3 0-6-2.6-6-6 3.6-.2 6 2 6 6z"></path>
           <path d="M12 12c3 0 6-2.6 6-6-3.6-.2-6 2-6 6z"></path>
         </svg>
+
+        <svg *ngIf="type === 'rat'" [attr.width]="size" [attr.height]="size" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 8.5a3.5 3.5 0 1 0-2.5-6 3.5 3.5 0 0 0 3.5 4.5"></path>
+          <path d="M17 8.5a3.5 3.5 0 1 1 2.5-6 3.5 3.5 0 0 1-3.5 4.5"></path>
+          <path d="M8 8.5C6 10.5 5.5 12.5 5.5 14.5c0 1.5 1 2.5 2.5 3.5L12 21l4-3c1.5-1 2.5-2 2.5-3.5 0-2-.5-4-2.5-6"></path>
+          <circle cx="9.5" cy="13" r="0.8" fill="currentColor" stroke="none"></circle>
+          <circle cx="14.5" cy="13" r="0.8" fill="currentColor" stroke="none"></circle>
+          <circle cx="12" cy="18.5" r="0.8" fill="currentColor" stroke="none"></circle>
+          <path d="M6.5 16.5L3 17.5M6.5 18L3 16.5M17.5 16.5L21 17.5M17.5 18L21 16.5"></path>
+        </svg>
       </span>
       <span *ngIf="showTooltip" class="body-icon-tooltip">{{ label }}</span>
     </button>
@@ -206,6 +217,8 @@ export class BodyTypeIconComponent {
         return 'Aetherwing';
       case 'plant':
         return 'Plant';
+      case 'rat':
+        return 'Rat';
     }
   }
 }
