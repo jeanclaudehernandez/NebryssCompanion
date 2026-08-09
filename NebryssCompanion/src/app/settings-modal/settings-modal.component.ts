@@ -2,6 +2,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
+import { DataService } from '../data.service';
+import { CampaignService } from '../campaign.service';
+import { ActivePlayerService } from '../active-player.service';
+import { Campaign } from '../model';
 
 @Component({
   selector: 'app-settings-modal',
@@ -21,7 +25,38 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
         </header>
 
         <div class="settings-body">
-          <!-- SECTION 1: SKIN & THEME SELECTION -->
+          <!-- SECTION 1: CAMPAIGN SELECTION -->
+          <section class="settings-section">
+            <h3 class="section-title">
+              <span class="material-icons">flag</span>
+              Active Campaign
+            </h3>
+
+            <div class="campaign-select-box">
+              <label for="settings-campaign-select" class="campaign-label">
+                Current Campaign:
+              </label>
+              <div class="custom-select-wrapper">
+                <select
+                  id="settings-campaign-select"
+                  class="settings-select"
+                  [ngModel]="selectedCampaign?.id"
+                  (change)="onCampaignSelect($event)"
+                >
+                  <option [ngValue]="null" disabled>Select Campaign...</option>
+                  <option *ngFor="let camp of campaigns" [value]="camp.id">
+                    {{ camp.name }}
+                  </option>
+                </select>
+                <span class="material-icons select-arrow">expand_more</span>
+              </div>
+              <small class="campaign-help-text" *ngIf="selectedCampaign">
+                Switching campaigns updates available players, story logs, npcs, locations and locations.
+              </small>
+            </div>
+          </section>
+
+          <!-- SECTION 2: SKIN & THEME SELECTION -->
           <section class="settings-section">
             <h3 class="section-title">
               <span class="material-icons">palette</span>
@@ -88,36 +123,9 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
             </div>
           </section>
 
-          <!-- SECTION 2: VISUAL ATMOSPHERE -->
-          <section class="settings-section">
-            <h3 class="section-title">
-              <span class="material-icons">auto_fix_high</span>
-              Visual Atmosphere & Display
-            </h3>
-
-            <div class="toggle-row">
-              <div class="toggle-info">
-                <strong>Grimdark Edge Vignette</strong>
-                <small>Ambient radial dark shadow overlay on screen edges</small>
-              </div>
-              <label class="switch">
-                <input
-                  type="checkbox"
-                  [checked]="themeService.vignetteEnabled$ | async"
-                  (change)="onToggleVignette($any($event.target).checked)"
-                />
-                <span class="slider"></span>
-              </label>
-            </div>
-          </section>
         </div>
 
         <footer class="settings-footer">
-          <button type="button" class="btn-reset" (click)="onReset()">
-            <span class="material-icons">restart_alt</span>
-            Reset Defaults
-          </button>
-
           <button type="button" class="btn-done" (click)="onClose()">
             Done
           </button>
@@ -155,8 +163,8 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
       display: flex;
       flex-direction: column;
       background: var(--header-bg, linear-gradient(145deg, #181926 0%, #0d0e17 100%));
-      border: 1.5px solid var(--accent-color, #d4af37);
-      border-radius: 12px;
+      border: 1px solid #535353;
+      border-radius: 8px;
       box-shadow: 0 16px 45px rgba(0, 0, 0, 0.95), inset 0 0 15px rgba(0,0,0,0.6);
       color: #f8fafc;
       overflow: hidden;
@@ -239,6 +247,68 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
       font-size: 18px;
     }
 
+    .campaign-select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .campaign-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    .custom-select-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .settings-select {
+      width: 100%;
+      padding: 10px 36px 10px 12px;
+      min-height: 44px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      color: #f8fafc;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+    }
+
+    .settings-select:focus {
+      border-color: var(--accent-color, #d4af37);
+      box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.25);
+    }
+
+    .settings-select option {
+      background: #181926;
+      color: #f8fafc;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #94a3b8;
+      font-size: 20px;
+    }
+
+    .campaign-help-text {
+      font-size: 0.72rem;
+      color: #94a3b8;
+      line-height: 1.3;
+      margin-top: 2px;
+    }
+
     .mode-options-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -249,7 +319,7 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
+      padding: 5px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.12);
       background: rgba(255, 255, 255, 0.04);
@@ -455,6 +525,9 @@ import { ThemeService, SkinMode, CharacterSkin } from '../theme.service';
 export class SettingsModalComponent {
   @Output() close = new EventEmitter<void>();
 
+  campaigns: Campaign[] = [];
+  selectedCampaign: Campaign | null = null;
+
   skins: { id: CharacterSkin; name: string; emoji: string; accent: string }[] = [
     { id: 'skin-wendy', name: 'Wendy (Field Medic)', emoji: '🪖', accent: '#4e7c41' },
     { id: 'skin-thennur', name: 'Thennur (Fellgor Shaman)', emoji: '📯', accent: '#00e676' },
@@ -467,8 +540,28 @@ export class SettingsModalComponent {
   ];
 
   constructor(
-    public themeService: ThemeService
-  ) { }
+    public themeService: ThemeService,
+    private dataService: DataService,
+    public campaignService: CampaignService,
+    private activePlayerService: ActivePlayerService
+  ) {
+    this.dataService.getCampaigns().subscribe(campaigns => {
+      this.campaigns = campaigns;
+    });
+
+    this.campaignService.selectedCampaign$.subscribe(campaign => {
+      this.selectedCampaign = campaign;
+    });
+  }
+
+  onCampaignSelect(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const campaignId = Number(select.value);
+    const chosen = this.campaigns.find(c => c.id === campaignId) || null;
+    this.activePlayerService.clearActivePlayer();
+    this.campaignService.setSelectedCampaign(chosen);
+    this.dataService.refreshPlayers().subscribe();
+  }
 
   onClose(): void {
     this.close.emit();

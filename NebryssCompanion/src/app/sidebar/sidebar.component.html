@@ -124,22 +124,17 @@
       <span>Rules</span>
     </div>
 
+    <!-- Category: Preferences -->
+    <div class="menu-category-title">Preferences</div>
+    <div class="menu-item" (click)="openSettingsModal()">
+      <span class="material-icons">settings</span>
+      <span>Settings</span>
+    </div>
+
     <div class="update-section">
       <button type="button" class="update-button clean-storage" (click)="clearStorageAndUpdate()">
         <span class="material-icons">refresh</span> Refresh Data
       </button>
-      <div class="campaign-selector-wrapper">
-        <label for="campaign-select" class="campaign-select-label">
-          <span class="material-icons">flag</span> Campaign
-        </label>
-        <select id="campaign-select" class="sidebar-campaign-select" [ngModel]="selectedCampaign?.id"
-          (change)="onCampaignSelect($event)">
-          <option [ngValue]="null" disabled>Select Campaign...</option>
-          <option *ngFor="let camp of campaigns" [value]="camp.id">
-            {{ camp.name }}
-          </option>
-        </select>
-      </div>
     </div>
     <button *ngIf="!isAdmin" type="button" class="update-button admin-btn" (click)="openAdminDialog(adminDialog)">
       <span class="material-icons">lock</span> Admin Access
@@ -162,7 +157,7 @@
   <div class="confirmation-dialog">
     <h3>Admin Access</h3>
     <p>Enter admin password:</p>
-    <input #passwordInput type="password"
+    <input #passwordInput type="password" autofocus
       style="margin-bottom: 10px; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;"
       (keyup.enter)="check(passwordInput.value)">
     <div class="dialog-buttons">

@@ -72,6 +72,10 @@ export class ModalComponent {
       this.viewContainerRef.clear();
       this.viewContainerRef.createEmbeddedView(template, context);
       this.cdr.detectChanges();
+      setTimeout(() => {
+        const autofocusEl = this.viewContainerRef.element.nativeElement.parentElement?.querySelector('[autofocus]') as HTMLElement;
+        autofocusEl?.focus();
+      }, 0);
     }
   }
 }

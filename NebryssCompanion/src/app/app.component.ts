@@ -66,21 +66,18 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
         </button>
 
         @if (showHeaderPlayerTitle) {
-          <div class="active-player-chip" *ngIf="activePlayer$ | async as player" (click)="onViewChange('players')" title="Active Player">
-            <span class="material-icons chip-icon">person</span>
-            <span class="chip-name">{{ player.name }}</span>
-          </div>
+          @if (activePlayer$ | async; as player) {
+            <div class="active-player-chip" (click)="onViewChange('players')" title="Active Player">
+              <span class="material-icons chip-icon">person</span>
+              <span class="chip-name">{{ player.name }}</span>
+            </div>
+          } @else {
+            <div class="active-player-chip" (click)="onViewChange('players')" title="Select Player">
+              <span class="material-icons chip-icon">person</span>
+              <span class="chip-name">Select</span>
+            </div>
+          }
         }
-
-        <button
-          type="button"
-          class="header-action-btn settings-btn"
-          (click)="openSettingsModal()"
-          title="App Settings & Customization"
-          aria-label="Open Settings"
-        >
-          <span class="material-icons">settings</span>
-        </button>
       </div>
     </header>
 
@@ -97,7 +94,7 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
         <div class="spinner"></div>
       </div>
     }
-    <app-sidebar #sidebarComp (viewChange)="onViewChange($event)"></app-sidebar>
+    <app-sidebar #sidebarComp (viewChange)="onViewChange($event)" (openSettings)="openSettingsModal()"></app-sidebar>
     
     <div class="content-area" #contentArea [style.transform]="contentTransform" [class.content-area-no-footer]="!showFooterMenu">
       <app-view-host
@@ -179,7 +176,7 @@ import { SettingsModalComponent } from './settings-modal/settings-modal.componen
         <h3>GM & Admin Access</h3>
         <ng-container *ngIf="!hasAccess">
           <p>Enter admin password to unlock GM features:</p>
-          <input #passwordInput type="password" style="margin-bottom: 12px; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem;" (keyup.enter)="check(passwordInput.value)">
+          <input #passwordInput type="password" autofocus style="margin-bottom: 12px; padding: 10px; width: 100%; box-sizing: border-box; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem;" (keyup.enter)="check(passwordInput.value)">
           <div class="dialog-buttons">
             <button class="btn-cancel" type="button" (click)="cancel()">Cancel</button>
             <button class="btn-confirm" type="button" (click)="check(passwordInput.value)">Submit</button>
@@ -782,6 +779,10 @@ export class AppComponent {
     };
 
     this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext);
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>('.admin-dialog-modal input[type="password"]');
+      input?.focus();
+    }, 50);
   }
 
   @HostListener('click', ['$event'])

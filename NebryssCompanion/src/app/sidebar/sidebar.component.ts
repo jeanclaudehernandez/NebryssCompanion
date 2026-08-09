@@ -8,10 +8,6 @@ import { AdminService } from '../admin.service';
 import { AppView } from '../app-view.types';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
-import { CampaignService } from '../campaign.service';
-import { Campaign } from '../model';
-
-import { ActivePlayerService } from '../active-player.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -26,11 +22,9 @@ export class SidebarComponent {
   @ViewChild('confirmDialog') confirmDialogTemplate!: TemplateRef<any>;
   @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<AppView>();
+  @Output() openSettings = new EventEmitter<void>();
   isOpen = false;
   isAdmin = false;
-
-  campaigns: Campaign[] = [];
-  selectedCampaign: Campaign | null = null;
 
   constructor(
     private matDialog: MatDialog,
@@ -38,30 +32,11 @@ export class SidebarComponent {
     private modalService: ModalService,
     public themeService: ThemeService,
     private adminService: AdminService,
-    private dataService: DataService,
-    public campaignService: CampaignService,
-    private activePlayerService: ActivePlayerService
+    private dataService: DataService
   ) {
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
-
-    this.dataService.getCampaigns().subscribe(campaigns => {
-      this.campaigns = campaigns;
-    });
-
-    this.campaignService.selectedCampaign$.subscribe(campaign => {
-      this.selectedCampaign = campaign;
-    });
-  }
-
-  onCampaignSelect(event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const campaignId = Number(select.value);
-    const chosen = this.campaigns.find(c => c.id === campaignId) || null;
-    this.activePlayerService.clearActivePlayer();
-    this.campaignService.setSelectedCampaign(chosen);
-    this.dataService.refreshPlayers().subscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -92,6 +67,11 @@ export class SidebarComponent {
   changeView(view: AppView) {
     this.viewChange.emit(view);
     this.toggleMenu();
+  }
+
+  openSettingsModal(): void {
+    this.openSettings.emit();
+    this.isOpen = false;
   }
 
   openAdminItemCreator(): void {
@@ -216,6 +196,10 @@ export class SidebarComponent {
       }
     };
     this.modalService.openFromTemplate(template, dialogContext);
+    setTimeout(() => {
+      const input = document.querySelector<HTMLInputElement>('.confirmation-dialog input[type="password"]');
+      input?.focus();
+    }, 50);
   }
 
   logoutAdmin() {
