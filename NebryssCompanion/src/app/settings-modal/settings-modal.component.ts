@@ -219,7 +219,6 @@ import { Campaign } from '../model';
                 <span class="material-icons warning-icon">warning</span>
                 <div class="confirm-text-wrap">
                   <strong>Clear Local Cache & Refresh?</strong>
-                  <p>This will reset local storage and reload the application. Ensure your character sheets are saved.</p>
                 </div>
               </div>
               <div class="confirm-actions">
