@@ -1,0 +1,402 @@
+<div class="session-admin-container">
+  <!-- Main Editor Form -->
+  <main class="session-editor-pane">
+    <div class="form-card">
+      <!-- Form Header -->
+      <div class="form-card-header">
+        <div class="header-title-group">
+          <h3>{{ isEditing ? currentSessionTitle : 'Create Session ' + sessionId }}</h3>
+          <div class="header-badges">
+            <span class="badge badge-session-num">
+              <span class="material-icons">auto_stories</span> Session {{ sessionId }}
+            </span>
+            <span class="badge badge-concluded" *ngIf="isCurrentSessionConcluded">
+              <span class="material-icons">check_circle</span> Concluded
+            </span>
+            <span class="badge badge-draft" *ngIf="!isCurrentSessionConcluded">
+              <span class="material-icons">edit_note</span> Draft (GM Only)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Branch Visibility Manager -->
+      <div class="branch-manager-card">
+        <div class="branch-manager-header">
+          <div class="branch-header-left">
+            <span class="material-icons branch-icon">alt_route</span>
+            <div>
+              <h4>Branch Visibility Controls</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detected Branches from Content -->
+        <div class="branch-chips-container">
+          <span class="chips-label">Detected Story Branches:</span>
+          <div class="branch-chips-list" *ngIf="detectedBranches.length > 0; else noBranchesDetected">
+            <button type="button" *ngFor="let b of detectedBranches" class="branch-toggle-chip"
+              [class.is-visible]="isBranchVisible(b)" (click)="toggleBranchVisibility(b)"
+              [title]="isBranchVisible(b) ? 'Click to hide from players (GM Only)' : 'Click to make visible to players'">
+              <span class="material-icons">{{ isBranchVisible(b) ? 'visibility' : 'visibility_off' }}</span>
+              <span class="branch-name">{{ b }}</span>
+              <span class="branch-status-label">{{ isBranchVisible(b) ? 'Player Visible' : 'GM Only' }}</span>
+            </button>
+          </div>
+          <ng-template #noBranchesDetected>
+            <span class="no-branches-hint">No branches found in session plan.</span>
+          </ng-template>
+        </div>
+
+
+
+        <!-- Active player visible branches list -->
+        <div class="active-branches-row" *ngIf="playerVisibleBranches.length > 0">
+          <span class="active-branches-label">Currently Visible to Players:</span>
+          <div class="active-chips">
+            <span *ngFor="let pv of playerVisibleBranches" class="active-branch-pill">
+              <span>{{ pv }}</span>
+              <button type="button" class="remove-branch-btn" (click)="removeBranch(pv)"
+                title="Remove from visible list">
+                <span class="material-icons">close</span>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Tabs (Plan vs Conclusion vs Live Preview) -->
+      <div class="editor-section-tabs">
+        <button type="button" class="section-tab-btn" [class.active]="activeSectionTab === 'plan'"
+          (click)="activeSectionTab = 'plan'">
+          <span class="material-icons">description</span>
+          <span>Plan</span>
+        </button>
+
+        <button type="button" class="section-tab-btn" [class.active]="activeSectionTab === 'conclusion'"
+          (click)="activeSectionTab = 'conclusion'">
+          <span class="material-icons">auto_stories</span>
+          <span>Conclusion</span>
+          <span class="tab-indicator" [class.has-conclusion]="isCurrentSessionConcluded"></span>
+        </button>
+
+        <button type="button" class="section-tab-btn" [class.active]="activeSectionTab === 'preview'"
+          (click)="activeSectionTab = 'preview'">
+          <span class="material-icons">visibility</span>
+          <span>Preview</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Session Plan Editor -->
+      <div class="editor-tab-body" *ngIf="activeSectionTab === 'plan'">
+        <!-- Inserter Toolbars -->
+        <div class="editor-toolbar">
+          <!-- Entity Tag Inserters -->
+          <div class="toolbar-group">
+            <span class="toolbar-label">Tag Entities:</span>
+            <button type="button" class="tag-btn tag-btn--player" (click)="openEntityPicker('player', 'content')"
+              title="Tag a Player Character">
+              <span class="material-icons">person</span>
+              <span>&#64;Player</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--npc" (click)="openEntityPicker('npc', 'content')"
+              title="Tag an NPC">
+              <span class="material-icons">badge</span>
+              <span>&#64;NPC</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--location" (click)="openEntityPicker('location', 'content')"
+              title="Tag a Location">
+              <span class="material-icons">place</span>
+              <span>&#64;Location</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--shop" (click)="openEntityPicker('shop', 'content')"
+              title="Tag a Merchant / Shop">
+              <span class="material-icons">storefront</span>
+              <span>&#64;Shop</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--bestiary" (click)="openEntityPicker('bestiary', 'content')"
+              title="Tag a Creature / Bestiary Entry">
+              <span class="material-icons">pets</span>
+              <span>&#64;Creature</span>
+            </button>
+          </div>
+
+          <!-- Snippets Inserter -->
+          <div class="toolbar-group snippets-group">
+            <span class="toolbar-label">Snippets:</span>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('title', 'content')"
+              title="Insert Session Title Header">### Title</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('branch-a', 'content')"
+              title="Insert Branch A Header">Branch A</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('branch-b', 'content')"
+              title="Insert Branch B Header">Branch B</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('phase', 'content')"
+              title="Insert Phase List Items">Phase</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('primary-obj', 'content')"
+              title="Insert Primary Objective">Primary Obj</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('secondary-obj', 'content')"
+              title="Insert Secondary Objective">Secondary Obj</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('branch-decision', 'content')"
+              title="Insert Branching Decision">Branch Decision</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('divider', 'content')"
+              title="Insert Divider">--- Divider</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('bold', 'content')"
+              title="Bold text">**Bold**</button>
+          </div>
+        </div>
+
+        <!-- Markdown Textarea -->
+        <div class="form-group full-width">
+          <label for="session-content">
+            Session Plan & Story Narrative (Markdown) <span class="required">*</span>
+          </label>
+          <textarea #contentTextarea id="session-content" rows="18" [(ngModel)]="content"
+            placeholder="Write the session narrative beats, acts, branches, and objectives..." class="code-textarea"
+            required></textarea>
+        </div>
+      </div>
+
+      <!-- Tab 2: Session Conclusion Editor -->
+      <div class="editor-tab-body" *ngIf="activeSectionTab === 'conclusion'">
+        <div class="conclusion-help-banner">
+          <span class="material-icons">info</span>
+          <span>Adding a conclusion finalizes this session and makes it visible to players in the companion app. Leaving
+            it blank keeps it in Draft mode.</span>
+        </div>
+
+        <!-- Inserter Toolbars -->
+        <div class="editor-toolbar">
+          <div class="toolbar-group">
+            <span class="toolbar-label">Tag Entities:</span>
+            <button type="button" class="tag-btn tag-btn--player" (click)="openEntityPicker('player', 'conclussion')">
+              <span class="material-icons">person</span>
+              <span>&#64;Player</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--npc" (click)="openEntityPicker('npc', 'conclussion')">
+              <span class="material-icons">badge</span>
+              <span>&#64;NPC</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--location"
+              (click)="openEntityPicker('location', 'conclussion')">
+              <span class="material-icons">place</span>
+              <span>&#64;Location</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--shop" (click)="openEntityPicker('shop', 'conclussion')">
+              <span class="material-icons">storefront</span>
+              <span>&#64;Shop</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--bestiary"
+              (click)="openEntityPicker('bestiary', 'conclussion')">
+              <span class="material-icons">pets</span>
+              <span>&#64;Creature</span>
+            </button>
+          </div>
+
+          <div class="toolbar-group snippets-group">
+            <span class="toolbar-label">Snippets:</span>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('conclusion-title', 'conclussion')">###
+              Conclusion</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('outcome-a', 'conclussion')">Outcome
+              A</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('outcome-b', 'conclussion')">Outcome
+              B</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('divider', 'conclussion')">---
+              Divider</button>
+            <button type="button" class="snippet-btn" (click)="insertSnippet('bold', 'conclussion')">**Bold**</button>
+          </div>
+        </div>
+
+        <!-- Conclusion Textarea -->
+        <div class="form-group full-width">
+          <label for="session-conclusion">
+            Session Conclusion / Post-Debrief Narrative (Markdown)
+          </label>
+          <textarea #conclusionTextarea id="session-conclusion" rows="16" [(ngModel)]="conclussion"
+            placeholder="Write the session resolution, consequences, rewards, and discoveries..."
+            class="code-textarea"></textarea>
+        </div>
+      </div>
+
+      <!-- Tab 3: Live Preview Rendering -->
+      <div class="editor-tab-body" *ngIf="activeSectionTab === 'preview'">
+        <div class="preview-container">
+          <!-- Preview Session Header Card -->
+          <div class="preview-card-header">
+            <div class="preview-header-left">
+              <span class="preview-number-badge">{{ sessionId }}</span>
+              <div class="preview-header-text">
+                <h3 class="preview-header-title">
+                  <span class="preview-session-label">Session {{ sessionId }}:</span>
+                  <span class="preview-session-name">{{ currentSessionTitle }}</span>
+                </h3>
+                <div class="preview-badges">
+                  <span class="preview-badge badge--concluded" *ngIf="isCurrentSessionConcluded">
+                    <span class="material-icons">check_circle</span> Concluded
+                  </span>
+                  <span class="preview-badge badge--draft" *ngIf="!isCurrentSessionConcluded">
+                    <span class="material-icons">edit_note</span> Draft — GM Only
+                  </span>
+                  <span class="preview-badge badge--branches" *ngIf="detectedBranches.length > 0">
+                    <span class="material-icons">alt_route</span> Branches ({{ playerVisibleBranches.length }}/{{
+                    detectedBranches.length }} Visible)
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Preview Body -->
+          <div class="preview-card-body">
+            <!-- Plan Section -->
+            <div class="preview-section" *ngIf="content">
+              <div class="preview-section-header">
+                <span class="material-icons section-icon">description</span>
+                <h4>Session Plan</h4>
+              </div>
+              <div class="session-narrative" [innerHTML]="parsedPlanPreview"></div>
+            </div>
+
+            <!-- Ornamental Divider -->
+            <div class="preview-divider" *ngIf="content && conclussion">
+              <span class="preview-divider-diamond"></span>
+            </div>
+
+            <!-- Conclusion Section -->
+            <div class="preview-section" *ngIf="conclussion">
+              <div class="preview-section-header">
+                <span class="material-icons section-icon">auto_stories</span>
+                <h4>
+                  Conclusion
+                  <span class="conclusion-sub" *ngIf="conclusionSubtitle">— {{ conclusionSubtitle }}</span>
+                </h4>
+              </div>
+              <div class="session-narrative" [innerHTML]="parsedConclusionPreview"></div>
+            </div>
+
+            <div class="preview-empty-notice" *ngIf="!conclussion">
+              <span class="material-icons">hourglass_empty</span>
+              <span>Conclusion is currently blank. This session will remain a GM Draft until concluded.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Footer Actions -->
+      <div class="form-actions">
+        <div class="actions-left">
+          <button *ngIf="isEditing" type="button" class="btn btn-danger" (click)="promptDelete()"
+            [disabled]="!canDelete">
+            <span class="material-icons">delete</span>
+            <span>Delete Session</span>
+          </button>
+        </div>
+
+        <div class="actions-right">
+          <button type="button" class="btn btn-secondary" (click)="startNewSession()" [disabled]="isSaving">
+            Clear / New
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Floating Save Button -->
+  <button type="button" class="floating-save-btn" (click)="saveSession()" [disabled]="!canSubmit"
+    [title]="isSaving ? 'Saving...' : (isEditing ? 'Save Session changes' : 'Create Session')"
+    [attr.aria-label]="isSaving ? 'Saving...' : (isEditing ? 'Save Session changes' : 'Create Session')">
+    <span class="material-icons" *ngIf="!isSaving">save</span>
+    <span class="spinner-small-btn" *ngIf="isSaving"></span>
+  </button>
+
+  <!-- Delete Modal Confirmation -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <span class="material-icons icon-warning">warning</span>
+        <h3>Confirm Session Deletion</h3>
+      </div>
+      <p>Are you sure you want to delete <strong>Session {{ sessionId }}</strong> ("{{ currentSessionTitle }}")? This
+        action cannot be undone.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelDelete()">Cancel</button>
+        <button type="button" class="btn btn-danger" (click)="confirmDelete()" [disabled]="isDeleting">
+          {{ isDeleting ? 'Deleting...' : 'Delete Permanently' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Entity Picker Modal -->
+  <div class="modal-overlay" *ngIf="showEntityPicker">
+    <div class="modal-card entity-picker-modal">
+      <div class="modal-header">
+        <span class="material-icons">sell</span>
+        <h3>Insert Entity Tag ({{ pickerEntityType | uppercase }})</h3>
+        <button type="button" class="btn-close-modal" (click)="closeEntityPicker()" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Entity Type Selector Tabs -->
+      <div class="picker-type-tabs">
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'player'"
+          (click)="pickerEntityType = 'player'">
+          <span class="material-icons">person</span>
+          <span>Player</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'npc'"
+          (click)="pickerEntityType = 'npc'">
+          <span class="material-icons">badge</span>
+          <span>NPC</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'location'"
+          (click)="pickerEntityType = 'location'">
+          <span class="material-icons">place</span>
+          <span>Location</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'shop'"
+          (click)="pickerEntityType = 'shop'">
+          <span class="material-icons">storefront</span>
+          <span>Shop</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'bestiary'"
+          (click)="pickerEntityType = 'bestiary'">
+          <span class="material-icons">pets</span>
+          <span>Creature</span>
+        </button>
+      </div>
+
+      <!-- Search in Picker -->
+      <div class="picker-search-box">
+        <span class="material-icons">search</span>
+        <input type="text" [(ngModel)]="pickerSearchTerm"
+          [placeholder]="'Search ' + pickerEntityType + 's by name or details...'" class="picker-search-input"
+          autofocus />
+        <button *ngIf="pickerSearchTerm" type="button" class="btn-clear-search" (click)="pickerSearchTerm = ''">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <!-- Entity List -->
+      <div class="picker-list">
+        <div *ngFor="let item of entityPickerList" class="picker-item" (click)="insertEntityTag(item)">
+          <div class="picker-item-main">
+            <span class="picker-item-name">{{ item.name }}</span>
+            <span class="picker-item-sub" *ngIf="item.subtitle">{{ item.subtitle }}</span>
+          </div>
+          <div class="picker-item-tag">
+            <code>&#64;{{ pickerEntityType }}[{{ item.id }}]</code>
+          </div>
+        </div>
+
+        <div class="picker-empty" *ngIf="entityPickerList.length === 0">
+          <p>No matching {{ pickerEntityType }}s found.</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeEntityPicker()">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

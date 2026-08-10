@@ -16,31 +16,22 @@
   </div>
 
   <div class="dropdown-menu" *ngIf="isOpen">
-    <div 
-      class="dropdown-item" 
-      *ngIf="showClearOption" 
-      (click)="selectOption(null)"
+    <div class="dropdown-item" *ngIf="showClearOption" (click)="selectOption(null)"
       [class.selected]="selectedOption === null">
       <div class="option-main">None</div>
       <div class="option-sub">Clear selection</div>
     </div>
-    
+
     <ng-container *ngIf="type === 'player'">
-      <div 
-        class="dropdown-item" 
-        *ngFor="let option of options" 
-        (click)="selectOption(option)"
+      <div class="dropdown-item" *ngFor="let option of options" (click)="selectOption(option)"
         [class.selected]="option.id === selectedOption?.id">
-        <div class="option-main">{{ option.name }} - {{ option.race }}</div>
+        <div class="option-main">{{ option.name }}</div>
         <div class="option-sub">{{ option.origin }}</div>
       </div>
     </ng-container>
 
     <ng-container *ngIf="type === 'simple'">
-      <div 
-        class="dropdown-item" 
-        *ngFor="let option of options" 
-        (click)="selectOption(option)"
+      <div class="dropdown-item" *ngFor="let option of options" (click)="selectOption(option)"
         [class.selected]="option === selectedOption">
         <div class="option-main">{{ option }}</div>
       </div>

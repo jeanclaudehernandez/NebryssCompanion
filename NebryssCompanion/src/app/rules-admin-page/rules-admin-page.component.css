@@ -6,57 +6,44 @@
   color: inherit;
 }
 
-/* Header */
-.admin-header {
+.sidebar-top-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  gap: 12px;
+  flex-direction: column;
 }
 
-.header-title-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.header-icon {
-  font-size: 26px;
-  color: #a855f7;
-}
-
-.header-title-group h2 {
-  margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.header-sub {
-  margin: 2px 0 0 0;
-  font-size: 0.8rem;
-  opacity: 0.7;
-}
-
-.btn-new {
+.btn-new-entry {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  background: #8b5cf6;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   color: #ffffff;
-  border: none;
-  padding: 6px 14px;
-  min-height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  min-height: 40px;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.btn-new:hover {
-  background: #7c3aed;
+.btn-new-entry:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.45);
+}
+
+.btn-new-entry:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.25);
 }
 
 /* Tab Bar */

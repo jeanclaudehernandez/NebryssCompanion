@@ -6,13 +6,16 @@
 
   <div *ngIf="isAdmin" class="layout">
     <div class="player-detail-container admin-mode-panel">
-      <div class="admin-section">
+      <div class="admin-section creator-top-bar">
         <div class="creator-mode-buttons">
           <button *ngFor="let mode of creatorModes" type="button" class="inline-btn"
             [class.active-mode]="creatorMode === mode.value" (click)="setCreatorMode(mode.value)">
             {{ mode.label }}
           </button>
         </div>
+        <button type="button" class="btn-new-entry" (click)="startCreateMode()">
+          + New Entry
+        </button>
       </div>
     </div>
 

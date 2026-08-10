@@ -5,21 +5,6 @@
   </div>
 
   <ng-container *ngIf="isAdmin">
-    <!-- Header Banner -->
-    <header class="admin-header">
-      <div class="header-title-group">
-        <span class="material-icons header-icon">auto_fix_high</span>
-        <div>
-          <h2>Rules Editor</h2>
-          <p class="header-sub">Manage Altered States, Weapon Rules, Terrains, and Mist Effects.</p>
-        </div>
-      </div>
-      <button type="button" class="btn-new" (click)="resetForm()">
-        <span class="material-icons">add</span>
-        <span>New Entry</span>
-      </button>
-    </header>
-
   <!-- Tab Bar -->
   <div class="tab-bar">
     <button
@@ -53,6 +38,12 @@
       </div>
 
       <div class="sidebar-content" *ngIf="!isSelectorCollapsed">
+        <div class="sidebar-top-actions">
+          <button type="button" class="btn-new-entry" (click)="resetForm()">
+            + New Entry
+          </button>
+        </div>
+
         <div class="search-box">
           <span class="material-icons search-icon">search</span>
           <input

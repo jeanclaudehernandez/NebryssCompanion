@@ -15,8 +15,8 @@
               <option *ngFor="let player of players" [ngValue]="player.id">{{ player.name }}</option>
             </select>
           </label>
-          <button type="button" class="inline-btn btn-new-player" (click)="createNewPlayer()" style="height: 44px; padding: 0 16px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap;">
-            + New Player
+          <button type="button" class="btn-new-entry" (click)="createNewPlayer()">
+            + New Entry
           </button>
         </div>
       </section>

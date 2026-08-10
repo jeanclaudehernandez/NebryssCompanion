@@ -86,6 +86,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     adminCreatureEditor: () => import('./creature-admin-page/creature-admin-page.component').then(m => m.CreatureAdminPageComponent),
     adminCampaignEditor: () => import('./campaign-admin-page/campaign-admin-page.component').then(m => m.CampaignAdminPageComponent),
     adminRulesEditor: () => import('./rules-admin-page/rules-admin-page.component').then(m => m.RulesAdminPageComponent),
+    adminSessionEditor: () => import('./session-admin-page/session-admin-page.component').then(m => m.SessionAdminPageComponent),
     campaignSessions: () => import('./campaign-sessions/campaign-sessions.component').then(m => m.CampaignSessionsComponent)
   };
 
@@ -182,10 +183,14 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         break;
       case 'campaignSessions':
         subscribeToOutput('viewChange', view => this.viewChange.emit(view));
+        subscribeToOutput('openAdminEditor', session => this.openAdminEditor.emit(session));
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
         subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
+        break;
+      case 'adminSessionEditor':
+        subscribeToOutput('viewChange', view => this.viewChange.emit(view));
         break;
       case 'worldMap':
         subscribeToOutput('navigateToLocation', locationName =>
@@ -255,6 +260,11 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
       case 'adminCreatureEditor':
         if (this.adminEditSession?.mode === 'creature') {
           this.componentRef.setInput('initialCreature', this.adminEditSession.creature);
+        }
+        break;
+      case 'adminSessionEditor':
+        if (this.adminEditSession?.mode === 'session') {
+          this.componentRef.setInput('initialSession', this.adminEditSession.session);
         }
         break;
     }

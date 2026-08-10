@@ -24,6 +24,7 @@ export const APP_VIEWS = [
   'adminCreatureEditor',
   'adminCampaignEditor',
   'adminRulesEditor',
+  'adminSessionEditor',
   'campaignSessions'
 ] as const;
 

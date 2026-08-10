@@ -1,21 +1,13 @@
 <div class="npc-admin-container">
-  <header class="npc-admin-header">
-    <div class="header-left">
-      <span class="material-icons header-icon">badge</span>
-      <div>
-        <h2>NPC Editor & Creator</h2>
-        <p class="subtitle">Manage non-player characters, faction affiliations, roles, and backstory.</p>
-      </div>
-    </div>
-    <button type="button" class="btn btn-primary" (click)="startNewNpc()">
-      <span class="material-icons">person_add</span>
-      <span>Create New NPC</span>
-    </button>
-  </header>
-
   <div class="npc-admin-layout">
     <!-- Sidebar / List Pane -->
     <aside class="npc-sidebar">
+      <div class="sidebar-top-actions">
+        <button type="button" class="btn-new-entry" (click)="startNewNpc()">
+          + New Entry
+        </button>
+      </div>
+
       <div class="search-box">
         <span class="material-icons">search</span>
         <input

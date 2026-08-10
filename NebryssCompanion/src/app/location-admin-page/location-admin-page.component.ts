@@ -214,6 +214,32 @@ export class LocationAdminPageComponent implements OnInit, OnChanges {
     return `translate(${this.pickerTranslateX}px, ${this.pickerTranslateY}px) scale(${this.pickerScale})`;
   }
 
+  startNewLocation(): void {
+    this.initialLocation = null;
+    this.initialMapX = null;
+    this.initialMapY = null;
+    this.locationId = null;
+    this.name = '';
+    this.description = '';
+    this.rpgMapLayout = '';
+    this.privateNotes = '';
+    this.secrets = [];
+    this.isSecret = false;
+    this.isSecretRevealed = false;
+    this.faction = '';
+    this.category = '';
+    this.categorySize = null;
+    this.imgUrl = '';
+    this.thumbnail = '';
+    this.mapX = null;
+    this.mapY = null;
+    this.isCapital = false;
+    this.isWorldMap = false;
+    this.discovered = true;
+    this.locationDeleted = false;
+    this.resetPickerView();
+  }
+
   openLocationOnWorldMap(): void {
     const locationName = this.name.trim();
     if (!locationName) {

@@ -11,6 +11,18 @@
     <span class="material-icons sessions-empty-icon">auto_stories</span>
     <h3>No Chronicles Yet</h3>
     <p>The pages of this campaign journal remain blank. Your story has yet to be written.</p>
+    <button *ngIf="isAdmin" type="button" class="btn-create-session" (click)="createNewSession()">
+      <span class="material-icons">add</span>
+      <span>Create First Session</span>
+    </button>
+  </div>
+
+  <!-- GM Top Actions Bar -->
+  <div class="sessions-top-actions" *ngIf="isAdmin && !isLoading && hasSessions">
+    <button type="button" class="btn-create-session" (click)="createNewSession()" title="Create a new campaign session">
+      <span class="material-icons">add</span>
+      <span>New Session</span>
+    </button>
   </div>
 
   <!-- Session Cards -->
@@ -50,7 +62,13 @@
             </div>
           </div>
         </div>
-        <span class="material-icons session-expand-icon" [class.rotated]="entry.expanded">expand_more</span>
+        <div class="session-card-header-right">
+          <button *ngIf="isAdmin" type="button" class="session-edit-btn" (click)="editSession(entry.session, $event)"
+            title="Edit this session in Session Editor" aria-label="Edit Session">
+            <span class="material-icons">edit</span>
+          </button>
+          <span class="material-icons session-expand-icon" [class.rotated]="entry.expanded">expand_more</span>
+        </div>
       </button>
 
       <!-- Session Body (expandable) -->

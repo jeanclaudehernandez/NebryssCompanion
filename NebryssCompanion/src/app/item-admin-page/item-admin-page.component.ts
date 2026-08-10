@@ -724,7 +724,7 @@ export class ItemAdminPageComponent implements OnInit, OnChanges {
     }
   }
 
-  private startCreateMode(): void {
+  startCreateMode(): void {
     this.clearEditState();
     this.creatorMode = 'item';
     this.resetForm();

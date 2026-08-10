@@ -4,39 +4,44 @@
   color: var(--text-color, #e2e8f0);
 }
 
-.npc-admin-header {
+.sidebar-top-actions {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+.btn-new-entry {
+  display: inline-flex;
   align-items: center;
-  margin-bottom: 1.5rem;
-  background: var(--card-bg, rgba(30, 41, 59, 0.7));
-  backdrop-filter: blur(12px);
-  padding: 10px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  min-height: 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+  text-decoration: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.btn-new-entry:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139, 92, 246, 0.45);
 }
 
-.header-icon {
-  font-size: 2.5rem;
-  color: #38bdf8;
-}
-
-.npc-admin-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-}
-
-.subtitle {
-  margin: 0.25rem 0 0 0;
-  font-size: 0.875rem;
-  color: #94a3b8;
+.btn-new-entry:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(139, 92, 246, 0.25);
 }
 
 .npc-admin-layout {

@@ -1,6 +1,9 @@
 <div class="admin-page">
   <div *ngIf="isAdmin" class="player-detail-container admin-header">
     <div class="admin-header-actions">
+      <button type="button" class="btn-new-entry" (click)="startNewLocation()">
+        + New Entry
+      </button>
       <button *ngIf="name.trim()" type="button" class="icon-btn view-map-btn" (click)="openLocationOnWorldMap()"
         aria-label="View location on World Map" title="View location focused on World Map">
         <span class="material-icons" aria-hidden="true">public</span>

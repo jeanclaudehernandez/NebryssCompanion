@@ -557,6 +557,7 @@ export class AppComponent {
       case 'adminCreatureEditor': return 'Creature Editor';
       case 'adminCampaignEditor': return 'Campaign Editor';
       case 'adminRulesEditor': return 'Rules Editor';
+      case 'adminSessionEditor': return 'Session Editor';
       case 'campaignSessions': return 'Campaign Sessions';
       default: return 'Nebryss Companion';
     }
@@ -840,6 +841,8 @@ export class AppComponent {
       this.currentView = 'adminNpcEditor';
     } else if (session.mode === 'creature') {
       this.currentView = 'adminCreatureEditor';
+    } else if (session.mode === 'session') {
+      this.currentView = 'adminSessionEditor';
     } else {
       this.currentView = 'adminItemCreator';
     }

@@ -25,6 +25,7 @@ import {
   BestiaryEntry
 } from '../model';
 import { AppView } from '../app-view.types';
+import { AdminEditorSession } from '../admin-editor.models';
 
 interface ParsedSession {
   session: CampaignSession;
@@ -68,6 +69,7 @@ const ENTITY_CONFIG: Record<EntityType, { icon: string; cssClass: string; label:
 })
 export class CampaignSessionsComponent implements OnInit {
   @Output() viewChange = new EventEmitter<AppView>();
+  @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   @Output() navigateToNpc = new EventEmitter<{ npcName?: string }>();
   @Output() navigateToLocation = new EventEmitter<{ locationName: string; backTarget: string | null }>();
   @Output() navigateToShop = new EventEmitter<{ shopName?: string }>();
@@ -183,6 +185,22 @@ export class CampaignSessionsComponent implements OnInit {
 
   toggleSession(index: number): void {
     this.parsedSessions[index].expanded = !this.parsedSessions[index].expanded;
+  }
+
+  editSession(session: CampaignSession, event?: MouseEvent): void {
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.openAdminEditor.emit({ mode: 'session', session });
+  }
+
+  createNewSession(): void {
+    this.openAdminEditor.emit({ mode: 'session', session: null });
+  }
+
+  openSessionEditor(): void {
+    this.openAdminEditor.emit({ mode: 'session', session: null });
   }
 
 

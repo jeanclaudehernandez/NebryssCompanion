@@ -1,22 +1,13 @@
 <div class="campaign-admin-container">
-  <!-- Header Banner -->
-  <header class="admin-header">
-    <div class="header-title-group">
-      <span class="material-icons header-icon">flag</span>
-      <div>
-        <h2>Campaign Management</h2>
-        <p class="header-sub">Create, edit, and operate multiple Nebryss campaigns.</p>
-      </div>
-    </div>
-    <button type="button" class="btn-new-campaign" (click)="resetForm()">
-      <span class="material-icons">add</span>
-      <span>New Campaign</span>
-    </button>
-  </header>
-
   <div class="admin-layout">
     <!-- Sidebar / Campaign List -->
     <aside class="campaign-sidebar">
+      <div class="sidebar-top-actions">
+        <button type="button" class="btn-new-entry" (click)="resetForm()">
+          + New Entry
+        </button>
+      </div>
+
       <div class="search-box">
         <span class="material-icons search-icon">search</span>
         <input

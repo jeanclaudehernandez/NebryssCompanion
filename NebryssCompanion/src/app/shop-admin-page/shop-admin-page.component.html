@@ -1,21 +1,13 @@
 <div class="shop-admin-container">
-  <header class="shop-admin-header">
-    <div class="header-left">
-      <span class="material-icons header-icon">storefront</span>
-      <div>
-        <h2>Shop Editor &amp; Manager</h2>
-        <p class="subtitle">Assign NPC owners, world map locations, catalog items, weapons, and shop-specific prices.</p>
-      </div>
-    </div>
-    <button type="button" class="btn btn-primary" (click)="startNewShop()">
-      <span class="material-icons">add_business</span>
-      <span>Create New Shop</span>
-    </button>
-  </header>
-
   <div class="shop-admin-layout">
     <!-- Sidebar / Shops List grouped by Location -->
     <aside class="shop-sidebar">
+      <div class="sidebar-top-actions">
+        <button type="button" class="btn-new-entry" (click)="startNewShop()">
+          + New Entry
+        </button>
+      </div>
+
       <div class="search-box">
         <span class="material-icons">search</span>
         <input
