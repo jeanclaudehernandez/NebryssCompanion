@@ -537,9 +537,9 @@ export class AppComponent {
       case 'players': return 'Players';
       case 'bestiary': return 'Bestiary';
       case 'letters': return 'Letters';
-      case 'items': return 'Items & Equipment';
+      case 'items': return 'Items';
       case 'shops': return 'Shops';
-      case 'lore': return 'Lore & Factions';
+      case 'lore': return 'Lore';
       case 'locations': return 'Locations';
       case 'worldMap': return 'World Map';
       case 'talents': return 'Talents';
@@ -551,14 +551,14 @@ export class AppComponent {
       case 'afflictions': return 'Afflictions';
       case 'shipNavigation': return 'Ship Navigation';
       case 'npcs': return 'NPCs';
-      case 'adminItemCreator': return 'Item Creator';
-      case 'adminLocationCreator': return 'Location Creator';
-      case 'adminPlayerEditor': return 'Player Editor';
-      case 'adminCreatureEditor': return 'Creature Editor';
-      case 'adminCampaignEditor': return 'Campaign Editor';
-      case 'adminRulesEditor': return 'Rules Editor';
-      case 'adminSessionEditor': return 'Session Editor';
-      case 'campaignSessions': return 'Campaign Sessions';
+      case 'adminItemCreator': return 'Item Admin';
+      case 'adminLocationCreator': return 'Location Admin';
+      case 'adminPlayerEditor': return 'Player admin';
+      case 'adminCreatureEditor': return 'Creature Admin';
+      case 'adminCampaignEditor': return 'Campaign Admin';
+      case 'adminRulesEditor': return 'Rules Admin';
+      case 'adminSessionEditor': return 'Session Admin';
+      case 'campaignSessions': return 'Sessions';
       default: return 'Nebryss Companion';
     }
   }

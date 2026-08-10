@@ -20,7 +20,7 @@ import { Campaign } from '../model';
         <header class="settings-header">
           <div class="settings-title-wrap">
             <span class="material-icons settings-header-icon">tune</span>
-            <h2>Settings & Preferences</h2>
+            <h2>Settings</h2>
           </div>
           <button type="button" class="settings-close-btn" (click)="onClose()" aria-label="Close settings">
             <span class="material-icons">close</span>
@@ -133,11 +133,6 @@ import { Campaign } from '../model';
             <!-- When not authenticated -->
             <div class="action-card" *ngIf="!adminService.hasAdminAccess">
               <div class="action-card-header">
-                <span class="material-icons action-icon">lock</span>
-                <div class="action-card-info">
-                  <strong>Unlock GM Mode</strong>
-                  <small>Unlock Game Master tools, admin editors, and secret campaign content</small>
-                </div>
               </div>
               <div class="admin-input-group">
                 <div class="password-field-wrapper">
@@ -145,7 +140,7 @@ import { Campaign } from '../model';
                   <input
                     [type]="showAdminPassword ? 'text' : 'password'"
                     class="settings-input"
-                    placeholder="Enter admin password..."
+                    placeholder="Enter password..."
                     [(ngModel)]="adminPassword"
                     (keyup.enter)="onUnlockAdmin()"
                   />
@@ -160,7 +155,6 @@ import { Campaign } from '../model';
                 </div>
                 <button type="button" class="btn-accent-action" (click)="onUnlockAdmin()">
                   <span class="material-icons">vpn_key</span>
-                  <span>Unlock</span>
                 </button>
               </div>
               <div class="input-error" *ngIf="adminPasswordError">
@@ -208,21 +202,14 @@ import { Campaign } from '../model';
           <section class="settings-section">
             <h3 class="section-title">
               <span class="material-icons">sync</span>
-              Data & Storage
+              Data storage
             </h3>
 
             <!-- Normal State -->
             <div class="action-card" *ngIf="!isConfirmingRefresh">
-              <div class="action-card-header">
-                <span class="material-icons action-icon">refresh</span>
-                <div class="action-card-info">
-                  <strong>Refresh Data & Cache</strong>
-                  <small>Clear locally cached data and force-sync the latest content from the server</small>
-                </div>
-              </div>
               <button type="button" class="btn-accent-action btn-full-width" (click)="onPromptRefresh()">
                 <span class="material-icons">refresh</span>
-                <span>Refresh Data</span>
+                <span>Clear data and re-sync</span>
               </button>
             </div>
 
@@ -537,10 +524,6 @@ import { Campaign } from '../model';
       display: flex;
       flex-direction: column;
       gap: 12px;
-      padding: 12px 14px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.04);
       color: #cbd5e1;
       box-sizing: border-box;
       transition: all 0.2s ease;

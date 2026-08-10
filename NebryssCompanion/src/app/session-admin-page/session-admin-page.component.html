@@ -10,9 +10,6 @@
             <span class="badge badge-session-num">
               <span class="material-icons">auto_stories</span> Session {{ sessionId }}
             </span>
-            <span class="badge badge-concluded" *ngIf="isCurrentSessionConcluded">
-              <span class="material-icons">check_circle</span> Concluded
-            </span>
             <span class="badge badge-draft" *ngIf="!isCurrentSessionConcluded">
               <span class="material-icons">edit_note</span> Draft (GM Only)
             </span>
@@ -230,9 +227,6 @@
                   <span class="preview-session-name">{{ currentSessionTitle }}</span>
                 </h3>
                 <div class="preview-badges">
-                  <span class="preview-badge badge--concluded" *ngIf="isCurrentSessionConcluded">
-                    <span class="material-icons">check_circle</span> Concluded
-                  </span>
                   <span class="preview-badge badge--draft" *ngIf="!isCurrentSessionConcluded">
                     <span class="material-icons">edit_note</span> Draft — GM Only
                   </span>

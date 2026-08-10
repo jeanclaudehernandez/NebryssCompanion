@@ -17,13 +17,7 @@
     </button>
   </div>
 
-  <!-- GM Top Actions Bar -->
-  <div class="sessions-top-actions" *ngIf="isAdmin && !isLoading && hasSessions">
-    <button type="button" class="btn-create-session" (click)="createNewSession()" title="Create a new campaign session">
-      <span class="material-icons">add</span>
-      <span>New Session</span>
-    </button>
-  </div>
+
 
   <!-- Session Cards -->
   <div class="sessions-list" *ngIf="!isLoading && hasSessions">
@@ -33,16 +27,12 @@
       <button type="button" class="session-card-header" (click)="toggleSession(i)" [attr.aria-expanded]="entry.expanded"
         [attr.aria-label]="'Toggle Session ' + entry.session.sessionId">
         <div class="session-card-header-left">
-          <span class="session-number-badge">{{ entry.session.sessionId }}</span>
           <div class="session-header-text">
             <h3 class="session-header-title">
               <span class="session-label">Session {{ entry.session.sessionId }}:</span>
               <span class="session-title-parsed" [innerHTML]="entry.titleHtml"></span>
             </h3>
             <div class="session-header-badges">
-              <span class="session-badge session-badge--concluded" *ngIf="entry.isConcluded">
-                <span class="material-icons">check_circle</span> Concluded
-              </span>
               <span class="session-badge session-badge--draft" *ngIf="!entry.isConcluded && isAdmin">
                 <span class="material-icons">edit_note</span> Draft — GM Only
               </span>
@@ -116,4 +106,9 @@
     </div>
   </div>
 
+  <!-- Floating New Session Button (GM Only) -->
+  <button *ngIf="isAdmin && !isLoading" type="button" class="floating-create-session-btn" (click)="createNewSession()"
+    title="Create New Session" aria-label="Create New Session">
+    <span class="material-icons">add</span>
+  </button>
 </div>

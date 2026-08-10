@@ -302,7 +302,6 @@
 .session-card-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-shrink: 0;
   margin-left: auto;
 }
@@ -1184,4 +1183,51 @@
   :host ::ng-deep .entity-chip-name {
     max-width: 120px;
   }
+}
+
+/* ===================================================================
+   Floating Create Session Button (Bottom Right)
+   =================================================================== */
+
+.floating-create-session-btn {
+  position: fixed;
+  bottom: 5rem;
+  right: 5rem;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c9a84c 0%, #a37e2c 100%);
+  color: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(201, 168, 76, 0.4);
+  cursor: pointer;
+  z-index: 100;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .floating-create-session-btn {
+    bottom: calc(4.5rem + env(safe-area-inset-bottom, 0px));
+    right: 1.25rem;
+    width: 40px;
+    height: 40px;
+  }
+}
+
+.floating-create-session-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 6px 20px rgba(201, 168, 76, 0.55);
+}
+
+.floating-create-session-btn:active {
+  transform: scale(0.96);
+}
+
+.floating-create-session-btn .material-icons {
+  font-size: 28px;
+  font-weight: 700;
 }
