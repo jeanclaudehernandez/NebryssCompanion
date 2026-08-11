@@ -1,0 +1,186 @@
+<div class="ai-session-manager">
+  <!-- Context Sidebar -->
+  <aside class="context-sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">Context</h3>
+      <button class="sidebar-toggle" (click)="sidebarCollapsed = !sidebarCollapsed">
+        <span class="material-icons">{{ sidebarCollapsed ? 'chevron_left' : 'chevron_right' }}</span>
+      </button>
+    </div>
+
+    <div class="sidebar-content" *ngIf="!sidebarCollapsed">
+      <!-- Connection Status -->
+      <div class="status-bar">
+        <span class="status-dot" [class.connected]="connectionStatus === 'connected'"
+              [class.reconnecting]="connectionStatus === 'reconnecting'"
+              [class.disconnected]="connectionStatus === 'disconnected' || connectionStatus === 'connecting'">
+        </span>
+        <span class="status-label">{{ connectionStatus | titlecase }}</span>
+        <button class="btn-icon btn-reconnect" *ngIf="connectionStatus === 'disconnected'"
+                (click)="reconnect()" title="Reconnect">
+          <span class="material-icons">refresh</span>
+        </button>
+      </div>
+
+      <!-- Active Campaign -->
+      <div class="context-section">
+        <div class="context-label">Campaign</div>
+        <div class="context-value campaign-badge" *ngIf="activeCampaign">
+          <span class="material-icons">flag</span>
+          {{ activeCampaign.name }}
+          <span class="campaign-id">#{{ activeCampaign.id }}</span>
+        </div>
+        <div class="context-value muted" *ngIf="!activeCampaign">No campaign selected</div>
+      </div>
+
+      <!-- Conversation ID -->
+      <div class="context-section" *ngIf="conversationId">
+        <div class="context-label">Conversation</div>
+        <div class="context-value conversation-id">{{ conversationId | slice:0:12 }}...</div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="context-section">
+        <div class="context-label">Quick Actions</div>
+        <div class="quick-actions">
+          <button class="quick-action-btn" (click)="sendQuickAction('get-context')"
+                  [disabled]="isAgentTyping || connectionStatus !== 'connected'">
+            <span class="material-icons">inventory</span>
+            <span>Get Context</span>
+          </button>
+          <button class="quick-action-btn" (click)="sendQuickAction('plan-session')"
+                  [disabled]="isAgentTyping || connectionStatus !== 'connected'">
+            <span class="material-icons">add_circle_outline</span>
+            <span>Plan Session</span>
+          </button>
+          <button class="quick-action-btn" (click)="sendQuickAction('conclude-session')"
+                  [disabled]="isAgentTyping || connectionStatus !== 'connected'">
+            <span class="material-icons">check_circle_outline</span>
+            <span>Conclude Session</span>
+          </button>
+          <button class="quick-action-btn" (click)="sendQuickAction('list-sessions')"
+                  [disabled]="isAgentTyping || connectionStatus !== 'connected'">
+            <span class="material-icons">format_list_numbered</span>
+            <span>List Sessions</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Players -->
+      <div class="context-section" *ngIf="activePlayers.length > 0">
+        <div class="context-label">Active Players</div>
+        <div class="player-list">
+          <div class="player-chip" *ngFor="let player of activePlayers">
+            <span class="material-icons">person</span>
+            {{ player.name }}
+          </div>
+        </div>
+      </div>
+
+      <!-- New Conversation -->
+      <div class="context-section">
+        <button class="btn-new-conversation" (click)="startNewConversation()">
+          <span class="material-icons">restart_alt</span>
+          <span>New Conversation</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Chat Area -->
+  <main class="chat-area">
+    <!-- Reopen Context Sidebar button (visible whenever sidebar is collapsed) -->
+    <button class="reopen-sidebar-btn" *ngIf="sidebarCollapsed" (click)="sidebarCollapsed = false" title="Open Context Sidebar">
+      <span class="material-icons">view_sidebar</span>
+      <span class="reopen-label">Context</span>
+    </button>
+
+    <!-- Messages -->
+    <div class="messages-container" #messagesContainer (scroll)="onScroll()">
+      <!-- Empty state -->
+      <div class="empty-state" *ngIf="messages.length === 0">
+        <span class="material-icons empty-icon">smart_toy</span>
+        <h2>AI Session Manager</h2>
+        <p>Chat with the AGY agent to plan, create, and conclude campaign sessions.</p>
+        <p class="empty-hint">Use the quick actions on the right, or type a message below.</p>
+      </div>
+
+      <!-- Message bubbles -->
+      <div *ngFor="let msg of messages; trackBy: trackByMessageId"
+           class="message-wrapper" [class.user]="msg.role === 'user'"
+           [class.agent]="msg.role === 'agent'" [class.system]="msg.role === 'system'">
+
+        <!-- System message -->
+        <div *ngIf="msg.role === 'system'" class="system-message">
+          <span class="material-icons system-icon">info</span>
+          <span [innerHTML]="msg.content"></span>
+        </div>
+
+        <!-- User message -->
+        <div *ngIf="msg.role === 'user'" class="message-bubble user-bubble">
+          <div class="message-content">{{ msg.content }}</div>
+          <div class="message-time">{{ msg.timestamp | date:'HH:mm' }}</div>
+        </div>
+
+        <!-- Agent message -->
+        <div *ngIf="msg.role === 'agent'" class="message-bubble agent-bubble">
+          <!-- Tool call chips -->
+          <div class="tool-calls" *ngIf="msg.toolCalls && msg.toolCalls.length > 0">
+            <div *ngFor="let tc of msg.toolCalls" class="tool-chip"
+                 [class.running]="tc.status === 'running'"
+                 [class.done]="tc.status === 'done' || tc.status === 'success'">
+              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : 'check_circle' }}</span>
+              <span class="tool-name">{{ tc.summary || tc.name }}</span>
+            </div>
+          </div>
+
+          <!-- Message content -->
+          <div class="message-content agent-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+
+          <!-- Active status badge (e.g. Reasoning... or Running command...) -->
+          <div class="active-status-badge" *ngIf="msg.isStreaming && agentStatus">
+            <span class="material-icons status-spin">sync</span>
+            <span>{{ agentStatus }}</span>
+          </div>
+
+          <!-- Typing indicator -->
+          <div class="typing-indicator" *ngIf="msg.isStreaming && !agentStatus">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+
+          <div class="message-time">{{ msg.timestamp | date:'HH:mm' }}</div>
+        </div>
+      </div>
+
+      <!-- Scroll-to-bottom FAB -->
+      <button class="scroll-to-bottom-fab" *ngIf="!isAtBottom" (click)="scrollToBottom()">
+        <span class="material-icons">keyboard_arrow_down</span>
+      </button>
+    </div>
+
+    <!-- Input bar -->
+    <div class="input-bar">
+      <div class="input-wrapper">
+        <textarea #inputArea
+                  class="message-input"
+                  [(ngModel)]="inputText"
+                  (keydown)="onInputKeydown($event)"
+                  placeholder="Type a message..."
+                  [disabled]="connectionStatus !== 'connected'"
+                  rows="1"
+                  (input)="autoResizeInput()"
+        ></textarea>
+        <button class="btn-send" *ngIf="!isAgentTyping"
+                (click)="sendCurrentMessage()"
+                [disabled]="!inputText.trim() || connectionStatus !== 'connected'">
+          <span class="material-icons">send</span>
+        </button>
+        <button class="btn-cancel-response" *ngIf="isAgentTyping" (click)="cancelResponse()">
+          <span class="material-icons">stop_circle</span>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

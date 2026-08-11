@@ -87,7 +87,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     adminCampaignEditor: () => import('./campaign-admin-page/campaign-admin-page.component').then(m => m.CampaignAdminPageComponent),
     adminRulesEditor: () => import('./rules-admin-page/rules-admin-page.component').then(m => m.RulesAdminPageComponent),
     adminSessionEditor: () => import('./session-admin-page/session-admin-page.component').then(m => m.SessionAdminPageComponent),
-    campaignSessions: () => import('./campaign-sessions/campaign-sessions.component').then(m => m.CampaignSessionsComponent)
+    campaignSessions: () => import('./campaign-sessions/campaign-sessions.component').then(m => m.CampaignSessionsComponent),
+    aiSessionManager: () => import('./ai-session-manager/ai-session-manager.component').then(m => m.AiSessionManagerComponent)
   };
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -188,6 +189,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
+        break;
+      case 'aiSessionManager':
+        subscribeToOutput('viewChange', view => this.viewChange.emit(view));
         break;
       case 'adminSessionEditor':
         subscribeToOutput('viewChange', view => this.viewChange.emit(view));

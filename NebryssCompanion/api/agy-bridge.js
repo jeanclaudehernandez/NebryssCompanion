@@ -1,0 +1,354 @@
+/**
+ * AGY Bridge — Spawns the `agy` CLI as a child process and streams
+ * parsed JSONL events back to callers over a callback interface.
+ */
+
+const { spawn } = require('child_process');
+const path = require('path');
+
+const WORKSPACE_DIR = path.resolve(__dirname, '../..');
+const AGY_CMD = process.platform === 'win32' ? 'agy.exe' : 'agy';
+
+/**
+ * Creates a human-readable summary for a tool execution.
+ */
+function formatToolSummary(toolName, params) {
+  if (!params) return toolName;
+
+  switch (toolName) {
+    case 'run_command':
+      return params.CommandLine ? `${params.CommandLine}` : 'Running command';
+    case 'view_file':
+      return params.AbsolutePath ? `Viewing ${path.basename(params.AbsolutePath)}` : 'Reading file';
+    case 'write_to_file':
+      return params.TargetFile ? `Writing ${path.basename(params.TargetFile)}` : 'Writing file';
+    case 'replace_file_content':
+    case 'multi_replace_file_content':
+      return params.TargetFile ? `Editing ${path.basename(params.TargetFile)}` : 'Modifying file';
+    case 'list_dir':
+      return params.DirectoryPath ? `Listing ${path.basename(params.DirectoryPath) || params.DirectoryPath}` : 'Listing directory';
+    case 'grep_search':
+      return params.Query ? `Searching "${params.Query}"` : 'Searching code';
+    case 'search_web':
+      return params.query ? `Searching web: "${params.query}"` : 'Web search';
+    case 'ask_question':
+      return 'Asking question';
+    default:
+      return toolName;
+  }
+}
+
+/**
+ * Creates a new AGY agent session.
+ *
+ * @param {object} options
+ * @param {function} options.onEvent  — Called with each parsed event: { type, ... }
+ * @param {function} options.onError  — Called with error strings
+ * @param {function} options.onClose  — Called when the process exits
+ * @returns {AgentSession}
+ */
+function createAgentSession({ onEvent, onError, onClose }) {
+  let conversationId = null;
+  let activeProcess = null;
+  let isProcessing = false;
+  let messageQueue = [];
+  let isDestroyed = false;
+  let streamedTokenCount = 0;
+
+  /**
+   * Build the system preamble that primes the agent for session management.
+   */
+  function buildSystemPreamble(campaignId) {
+    return [
+      'You are working in the Nebryss Kill Team Campaign workspace.',
+      'Use the "Nebryss Session Manager" skill for all session-related tasks.',
+      'The companion tool script is located at: NebryssCompanion/scripts/campaign-session-tool.js',
+      campaignId ? `The active campaign ID is: ${campaignId}.` : '',
+      'IMPORTANT PRESENTATION RULE: When presenting session plans, narrative drafts, or conclusion drafts in chat for user review, DO NOT display raw reference tag syntax (@player[id], @npc[id], etc.); display natural, clean entity names so the text is natural and easy to read.',
+      'When saving to the database using campaign-session-tool.js, ensure entity names are converted to @entity[id] tags.',
+    ].filter(Boolean).join('\n');
+  }
+
+  /**
+   * Spawns the `agy` CLI with the given prompt.
+   */
+  function spawnAgy(prompt) {
+    const args = [
+      '-p', prompt,
+      '--output-format', 'stream-json',
+      '--dangerously-skip-permissions',
+      '--add-dir', WORKSPACE_DIR,
+    ];
+
+    if (conversationId) {
+      args.push('--conversation', conversationId);
+    }
+
+    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'}`);
+
+    return spawn(AGY_CMD, args, {
+      cwd: WORKSPACE_DIR,
+      env: { ...process.env },
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false,
+    });
+  }
+
+  /**
+   * Parse a single line of JSONL output from the agy CLI.
+   */
+  function parseJsonLine(line) {
+    const trimmed = line.trim();
+    if (!trimmed) return null;
+
+    try {
+      return JSON.parse(trimmed);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /**
+   * Map agy CLI JSONL events to frontend client message format.
+   */
+  function handleAgyEvent(parsed) {
+    if (!parsed || !parsed.event) {
+      return;
+    }
+
+    switch (parsed.event) {
+      case 'init': {
+        if (parsed.conversation_id) {
+          conversationId = parsed.conversation_id;
+          console.log(`[AGY Bridge] Session initialized with ID: ${conversationId}`);
+        }
+        onEvent({
+          type: 'init',
+          conversationId: parsed.conversation_id || conversationId,
+          tools: parsed.init?.tools || [],
+        });
+        break;
+      }
+
+      case 'step_update': {
+        const step = parsed.step_update;
+        if (!step) break;
+
+        if (step.conversation_id) {
+          conversationId = step.conversation_id;
+        }
+
+        // 1. Text token streaming (agent response)
+        if (step.text_delta) {
+          streamedTokenCount++;
+          onEvent({
+            type: 'token',
+            content: step.text_delta,
+          });
+        }
+
+        // 2. Tool invocation
+        if (step.step_type === 'tool') {
+          const toolName = step.tool_name || step.tool_info?.name || 'tool';
+          const params = step.tool_info?.parameters || {};
+          const summary = formatToolSummary(toolName, params);
+
+          if (step.state === 'ACTIVE') {
+            console.log(`[AGY Bridge] Tool started: ${toolName} - ${summary}`);
+            onEvent({
+              type: 'tool_call',
+              name: toolName,
+              args: params,
+              status: 'running',
+              summary: summary,
+              stepIndex: step.step_index,
+            });
+          } else if (step.state === 'DONE') {
+            console.log(`[AGY Bridge] Tool finished: ${toolName}`);
+            onEvent({
+              type: 'tool_result',
+              name: toolName,
+              status: 'done',
+              summary: summary,
+              output: step.tool_info?.output || '',
+              stepIndex: step.step_index,
+            });
+          } else if (step.state === 'ERROR') {
+            console.warn(`[AGY Bridge] Tool error: ${toolName}`);
+            onEvent({
+              type: 'tool_result',
+              name: toolName,
+              status: 'error',
+              summary: summary,
+              output: step.tool_info?.error?.message || 'Tool execution failed',
+              stepIndex: step.step_index,
+            });
+          }
+        }
+
+        // 3. Status updates during reasoning / thinking
+        if (step.step_type === 'agent_response' && !step.text_delta) {
+          if (step.usage?.thinking_tokens) {
+            onEvent({
+              type: 'task_update',
+              summary: `Reasoning (${step.usage.thinking_tokens} tokens)...`,
+              status: 'thinking',
+            });
+          }
+        }
+        break;
+      }
+
+      case 'result': {
+        const res = parsed.result;
+        if (res?.conversation_id) {
+          conversationId = res.conversation_id;
+        }
+
+        console.log(`[AGY Bridge] Received result with status: ${res?.status}`);
+
+        // If no tokens were streamed earlier, emit full response text now
+        if (streamedTokenCount === 0 && res?.response) {
+          onEvent({
+            type: 'token',
+            content: res.response,
+          });
+        }
+
+        onEvent({
+          type: 'response_end',
+          conversationId: res?.conversation_id || conversationId,
+          status: res?.status || 'SUCCESS',
+          usage: res?.usage || null,
+        });
+        break;
+      }
+
+      default:
+        break;
+    }
+  }
+
+  /**
+   * Process stdout data stream line-by-line.
+   */
+  function createDataHandler() {
+    let buffer = '';
+
+    return function handleData(rawData) {
+      const data = typeof rawData === 'string' ? rawData : rawData.toString('utf8');
+      buffer += data;
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || '';
+
+      for (const line of lines) {
+        const clean = line.replace(/\x1b\[[0-9;]*[a-zA-Z]/g, '').trim();
+        if (!clean) continue;
+
+        const parsed = parseJsonLine(clean);
+        if (parsed) {
+          handleAgyEvent(parsed);
+        }
+      }
+    };
+  }
+
+  /**
+   * Send a message to the AGY agent.
+   */
+  function sendMessage(text, campaignId) {
+    if (isDestroyed) return;
+
+    if (isProcessing) {
+      messageQueue.push({ text, campaignId });
+      return;
+    }
+
+    isProcessing = true;
+    streamedTokenCount = 0;
+
+    // Prepend system preamble to the first message of a new conversation
+    let prompt = text;
+    if (!conversationId) {
+      prompt = buildSystemPreamble(campaignId) + '\n\n---\n\n' + text;
+    }
+
+    const proc = spawnAgy(prompt);
+    activeProcess = proc;
+
+    const handleData = createDataHandler();
+
+    proc.stdout.on('data', handleData);
+
+    proc.stderr.on('data', (data) => {
+      const errMsg = data.toString('utf8').trim();
+      if (errMsg) {
+        console.warn(`[AGY Bridge STDERR]: ${errMsg}`);
+      }
+    });
+
+    proc.on('close', (exitCode) => {
+      console.log(`[AGY Bridge] agy process closed with code: ${exitCode}`);
+      isProcessing = false;
+      activeProcess = null;
+
+      // Ensure response_end was emitted
+      onEvent({
+        type: 'response_end',
+        conversationId: conversationId,
+        status: exitCode === 0 ? 'SUCCESS' : 'ERROR',
+        exitCode,
+      });
+
+      processQueue();
+    });
+
+    proc.on('error', (err) => {
+      console.error(`[AGY Bridge] Process error:`, err);
+      isProcessing = false;
+      activeProcess = null;
+      onError(`Failed to spawn agy: ${err.message}`);
+    });
+  }
+
+  /**
+   * Process queued messages.
+   */
+  function processQueue() {
+    if (isDestroyed || messageQueue.length === 0) return;
+    const next = messageQueue.shift();
+    sendMessage(next.text, next.campaignId);
+  }
+
+  /**
+   * Cancel the currently running response.
+   */
+  function cancel() {
+    if (activeProcess) {
+      activeProcess.kill('SIGTERM');
+      activeProcess = null;
+      isProcessing = false;
+      onEvent({ type: 'response_end', status: 'CANCELED', conversationId });
+    }
+  }
+
+  /**
+   * Destroy the session and clean up.
+   */
+  function destroy() {
+    isDestroyed = true;
+    messageQueue = [];
+    cancel();
+  }
+
+  return {
+    sendMessage,
+    cancel,
+    destroy,
+    getConversationId: () => conversationId,
+    isProcessing: () => isProcessing,
+  };
+}
+
+module.exports = { createAgentSession };

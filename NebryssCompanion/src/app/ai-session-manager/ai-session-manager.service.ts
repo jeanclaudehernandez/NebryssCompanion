@@ -1,0 +1,337 @@
+import { Injectable, OnDestroy } from '@angular/core';
+import { BehaviorSubject, Subject, Observable } from 'rxjs';
+
+export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'agent' | 'system';
+  content: string;
+  timestamp: Date;
+  isStreaming?: boolean;
+  toolCalls?: ToolCallInfo[];
+}
+
+export interface ToolCallInfo {
+  name: string;
+  args?: any;
+  status: string;
+  summary?: string;
+  output?: string;
+}
+
+export interface AgentEvent {
+  type: string;
+  [key: string]: any;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AiSessionManagerService implements OnDestroy {
+  private ws: WebSocket | null = null;
+  private reconnectTimer: any = null;
+  private reconnectAttempts = 0;
+  private maxReconnectDelay = 30000;
+  private destroyed = false;
+
+  private connectionStatusSubject = new BehaviorSubject<ConnectionStatus>('disconnected');
+  private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
+  private isAgentTypingSubject = new BehaviorSubject<boolean>(false);
+  private currentStatusSubject = new BehaviorSubject<string | null>(null);
+  private rawEventsSubject = new Subject<AgentEvent>();
+
+  // Currently streaming agent message (accumulates tokens)
+  private currentStreamingMessage: ChatMessage | null = null;
+  private conversationId: string | null = null;
+
+  connectionStatus$: Observable<ConnectionStatus> = this.connectionStatusSubject.asObservable();
+  messages$: Observable<ChatMessage[]> = this.messagesSubject.asObservable();
+  isAgentTyping$: Observable<boolean> = this.isAgentTypingSubject.asObservable();
+  currentStatus$: Observable<string | null> = this.currentStatusSubject.asObservable();
+  rawEvents$: Observable<AgentEvent> = this.rawEventsSubject.asObservable();
+
+  get isConnected(): boolean {
+    return this.connectionStatusSubject.value === 'connected';
+  }
+
+  get currentConversationId(): string | null {
+    return this.conversationId;
+  }
+
+  connect(): void {
+    if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
+      return;
+    }
+
+    this.connectionStatusSubject.next('connecting');
+
+    const wsUrl = this.getWebSocketUrl();
+
+    try {
+      this.ws = new WebSocket(wsUrl);
+    } catch (err) {
+      console.error('[AI Session] WebSocket creation failed:', err);
+      this.connectionStatusSubject.next('disconnected');
+      this.scheduleReconnect();
+      return;
+    }
+
+    this.ws.onopen = () => {
+      console.log('[AI Session] WebSocket connected');
+      this.connectionStatusSubject.next('connected');
+      this.reconnectAttempts = 0;
+    };
+
+    this.ws.onmessage = (event) => {
+      try {
+        const data: AgentEvent = JSON.parse(event.data);
+        this.handleEvent(data);
+        this.rawEventsSubject.next(data);
+      } catch (err) {
+        console.error('[AI Session] Failed to parse message:', err);
+      }
+    };
+
+    this.ws.onclose = () => {
+      console.log('[AI Session] WebSocket closed');
+      this.ws = null;
+      if (!this.destroyed) {
+        this.connectionStatusSubject.next('reconnecting');
+        this.scheduleReconnect();
+      } else {
+        this.connectionStatusSubject.next('disconnected');
+      }
+    };
+
+    this.ws.onerror = (err) => {
+      console.error('[AI Session] WebSocket error:', err);
+    };
+  }
+
+  disconnect(): void {
+    this.clearReconnectTimer();
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+    this.connectionStatusSubject.next('disconnected');
+  }
+
+  sendMessage(text: string, campaignId?: number): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.error('[AI Session] Cannot send — not connected');
+      return;
+    }
+
+    // Add user message to the list
+    const userMsg: ChatMessage = {
+      id: this.generateId(),
+      role: 'user',
+      content: text,
+      timestamp: new Date(),
+    };
+    this.addMessage(userMsg);
+
+    // Send to server
+    this.ws.send(JSON.stringify({
+      type: 'chat',
+      message: text,
+      campaignId: campaignId || undefined,
+    }));
+
+    // Prepare for streaming response
+    this.isAgentTypingSubject.next(true);
+    this.currentStreamingMessage = {
+      id: this.generateId(),
+      role: 'agent',
+      content: '',
+      timestamp: new Date(),
+      isStreaming: true,
+      toolCalls: [],
+    };
+    this.addMessage(this.currentStreamingMessage);
+  }
+
+  cancelResponse(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: 'cancel' }));
+  }
+
+  clearHistory(): void {
+    this.messagesSubject.next([]);
+    this.conversationId = null;
+    this.currentStreamingMessage = null;
+    this.isAgentTypingSubject.next(false);
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    this.disconnect();
+  }
+
+  // ─── Event Handling ───────────────────────────────────────────────
+
+  private handleEvent(event: AgentEvent): void {
+    switch (event.type) {
+      case 'init':
+        if (event['conversationId']) {
+          this.conversationId = event['conversationId'];
+        }
+        this.currentStatusSubject.next('Initialized agent session');
+        break;
+
+      case 'token':
+        this.currentStatusSubject.next(null);
+        this.appendToken(event['content'] || '');
+        break;
+
+      case 'tool_call':
+        this.currentStatusSubject.next(event['summary'] || `Running ${event['name']}`);
+        this.addToolCall({
+          name: event['name'] || 'unknown',
+          args: event['args'],
+          status: event['status'] || 'running',
+          summary: event['summary'] || '',
+        });
+        break;
+
+      case 'tool_result':
+        this.updateToolCallStatus(event['name'], event['status'] || 'done', event['output']);
+        break;
+
+      case 'response_end':
+        this.currentStatusSubject.next(null);
+        this.finalizeResponse(event['conversationId'], event['status']);
+        break;
+
+      case 'task_update':
+        if (event['summary']) {
+          this.currentStatusSubject.next(event['summary']);
+        }
+        break;
+
+      case 'error':
+        this.currentStatusSubject.next(null);
+        this.handleErrorEvent(event['message'] || 'Unknown error');
+        break;
+
+      case 'agent_event':
+        // Unrecognized event — log for debugging
+        console.log('[AI Session] Unhandled agent event:', event);
+        break;
+    }
+  }
+
+  private appendToken(content: string): void {
+    if (!this.currentStreamingMessage) return;
+    this.currentStreamingMessage.content += content;
+    this.emitMessages();
+  }
+
+  private addToolCall(toolCall: ToolCallInfo): void {
+    if (!this.currentStreamingMessage) return;
+    if (!this.currentStreamingMessage.toolCalls) {
+      this.currentStreamingMessage.toolCalls = [];
+    }
+    this.currentStreamingMessage.toolCalls.push(toolCall);
+    this.emitMessages();
+  }
+
+  private updateToolCallStatus(name: string, status: string, output?: string): void {
+    if (!this.currentStreamingMessage?.toolCalls) return;
+    const tc = this.currentStreamingMessage.toolCalls.find(t => t.name === name && t.status === 'running');
+    if (tc) {
+      tc.status = status;
+      if (output) tc.output = output;
+      this.emitMessages();
+    }
+  }
+
+  private finalizeResponse(conversationId: string | null, status: string): void {
+    if (conversationId) {
+      this.conversationId = conversationId;
+    }
+
+    if (this.currentStreamingMessage) {
+      this.currentStreamingMessage.isStreaming = false;
+
+      // If the response was empty but had an error status, add error info
+      if (!this.currentStreamingMessage.content && status === 'ERROR') {
+        this.currentStreamingMessage.content = '*The agent encountered an error processing this request.*';
+      }
+    }
+
+    this.currentStreamingMessage = null;
+    this.isAgentTypingSubject.next(false);
+    this.emitMessages();
+  }
+
+  private handleErrorEvent(message: string): void {
+    if (this.currentStreamingMessage) {
+      // Append error to the streaming message
+      this.currentStreamingMessage.content += `\n\n⚠️ **Error:** ${message}`;
+      this.currentStreamingMessage.isStreaming = false;
+      this.currentStreamingMessage = null;
+      this.isAgentTypingSubject.next(false);
+      this.emitMessages();
+    } else {
+      this.addSystemMessage(`⚠️ Error: ${message}`);
+    }
+  }
+
+  // ─── Message Management ───────────────────────────────────────────
+
+  private addMessage(msg: ChatMessage): void {
+    const current = this.messagesSubject.value;
+    this.messagesSubject.next([...current, msg]);
+  }
+
+  private addSystemMessage(text: string): void {
+    this.addMessage({
+      id: this.generateId(),
+      role: 'system',
+      content: text,
+      timestamp: new Date(),
+    });
+  }
+
+  private emitMessages(): void {
+    // Trigger change detection by emitting a new array reference
+    this.messagesSubject.next([...this.messagesSubject.value]);
+  }
+
+  // ─── Reconnection ────────────────────────────────────────────────
+
+  private scheduleReconnect(): void {
+    this.clearReconnectTimer();
+    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), this.maxReconnectDelay);
+    this.reconnectAttempts++;
+    console.log(`[AI Session] Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts})`);
+    this.reconnectTimer = setTimeout(() => this.connect(), delay);
+  }
+
+  private clearReconnectTimer(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+  }
+
+  // ─── Utilities ───────────────────────────────────────────────────
+
+  private getWebSocketUrl(): string {
+    const win = window as any;
+
+    // 1. Injected at runtime by server (e.g. "ws://localhost:8080/ws" or "wss://duckdns.org/ws")
+    if (win.WS_URL) {
+      return win.WS_URL.replace(/\/ws\/?$/, '') + '/ws/agent';
+    }
+
+    // 2. Derive from current host
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}/ws/agent`;
+  }
+
+  private generateId(): string {
+    return `msg-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+  }
+}

@@ -119,6 +119,10 @@
       <span class="material-icons">flag</span>
       <span>Campaigns</span>
     </div>
+    <div class="menu-item" *ngIf="isAdmin" (click)="changeView('aiSessionManager')">
+      <span class="material-icons">smart_toy</span>
+      <span>AI Session Manager</span>
+    </div>
     <div class="menu-item" *ngIf="isAdmin" (click)="openAdminRulesEditor()">
       <span class="material-icons">auto_fix_high</span>
       <span>Rules</span>

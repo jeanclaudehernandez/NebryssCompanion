@@ -25,7 +25,8 @@ export const APP_VIEWS = [
   'adminCampaignEditor',
   'adminRulesEditor',
   'adminSessionEditor',
-  'campaignSessions'
+  'campaignSessions',
+  'aiSessionManager'
 ] as const;
 
 export type AppView = typeof APP_VIEWS[number];

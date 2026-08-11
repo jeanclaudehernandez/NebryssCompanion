@@ -518,7 +518,7 @@ export class AppComponent {
   }
 
   get showFooterMenu(): boolean {
-    if (this.currentView === 'bestiary') {
+    if (this.currentView === 'bestiary' || this.currentView === 'aiSessionManager') {
       return false;
     }
     return !this.currentView.startsWith('admin');
@@ -559,6 +559,7 @@ export class AppComponent {
       case 'adminRulesEditor': return 'Rules Admin';
       case 'adminSessionEditor': return 'Session Admin';
       case 'campaignSessions': return 'Sessions';
+      case 'aiSessionManager': return 'AI Session Manager';
       default: return 'Nebryss Companion';
     }
   }
