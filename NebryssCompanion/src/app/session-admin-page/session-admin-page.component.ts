@@ -192,7 +192,25 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
         this.isAdmin = isAdmin;
       });
 
-    this.loadAllData();
+    this.campaignService.selectedCampaign$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(activeCampaign => {
+        if (activeCampaign) {
+          this.selectedCampaignFilter = activeCampaign.id;
+          if (!this.id) {
+            this.campaignId = activeCampaign.id;
+          }
+        }
+        this.loadAllData();
+      });
+
+    this.dataService.campaignSessions$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(sessions => {
+        if (sessions && sessions.length > 0) {
+          this.sessions = sessions;
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -232,15 +250,17 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
 
           const activeCampaign = this.campaignService.getSelectedCampaign();
           if (activeCampaign) {
-            this.campaignId = activeCampaign.id;
             this.selectedCampaignFilter = activeCampaign.id;
+            if (!this.id) {
+              this.campaignId = activeCampaign.id;
+            }
           }
 
           this.isLoading = false;
 
           if (this.initialSession) {
             this.populateForm(this.initialSession);
-          } else {
+          } else if (!this.id) {
             this.startNewSession();
           }
         },

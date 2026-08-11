@@ -106,8 +106,31 @@ export class CampaignSessionsComponent implements OnInit {
         this.rebuildVisibleSessions();
       });
 
-    const campaign = this.campaignService.getSelectedCampaign();
-    const campaignId = campaign?.id;
+    this.campaignService.selectedCampaign$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(campaign => {
+        this.loadSessionsForCampaign(campaign?.id);
+      });
+
+    this.dataService.campaignSessions$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(allSessions => {
+        const campaign = this.campaignService.getSelectedCampaign();
+        const campaignId = campaign?.id;
+        const filtered = campaignId
+          ? (allSessions || []).filter(s => s.campaignId === campaignId)
+          : (allSessions || []);
+
+        this.allSessions = filtered
+          .slice()
+          .sort((a, b) => b.sessionId - a.sessionId);
+
+        this.rebuildVisibleSessions();
+      });
+  }
+
+  private loadSessionsForCampaign(campaignId?: number): void {
+    this.isLoading = true;
 
     forkJoin({
       sessions: this.dataService.getCampaignSessions(campaignId),
@@ -118,21 +141,26 @@ export class CampaignSessionsComponent implements OnInit {
       bestiary: this.dataService.getBestiary()
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ sessions, players, npcs, locations, shops, bestiary }) => {
-        this.lookup = {
-          players,
-          npcs,
-          locations: (locations as any)?.locations ?? locations ?? [],
-          shops,
-          bestiary
-        };
+      .subscribe({
+        next: ({ sessions, players, npcs, locations, shops, bestiary }) => {
+          this.lookup = {
+            players: players || [],
+            npcs: npcs || [],
+            locations: (locations as any)?.locations ?? locations ?? [],
+            shops: shops || [],
+            bestiary: bestiary || []
+          };
 
-        this.allSessions = sessions
-          .slice()
-          .sort((a, b) => b.sessionId - a.sessionId);
+          this.allSessions = (sessions || [])
+            .slice()
+            .sort((a, b) => b.sessionId - a.sessionId);
 
-        this.rebuildVisibleSessions();
-        this.isLoading = false;
+          this.rebuildVisibleSessions();
+          this.isLoading = false;
+        },
+        error: () => {
+          this.isLoading = false;
+        }
       });
   }
 

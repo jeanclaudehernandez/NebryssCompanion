@@ -137,12 +137,17 @@ export class DataService {
       this.npcsSubject.next([]);
       this.npcsCache$ = null;
 
+      this.campaignSessions = [];
+      this.campaignSessionsSubject.next([]);
+      this.campaignSessionsCache$ = null;
+
       this.allDataCache$ = null;
 
       this.refreshPlayers().subscribe();
       this.refreshShops().subscribe();
       this.refreshLocations().subscribe();
       this.refreshNpcs().subscribe();
+      this.refreshCampaignSessions().subscribe();
     });
   }
 
