@@ -1,7 +1,6 @@
 ---
 name: Nebryss Weapon Rule Designer
-description: Designs new Weapon Rules for the Nebryss Killteam Campaign in the exact weaponRules JSON shape. Invoke when the user asks to add a special weapon rule keyword and its effect/prModifier.
-Trigger: User requests a new weapon rule (e.g., "Create a rule for corrosive damage" or "Add a mobility rule for mist weapons").
+description: Designs new Weapon Rules for the Nebryss Killteam Campaign in the exact weaponRules JSON shape. Invoke when the user asks to add a special weapon rule keyword and its effect/prModifier (e.g., "Create a rule for corrosive damage" or "Add a mobility rule for mist weapons").
 ---
 
 ### Execution Steps

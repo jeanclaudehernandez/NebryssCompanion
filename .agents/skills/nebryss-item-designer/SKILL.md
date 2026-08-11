@@ -1,7 +1,6 @@
 ---
 name: Nebryss Item Designer
-description: **Description:** Designs game items (consumables, armor, ammunition, modifications, materials, or blueprints) strictly adhering to the game's item JSON structures.
-**Trigger:** User requests an item (e.g., "Create a healing potion," "Design heavy armor").
+description: Designs game items (consumables, armor, ammunition, modifications, materials, or blueprints) strictly adhering to the game's item JSON structures. Invoke when user requests an item (e.g., "Create a healing potion," "Design heavy armor").
 ---
 
 ### Execution Steps

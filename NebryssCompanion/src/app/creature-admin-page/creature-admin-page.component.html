@@ -74,12 +74,29 @@
                   PR</button>
               </div>
             </label>
-            <div class="field" style="grid-column: 1 / -1; margin-top: 4px;">
-              <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;">
-                <input type="checkbox" [(ngModel)]="creature.isDiscovered" name="creatureIsDiscovered"
-                  style="width: auto; cursor: pointer;" />
-                <span><strong>Discovered by Players</strong> (Checked = Visible to players in Bestiary)</span>
-              </label>
+            <div class="field campaign-discovery-field" style="grid-column: 1 / -1; margin-top: 4px;">
+              <span class="field-title">Campaign Discovery (Visible to Players per Campaign):</span>
+              <div class="campaign-discovery-grid" *ngIf="campaigns.length > 0">
+                <label *ngFor="let camp of campaigns" class="campaign-check-label">
+                  <input type="checkbox"
+                    [checked]="isCampaignDiscovered(camp.id)"
+                    (change)="toggleCampaignDiscovery(camp.id)"
+                    style="width: auto; cursor: pointer;" />
+                  <span class="campaign-check-name">{{ camp.name }}</span>
+                  <span class="campaign-check-id">(ID: {{ camp.id }})</span>
+                </label>
+              </div>
+              <div class="quick-discovery-actions" *ngIf="campaigns.length > 0">
+                <button type="button" class="inline-btn-secondary" (click)="setAllCampaignsDiscovered(true)">Discover All</button>
+                <button type="button" class="inline-btn-secondary" (click)="setAllCampaignsDiscovered(false)">Undiscover All</button>
+              </div>
+              <div *ngIf="campaigns.length === 0" class="hint">
+                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; user-select: none;">
+                  <input type="checkbox" [(ngModel)]="creature.isDiscovered" name="creatureIsDiscovered"
+                    style="width: auto; cursor: pointer;" />
+                  <span><strong>Discovered by Players</strong> (Default fallback)</span>
+                </label>
+              </div>
             </div>
           </div>
         </section>

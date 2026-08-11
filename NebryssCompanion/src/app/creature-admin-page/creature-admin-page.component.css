@@ -690,3 +690,112 @@
   background: #242424;
   color: #e0e0e0;
 }
+
+/* Campaign Discovery Selector Styles */
+.campaign-discovery-field {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+}
+
+:host-context(body.dark-theme) .campaign-discovery-field {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.field-title {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+:host-context(body.dark-theme) .field-title {
+  color: #d1d5db;
+}
+
+.campaign-discovery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.campaign-check-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.campaign-check-label:hover {
+  border-color: #3b82f6;
+  background: rgba(59, 130, 246, 0.05);
+}
+
+:host-context(body.dark-theme) .campaign-check-label {
+  background: #1f2937;
+  border-color: #374151;
+  color: #f3f4f6;
+}
+
+:host-context(body.dark-theme) .campaign-check-label:hover {
+  border-color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.campaign-check-name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.campaign-check-id {
+  font-size: 11px;
+  color: #6b7280;
+  font-family: monospace;
+}
+
+:host-context(body.dark-theme) .campaign-check-id {
+  color: #9ca3af;
+}
+
+.quick-discovery-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.inline-btn-secondary {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.inline-btn-secondary:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+:host-context(body.dark-theme) .inline-btn-secondary {
+  background: #374151;
+  border-color: #4b5563;
+  color: #e5e7eb;
+}
+
+:host-context(body.dark-theme) .inline-btn-secondary:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+}

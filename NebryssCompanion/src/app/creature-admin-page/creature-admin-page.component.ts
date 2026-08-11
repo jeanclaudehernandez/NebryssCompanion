@@ -7,7 +7,7 @@ import { AdminService } from '../admin.service';
 import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.component';
 import { DataService } from '../data.service';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
-import { AlteredState, BestiaryEntry, ItemCategory, Items, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Campaign, ItemCategory, Items, Weapon, WeaponRule } from '../model';
 import { ToastService } from '../toast.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { NavigationHistoryService } from '../navigation-history.service';
@@ -50,6 +50,7 @@ export class CreatureAdminPageComponent implements OnInit {
   showDeleteConfirm = false;
 
   bestiary: BestiaryEntry[] = [];
+  campaigns: Campaign[] = [];
   weapons: Weapon[] = [];
   itemsData: Items = { items: [] };
   itemCategories: ItemCategory[] = [];
@@ -132,6 +133,7 @@ export class CreatureAdminPageComponent implements OnInit {
     this.isLoading = true;
     forkJoin({
       bestiary: this.dataService.getBestiary(),
+      campaigns: this.dataService.getCampaigns(),
       weapons: this.dataService.getWeapons(),
       items: this.dataService.getItems(),
       categories: this.dataService.getitemCategories(),
@@ -140,8 +142,9 @@ export class CreatureAdminPageComponent implements OnInit {
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ bestiary, weapons, items, categories, weaponRules, alteredStates }) => {
+        next: ({ bestiary, campaigns, weapons, items, categories, weaponRules, alteredStates }) => {
           this.bestiary = [...bestiary].sort((a, b) => a.name.localeCompare(b.name));
+          this.campaigns = [...(campaigns || [])];
           this.weapons = [...weapons].sort((a, b) => a.name.localeCompare(b.name));
           this.itemsData = items;
           this.itemCategories = categories;
@@ -212,7 +215,10 @@ export class CreatureAdminPageComponent implements OnInit {
     this.selectedCreatureId = creature.id;
     this.isEditing = true;
     this.editableCreature = this.cloneCreature(creature);
-    this.editableCreature.isDiscovered = creature.isDiscovered !== false;
+    this.editableCreature.discoveredCampaignIds = Array.isArray(creature.discoveredCampaignIds)
+      ? [...creature.discoveredCampaignIds]
+      : (creature.isDiscovered !== false ? (this.campaigns.length > 0 ? this.campaigns.map(c => c.id) : [1]) : []);
+    this.editableCreature.isDiscovered = this.editableCreature.discoveredCampaignIds.length > 0;
     this.editableCreature.weapons = [...(this.editableCreature.weapons ?? [])]
       .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
       .filter((id): id is number => typeof id === 'number' && !isNaN(id));
@@ -240,6 +246,7 @@ export class CreatureAdminPageComponent implements OnInit {
       subgroup: this.selectedSubGroup || '',
       pr: 10,
       isDiscovered: true,
+      discoveredCampaignIds: this.campaigns.length > 0 ? this.campaigns.map(c => c.id) : [1],
       attributes: {
         Movement: 6,
         Wounds: 10,
@@ -253,6 +260,32 @@ export class CreatureAdminPageComponent implements OnInit {
     };
     this.rebuildAssignedItemsTable();
     this.cancelStatEdit();
+  }
+
+  isCampaignDiscovered(campId: number): boolean {
+    if (!this.editableCreature?.discoveredCampaignIds) return false;
+    return this.editableCreature.discoveredCampaignIds.includes(campId);
+  }
+
+  toggleCampaignDiscovery(campId: number): void {
+    if (!this.editableCreature) return;
+    const current = this.editableCreature.discoveredCampaignIds ?? [];
+    if (current.includes(campId)) {
+      this.editableCreature.discoveredCampaignIds = current.filter(id => id !== campId);
+    } else {
+      this.editableCreature.discoveredCampaignIds = [...current, campId];
+    }
+    this.editableCreature.isDiscovered = this.editableCreature.discoveredCampaignIds.length > 0;
+  }
+
+  setAllCampaignsDiscovered(discovered: boolean): void {
+    if (!this.editableCreature) return;
+    if (discovered) {
+      this.editableCreature.discoveredCampaignIds = this.campaigns.map(c => c.id);
+    } else {
+      this.editableCreature.discoveredCampaignIds = [];
+    }
+    this.editableCreature.isDiscovered = this.editableCreature.discoveredCampaignIds.length > 0;
   }
 
   get canSave(): boolean {
@@ -270,6 +303,7 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.editableCreature.faction,
       subgroup: this.editableCreature.subgroup,
       pr: this.editableCreature.pr,
+      discoveredCampaignIds: this.editableCreature.discoveredCampaignIds ?? [],
       isDiscovered: this.editableCreature.isDiscovered !== false,
       attributes: this.editableCreature.attributes,
       weapons: this.editableCreature.weapons,
@@ -591,7 +625,8 @@ export class CreatureAdminPageComponent implements OnInit {
       faction: this.editableCreature.faction.trim() || 'Neutral',
       subgroup: this.editableCreature.subgroup.trim() || 'General',
       pr: Number(this.editableCreature.pr) || 10,
-      isDiscovered: this.editableCreature.isDiscovered !== false,
+      discoveredCampaignIds: this.editableCreature.discoveredCampaignIds ?? [],
+      isDiscovered: (this.editableCreature.discoveredCampaignIds ?? []).length > 0,
       weapons: [...(this.editableCreature.weapons ?? [])]
         .map(w => (typeof w === 'number' ? w : (w as any)?.id || (w as any)?.weapon?.id))
         .filter((id): id is number => typeof id === 'number' && !isNaN(id)),

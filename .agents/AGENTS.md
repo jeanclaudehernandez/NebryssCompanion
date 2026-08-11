@@ -1,11 +1,9 @@
----
-trigger: always_on
----
-
 # NebryssCompanion - Project Context & Rules for AI Agents
 
 ## 1. Project Overview
 NebryssCompanion is a responsive companion Progressive Web Application (PWA) built with **Angular 18**, **Angular CDK**, and **Angular Material**. It serves as a digital companion for a tabletop RPG / skirmish game ("Nebryss").
+
+> **Master Context & Lore Guide**: For complete world lore, the 5 factions, the active "Voss Succession" storyline, full character rosters, Kill Team 3E PR formulas, and software architecture, consult [CONTEXT.md](file:///c:/Users/jeanh/Desktop/Nebryss%20Killteam%20Campaign/CONTEXT.md).
 
 ### Core Views & Navigation (`currentView` in `AppComponent`):
 - `players`: Active Player list & Character Sheet detail (`PlayerListComponent`, `PlayerDetailComponent`).
@@ -65,33 +63,9 @@ NebryssCompanion is a responsive companion Progressive Web Application (PWA) bui
 6. **No Automatic Builds**: Do NOT run build commands (`ng build`, `npm run build`, `npm run build:prod`, etc.) after making changes unless explicitly requested by the user.
 7. **No constant git checks**: Do NOT run commands (`git status`, `git diff`, `git log`, etc.) unless explicitly requested by the user or if the task at hand requires checking work history.
 8. **Campaign Session Management & Entity Tagging**:
-   - Play sessions are stored in the `campaignSession` MongoDB collection with schema `{ campaignId: number, sessionId: number, content: string, conclussion: string }`.
-   - When drafting `content` or `conclussion`, ALWAYS tag entities using their unique numeric IDs: `@player[<id>]`, `@npc[<id>]`, `@location[<id>]`, `@shop[<id>]`, and `@bestiary[<id>]` for automated parsing and relational integrity.
-   - When creating sessions: Read DB previous sessions, generate and pitch structured ideas for approval, draft the session with entity ID tags, present for approval, and write to MongoDB.
-   - When concluding sessions: Fetch the latest session, ask debrief questions about exploration, battles, choices, and NPC interactions, synthesize the conclusion draft with entity ID tags, and update MongoDB.
-
----
-name: deploy
-description: Deploy the frontend or backend of Nebryss Companion by checking deploy.bat for deployment instructions and execution steps.
----
-
-# Deployment Instructions
-
-When asked to deploy the frontend, backend, or the full application:
-
-1. **Check `deploy.bat`**: Always view `deploy.bat` in the repository root first to verify the latest environment variables (`GCLOUD_PROJECT`, `CLOUD_RUN_SERVICE`, `GCLOUD_REGION`, `IMAGE_NAME`) and script commands.
-
-2. **Frontend Deployment**:
-   - Do NOT run any `git` commands.
-   - Run `npm run build` to build the Angular frontend distribution files.
-   - Run `npx firebase deploy --only hosting` (or `firebase deploy`) to publish the built frontend.
-
-3. **Backend Deployment**:
-   - Submit the Docker container build via Cloud Build:
-     `gcloud builds submit --project "%GCLOUD_PROJECT%" --tag "%IMAGE_NAME%"`
-   - Deploy the container to Google Cloud Run:
-     `gcloud run deploy "%CLOUD_RUN_SERVICE%" --project "%GCLOUD_PROJECT%" --image "%IMAGE_NAME%" --region "%GCLOUD_REGION%" --platform managed --quiet`
-
-4. **Full Stack Deployment**:
-   - Follow the steps sequentially as listed in `deploy.bat`.
+   - Play sessions are stored in the `campaignSession` MongoDB collection with schema `{ campaignId: number, sessionId: number, content: string, conclussion: string, playerVisibleBranches?: string[] }`.
+   - **Database vs Chat Presentation Separation**: When storing `content` or `conclussion` in MongoDB/JSON, ALWAYS tag entities using their unique numeric IDs: `@player[<id>]`, `@npc[<id>]`, `@location[<id>]`, `@shop[<id>]`, and `@bestiary[<id>]` for automated parsing and relational integrity. However, **when presenting session plans, narrative drafts, or conclusion drafts in chat for user review and approval, DO NOT display raw reference tag syntax**; instead, display natural, clean entity names (e.g. 'Wendy', 'Fortress Sanctus', 'Inquisitor Veyra Mortis', 'Maledictum Prime') so the text is natural and easy to read.
+   - **Chat Confirmation & Approval Workflow**: Never use interactive submit modals or assume automatic writes without approval. Always print session plans, newly proposed NPCs, Bestiary stat blocks, full narrative drafts (with clean names), and conclusion drafts (with clean names) directly in the chat message for user review. Solicit user feedback, and ONLY when the user explicitly approves in chat (e.g. "approve"), execute the tool/script to insert and persist into MongoDB and local JSON storage (with exact `@entity[<id>]` tags).
+   - When creating sessions: Read DB previous sessions, generate and pitch structured ideas for approval in chat, create NPC entries if new story characters or factions are introduced, and if NPCs are proposed to battle against the players, create corresponding Bestiary entries linked via `bestiaryId` (**strictly using weapons that already exist in the weapons compendium** and calculating exact PR), draft the session with clean entity names in chat, await user approval in chat, and write to MongoDB with `@entity[<id>]` tags upon approval.
+   - When concluding sessions: Fetch the latest session, ask debrief questions about exploration, battles, choices, and NPC interactions. **For sessions containing branching paths (e.g. Branch A / Branch B)**: When the user/GM indicates that players chose or completed one specific branch (e.g. Branch A), **ONLY the chosen/completed branch(es) must be added to `playerVisibleBranches` (e.g. `["Branch A"]` or `["Branch A: <Title>"]`)**—any unchosen, unexplored, or alternative branches must **NOT** be added to `playerVisibleBranches` so they remain hidden from players (GM-only). Synthesize the conclusion draft in chat with clean entity names, present for explicit approval in chat, and update MongoDB with `@entity[<id>]` tags upon approval.
 

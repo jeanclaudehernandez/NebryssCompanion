@@ -1,7 +1,6 @@
 ---
 name: Nebryss Weapon Designer
-description: Conceptualizes, balances, and formats new weapons for the Nebryss Killteam Campaign based on thematic descriptions or names.
-Trigger: User requests a new weapon (e.g., "Create a high-tech sniper rifle" or "Design a corrupted biological claw").
+description: Conceptualizes, balances, and formats new weapons for the Nebryss Killteam Campaign based on thematic descriptions or names. Invoke when user requests a new weapon (e.g., "Create a high-tech sniper rifle" or "Design a corrupted biological claw").
 ---
 
 ### Execution Steps

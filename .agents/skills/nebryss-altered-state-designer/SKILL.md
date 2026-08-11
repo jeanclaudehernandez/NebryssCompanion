@@ -1,7 +1,6 @@
 ---
 name: Nebryss Altered State Designer
-description: Designs new Altered States (status effects) for the Nebryss Killteam Campaign in the exact alteredStates JSON shape. Invoke when the user asks to add a new status condition.
-Trigger: User requests a new status/condition (e.g., "Create a Frozen status" or "Add a Fear condition that affects WS/BS").
+description: Designs new Altered States (status effects) for the Nebryss Killteam Campaign in the exact alteredStates JSON shape. Invoke when the user asks to add a new status condition or alter states.
 ---
 
 ### Execution Steps

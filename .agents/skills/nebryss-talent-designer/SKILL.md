@@ -1,7 +1,6 @@
 ---
 name: Nebryss Talent Designer
-description: Designs new Talents for the Nebryss Killteam Campaign in the exact talents JSON shape. Invoke when the user asks to create a talent/perk/upgrade (including requirements and stat modifications).
-Trigger: User requests a new talent (e.g., "Create a support talent for healing" or "Design a combat perk that improves melee crits").
+description: Designs new Talents for the Nebryss Killteam Campaign in the exact talents JSON shape. Invoke when the user asks to create a talent/perk/upgrade (including requirements and stat modifications, e.g., "Create a support talent for healing" or "Design a combat perk that improves melee crits").
 ---
 
 ### Execution Steps

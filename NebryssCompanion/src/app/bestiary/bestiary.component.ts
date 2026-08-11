@@ -3,9 +3,10 @@ import { Component, ElementRef, OnInit, OnDestroy, OnChanges, SimpleChanges, Vie
 import { CommonModule } from '@angular/common';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
+import { CampaignService } from '../campaign.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
-import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection, NPC } from '../model';
+import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection, NPC, Campaign } from '../model';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
@@ -35,6 +36,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   bestiary: BestiaryEntry[] = [];
   npcs: NPC[] = [];
   isAdmin: boolean = false;
+  activeCampaign: Campaign | null = null;
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | null = null;
   selectedCreatures: BestiaryEntry[] = [];
@@ -58,6 +60,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private dataService: DataService,
     private adminService: AdminService,
+    private campaignService: CampaignService,
     private themeService: ThemeService,
     private bestiaryMaterialsService: BestiaryMaterialsService,
     private toastService: ToastService
@@ -67,14 +70,18 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.themeSubscription = this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
       if (this.bestiary.length > 0) {
-        this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
-        this.applyFilters();
-        this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
-        this.selectedCreatures = this.selectedCreatures.filter(c => this.isAdmin || c.isDiscovered !== false);
-        this.syncCreatureScrollSections();
-        this.updateDroppedMaterials();
+        this.refreshVisibleCreatures();
       }
     });
+
+    this.themeSubscription.add(
+      this.campaignService.selectedCampaign$.subscribe(campaign => {
+        this.activeCampaign = campaign;
+        if (this.bestiary.length > 0) {
+          this.refreshVisibleCreatures();
+        }
+      })
+    );
 
     this.themeSubscription.add(
       this.themeService.darkMode$.subscribe(isDark => {
@@ -117,7 +124,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
         const ids = JSON.parse(savedCreatureIds) as number[];
         this.selectedCreatures = ids.map(id => 
           this.bestiary.find(c => c.id === id)
-        ).filter((c): c is BestiaryEntry => c !== undefined && (this.isAdmin || c.isDiscovered !== false));
+        ).filter((c): c is BestiaryEntry => c !== undefined && this.isCreatureDiscovered(c));
         this.syncCreatureScrollSections();
         
         if (this.selectedCreatures.length > 0) {
@@ -135,15 +142,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.dataService.bestiary$?.subscribe(bestiary => {
       if (bestiary && bestiary.length > 0) {
         this.bestiary = bestiary;
-        this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
-        this.applyFilters();
-        this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
-
-        this.selectedCreatures = this.selectedCreatures
-          .map(selected => this.bestiary.find(c => c.id === selected.id))
-          .filter((c): c is BestiaryEntry => c !== undefined && (this.isAdmin || c.isDiscovered !== false));
-        this.syncCreatureScrollSections();
-        this.updateDroppedMaterials();
+        this.refreshVisibleCreatures();
       }
     });
 
@@ -171,8 +170,47 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.bestiaryMaterialsService.reset();
   }
 
+  private refreshVisibleCreatures(): void {
+    this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
+    this.applyFilters();
+    this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
+    this.selectedCreatures = this.selectedCreatures
+      .map(selected => this.bestiary.find(c => c.id === selected.id))
+      .filter((c): c is BestiaryEntry => c !== undefined && this.isCreatureDiscovered(c));
+    this.syncCreatureScrollSections();
+    this.updateDroppedMaterials();
+  }
+
+  isCreatureDiscovered(creature: BestiaryEntry, campaignId?: number | null): boolean {
+    if (this.isAdmin) return true;
+    return this.isCreatureDiscoveredInCampaign(creature, campaignId);
+  }
+
+  isCreatureDiscoveredInCampaign(creature: BestiaryEntry, campaignId?: number | null): boolean {
+    const targetCampId = campaignId !== undefined ? campaignId : this.activeCampaign?.id;
+    if (creature.discoveredCampaignIds && Array.isArray(creature.discoveredCampaignIds)) {
+      if (targetCampId) {
+        return creature.discoveredCampaignIds.includes(targetCampId);
+      }
+      return creature.discoveredCampaignIds.length > 0;
+    }
+    return creature.isDiscovered !== false;
+  }
+
+  isCreatureDiscoveredInCurrentCampaign(creature: BestiaryEntry): boolean {
+    return this.isCreatureDiscoveredInCampaign(creature, this.activeCampaign?.id);
+  }
+
+  getDiscoveryToggleTooltip(creature: BestiaryEntry): string {
+    const isDiscovered = this.isCreatureDiscoveredInCurrentCampaign(creature);
+    const campName = this.activeCampaign ? ` in "${this.activeCampaign.name}"` : '';
+    return isDiscovered
+      ? `Creature is Discovered${campName}. Click to mark Undiscovered.`
+      : `Creature is Undiscovered${campName}. Click to mark Discovered.`;
+  }
+
   private getVisibleCreatures(): BestiaryEntry[] {
-    return this.bestiary.filter(c => this.isAdmin || c.isDiscovered !== false);
+    return this.bestiary.filter(c => this.isCreatureDiscovered(c));
   }
 
   private getUniqueValues(array: any[], property: string): string[] {
@@ -213,7 +251,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     if (this.selectedCreatureId) {
       const creature = this.bestiary.find(c => c.id === Number(this.selectedCreatureId)) || null;
       
-      if (creature && (this.isAdmin || creature.isDiscovered !== false)) {
+      if (creature && this.isCreatureDiscovered(creature)) {
         // Check if already selected
         const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
         
@@ -237,7 +275,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   selectAndScrollToCreature(bestiaryId: number): void {
     if (!bestiaryId) return;
     const creature = this.bestiary.find(c => c.id === Number(bestiaryId));
-    if (!creature || (!this.isAdmin && creature.isDiscovered === false)) return;
+    if (!creature || !this.isCreatureDiscovered(creature)) return;
 
     const alreadySelected = this.selectedCreatures.some(c => c.id === creature.id);
     if (!alreadySelected) {
@@ -254,16 +292,27 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
 
   toggleCreatureDiscovered(creature: BestiaryEntry, event?: Event): void {
     event?.stopPropagation();
-    const nextDiscovered = creature.isDiscovered === false ? true : false;
+    const campId = this.activeCampaign?.id ?? 1;
+    const currentIds: number[] = Array.isArray(creature.discoveredCampaignIds)
+      ? [...creature.discoveredCampaignIds]
+      : (creature.isDiscovered !== false ? [1] : []);
+
+    const alreadyDiscovered = currentIds.includes(campId);
+    const nextDiscoveredIds = alreadyDiscovered
+      ? currentIds.filter(id => id !== campId)
+      : [...currentIds, campId];
+
     const updated: BestiaryEntry = {
       ...creature,
-      isDiscovered: nextDiscovered
+      discoveredCampaignIds: nextDiscoveredIds,
+      isDiscovered: nextDiscoveredIds.length > 0
     };
     this.dataService.saveBestiary(updated).subscribe({
       next: saved => {
-        const statusMsg = saved.isDiscovered !== false
-          ? `Creature "${saved.name}" is now DISCOVERED (Visible to Players).`
-          : `Creature "${saved.name}" is now UNDISCOVERED (Hidden from Players).`;
+        const campName = this.activeCampaign ? ` for "${this.activeCampaign.name}"` : '';
+        const statusMsg = !alreadyDiscovered
+          ? `Creature "${saved.name}" is now DISCOVERED${campName} (Visible to Players).`
+          : `Creature "${saved.name}" is now UNDISCOVERED${campName} (Hidden from Players).`;
         this.toastService.show(statusMsg, 'success');
       },
       error: () => {

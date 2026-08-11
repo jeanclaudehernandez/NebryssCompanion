@@ -2,21 +2,29 @@ import { TestBed } from '@angular/core/testing';
 import { ActivePlayerService } from './active-player.service';
 import { Player } from './model';
 import { DataService } from './data.service';
+import { CampaignService } from './campaign.service';
 import { of } from 'rxjs';
 
 describe('ActivePlayerService', () => {
   let service: ActivePlayerService;
   let mockPlayer: Player;
   let dataServiceSpy: jasmine.SpyObj<DataService>;
+  let campaignServiceSpy: jasmine.SpyObj<CampaignService>;
 
   beforeEach(() => {
     dataServiceSpy = jasmine.createSpyObj('DataService', ['savePlayer', 'getPlayers']);
     dataServiceSpy.savePlayer.and.returnValue(of(null as any));
     dataServiceSpy.getPlayers.and.returnValue(of([]));
 
+    campaignServiceSpy = jasmine.createSpyObj('CampaignService', ['getSelectedCampaign'], {
+      selectedCampaign$: of(null)
+    });
+    campaignServiceSpy.getSelectedCampaign.and.returnValue(null);
+
     TestBed.configureTestingModule({
       providers: [
-        { provide: DataService, useValue: dataServiceSpy }
+        { provide: DataService, useValue: dataServiceSpy },
+        { provide: CampaignService, useValue: campaignServiceSpy }
       ]
     });
     service = TestBed.inject(ActivePlayerService);
@@ -87,7 +95,7 @@ describe('ActivePlayerService', () => {
     localStorage.setItem('activePlayer', JSON.stringify(mockPlayer));
     
     // Create new instance of service which should load from localStorage
-    const newService = new ActivePlayerService(dataServiceSpy);
+    const newService = new ActivePlayerService(dataServiceSpy, campaignServiceSpy);
     
     // Check player was loaded
     expect(newService.activePlayer).toEqual(mockPlayer);

@@ -31,7 +31,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -63,7 +66,10 @@
         "prModifier": 5
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -95,7 +101,10 @@
       }
     ],
     "items": [],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -127,7 +136,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -158,7 +170,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -195,7 +210,10 @@
         "prModifier": 6
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -226,7 +244,10 @@
         "effect": "In mist zones, gain Cover against ranged attacks."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -257,7 +278,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -294,7 +318,10 @@
       }
     ],
     "items": [],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -330,7 +357,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -366,7 +396,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -403,7 +436,10 @@
         "effect": "Remove this operative from the killzone at the end of the turning point."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -445,7 +481,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -488,7 +527,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -526,7 +568,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -563,7 +608,10 @@
         "effect": "Remove this operative from the killzone at the end of the turning point."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -604,7 +652,10 @@
         "prModifier": null
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -640,7 +691,10 @@
         "prModifier": 4
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -678,7 +732,10 @@
         "prModifier": 4
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -714,7 +771,10 @@
         "prModifier": 3
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -757,7 +817,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -792,7 +855,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -829,7 +895,10 @@
       }
     ],
     "items": [],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -865,7 +934,10 @@
         "effect": "Free Dash when within 6 inches of Murloc King."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -902,7 +974,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -939,7 +1014,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -979,7 +1057,10 @@
         "effect": "Psychic, Critical hits inflict the <strong>Bleeding</strong> status. If the target is already Bleeding, worsen it to <strong>Corrupted</strong>."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1013,7 +1094,10 @@
         "effect": "When this operative is <strong>destroyed</strong>, all enemies <strong>within 3 inches</strong> suffer <strong>1D3</strong> wounds and gain <strong>Bleeding</strong>."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1058,7 +1142,10 @@
         "effect": "Improve Save by 1. When retaliating, retain one failed attack dice as a success."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1096,7 +1183,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1132,7 +1222,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1172,7 +1265,10 @@
         "effect": "At the end of each Turning Point, heal 1D3 wounds. If in a mist zone, heal 1D3+2 instead."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1214,7 +1310,10 @@
         "effect": "Mist zones within 12 inches cannot be dispersed. All mist effects are treated as Dense density."
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1248,7 +1347,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1281,7 +1383,10 @@
         "prModifier": 3
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1319,7 +1424,10 @@
         "quant": 1
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1351,7 +1459,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1395,7 +1506,10 @@
         "quant": 1
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1432,7 +1546,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1469,7 +1586,10 @@
         "prModifier": -2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1519,7 +1639,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1565,7 +1688,10 @@
         "prModifier": 10
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1607,7 +1733,10 @@
         "prModifier": -1
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1645,7 +1774,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1677,7 +1809,10 @@
         "prModifier": 3
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1709,7 +1844,10 @@
         "prModifier": 5
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1753,7 +1891,10 @@
       }
     ],
     "items": [],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1790,7 +1931,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1822,7 +1966,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1858,7 +2005,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1890,7 +2040,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1927,7 +2080,10 @@
         "prModifier": 4
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1959,7 +2115,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -1996,7 +2155,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2033,7 +2195,10 @@
         "prModifier": 3
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2065,7 +2230,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2102,7 +2270,10 @@
         "prModifier": 2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2133,7 +2304,10 @@
         "prModifier": -2
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2179,7 +2353,10 @@
         "prModifier": 9
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2216,7 +2393,10 @@
         "prModifier": 7
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2253,7 +2433,10 @@
         "prModifier": 112
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2290,7 +2473,10 @@
         "prModifier": 6
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "_id": {
@@ -2322,7 +2508,10 @@
         "prModifier": 4
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   },
   {
     "id": 73,
@@ -2355,6 +2544,9 @@
         "prModifier": 3
       }
     ],
-    "isDiscovered": true
+    "isDiscovered": true,
+    "discoveredCampaignIds": [
+      1
+    ]
   }
 ]

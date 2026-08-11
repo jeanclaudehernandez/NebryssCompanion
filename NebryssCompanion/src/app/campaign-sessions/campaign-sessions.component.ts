@@ -700,6 +700,11 @@ export class CampaignSessionsComponent implements OnInit {
         if (!creature) {
           return false;
         }
+        const activeCamp = this.campaignService.getSelectedCampaign();
+        const targetCampId = activeCamp?.id;
+        if (creature.discoveredCampaignIds && Array.isArray(creature.discoveredCampaignIds)) {
+          return targetCampId ? creature.discoveredCampaignIds.includes(targetCampId) : creature.discoveredCampaignIds.length > 0;
+        }
         return creature.isDiscovered !== false && (creature as any).discovered !== false;
       }
       default:

@@ -1,6 +1,6 @@
 ---
-name: npc-shop-editor
-description: Instructions and guidelines for creating, editing, and managing NPCs, Shops, NPC ownership, and shop price overrides in NebryssCompanion.
+name: Nebryss NPC & Shop Editor
+description: Instructions and guidelines for creating, editing, and managing NPCs, Shops, NPC ownership, and shop price overrides in NebryssCompanion. Invoke when the user asks to create, edit, or manage NPCs, update shop inventories, or configure merchant pricing.
 ---
 
 # NPC & Shop Editor Management

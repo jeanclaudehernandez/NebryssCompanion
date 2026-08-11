@@ -1,7 +1,6 @@
 ---
 name: Nebryss Affliction Designer
-description: Designs new Afflictions for the Nebryss Killteam Campaign in the exact afflictions JSON shape. Invoke when the user asks to create or balance an affliction/injury/curse.
-Trigger: User requests a new affliction (e.g., "Create a lingering poison affliction" or "Design a curse that lowers APL").
+description: Designs new Afflictions for the Nebryss Killteam Campaign in the exact afflictions JSON shape. Invoke when the user asks to create or balance an affliction/injury/curse or requests a new affliction.
 ---
 
 ### Execution Steps

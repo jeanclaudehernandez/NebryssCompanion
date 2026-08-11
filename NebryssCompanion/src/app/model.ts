@@ -116,6 +116,7 @@ export interface BestiaryEntry extends Character {
   subgroup: string;
   pr: number;
   isDiscovered?: boolean;
+  discoveredCampaignIds?: number[];
 }
 
 // itemCategories.ts

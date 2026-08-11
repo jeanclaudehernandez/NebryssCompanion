@@ -2,20 +2,42 @@ const fs = require('fs');
 const path = require('path');
 const { MongoClient } = require('mongodb');
 
-// Load environment variables (.env or .env.duckdns)
-const envFiles = [path.join(__dirname, '../.env'), path.join(__dirname, '../.env.duckdns')];
-for (const envFile of envFiles) {
-  if (fs.existsSync(envFile)) {
-    const envConfig = fs.readFileSync(envFile, 'utf8');
-    envConfig.split('\n').forEach(line => {
-      const trimmed = line.trim();
-      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
-        const [key, ...vals] = trimmed.split('=');
-        if (key && !process.env[key.trim()]) {
-          process.env[key.trim()] = vals.join('=').trim();
+// Helper to find existing files across potential roots
+function findFirstExistingPath(relativePaths) {
+  for (const rel of relativePaths) {
+    const abs = path.isAbsolute(rel) ? rel : path.resolve(__dirname, rel);
+    if (fs.existsSync(abs)) return abs;
+  }
+  return null;
+}
+
+// Search and load environment variables (.env or .env.duckdns)
+const envCandidates = [
+  '../.env',
+  '../../.env',
+  '../NebryssCompanion/.env',
+  '../../NebryssCompanion/.env',
+  './.env',
+  './NebryssCompanion/.env',
+  '../.env.duckdns',
+  './NebryssCompanion/.env.duckdns'
+];
+
+for (const cand of envCandidates) {
+  const envPath = findFirstExistingPath([cand]);
+  if (envPath) {
+    try {
+      const envConfig = fs.readFileSync(envPath, 'utf8');
+      envConfig.split('\n').forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+          const [key, ...vals] = trimmed.split('=');
+          if (key && !process.env[key.trim()]) {
+            process.env[key.trim()] = vals.join('=').trim();
+          }
         }
-      }
-    });
+      });
+    } catch (e) {}
   }
 }
 
@@ -23,8 +45,8 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCo
 const mainDbName = process.env.MONGODB_DB_MAIN || 'Nebryss-assets';
 const playersDbName = process.env.MONGODB_DB_PLAYERS || 'NebryssCampaignAssets';
 
-const assetsDir = path.join(__dirname, '../src/assets');
-const localDbDir = path.join(__dirname, '../local-db');
+const localDbDir = findFirstExistingPath(['../local-db', './NebryssCompanion/local-db', './local-db']) || path.join(__dirname, '../local-db');
+const assetsDir = findFirstExistingPath(['../src/assets', './NebryssCompanion/src/assets', './src/assets']) || path.join(__dirname, '../src/assets');
 
 async function getClient() {
   try {
@@ -52,8 +74,14 @@ function writeJsonFallback(filename, data) {
   const localPath = path.join(localDbDir, filename);
   const assetPath = path.join(assetsDir, filename);
   const jsonStr = JSON.stringify(data, null, 2);
-  try { fs.writeFileSync(localPath, jsonStr, 'utf8'); } catch (e) {}
-  try { fs.writeFileSync(assetPath, jsonStr, 'utf8'); } catch (e) {}
+  try {
+    if (!fs.existsSync(path.dirname(localPath))) fs.mkdirSync(path.dirname(localPath), { recursive: true });
+    fs.writeFileSync(localPath, jsonStr, 'utf8');
+  } catch (e) {}
+  try {
+    if (!fs.existsSync(path.dirname(assetPath))) fs.mkdirSync(path.dirname(assetPath), { recursive: true });
+    fs.writeFileSync(assetPath, jsonStr, 'utf8');
+  } catch (e) {}
 }
 
 const ENTITY_REGEX = /@(player|npc|location|shop|bestiary)\[([^\]]+)\]/g;
@@ -121,6 +149,75 @@ function expandToDisplayTags(text, context) {
     }
     return match;
   });
+}
+
+function toCleanText(text, context) {
+  if (!text) return '';
+  return text.replace(ENTITY_REGEX, (match, type, content) => {
+    const raw = String(content).trim();
+    let name = null;
+    if (/^\d+$/.test(raw)) {
+      name = findEntityName(type, Number(raw), context);
+    } else if (raw.includes(':')) {
+      const parts = raw.split(':');
+      name = parts.slice(1).join(':').trim();
+    } else {
+      const id = findEntityId(type, raw, context);
+      name = findEntityName(type, id, context) || raw;
+    }
+    return name || match;
+  });
+}
+
+function autoTagEntities(text, context) {
+  if (!text) return '';
+  let result = text;
+
+  // First, normalize any existing tag syntax like @player[Wendy] -> @player[1]
+  result = normalizeToIdTags(result, context);
+
+  // Build candidate entity search terms (sorted by name length descending to match full names first)
+  const candidates = [];
+
+  (context.players || []).forEach(p => {
+    if (p.name) candidates.push({ type: 'player', id: p.id, name: p.name.trim() });
+  });
+  (context.npcs || []).forEach(n => {
+    if (n.name) {
+      candidates.push({ type: 'npc', id: n.id, name: n.name.trim() });
+      const cleanName = n.name.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+      if (cleanName && cleanName !== n.name.trim()) {
+        candidates.push({ type: 'npc', id: n.id, name: cleanName });
+      }
+    }
+  });
+  (context.locations || []).forEach(l => {
+    if (l.name) candidates.push({ type: 'location', id: l.id, name: l.name.trim() });
+  });
+  (context.shops || []).forEach(s => {
+    if (s.name) candidates.push({ type: 'shop', id: s.id, name: s.name.trim() });
+  });
+  (context.bestiary || []).forEach(b => {
+    if (b.name) {
+      candidates.push({ type: 'bestiary', id: b.id, name: b.name.trim() });
+      if (!b.name.endsWith('s')) {
+        candidates.push({ type: 'bestiary', id: b.id, name: b.name.trim() + 's' });
+      }
+    }
+  });
+
+  // Sort longest names first
+  candidates.sort((a, b) => b.name.length - a.name.length);
+
+  // Replace occurrences not already inside a tag
+  for (const cand of candidates) {
+    if (cand.name.length < 3) continue; // skip too-short names to avoid false positives
+    const escapedName = cand.name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+    const pattern = new RegExp(`(?<!@(?:player|npc|location|shop|bestiary)\\[[^\\]]*)\\b${escapedName}\\b(?![^\\[]*\\])`, 'g');
+    result = result.replace(pattern, `@${cand.type}[${cand.id}]`);
+  }
+
+  return result;
 }
 
 function parseEntities(text, context = null) {
@@ -299,16 +396,13 @@ async function getCampaignContext(campaignId = 1) {
       const playersDb = client.db(playersDbName);
 
       campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId)) || campaigns[0];
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
       const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+      const resolvedCampaignId = campaign ? campaign.id : Number(campaignId);
 
       sessions = await mainDb.collection('campaignSession').find({
-        $or: [{ campaignId: Number(campaignId) }, { campaignId: String(campaignId) }]
+        $or: [{ campaignId: Number(resolvedCampaignId) }, { campaignId: String(resolvedCampaignId) }]
       }).sort({ sessionId: 1 }).toArray();
-
-      if (sessions.length === 0) {
-        sessions = await mainDb.collection('campaignSession').find().sort({ sessionId: 1 }).toArray();
-      }
 
       players = await playersDb.collection(`${prefix}-player`).find().toArray();
       if (!players.length) players = await playersDb.collection('player').find().toArray();
@@ -351,7 +445,7 @@ async function getCampaignContext(campaignId = 1) {
     players: players.map(p => ({ id: p.id, name: p.name, race: p.race, origin: p.origin })),
     npcs: npcs.map(n => ({ id: n.id, name: n.name, faction: n.faction, role: n.role, location: n.location, bestiaryId: n.bestiaryId })),
     locations: locations.map(l => ({ id: l.id, name: l.name, faction: l.faction, isCapital: l.isCapital })),
-    shops: shops.map(s => ({ id: s.id, name: s.name, locationName: s.locationName, owner: s.owner })),
+    shops: shops.map(s => ({ id: s.id, name: s.name, locationName: s.locationName || s.location, owner: s.owner })),
     bestiary: bestiary.map(b => ({ id: b.id, name: b.name, faction: b.faction, pr: b.pr, weapons: b.weapons })),
     weapons: weapons.map(w => ({ id: w.id, name: w.name, price: w.price, profiles: w.profiles })),
     weaponRules: weaponRules.map(r => ({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier }))
@@ -360,10 +454,16 @@ async function getCampaignContext(campaignId = 1) {
   return context;
 }
 
-async function listSessions(campaignId, expandDisplay = false) {
+async function listSessions(campaignId, format = 'raw') {
   const context = await getCampaignContext(campaignId || 1);
   let sessions = context.sessions;
-  if (expandDisplay) {
+  if (format === 'clean') {
+    sessions = sessions.map(s => ({
+      ...s,
+      displayContent: toCleanText(s.content, context),
+      displayConclussion: toCleanText(s.conclussion, context)
+    }));
+  } else if (format === 'expand') {
     sessions = sessions.map(s => ({
       ...s,
       displayContent: expandToDisplayTags(s.content, context),
@@ -373,10 +473,10 @@ async function listSessions(campaignId, expandDisplay = false) {
   return sessions;
 }
 
-async function saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches }) {
+async function saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag = true }) {
   const context = await getCampaignContext(campaignId);
-  const normalizedContent = normalizeToIdTags(content || '', context);
-  const normalizedConclussion = normalizeToIdTags(conclussion || '', context);
+  const processedContent = autoTag ? autoTagEntities(content || '', context) : normalizeToIdTags(content || '', context);
+  const processedConclussion = autoTag ? autoTagEntities(conclussion || '', context) : normalizeToIdTags(conclussion || '', context);
 
   const branchesArray = Array.isArray(playerVisibleBranches)
     ? playerVisibleBranches
@@ -388,8 +488,8 @@ async function saveSession({ campaignId, sessionId, content, conclussion, player
   const sessionDoc = {
     campaignId: Number(campaignId),
     sessionId: Number(sessionId),
-    content: normalizedContent,
-    conclussion: normalizedConclussion,
+    content: processedContent,
+    conclussion: processedConclussion,
     playerVisibleBranches: branchesArray
   };
 
@@ -439,18 +539,20 @@ async function saveSession({ campaignId, sessionId, content, conclussion, player
     }
     allJson.push(sessionDoc);
   }
+  writeJsonFallback('campaignSession.json', allJson);
   writeJsonFallback('campaignSessions.json', allJson);
 
   return {
     ...sessionDoc,
-    displayContent: expandToDisplayTags(normalizedContent, context),
-    displayConclussion: expandToDisplayTags(normalizedConclussion, context)
+    cleanContent: toCleanText(processedContent, context),
+    cleanConclussion: toCleanText(processedConclussion, context),
+    displayContent: expandToDisplayTags(processedContent, context)
   };
 }
 
-async function finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches }) {
+async function finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches, autoTag = true }) {
   const context = await getCampaignContext(campaignId);
-  const normalizedConclussion = normalizeToIdTags(conclussion || '', context);
+  const processedConclussion = autoTag ? autoTagEntities(conclussion || '', context) : normalizeToIdTags(conclussion || '', context);
 
   const branchesArray = playerVisibleBranches !== undefined
     ? (Array.isArray(playerVisibleBranches)
@@ -473,7 +575,7 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
       };
       const existing = await collection.findOne(query);
       if (existing) {
-        const updateFields = { conclussion: normalizedConclussion };
+        const updateFields = { conclussion: processedConclussion };
         if (branchesArray !== undefined) {
           updateFields.playerVisibleBranches = branchesArray;
         }
@@ -488,16 +590,18 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
   const allJson = readJsonFallback('campaignSessions.json');
   const idx = allJson.findIndex(s => Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === Number(sessionId));
   if (idx !== -1) {
-    allJson[idx].conclussion = normalizedConclussion;
+    allJson[idx].conclussion = processedConclussion;
     if (branchesArray !== undefined) {
       allJson[idx].playerVisibleBranches = branchesArray;
     }
+    writeJsonFallback('campaignSession.json', allJson);
     writeJsonFallback('campaignSessions.json', allJson);
     if (!updated) updated = allJson[idx];
   }
 
   if (updated) {
-    updated.displayConclussion = expandToDisplayTags(normalizedConclussion, context);
+    updated.cleanConclussion = toCleanText(processedConclussion, context);
+    updated.displayConclussion = expandToDisplayTags(processedConclussion, context);
   }
 
   return updated;
@@ -523,7 +627,7 @@ async function createNPC(npcData) {
     tactics = '',
     motivations = '',
     wargear = [],
-    discovered = false
+    discovered = true
   } = npcData;
 
   if (!name || !faction) {
@@ -539,7 +643,7 @@ async function createNPC(npcData) {
       const mainDb = client.db(mainDbName);
       const playersDb = client.db(playersDbName);
       const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId)) || campaigns[0];
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
       prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
       existingNpcs = await playersDb.collection(`${prefix}-npc`).find().toArray();
@@ -579,7 +683,7 @@ async function createNPC(npcData) {
     ...(tactics ? { tactics: tactics.trim() } : {}),
     ...(motivations ? { motivations: motivations.trim() } : {}),
     ...(Array.isArray(wargear) && wargear.length > 0 ? { wargear } : {}),
-    discovered: !!discovered
+    discovered: discovered !== undefined ? !!discovered : true
   };
 
   const writeClient = await getClient();
@@ -599,6 +703,7 @@ async function createNPC(npcData) {
 
   const updatedJson = jsonNpcs.filter(n => n.id !== newId);
   updatedJson.push(npcDoc);
+  writeJsonFallback('npc.json', updatedJson);
   writeJsonFallback('npcs.json', updatedJson);
 
   return {
@@ -617,7 +722,9 @@ async function createBestiaryEntry(bestiaryData) {
     weapons = [],
     abilities = [],
     deployables = [],
-    isDiscovered = false,
+    isDiscovered = true,
+    discoveredCampaignIds = null,
+    campaignId = 1,
     pr = null
   } = bestiaryData;
 
@@ -626,8 +733,6 @@ async function createBestiaryEntry(bestiaryData) {
   }
 
   const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
-
-  // STRICT CHECK: Ensure every weapon ID exists in weapons compendium
   const validatedWeaponIds = validateWeaponsExist(weapons || [], allWeapons);
 
   const finalAttributes = {
@@ -655,7 +760,6 @@ async function createBestiaryEntry(bestiaryData) {
   const maxId = allExisting.reduce((max, b) => (b && typeof b.id === 'number' && b.id > max ? b.id : max), 0);
   const newId = maxId + 1;
 
-  // Calculate PR automatically using validate_pr formula
   const prBreakdown = calculatePR({
     attributes: finalAttributes,
     weapons: validatedWeaponIds,
@@ -663,6 +767,10 @@ async function createBestiaryEntry(bestiaryData) {
   }, allWeapons, allRules);
 
   const finalPR = (typeof pr === 'number' && pr > 0) ? pr : prBreakdown.total;
+
+  const finalDiscoveredCampaignIds = Array.isArray(discoveredCampaignIds)
+    ? discoveredCampaignIds
+    : (isDiscovered !== false ? (campaignId ? [Number(campaignId)] : [1]) : []);
 
   const bestiaryDoc = {
     id: newId,
@@ -674,7 +782,8 @@ async function createBestiaryEntry(bestiaryData) {
     weapons: validatedWeaponIds,
     abilities: Array.isArray(abilities) ? abilities : [],
     ...(Array.isArray(deployables) && deployables.length > 0 ? { deployables } : {}),
-    isDiscovered: !!isDiscovered
+    isDiscovered: finalDiscoveredCampaignIds.length > 0,
+    discoveredCampaignIds: finalDiscoveredCampaignIds
   };
 
   const writeClient = await getClient();
@@ -690,6 +799,7 @@ async function createBestiaryEntry(bestiaryData) {
   const updatedJson = jsonBestiary.filter(b => b.id !== newId);
   updatedJson.push(bestiaryDoc);
   writeJsonFallback('bestiary.json', updatedJson);
+  writeJsonFallback('bestiaries.json', updatedJson);
 
   return {
     ...bestiaryDoc,
@@ -718,14 +828,13 @@ async function createCombatNPC(combatData) {
     tactics = '',
     motivations = '',
     wargear = [],
-    discovered = false,
+    discovered = true,
     attributes = {},
     weapons = [],
     abilities = [],
     deployables = []
   } = combatData;
 
-  // 1. Create Bestiary entry first (which strictly validates existing weapons and calculates PR)
   const bestiaryEntry = await createBestiaryEntry({
     name,
     faction,
@@ -737,7 +846,6 @@ async function createCombatNPC(combatData) {
     isDiscovered: discovered
   });
 
-  // 2. Create NPC entry linked to bestiaryId
   const npcDoc = await createNPC({
     campaignId,
     name,
@@ -779,7 +887,6 @@ function parseArgJson(raw) {
     return JSON.parse(str);
   } catch (e) {
     try {
-      // Fallback for JS object literal syntax or unquoted keys
       return Function(`"use strict"; return (${str});`)();
     } catch (e2) {
       return null;
@@ -787,30 +894,40 @@ function parseArgJson(raw) {
   }
 }
 
-// CLI argument execution
+function readFileContentSafe(filePath) {
+  if (!filePath) return null;
+  const resolved = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
+  if (fs.existsSync(resolved)) {
+    return fs.readFileSync(resolved, 'utf8');
+  }
+  return null;
+}
+
+// CLI handler
 async function main() {
   const args = process.argv.slice(2);
   const command = args[0];
 
-  if (!command || command === 'help') {
+  if (!command || command === 'help' || command === '--help') {
     console.log(`
-Nebryss Campaign Session Tool (Entity ID & Combat NPC Integrated)
+Nebryss Campaign Session Tool v2.0
 Usage:
   node scripts/campaign-session-tool.js get-context [campaignId]
-  node scripts/campaign-session-tool.js list [campaignId] [--expand]
-  node scripts/campaign-session-tool.js get-latest [campaignId] [--expand]
-  node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 --content="..." [--conclussion="..."]
-  node scripts/campaign-session-tool.js finalize --campaignId=1 --sessionId=1 --conclussion="..."
-  node scripts/campaign-session-tool.js parse-tags "<text>" [campaignId]
+  node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
+  node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
+  node scripts/campaign-session-tool.js auto-tag [campaignId] [--input="..." | --file="..."]
+  node scripts/campaign-session-tool.js clean-text [campaignId] [--input="..." | --file="..."]
+  node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 [--content="..." | --content-file="..."] [--conclussion="..." | --conclussion-file="..."] [--branches="..."]
+  node scripts/campaign-session-tool.js finalize --campaignId=1 --sessionId=1 [--conclussion="..." | --conclussion-file="..."] [--branches="..."]
 
 Weapon Compendium:
   node scripts/campaign-session-tool.js list-weapons [query]
   node scripts/campaign-session-tool.js calculate-pr --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2}' --abilities='[{"name":"X","effect":"Y","prModifier":10}]'
 
 NPC & Bestiary Creation:
-  node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Name" --faction="Faction" [--subgroup="..."] [--role="..."] [--location="..."] [--bestiaryId=12]
-  node scripts/campaign-session-tool.js create-bestiary --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--abilities='[...]']
-  node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--abilities='[...]'] [--role="..."] [--location="..."]
+  node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Name" --faction="Faction" [--json-file="..."]
+  node scripts/campaign-session-tool.js create-bestiary --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
+  node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
     `);
     process.exit(0);
   }
@@ -821,21 +938,41 @@ NPC & Bestiary Creation:
     console.log(JSON.stringify(ctx, null, 2));
   } else if (command === 'list') {
     const campaignId = args[1] || null;
-    const expand = args.includes('--expand');
-    const sessions = await listSessions(campaignId, expand);
+    let format = 'raw';
+    if (args.includes('--clean')) format = 'clean';
+    else if (args.includes('--expand')) format = 'expand';
+    const sessions = await listSessions(campaignId, format);
     console.log(JSON.stringify(sessions, null, 2));
   } else if (command === 'get-latest') {
     const campaignId = args[1] || 1;
-    const expand = args.includes('--expand');
-    const sessions = await listSessions(campaignId, expand);
+    let format = 'raw';
+    if (args.includes('--clean')) format = 'clean';
+    else if (args.includes('--expand')) format = 'expand';
+    const sessions = await listSessions(campaignId, format);
     const latest = sessions.length ? sessions[sessions.length - 1] : null;
     console.log(JSON.stringify(latest, null, 2));
-  } else if (command === 'parse-tags') {
-    const campaignId = args[2] || 1;
+  } else if (command === 'auto-tag') {
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : 1;
     const context = await getCampaignContext(campaignId);
-    const text = args[1];
-    const tags = parseEntities(text, context);
-    console.log(JSON.stringify(tags, null, 2));
+    let text = '';
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
+      else if (arg.startsWith('--file=')) text = readFileContentSafe(arg.substring('--file='.length)) || '';
+    });
+    if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
+    const tagged = autoTagEntities(text, context);
+    console.log(tagged);
+  } else if (command === 'clean-text') {
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : 1;
+    const context = await getCampaignContext(campaignId);
+    let text = '';
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
+      else if (arg.startsWith('--file=')) text = readFileContentSafe(arg.substring('--file='.length)) || '';
+    });
+    if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
+    const clean = toCleanText(text, context);
+    console.log(clean);
   } else if (command === 'list-weapons') {
     const query = args[1] || '';
     const results = await listWeapons(query);
@@ -859,8 +996,9 @@ NPC & Bestiary Creation:
         const parsed = parseArgJson(arg.substring('--abilities='.length));
         if (parsed && Array.isArray(parsed)) abilities = parsed;
       }
-      if (arg.startsWith('--data=')) {
-        const parsed = parseArgJson(arg.substring('--data='.length));
+      if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
         if (parsed) {
           if (parsed.weapons) weapons = parsed.weapons;
           if (parsed.attributes) attributes = parsed.attributes;
@@ -894,8 +1032,9 @@ NPC & Bestiary Creation:
       else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
       else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length)) || [];
       else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--data=')) {
-        const parsed = parseArgJson(arg.substring('--data='.length));
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
         if (parsed) Object.assign(npcParams, parsed);
       }
     });
@@ -917,8 +1056,9 @@ NPC & Bestiary Creation:
       else if (arg.startsWith('--deployables=')) bestiaryParams.deployables = parseArgJson(arg.substring('--deployables='.length));
       else if (arg.startsWith('--isDiscovered=')) bestiaryParams.isDiscovered = arg.split('=')[1] === 'true';
       else if (arg.startsWith('--pr=')) bestiaryParams.pr = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--data=')) {
-        const parsed = parseArgJson(arg.substring('--data='.length));
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
         if (parsed) Object.assign(bestiaryParams, parsed);
       }
     });
@@ -953,8 +1093,9 @@ NPC & Bestiary Creation:
       else if (arg.startsWith('--attributes=')) combatParams.attributes = parseArgJson(arg.substring('--attributes='.length));
       else if (arg.startsWith('--abilities=')) combatParams.abilities = parseArgJson(arg.substring('--abilities='.length));
       else if (arg.startsWith('--deployables=')) combatParams.deployables = parseArgJson(arg.substring('--deployables='.length));
-      else if (arg.startsWith('--data=')) {
-        const parsed = parseArgJson(arg.substring('--data='.length));
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
         if (parsed) Object.assign(combatParams, parsed);
       }
     });
@@ -967,41 +1108,77 @@ NPC & Bestiary Creation:
     let content = '';
     let conclussion = '';
     let playerVisibleBranches = [];
+    let autoTag = true;
 
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--content=')) content = arg.substring('--content='.length);
+      else if (arg.startsWith('--content-file=')) content = readFileContentSafe(arg.substring('--content-file='.length)) || '';
+      else if (arg.startsWith('--file=')) {
+        const raw = readFileContentSafe(arg.substring('--file='.length)) || '';
+        const parsed = parseArgJson(raw);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.campaignId) campaignId = Number(parsed.campaignId);
+          if (parsed.sessionId) sessionId = Number(parsed.sessionId);
+          if (parsed.content) content = parsed.content;
+          if (parsed.conclussion) conclussion = parsed.conclussion;
+          if (parsed.playerVisibleBranches) playerVisibleBranches = parsed.playerVisibleBranches;
+        } else {
+          content = raw;
+        }
+      }
       else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--conclussion-file=')) conclussion = readFileContentSafe(arg.substring('--conclussion-file='.length)) || '';
       else if (arg.startsWith('--playerVisibleBranches=')) {
         playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
       else if (arg.startsWith('--branches=')) {
         playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
+      else if (arg === '--no-auto-tag') {
+        autoTag = false;
+      }
     });
 
-    const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches });
+    const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'finalize') {
     let campaignId = 1;
     let sessionId = 1;
     let conclussion = '';
     let playerVisibleBranches = undefined;
+    let autoTag = true;
 
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
+      else if (arg.startsWith('--conclussion-file=')) conclussion = readFileContentSafe(arg.substring('--conclussion-file='.length)) || '';
+      else if (arg.startsWith('--file=')) {
+        const raw = readFileContentSafe(arg.substring('--file='.length)) || '';
+        const parsed = parseArgJson(raw);
+        if (parsed && typeof parsed === 'object') {
+          if (parsed.campaignId) campaignId = Number(parsed.campaignId);
+          if (parsed.sessionId) sessionId = Number(parsed.sessionId);
+          if (parsed.conclussion) conclussion = parsed.conclussion;
+          if (parsed.playerVisibleBranches) playerVisibleBranches = parsed.playerVisibleBranches;
+        } else {
+          conclussion = raw;
+        }
+      }
       else if (arg.startsWith('--playerVisibleBranches=')) {
         playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
       else if (arg.startsWith('--branches=')) {
         playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
+      else if (arg === '--no-auto-tag') {
+        autoTag = false;
+      }
     });
 
-    const res = await finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches });
+    const res = await finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));
   }
 }
@@ -1021,6 +1198,8 @@ module.exports = {
   parseEntities,
   normalizeToIdTags,
   expandToDisplayTags,
+  toCleanText,
+  autoTagEntities,
   ENTITY_REGEX,
   listWeapons,
   calculatePR,
@@ -1028,5 +1207,7 @@ module.exports = {
   getAllWeaponsAndRules,
   createNPC,
   createBestiaryEntry,
-  createCombatNPC
+  createCombatNPC,
+  main
 };
+

@@ -1,7 +1,6 @@
 ---
 name: Nebryss Campaign Designer
-description: **Description:** Manages and designs tabletop skirmish game campaigns adhering strictly to the Nebryss campaign JSON structure.
-**Trigger:** User requests campaign management (e.g., "Create a new campaign," "Design a campaign for Voss Succession").
+description: Manages and designs tabletop skirmish game campaigns adhering strictly to the Nebryss campaign JSON structure. Invoke when user requests campaign management (e.g., "Create a new campaign," "Design a campaign for Voss Succession").
 ---
 
 ### Execution Steps

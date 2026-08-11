@@ -1,7 +1,6 @@
 ---
 name: Nebryss Creature Designer
-description: **Description:** Generates new creatures, enemies, and NPCs as Bestiary entries with balanced stats, abilities, and weapons.
-**Trigger:** User asks for a creature (e.g., "Create a fast scout for the rebels," "Make a tanky swamp beast").
+description: Generates new creatures, enemies, and NPCs as Bestiary entries with balanced stats, abilities, and weapons. Invoke when user asks for a creature (e.g., "Create a fast scout for the rebels," "Make a tanky swamp beast").
 ---
 
 ### Execution Steps
@@ -40,7 +39,9 @@ description: **Description:** Generates new creatures, enemies, and NPCs as Best
       "effect": "string",
       "prModifier": "number (optional, usually 5-15)"
     }
-  ]
+  ],
+  "isDiscovered": true,
+  "discoveredCampaignIds": [1]
 }
 
 ```
