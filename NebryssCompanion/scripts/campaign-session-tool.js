@@ -180,7 +180,13 @@ function autoTagEntities(text, context) {
   const candidates = [];
 
   (context.players || []).forEach(p => {
-    if (p.name) candidates.push({ type: 'player', id: p.id, name: p.name.trim() });
+    if (p.name) {
+      candidates.push({ type: 'player', id: p.id, name: p.name.trim() });
+      const unaccented = p.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+      if (unaccented && unaccented !== p.name.trim()) {
+        candidates.push({ type: 'player', id: p.id, name: unaccented });
+      }
+    }
   });
   (context.npcs || []).forEach(n => {
     if (n.name) {
@@ -188,6 +194,10 @@ function autoTagEntities(text, context) {
       const cleanName = n.name.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
       if (cleanName && cleanName !== n.name.trim()) {
         candidates.push({ type: 'npc', id: n.id, name: cleanName });
+      }
+      const unaccented = n.name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+      if (unaccented && unaccented !== n.name.trim()) {
+        candidates.push({ type: 'npc', id: n.id, name: unaccented });
       }
     }
   });
@@ -212,8 +222,8 @@ function autoTagEntities(text, context) {
   // Replace occurrences not already inside a tag
   for (const cand of candidates) {
     if (cand.name.length < 3) continue; // skip too-short names to avoid false positives
-    const escapedName = cand.name.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
-    const pattern = new RegExp(`(?<!@(?:player|npc|location|shop|bestiary)\\[[^\\]]*)\\b${escapedName}\\b(?![^\\[]*\\])`, 'g');
+    const escapedName = cand.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const pattern = new RegExp(`(?<!@(?:player|npc|location|shop|bestiary)\\[[^\\]]*)(?:^|(?<=[^\\p{L}\\p{N}_]))${escapedName}(?:(?=[^\\p{L}\\p{N}_])|$)`, 'gu');
     result = result.replace(pattern, `@${cand.type}[${cand.id}]`);
   }
 
@@ -880,6 +890,206 @@ async function createCombatNPC(combatData) {
   };
 }
 
+async function createLocation(locationData) {
+  const {
+    campaignId = 1,
+    name,
+    faction = 'Unaligned',
+    description = '',
+    category = 'POI',
+    categorySize = 'Medium',
+    isCapital = false,
+    isWorldMap = false,
+    mapX = null,
+    mapY = null,
+    discovered = true,
+    rpgMapLayout = '',
+    privateNotes = '',
+    secrets = [],
+    isSecret = false,
+    isSecretRevealed = false,
+    notableFeatures = [],
+    shops = [],
+    imgUrl = '',
+    thumbnail = ''
+  } = locationData;
+
+  if (!name) {
+    throw new Error('Location requires at least "name".');
+  }
+
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let existingLocations = [];
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      existingLocations = await playersDb.collection(`${prefix}-location`).find().toArray();
+      if (!existingLocations.length) {
+        existingLocations = await playersDb.collection('location').find().toArray();
+      }
+      if (!existingLocations.length) {
+        existingLocations = await mainDb.collection('location').find().toArray();
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonLocations = readJsonFallback('locations.json');
+  const allExisting = [...existingLocations, ...jsonLocations];
+  const maxId = allExisting.reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
+  const newId = maxId + 1;
+
+  const locationDoc = {
+    id: newId,
+    name: name.trim(),
+    faction: faction ? faction.trim() : 'Unaligned',
+    description: description ? description.trim() : '',
+    ...(category ? { category: category.trim() } : {}),
+    ...(categorySize !== undefined ? { categorySize } : {}),
+    isCapital: !!isCapital,
+    ...(isWorldMap ? { isWorldMap: true } : {}),
+    ...(typeof mapX === 'number' && !isNaN(mapX) ? { mapX } : {}),
+    ...(typeof mapY === 'number' && !isNaN(mapY) ? { mapY } : {}),
+    discovered: discovered !== undefined ? !!discovered : true,
+    ...(rpgMapLayout ? { rpgMapLayout } : {}),
+    ...(privateNotes ? { privateNotes } : {}),
+    ...(Array.isArray(secrets) && secrets.length > 0 ? { secrets } : {}),
+    ...(isSecret ? { isSecret: true } : {}),
+    ...(isSecretRevealed ? { isSecretRevealed: true } : {}),
+    ...(Array.isArray(notableFeatures) && notableFeatures.length > 0 ? { notableFeatures } : {}),
+    ...(Array.isArray(shops) && shops.length > 0 ? { shops } : {}),
+    ...(imgUrl ? { imgUrl } : {}),
+    ...(thumbnail ? { thumbnail } : {})
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-location`).insertOne({ ...locationDoc });
+      const genericCol = playersDb.collection('location');
+      const genExists = await genericCol.findOne({ id: newId });
+      if (!genExists) {
+        await genericCol.insertOne({ ...locationDoc });
+      }
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonLocations.filter(l => l.id !== newId);
+  updatedJson.push(locationDoc);
+  writeJsonFallback('location.json', updatedJson);
+  writeJsonFallback('locations.json', updatedJson);
+
+  return {
+    ...locationDoc,
+    entityTag: `@location[${locationDoc.id}]`,
+    displayTag: `@location[${locationDoc.id}: ${locationDoc.name}]`
+  };
+}
+
+async function createShop(shopData) {
+  const {
+    campaignId = 1,
+    name,
+    owner = null,
+    locationId = null,
+    locationName = '',
+    location = '',
+    description = '',
+    discovered = true,
+    imgUrl = '',
+    thumbnail = '',
+    categories = [1],
+    paymentMethod = { digital: true, physical: true },
+    items = []
+  } = shopData;
+
+  if (!name) {
+    throw new Error('Shop requires at least "name".');
+  }
+
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let existingShops = [];
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      existingShops = await playersDb.collection(`${prefix}-shop`).find().toArray();
+      if (!existingShops.length) {
+        existingShops = await playersDb.collection('shop').find().toArray();
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonShops = readJsonFallback('shops.json');
+  const allExisting = [...existingShops, ...jsonShops];
+  const maxId = allExisting.reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
+  const newId = maxId + 1;
+
+  const parsedOwner = (owner !== null && owner !== undefined && !isNaN(Number(owner))) ? Number(owner) : undefined;
+  const parsedLocId = (locationId !== null && locationId !== undefined && !isNaN(Number(locationId))) ? Number(locationId) : undefined;
+
+  const shopDoc = {
+    id: newId,
+    name: name.trim(),
+    ...(parsedOwner !== undefined ? { owner: parsedOwner } : {}),
+    ...(parsedLocId !== undefined ? { locationId: parsedLocId } : {}),
+    ...(locationName ? { locationName: locationName.trim() } : {}),
+    ...(location ? { location: location.trim() } : {}),
+    description: description ? description.trim() : '',
+    discovered: discovered !== undefined ? !!discovered : true,
+    ...(imgUrl ? { imgUrl } : {}),
+    ...(thumbnail ? { thumbnail } : {}),
+    categories: Array.isArray(categories) && categories.length > 0 ? categories : [1],
+    paymentMethod: paymentMethod && typeof paymentMethod === 'object' ? paymentMethod : { digital: true, physical: true },
+    items: Array.isArray(items) ? items : []
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-shop`).insertOne({ ...shopDoc });
+      const genericCol = playersDb.collection('shop');
+      const genExists = await genericCol.findOne({ id: newId });
+      if (!genExists) {
+        await genericCol.insertOne({ ...shopDoc });
+      }
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonShops.filter(s => s.id !== newId);
+  updatedJson.push(shopDoc);
+  writeJsonFallback('shop.json', updatedJson);
+  writeJsonFallback('shops.json', updatedJson);
+
+  return {
+    ...shopDoc,
+    entityTag: `@shop[${shopDoc.id}]`,
+    displayTag: `@shop[${shopDoc.id}: ${shopDoc.name}]`
+  };
+}
+
 function parseArgJson(raw) {
   if (!raw) return null;
   const str = String(raw).trim();
@@ -924,10 +1134,12 @@ Weapon Compendium:
   node scripts/campaign-session-tool.js list-weapons [query]
   node scripts/campaign-session-tool.js calculate-pr --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2}' --abilities='[{"name":"X","effect":"Y","prModifier":10}]'
 
-NPC & Bestiary Creation:
+NPC, Bestiary, Location & Shop Creation:
   node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Name" --faction="Faction" [--json-file="..."]
   node scripts/campaign-session-tool.js create-bestiary --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
   node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
+  node scripts/campaign-session-tool.js create-location --campaignId=1 --name="Location Name" --faction="Faction" --description="Lore" [--json-file="..."]
+  node scripts/campaign-session-tool.js create-shop --campaignId=1 --name="Shop Name" --owner=1 --locationId=1 --description="Lore" [--items='[{"id":16,"price":5,"type":"item"}]'] [--json-file="..."]
     `);
     process.exit(0);
   }
@@ -1102,6 +1314,66 @@ NPC & Bestiary Creation:
 
     const res = await createCombatNPC(combatParams);
     console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-location') {
+    const locParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
+      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
+      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
+      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
+      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
+      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
+      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
+      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(locParams, parsed);
+      }
+    });
+
+    const res = await createLocation(locParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-shop') {
+    const shopParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--owner=')) shopParams.owner = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationId=')) shopParams.locationId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
+      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--categories=')) {
+        const raw = arg.substring('--categories='.length);
+        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
+      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(shopParams, parsed);
+      }
+    });
+
+    const res = await createShop(shopParams);
+    console.log(JSON.stringify(res, null, 2));
   } else if (command === 'save') {
     let campaignId = 1;
     let sessionId = 1;
@@ -1208,6 +1480,8 @@ module.exports = {
   createNPC,
   createBestiaryEntry,
   createCombatNPC,
+  createLocation,
+  createShop,
   main
 };
 
