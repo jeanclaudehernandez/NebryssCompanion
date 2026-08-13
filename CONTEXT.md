@@ -250,5 +250,11 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
    - All user-facing UI text, headers, tooltips, and dialogs **MUST** be in English.
    - Ensure mobile-first responsive design supporting viewport widths down to **360px**, respecting iOS/Android safe area insets (`env(safe-area-inset-top/bottom)`) and minimum **44px × 44px** touch targets.
    - All components must support dark mode (`body.dark-theme`).
-4. **Build & Git Hygiene**:
+4. **Session Planner Tool & File Integrity Rules**:
+   - The Session Planner AI must **NEVER** modify, create, overwrite, or delete any files on the filesystem directly.
+   - All entity interactions (reading single/multiple, filtering, creating, updating, deleting entities, saving sessions) must be executed strictly via `campaign-session-tool.js`.
+   - **NEVER** run ad-hoc scripts or one-liners that connect directly to MongoDB via MongoClient; all CRUD and query capabilities are provided by `campaign-session-tool.js`.
+   - If asked to modify anything that is NOT an entity (source code, templates, styling, scripts, configs, documentation), the agent must instruct that it is not allowed.
+   - If it is an entity, always use the companion tool and do not modify files directly. For player entities, updates are persisted to the database without modifying local JSON files.
+5. **Build & Git Hygiene**:
    - Do **NOT** run automatic build commands (`ng build`, `npm run build`) or git tracking commands (`git status`, `git diff`) unless explicitly instructed.

@@ -1090,6 +1090,705 @@ async function createShop(shopData) {
   };
 }
 
+async function updatePlayer(playerUpdateData) {
+  const { id, campaignId = 1, ...updates } = playerUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updatePlayer requires an "id" property to identify the player.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let targetPlayer = null;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      const col = playersDb.collection(`${prefix}-player`);
+      targetPlayer = await col.findOne({ id: numericId });
+      if (!targetPlayer) {
+        targetPlayer = await playersDb.collection('player').findOne({ id: numericId });
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonPlayers = readJsonFallback('players.json');
+  if (!targetPlayer) {
+    targetPlayer = jsonPlayers.find(p => p.id === numericId);
+  }
+
+  if (!targetPlayer) {
+    throw new Error(`Player with ID ${numericId} not found in database or local storage.`);
+  }
+
+  // Merge attributes safely if provided
+  let finalAttributes = targetPlayer.attributes;
+  if (updates.attributes && typeof updates.attributes === 'object') {
+    finalAttributes = {
+      ...(targetPlayer.attributes || {}),
+      ...updates.attributes
+    };
+  }
+
+  // Merge progression safely if provided
+  let finalProgression = targetPlayer.progression;
+  if (updates.progression && typeof updates.progression === 'object') {
+    finalProgression = {
+      ...(targetPlayer.progression || {}),
+      ...updates.progression,
+      mistrals: {
+        ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
+        ...(updates.progression.mistrals || {})
+      }
+    };
+  } else if (
+    updates.talentPoints !== undefined ||
+    updates.digitalMistrals !== undefined ||
+    updates.physicalMistrals !== undefined ||
+    updates.talents !== undefined ||
+    updates.afflictions !== undefined ||
+    updates.equipment !== undefined
+  ) {
+    finalProgression = {
+      ...(targetPlayer.progression || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] }),
+      ...(updates.talentPoints !== undefined ? { talentPoints: Number(updates.talentPoints) } : {}),
+      mistrals: {
+        ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
+        ...(updates.digitalMistrals !== undefined ? { digital: Number(updates.digitalMistrals) } : {}),
+        ...(updates.physicalMistrals !== undefined ? { physical: Number(updates.physicalMistrals) } : {})
+      },
+      ...(Array.isArray(updates.talents) ? { talents: updates.talents } : {}),
+      ...(Array.isArray(updates.afflictions) ? { afflictions: updates.afflictions } : {}),
+      ...(Array.isArray(updates.equipment) ? { equipment: updates.equipment } : {})
+    };
+  }
+
+  // Merge weapons if provided
+  let finalWeapons = targetPlayer.weapons;
+  if (Array.isArray(updates.weapons)) {
+    finalWeapons = updates.weapons.map(Number).filter(n => !isNaN(n));
+  }
+
+  // Merge items / inventory if provided
+  let finalItems = targetPlayer.items;
+  if (Array.isArray(updates.items)) {
+    finalItems = updates.items;
+  }
+
+  // Merge abilities if provided
+  let finalAbilities = targetPlayer.abilities;
+  if (Array.isArray(updates.abilities)) {
+    finalAbilities = updates.abilities;
+  }
+
+  const updatedDoc = {
+    ...targetPlayer,
+    ...(updates.name ? { name: updates.name.trim() } : {}),
+    ...(updates.race ? { race: updates.race.trim() } : {}),
+    ...(updates.origin ? { origin: updates.origin.trim() } : {}),
+    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+    ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
+    ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
+    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+    ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
+    ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
+    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+    ...(finalAttributes ? { attributes: finalAttributes } : {}),
+    ...(finalWeapons ? { weapons: finalWeapons } : {}),
+    ...(finalAbilities ? { abilities: finalAbilities } : {}),
+    ...(finalProgression ? { progression: finalProgression } : {}),
+    ...(finalItems ? { items: finalItems } : {})
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-player`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+      await playersDb.collection('player').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  // Note: Per design constraints, player updates are persisted strictly to MongoDB without modifying local JSON files.
+
+  return {
+    ...updatedDoc,
+    entityTag: `@player[${updatedDoc.id}]`,
+    displayTag: `@player[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function updateNPC(npcUpdateData) {
+  const { id, campaignId = 1, ...updates } = npcUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateNPC requires an "id" property to identify the NPC.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let targetNPC = null;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      const col = playersDb.collection(`${prefix}-npc`);
+      targetNPC = await col.findOne({ id: numericId });
+      if (!targetNPC) {
+        targetNPC = await playersDb.collection('npc').findOne({ id: numericId });
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonNpcs = readJsonFallback('npcs.json');
+  if (!targetNPC) {
+    targetNPC = jsonNpcs.find(n => n.id === numericId);
+  }
+
+  if (!targetNPC) {
+    throw new Error(`NPC with ID ${numericId} not found in database or local storage.`);
+  }
+
+  const updatedDoc = {
+    ...targetNPC,
+    ...(updates.name ? { name: updates.name.trim() } : {}),
+    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+    ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
+    ...(updates.mission !== undefined ? { mission: updates.mission.trim() } : {}),
+    ...(updates.methods !== undefined ? { methods: updates.methods.trim() } : {}),
+    ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
+    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+    ...(updates.bestiaryId !== undefined ? { bestiaryId: (updates.bestiaryId !== null && !isNaN(Number(updates.bestiaryId))) ? Number(updates.bestiaryId) : undefined } : {}),
+    ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
+    ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
+    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+    ...(updates.fleetSize !== undefined ? { fleetSize: updates.fleetSize.trim() } : {}),
+    ...(updates.flagship !== undefined ? { flagship: updates.flagship.trim() } : {}),
+    ...(updates.tactics !== undefined ? { tactics: updates.tactics.trim() } : {}),
+    ...(updates.motivations !== undefined ? { motivations: updates.motivations.trim() } : {}),
+    ...(Array.isArray(updates.wargear) ? { wargear: updates.wargear } : {}),
+    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {})
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-npc`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+      await playersDb.collection('npc').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonNpcs.filter(n => n.id !== numericId);
+  updatedJson.push(updatedDoc);
+  writeJsonFallback('npc.json', updatedJson);
+  writeJsonFallback('npcs.json', updatedJson);
+
+  return {
+    ...updatedDoc,
+    entityTag: `@npc[${updatedDoc.id}]`,
+    displayTag: `@npc[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function updateLocation(locationUpdateData) {
+  const { id, campaignId = 1, ...updates } = locationUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateLocation requires an "id" property to identify the location.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let targetLoc = null;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      const col = playersDb.collection(`${prefix}-location`);
+      targetLoc = await col.findOne({ id: numericId });
+      if (!targetLoc) targetLoc = await playersDb.collection('location').findOne({ id: numericId });
+      if (!targetLoc) targetLoc = await mainDb.collection('location').findOne({ id: numericId });
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonLocations = readJsonFallback('locations.json');
+  if (!targetLoc) {
+    targetLoc = jsonLocations.find(l => l.id === numericId);
+  }
+
+  if (!targetLoc) {
+    throw new Error(`Location with ID ${numericId} not found in database or local storage.`);
+  }
+
+  const updatedDoc = {
+    ...targetLoc,
+    ...(updates.name ? { name: updates.name.trim() } : {}),
+    ...(updates.faction !== undefined ? { faction: updates.faction.trim() } : {}),
+    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+    ...(updates.category !== undefined ? { category: updates.category.trim() } : {}),
+    ...(updates.categorySize !== undefined ? { categorySize: updates.categorySize } : {}),
+    ...(updates.isCapital !== undefined ? { isCapital: !!updates.isCapital } : {}),
+    ...(updates.isWorldMap !== undefined ? { isWorldMap: !!updates.isWorldMap } : {}),
+    ...(updates.mapX !== undefined ? { mapX: Number(updates.mapX) } : {}),
+    ...(updates.mapY !== undefined ? { mapY: Number(updates.mapY) } : {}),
+    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
+    ...(updates.rpgMapLayout !== undefined ? { rpgMapLayout: updates.rpgMapLayout } : {}),
+    ...(updates.privateNotes !== undefined ? { privateNotes: updates.privateNotes } : {}),
+    ...(Array.isArray(updates.secrets) ? { secrets: updates.secrets } : {}),
+    ...(updates.isSecret !== undefined ? { isSecret: !!updates.isSecret } : {}),
+    ...(updates.isSecretRevealed !== undefined ? { isSecretRevealed: !!updates.isSecretRevealed } : {}),
+    ...(Array.isArray(updates.notableFeatures) ? { notableFeatures: updates.notableFeatures } : {}),
+    ...(Array.isArray(updates.shops) ? { shops: updates.shops } : {}),
+    ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
+    ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-location`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+      await playersDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonLocations.filter(l => l.id !== numericId);
+  updatedJson.push(updatedDoc);
+  writeJsonFallback('location.json', updatedJson);
+  writeJsonFallback('locations.json', updatedJson);
+
+  return {
+    ...updatedDoc,
+    entityTag: `@location[${updatedDoc.id}]`,
+    displayTag: `@location[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function updateShop(shopUpdateData) {
+  const { id, campaignId = 1, ...updates } = shopUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateShop requires an "id" property to identify the shop.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let targetShop = null;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      const col = playersDb.collection(`${prefix}-shop`);
+      targetShop = await col.findOne({ id: numericId });
+      if (!targetShop) targetShop = await playersDb.collection('shop').findOne({ id: numericId });
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonShops = readJsonFallback('shops.json');
+  if (!targetShop) {
+    targetShop = jsonShops.find(s => s.id === numericId);
+  }
+
+  if (!targetShop) {
+    throw new Error(`Shop with ID ${numericId} not found in database or local storage.`);
+  }
+
+  const updatedDoc = {
+    ...targetShop,
+    ...(updates.name ? { name: updates.name.trim() } : {}),
+    ...(updates.owner !== undefined ? { owner: updates.owner !== null ? Number(updates.owner) : null } : {}),
+    ...(updates.locationId !== undefined ? { locationId: updates.locationId !== null ? Number(updates.locationId) : null } : {}),
+    ...(updates.locationName !== undefined ? { locationName: updates.locationName.trim() } : {}),
+    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
+    ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
+    ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
+  };
+
+  if (Array.isArray(updates.categories)) {
+    updatedDoc.categories = updates.categories;
+  }
+  if (updates.paymentMethod && typeof updates.paymentMethod === 'object') {
+    updatedDoc.paymentMethod = { ...targetShop.paymentMethod, ...updates.paymentMethod };
+  }
+  if (Array.isArray(updates.items)) {
+    updatedDoc.items = updates.items;
+  }
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const playersDb = writeClient.db(playersDbName);
+      await playersDb.collection(`${prefix}-shop`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+      await playersDb.collection('shop').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonShops.filter(s => s.id !== numericId);
+  updatedJson.push(updatedDoc);
+  writeJsonFallback('shop.json', updatedJson);
+  writeJsonFallback('shops.json', updatedJson);
+
+  return {
+    ...updatedDoc,
+    entityTag: `@shop[${updatedDoc.id}]`,
+    displayTag: `@shop[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function updateBestiaryEntry(bestiaryUpdateData) {
+  const { id, ...updates } = bestiaryUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateBestiaryEntry requires an "id" property to identify the creature.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let targetBestiary = null;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      targetBestiary = await mainDb.collection('bestiary').findOne({ id: numericId });
+    } finally {
+      await client.close();
+    }
+  }
+
+  const jsonBestiary = readJsonFallback('bestiary.json');
+  if (!targetBestiary) {
+    targetBestiary = jsonBestiary.find(b => b.id === numericId);
+  }
+
+  if (!targetBestiary) {
+    throw new Error(`Bestiary entry with ID ${numericId} not found in database or local storage.`);
+  }
+
+  const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
+
+  let finalWeapons = targetBestiary.weapons || [];
+  if (Array.isArray(updates.weapons)) {
+    finalWeapons = validateWeaponsExist(updates.weapons, allWeapons);
+  }
+
+  const finalAttributes = {
+    ...(targetBestiary.attributes || {}),
+    ...(updates.attributes || {})
+  };
+
+  const finalAbilities = Array.isArray(updates.abilities) ? updates.abilities : (targetBestiary.abilities || []);
+
+  const prBreakdown = calculatePR({
+    attributes: finalAttributes,
+    weapons: finalWeapons,
+    abilities: finalAbilities
+  }, allWeapons, allRules);
+
+  const finalPR = (typeof updates.pr === 'number' && updates.pr > 0) ? updates.pr : prBreakdown.total;
+
+  const updatedDoc = {
+    ...targetBestiary,
+    ...(updates.name ? { name: updates.name.trim() } : {}),
+    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+    pr: finalPR,
+    attributes: finalAttributes,
+    weapons: finalWeapons,
+    abilities: finalAbilities,
+    ...(Array.isArray(updates.deployables) ? { deployables: updates.deployables } : {}),
+    ...(updates.isDiscovered !== undefined ? { isDiscovered: !!updates.isDiscovered } : {}),
+    ...(Array.isArray(updates.discoveredCampaignIds) ? { discoveredCampaignIds: updates.discoveredCampaignIds } : {})
+  };
+
+  const writeClient = await getClient();
+  if (writeClient) {
+    try {
+      const mainDb = writeClient.db(mainDbName);
+      await mainDb.collection('bestiary').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    } finally {
+      await writeClient.close();
+    }
+  }
+
+  const updatedJson = jsonBestiary.filter(b => b.id !== numericId);
+  updatedJson.push(updatedDoc);
+  writeJsonFallback('bestiary.json', updatedJson);
+  writeJsonFallback('bestiaries.json', updatedJson);
+
+  return {
+    ...updatedDoc,
+    prBreakdown,
+    entityTag: `@bestiary[${updatedDoc.id}]`,
+    displayTag: `@bestiary[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function readEntities({ type, campaignId = 1, filter = {}, search = '', limit = null }) {
+  const normalizedType = String(type || '').toLowerCase().trim();
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let docs = [];
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      if (normalizedType === 'player' || normalizedType === 'players') {
+        docs = await playersDb.collection(`${prefix}-player`).find().toArray();
+        if (!docs.length) docs = await playersDb.collection('player').find().toArray();
+      } else if (normalizedType === 'npc' || normalizedType === 'npcs') {
+        docs = await playersDb.collection(`${prefix}-npc`).find().toArray();
+        if (!docs.length) docs = await playersDb.collection('npc').find().toArray();
+      } else if (normalizedType === 'location' || normalizedType === 'locations') {
+        docs = await playersDb.collection(`${prefix}-location`).find().toArray();
+        if (!docs.length) docs = await playersDb.collection('location').find().toArray();
+      } else if (normalizedType === 'shop' || normalizedType === 'shops') {
+        docs = await playersDb.collection(`${prefix}-shop`).find().toArray();
+        if (!docs.length) docs = await playersDb.collection('shop').find().toArray();
+      } else if (normalizedType === 'bestiary' || normalizedType === 'creature' || normalizedType === 'creatures') {
+        docs = await mainDb.collection('bestiary').find().toArray();
+      } else if (normalizedType === 'session' || normalizedType === 'sessions' || normalizedType === 'campaignsession') {
+        docs = await mainDb.collection('campaignSession').find({ campaignId: Number(campaignId) }).toArray();
+      } else if (normalizedType === 'weapon' || normalizedType === 'weapons') {
+        docs = await mainDb.collection('weapon').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('weapons').find().toArray();
+      } else if (normalizedType === 'weaponrule' || normalizedType === 'weaponrules') {
+        docs = await mainDb.collection('weaponRule').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('weaponRules').find().toArray();
+      } else if (normalizedType === 'talent' || normalizedType === 'talents') {
+        docs = await mainDb.collection('talent').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('talents').find().toArray();
+      } else if (normalizedType === 'affliction' || normalizedType === 'afflictions') {
+        docs = await mainDb.collection('affliction').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('afflictions').find().toArray();
+      } else if (normalizedType === 'alteredstate' || normalizedType === 'alteredstates' || normalizedType === 'status') {
+        docs = await mainDb.collection('alteredState').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('status').find().toArray();
+      } else {
+        throw new Error(`Unknown entity type "${type}". Allowed types: player, npc, location, shop, bestiary, session, weapon, weaponRule, talent, affliction, alteredState.`);
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  // If no docs from DB, fallback to JSON files
+  if (!docs || docs.length === 0) {
+    if (normalizedType === 'player' || normalizedType === 'players') {
+      docs = readJsonFallback('players.json');
+    } else if (normalizedType === 'npc' || normalizedType === 'npcs') {
+      docs = readJsonFallback('npcs.json');
+    } else if (normalizedType === 'location' || normalizedType === 'locations') {
+      docs = readJsonFallback('locations.json');
+    } else if (normalizedType === 'shop' || normalizedType === 'shops') {
+      docs = readJsonFallback('shops.json');
+    } else if (normalizedType === 'bestiary' || normalizedType === 'creature' || normalizedType === 'creatures') {
+      docs = readJsonFallback('bestiary.json');
+    } else if (normalizedType === 'session' || normalizedType === 'sessions' || normalizedType === 'campaignsession') {
+      docs = readJsonFallback('campaignSessions.json').filter(s => Number(s.campaignId) === Number(campaignId));
+    } else if (normalizedType === 'weapon' || normalizedType === 'weapons') {
+      docs = readJsonFallback('weapons.json');
+    } else if (normalizedType === 'weaponrule' || normalizedType === 'weaponrules') {
+      docs = readJsonFallback('weaponRules.json');
+    } else if (normalizedType === 'talent' || normalizedType === 'talents') {
+      docs = readJsonFallback('talents.json');
+    } else if (normalizedType === 'affliction' || normalizedType === 'afflictions') {
+      docs = readJsonFallback('afflictions.json');
+    } else if (normalizedType === 'alteredstate' || normalizedType === 'alteredstates' || normalizedType === 'status') {
+      docs = readJsonFallback('alteredStates.json');
+    }
+  }
+
+  // Apply filters
+  let filtered = docs;
+  if (filter && typeof filter === 'object' && Object.keys(filter).length > 0) {
+    filtered = filtered.filter(item => {
+      for (const [k, v] of Object.entries(filter)) {
+        if (v === undefined || v === null || v === '') continue;
+        const itemVal = item[k];
+        if (itemVal === undefined) return false;
+        if (typeof v === 'string' && typeof itemVal === 'string') {
+          if (!itemVal.toLowerCase().includes(v.toLowerCase())) return false;
+        } else if (typeof v === 'boolean') {
+          if (Boolean(itemVal) !== Boolean(v)) return false;
+        } else if (typeof v === 'number') {
+          if (Number(itemVal) !== Number(v)) return false;
+        } else if (Array.isArray(v)) {
+          if (!Array.isArray(itemVal) || !v.every(x => itemVal.includes(x))) return false;
+        } else if (itemVal !== v) {
+          return false;
+        }
+      }
+      return true;
+    });
+  }
+
+  // Apply search query across textual fields
+  if (search && typeof search === 'string' && search.trim() !== '') {
+    const q = search.trim().toLowerCase();
+    filtered = filtered.filter(item => {
+      const matchName = item.name && String(item.name).toLowerCase().includes(q);
+      const matchDesc = item.description && String(item.description).toLowerCase().includes(q);
+      const matchLore = item.lore && String(item.lore).toLowerCase().includes(q);
+      const matchFaction = item.faction && String(item.faction).toLowerCase().includes(q);
+      const matchRole = item.role && String(item.role).toLowerCase().includes(q);
+      const matchLocation = (item.location || item.locationName) && String(item.location || item.locationName).toLowerCase().includes(q);
+      const matchId = String(item.id) === q;
+      return matchName || matchDesc || matchLore || matchFaction || matchRole || matchLocation || matchId;
+    });
+  }
+
+  if (typeof limit === 'number' && limit > 0) {
+    filtered = filtered.slice(0, limit);
+  }
+
+  return filtered;
+}
+
+async function getEntity({ type, id, name, campaignId = 1 }) {
+  const docs = await readEntities({ type, campaignId });
+  if (id !== undefined && id !== null && String(id).trim() !== '') {
+    const numId = Number(id);
+    const strId = String(id).trim();
+    const found = docs.find(d => d.id === numId || String(d.id) === strId || d._id === id || String(d._id) === strId);
+    if (found) return found;
+  }
+  if (name) {
+    const cleaned = cleanString(name);
+    const exact = docs.find(d => cleanString(d.name) === cleaned || String(d.id) === String(name));
+    if (exact) return exact;
+    const partial = docs.find(d => cleanString(d.name).includes(cleaned) || cleaned.includes(cleanString(d.name)));
+    if (partial) return partial;
+  }
+  return null;
+}
+
+async function deleteEntity({ type, id, campaignId = 1 }) {
+  const normalizedType = String(type || '').toLowerCase().trim();
+  if (id === undefined || id === null) {
+    throw new Error('deleteEntity requires an "id" property.');
+  }
+
+  const numericId = Number(id);
+  const client = await getClient();
+  let prefix = 'nebryss-voss-succession';
+  let deletedFromDb = false;
+
+  if (client) {
+    try {
+      const mainDb = client.db(mainDbName);
+      const playersDb = client.db(playersDbName);
+      const campaigns = await mainDb.collection('campaign').find().toArray();
+      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+      if (normalizedType === 'player') {
+        await playersDb.collection(`${prefix}-player`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        await playersDb.collection('player').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        deletedFromDb = true;
+      } else if (normalizedType === 'npc') {
+        await playersDb.collection(`${prefix}-npc`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        await playersDb.collection('npc').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        deletedFromDb = true;
+      } else if (normalizedType === 'location') {
+        await playersDb.collection(`${prefix}-location`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        await playersDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        deletedFromDb = true;
+      } else if (normalizedType === 'shop') {
+        await playersDb.collection(`${prefix}-shop`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        await playersDb.collection('shop').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        deletedFromDb = true;
+      } else if (normalizedType === 'bestiary') {
+        await mainDb.collection('bestiary').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
+        deletedFromDb = true;
+      } else if (normalizedType === 'session') {
+        await mainDb.collection('campaignSession').deleteOne({ campaignId: Number(campaignId), sessionId: numericId });
+        deletedFromDb = true;
+      } else {
+        throw new Error(`Unknown or unsupported entity type for delete: "${type}".`);
+      }
+    } finally {
+      await client.close();
+    }
+  }
+
+  // For non-player entities, also update local JSON files
+  if (normalizedType === 'npc') {
+    const jsonDocs = readJsonFallback('npcs.json').filter(n => Number(n.id) !== numericId);
+    writeJsonFallback('npc.json', jsonDocs);
+    writeJsonFallback('npcs.json', jsonDocs);
+  } else if (normalizedType === 'location') {
+    const jsonDocs = readJsonFallback('locations.json').filter(l => Number(l.id) !== numericId);
+    writeJsonFallback('location.json', jsonDocs);
+    writeJsonFallback('locations.json', jsonDocs);
+  } else if (normalizedType === 'shop') {
+    const jsonDocs = readJsonFallback('shops.json').filter(s => Number(s.id) !== numericId);
+    writeJsonFallback('shop.json', jsonDocs);
+    writeJsonFallback('shops.json', jsonDocs);
+  } else if (normalizedType === 'bestiary') {
+    const jsonDocs = readJsonFallback('bestiary.json').filter(b => Number(b.id) !== numericId);
+    writeJsonFallback('bestiary.json', jsonDocs);
+    writeJsonFallback('bestiaries.json', jsonDocs);
+  } else if (normalizedType === 'session') {
+    const jsonDocs = readJsonFallback('campaignSessions.json').filter(s => !(Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === numericId));
+    writeJsonFallback('campaignSession.json', jsonDocs);
+    writeJsonFallback('campaignSessions.json', jsonDocs);
+  }
+
+  return {
+    success: true,
+    type: normalizedType,
+    id: numericId,
+    campaignId: Number(campaignId),
+    deletedFromDb,
+    message: `Successfully deleted ${normalizedType} with ID ${numericId}`
+  };
+}
+
 function parseArgJson(raw) {
   if (!raw) return null;
   const str = String(raw).trim();
@@ -1120,11 +1819,12 @@ async function main() {
 
   if (!command || command === 'help' || command === '--help') {
     console.log(`
-Nebryss Campaign Session Tool v2.0
+Nebryss Campaign Session Tool v2.1
 Usage:
   node scripts/campaign-session-tool.js get-context [campaignId]
   node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
   node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
+  node scripts/campaign-session-tool.js get-entity <player|npc|location|shop|bestiary> [id or name] [--campaignId=1]
   node scripts/campaign-session-tool.js auto-tag [campaignId] [--input="..." | --file="..."]
   node scripts/campaign-session-tool.js clean-text [campaignId] [--input="..." | --file="..."]
   node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 [--content="..." | --content-file="..."] [--conclussion="..." | --conclussion-file="..."] [--branches="..."]
@@ -1134,12 +1834,19 @@ Weapon Compendium:
   node scripts/campaign-session-tool.js list-weapons [query]
   node scripts/campaign-session-tool.js calculate-pr --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2}' --abilities='[{"name":"X","effect":"Y","prModifier":10}]'
 
-NPC, Bestiary, Location & Shop Creation:
+Entity Creation:
   node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Name" --faction="Faction" [--json-file="..."]
   node scripts/campaign-session-tool.js create-bestiary --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
   node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
   node scripts/campaign-session-tool.js create-location --campaignId=1 --name="Location Name" --faction="Faction" --description="Lore" [--json-file="..."]
   node scripts/campaign-session-tool.js create-shop --campaignId=1 --name="Shop Name" --owner=1 --locationId=1 --description="Lore" [--items='[{"id":16,"price":5,"type":"item"}]'] [--json-file="..."]
+
+Entity Updates / Edits:
+  node scripts/campaign-session-tool.js update-player --id=1 [--campaignId=1] [--talentPoints=2] [--digitalMistrals=50] [--physicalMistrals=10] [--weapons="23,1"] [--attributes='...'] [--json-file="..."]
+  node scripts/campaign-session-tool.js update-npc --id=1 [--campaignId=1] [--name="..."] [--faction="..."] [--role="..."] [--json-file="..."]
+  node scripts/campaign-session-tool.js update-location --id=1 [--campaignId=1] [--name="..."] [--description="..."] [--json-file="..."]
+  node scripts/campaign-session-tool.js update-shop --id=1 [--campaignId=1] [--name="..."] [--description="..."] [--items='...'] [--json-file="..."]
+  node scripts/campaign-session-tool.js update-bestiary --id=1 [--name="..."] [--weapons="2,31"] [--attributes='...'] [--json-file="..."]
     `);
     process.exit(0);
   }
@@ -1163,6 +1870,56 @@ NPC, Bestiary, Location & Shop Creation:
     const sessions = await listSessions(campaignId, format);
     const latest = sessions.length ? sessions[sessions.length - 1] : null;
     console.log(JSON.stringify(latest, null, 2));
+  } else if (command === 'get-entity') {
+    const entityParams = { campaignId: 1 };
+    let type = args[1];
+    let query = args[2];
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) entityParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
+      else if (arg.startsWith('--id=')) entityParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) entityParams.name = arg.substring('--name='.length);
+    });
+    entityParams.type = type;
+    if (query && !query.startsWith('--')) {
+      if (/^\d+$/.test(query)) entityParams.id = Number(query);
+      else entityParams.name = query;
+    }
+    const res = await getEntity(entityParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'list-entities' || command === 'read-entities') {
+    const queryParams = { campaignId: 1 };
+    let type = args[1];
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) queryParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
+      else if (arg.startsWith('--filter=')) queryParams.filter = parseArgJson(arg.substring('--filter='.length));
+      else if (arg.startsWith('--search=')) queryParams.search = arg.substring('--search='.length);
+      else if (arg.startsWith('--limit=')) queryParams.limit = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(queryParams, parsed);
+      }
+    });
+    queryParams.type = type;
+    const res = await readEntities(queryParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'delete-entity' || command.startsWith('delete-')) {
+    const deleteParams = { campaignId: 1 };
+    let type = command.startsWith('delete-') && command !== 'delete-entity' ? command.substring('delete-'.length) : args[1];
+    let idArg = command.startsWith('delete-') && command !== 'delete-entity' ? args[1] : args[2];
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) deleteParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
+      else if (arg.startsWith('--id=')) deleteParams.id = Number(arg.split('=')[1]);
+    });
+    deleteParams.type = type;
+    if (idArg && !idArg.startsWith('--')) {
+      deleteParams.id = Number(idArg);
+    }
+    const res = await deleteEntity(deleteParams);
+    console.log(JSON.stringify(res, null, 2));
   } else if (command === 'auto-tag') {
     const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : 1;
     const context = await getCampaignContext(campaignId);
@@ -1253,6 +2010,74 @@ NPC, Bestiary, Location & Shop Creation:
 
     const res = await createNPC(npcParams);
     console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-player') {
+    const playerParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) playerParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) playerParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) playerParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--race=')) playerParams.race = arg.substring('--race='.length);
+      else if (arg.startsWith('--origin=')) playerParams.origin = arg.substring('--origin='.length);
+      else if (arg.startsWith('--faction=')) playerParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--subgroup=')) playerParams.subgroup = arg.substring('--subgroup='.length);
+      else if (arg.startsWith('--role=')) playerParams.role = arg.substring('--role='.length);
+      else if (arg.startsWith('--personality=')) playerParams.personality = arg.substring('--personality='.length);
+      else if (arg.startsWith('--location=')) playerParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--reputation=')) playerParams.reputation = arg.substring('--reputation='.length);
+      else if (arg.startsWith('--backstory=')) playerParams.backstory = arg.substring('--backstory='.length);
+      else if (arg.startsWith('--description=')) playerParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--weapons=')) {
+        const rawW = arg.substring('--weapons='.length);
+        playerParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--attributes=')) playerParams.attributes = parseArgJson(arg.substring('--attributes='.length));
+      else if (arg.startsWith('--abilities=')) playerParams.abilities = parseArgJson(arg.substring('--abilities='.length));
+      else if (arg.startsWith('--progression=')) playerParams.progression = parseArgJson(arg.substring('--progression='.length));
+      else if (arg.startsWith('--items=')) playerParams.items = parseArgJson(arg.substring('--items='.length));
+      else if (arg.startsWith('--talentPoints=')) playerParams.talentPoints = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--digitalMistrals=')) playerParams.digitalMistrals = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--physicalMistrals=')) playerParams.physicalMistrals = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(playerParams, parsed);
+      }
+    });
+
+    const res = await updatePlayer(playerParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-npc') {
+    const npcParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) npcParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) npcParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) npcParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) npcParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--subgroup=')) npcParams.subgroup = arg.substring('--subgroup='.length);
+      else if (arg.startsWith('--role=')) npcParams.role = arg.substring('--role='.length);
+      else if (arg.startsWith('--mission=')) npcParams.mission = arg.substring('--mission='.length);
+      else if (arg.startsWith('--methods=')) npcParams.methods = arg.substring('--methods='.length);
+      else if (arg.startsWith('--personality=')) npcParams.personality = arg.substring('--personality='.length);
+      else if (arg.startsWith('--location=')) npcParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--bestiaryId=')) npcParams.bestiaryId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--reputation=')) npcParams.reputation = arg.substring('--reputation='.length);
+      else if (arg.startsWith('--backstory=')) npcParams.backstory = arg.substring('--backstory='.length);
+      else if (arg.startsWith('--description=')) npcParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--fleetSize=')) npcParams.fleetSize = arg.substring('--fleetSize='.length);
+      else if (arg.startsWith('--flagship=')) npcParams.flagship = arg.substring('--flagship='.length);
+      else if (arg.startsWith('--tactics=')) npcParams.tactics = arg.substring('--tactics='.length);
+      else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
+      else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length));
+      else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(npcParams, parsed);
+      }
+    });
+
+    const res = await updateNPC(npcParams);
+    console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-bestiary') {
     const bestiaryParams = {};
     args.slice(1).forEach(arg => {
@@ -1276,6 +2101,31 @@ NPC, Bestiary, Location & Shop Creation:
     });
 
     const res = await createBestiaryEntry(bestiaryParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-bestiary') {
+    const bestiaryParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) bestiaryParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) bestiaryParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) bestiaryParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--subgroup=')) bestiaryParams.subgroup = arg.substring('--subgroup='.length);
+      else if (arg.startsWith('--weapons=')) {
+        const rawW = arg.substring('--weapons='.length);
+        bestiaryParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--attributes=')) bestiaryParams.attributes = parseArgJson(arg.substring('--attributes='.length));
+      else if (arg.startsWith('--abilities=')) bestiaryParams.abilities = parseArgJson(arg.substring('--abilities='.length));
+      else if (arg.startsWith('--deployables=')) bestiaryParams.deployables = parseArgJson(arg.substring('--deployables='.length));
+      else if (arg.startsWith('--isDiscovered=')) bestiaryParams.isDiscovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--pr=')) bestiaryParams.pr = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(bestiaryParams, parsed);
+      }
+    });
+
+    const res = await updateBestiaryEntry(bestiaryParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-combat-npc') {
     const combatParams = { campaignId: 1 };
@@ -1346,6 +2196,39 @@ NPC, Bestiary, Location & Shop Creation:
 
     const res = await createLocation(locParams);
     console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-location') {
+    const locParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) locParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
+      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
+      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
+      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
+      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
+      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
+      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
+      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(locParams, parsed);
+      }
+    });
+
+    const res = await updateLocation(locParams);
+    console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-shop') {
     const shopParams = { campaignId: 1 };
     args.slice(1).forEach(arg => {
@@ -1373,6 +2256,35 @@ NPC, Bestiary, Location & Shop Creation:
     });
 
     const res = await createShop(shopParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-shop') {
+    const shopParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) shopParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--owner=')) shopParams.owner = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationId=')) shopParams.locationId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
+      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--categories=')) {
+        const raw = arg.substring('--categories='.length);
+        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
+      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
+      else if (arg.startsWith('--json-file=')) {
+        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
+        const parsed = parseArgJson(fileContent);
+        if (parsed) Object.assign(shopParams, parsed);
+      }
+    });
+
+    const res = await updateShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'save') {
     let campaignId = 1;
@@ -1478,10 +2390,18 @@ module.exports = {
   validateWeaponsExist,
   getAllWeaponsAndRules,
   createNPC,
+  updatePlayer,
+  updateNPC,
   createBestiaryEntry,
+  updateBestiaryEntry,
   createCombatNPC,
   createLocation,
+  updateLocation,
   createShop,
+  updateShop,
+  getEntity,
+  readEntities,
+  deleteEntity,
   main
 };
 
