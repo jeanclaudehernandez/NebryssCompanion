@@ -43,7 +43,12 @@ export class WebSocketService implements OnDestroy {
       return;
     }
 
-    const wsUrl = customUrl || this.getWebSocketUrl();
+    let wsUrl = customUrl || this.getWebSocketUrl();
+    const token = this.authService.getToken();
+    if (token) {
+      const sep = wsUrl.includes('?') ? '&' : '?';
+      wsUrl += `${sep}token=${encodeURIComponent(token)}`;
+    }
     try {
       this.socket = new WebSocket(wsUrl);
 

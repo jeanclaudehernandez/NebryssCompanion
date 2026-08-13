@@ -105,8 +105,8 @@ function parseCookies(cookieHeader) {
 
 function setAuthCookie(res, token, req) {
   const isHttps = req.secure || req.headers['x-forwarded-proto'] === 'https';
-  // Use SameSite=Lax so cookies are sent across top-level navigations & relative requests
-  let cookieStr = `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; Max-Age=${SESSION_DURATION_SEC}; HttpOnly; SameSite=Lax`;
+  const sameSite = isHttps ? 'None' : 'Lax';
+  let cookieStr = `${COOKIE_NAME}=${encodeURIComponent(token)}; Path=/; Max-Age=${SESSION_DURATION_SEC}; HttpOnly; SameSite=${sameSite}`;
   if (isHttps) {
     cookieStr += '; Secure';
   }
@@ -115,7 +115,8 @@ function setAuthCookie(res, token, req) {
 
 function clearAuthCookie(res, req) {
   const isHttps = req ? (req.secure || req.headers['x-forwarded-proto'] === 'https') : false;
-  let cookieStr = `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=Lax`;
+  const sameSite = isHttps ? 'None' : 'Lax';
+  let cookieStr = `${COOKIE_NAME}=; Path=/; Max-Age=0; HttpOnly; SameSite=${sameSite}`;
   if (isHttps) {
     cookieStr += '; Secure';
   }
