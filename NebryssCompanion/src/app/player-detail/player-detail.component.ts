@@ -235,7 +235,9 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
     // Initialize itemTableData
     this.itemTableData = [];
     if (this.character.items && this.character.items.length > 0) {
-      this.itemTableData = this.character.items.map(inventory => {
+      this.itemTableData = this.character.items
+        .filter(inventory => inventory.quant === undefined || inventory.quant > 0)
+        .map(inventory => {
         const item = this.getItemById(inventory.id);
         const rawDescription = item?.description || 'No description available';
         
@@ -339,6 +341,7 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
 
       if (player.items && player.items.length > 0) {
         this.modItems = player.items
+          .filter((inventory: Inventory) => inventory.quant === undefined || inventory.quant > 0)
           .map((inventory: Inventory) => {
             const item = this.getItemById(inventory.id);
             if (!item || item.type !== 'modification') {

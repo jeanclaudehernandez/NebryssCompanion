@@ -604,15 +604,27 @@ export class GenericTableComponent implements OnInit, OnChanges {
     if (existingItemIndex >= 0) {
       const existingItem = player.items[existingItemIndex];
       
-      if (existingItem.quant > 0) {
-        // Decrement quantity by 1 (reaches 0 if it was 1, item is kept in inventory)
+      if (existingItem.quant > 1) {
+        // Decrement quantity by 1
         existingItem.quant -= 1;
+
+        // Handle deployables quantity decrement
+        if (item.type === 'deployable' && player.deployables) {
+          const existingDeployable = player.deployables.find((deployable) => deployable.id === item.id);
+          if (existingDeployable) {
+            existingDeployable.quant -= 1;
+            if (existingDeployable.quant <= 0) {
+              player.deployables = player.deployables.filter((deployable) => deployable.id !== item.id);
+            }
+          }
+        }
+
         this.toastService.show(
           `Updated ${item.name || 'Item'} (${existingItem.quant} remaining)`, 
           'info'
         );
       } else {
-        // Quantity is ALREADY 0: pressing subtract (-) again removes the item completely
+        // Reaching 0 quantity: remove item from inventory
         player.items.splice(existingItemIndex, 1);
         
         // Handle deployables removal

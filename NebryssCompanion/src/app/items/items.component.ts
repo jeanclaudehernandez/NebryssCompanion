@@ -677,7 +677,7 @@ export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
     
     const activePlayer = this.activePlayerService.activePlayer;
     const playerItemQuantById = activePlayer?.items
-      ? new Map(activePlayer.items.map(i => [i.id, i.quant] as const))
+      ? new Map(activePlayer.items.filter(i => i.quant === undefined || i.quant > 0).map(i => [i.id, i.quant] as const))
       : null;
 
     // Get items matching the requested type
@@ -742,7 +742,7 @@ export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     
     // Map player's item IDs for quick lookup
-    const playerItemIds = new Set(activePlayer.items.map(item => item.id));
+    const playerItemIds = new Set(activePlayer.items.filter(item => item.quant === undefined || item.quant > 0).map(item => item.id));
     
     // Sort the items - player owned items first
     return [...items].sort((a, b) => {
@@ -829,10 +829,10 @@ export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
     const source = (this.itemsData as any).items as any[];
     const activePlayer = this.activePlayerService.activePlayer;
     const playerItemQuantById = activePlayer?.items
-      ? new Map(activePlayer.items.map(i => [i.id, i.quant] as const))
+      ? new Map(activePlayer.items.filter(i => i.quant === undefined || i.quant > 0).map(i => [i.id, i.quant] as const))
       : null;
     const playerItemIds = activePlayer?.items?.length
-      ? new Set(activePlayer.items.map(i => i.id))
+      ? new Set(activePlayer.items.filter(i => i.quant === undefined || i.quant > 0).map(i => i.id))
       : null;
 
     const owned: any[] = [];
