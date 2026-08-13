@@ -38,6 +38,8 @@ testem.log
 /typings
 /.firebase
 # Database & Data storage
+local-db/
+**/local-db/
 local-db/mongodb_data/
 local-db/*.log
 local-db/*.sock
