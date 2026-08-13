@@ -8,6 +8,7 @@ import { ActivePlayerService } from '../active-player.service';
 import { AdminService } from '../admin.service';
 import { UpdateService } from '../update.service';
 import { ToastService } from '../toast.service';
+import { AuthService } from '../auth.service';
 import { Campaign } from '../model';
 
 @Component({
@@ -155,6 +156,48 @@ import { Campaign } from '../model';
                   <span>{{ isRefreshingData ? 'Refreshing...' : 'Yes, Refresh' }}</span>
                 </button>
               </div>
+            </div>
+          </section>
+
+          <!-- SECTION 4: ACCOUNT & SESSION -->
+          <section class="settings-section">
+            <h3 class="section-title">
+              <span class="material-icons">account_circle</span>
+              Account & Session
+            </h3>
+
+            <div class="user-account-card">
+              <div class="user-info-row" *ngIf="(authService.currentUser$ | async) as user; else fallbackUserBlock">
+                <div class="user-avatar-wrap">
+                  <span class="material-icons user-avatar-icon">{{ user.role === 'admin' ? 'admin_panel_settings' : 'person' }}</span>
+                </div>
+                <div class="user-details">
+                  <div class="user-primary-line">
+                    <strong class="user-name">{{ user.username }}</strong>
+                    <span class="user-role-badge" [class.badge-admin]="user.role === 'admin'">
+                      {{ user.role === 'admin' ? 'Game Master' : 'Player' }}
+                    </span>
+                  </div>
+                  <small class="user-email">{{ user.email }}</small>
+                </div>
+              </div>
+
+              <ng-template #fallbackUserBlock>
+                <div class="user-info-row">
+                  <div class="user-avatar-wrap">
+                    <span class="material-icons user-avatar-icon">person</span>
+                  </div>
+                  <div class="user-details">
+                    <strong class="user-name">Signed In</strong>
+                    <small class="user-email">Active Session</small>
+                  </div>
+                </div>
+              </ng-template>
+
+              <button type="button" class="btn-logout-card" (click)="onLogout()">
+                <span class="material-icons">logout</span>
+                <span>Log Out</span>
+              </button>
             </div>
           </section>
         </div>
@@ -752,6 +795,134 @@ import { Campaign } from '../model';
       filter: brightness(1.15);
       box-shadow: 0 0 10px var(--accent-color, #d4af37);
     }
+
+    /* Account & Session Styles */
+    .user-account-card {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.03);
+      box-sizing: border-box;
+    }
+
+    .user-info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar-wrap {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(212, 175, 55, 0.15);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    .user-avatar-icon {
+      font-size: 24px;
+      color: var(--accent-color, #d4af37);
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .user-details {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .user-primary-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .user-name {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .user-role-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .user-role-badge.badge-admin {
+      background: rgba(212, 175, 55, 0.2);
+      color: var(--accent-color, #d4af37);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+    }
+
+    .user-email {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-logout-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }
+
+    .btn-logout-card:hover {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: #ef4444;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-logout-card:active {
+      transform: scale(0.98);
+    }
+
+    .btn-logout-card .material-icons {
+      font-size: 19px;
+    }
   `]
 })
 export class SettingsModalComponent {
@@ -780,7 +951,8 @@ export class SettingsModalComponent {
     private activePlayerService: ActivePlayerService,
     public adminService: AdminService,
     private updateService: UpdateService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    public authService: AuthService
   ) {
     this.dataService.getCampaigns().subscribe(campaigns => {
       this.campaigns = campaigns;
@@ -824,5 +996,10 @@ export class SettingsModalComponent {
     this.isRefreshingData = true;
     this.toastService.show('Clearing storage and refreshing data...', 'info');
     this.updateService.clearStorageAndReload();
+  }
+
+  onLogout(): void {
+    this.onClose();
+    this.authService.logout().subscribe();
   }
 }

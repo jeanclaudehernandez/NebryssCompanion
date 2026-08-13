@@ -7,7 +7,6 @@ import { AdminService } from '../admin.service';
 import { AppView } from '../app-view.types';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
-import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -29,17 +28,11 @@ export class SidebarComponent {
     private modalService: ModalService,
     public themeService: ThemeService,
     private adminService: AdminService,
-    private dataService: DataService,
-    public authService: AuthService
+    private dataService: DataService
   ) {
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
-  }
-
-  onLogout(): void {
-    this.isOpen = false;
-    this.authService.logout().subscribe();
   }
 
   @HostListener('document:click', ['$event'])
