@@ -141,7 +141,7 @@ In all session logs, narrative descriptions, and database entries, entities **MU
 
 | ID | Name | Race / Origin | Attributes (M / W / Sv / APL) | Body Types | Archetype & Combat Style |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `@player[1]` | **Wendy** | Human / Imperial Deserter | 6" / 6W / 5+ / 2 APL | `universal`, `human` | Combat Medic: *Battlefield First Aid*, *Extended Mags*, *Steady Guard* |
+| `@player[1]` | **Wendy** | Human / Imperial Deserter | 8" / 6W / 5+ / 2 APL | `universal`, `human` | Combat Medic: *Battlefield First Aid*, *Extended Mags*, *Steady Guard* |
 | `@player[2]` | **Thennur** | Fellgor / NLR Traveler | 6" / 9W / 5+ / 2 APL | `universal`, `human`, `spell`, `fellgor` | Mist Shaman / Support: *Mist Veil*, *The Wind's Gift*, *Wind's Gift Salvation* |
 | `@player[3]` | **Akrina V.** | Human / Exiled Voss Scion | 7" / 7W / 5+ / 2 APL | `universal`, `human` | Agile Gunslinger: *Unrelenting Barrage* (2x Shoot), *Demonstrably Agile* |
 | `@player[4]` | **Xarion Vex** | Mutated Astartes / Cabal Deserter | 5" / 10W / 5+ / 2 APL | `universal`, `astartes`, `spell` | Shattered Oracle: *Fractal Visions*, *Mist Veilwalk*, *Screaming Vortex* summons (Pig ear mutation) |

@@ -929,3 +929,15 @@ body:not(.dark-theme) .quick-action-btn {
   background: rgba(0, 0, 0, 0.02);
   color: rgba(0, 0, 0, 0.75);
 }
+
+.admin-locked {
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.admin-locked h3 {
+  color: #ef4444;
+  margin: 0;
+  font-size: 1.2rem;
+}

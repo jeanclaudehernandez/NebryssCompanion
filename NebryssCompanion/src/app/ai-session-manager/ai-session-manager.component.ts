@@ -21,7 +21,7 @@ import {
 } from './ai-session-manager.service';
 import { CampaignService } from '../campaign.service';
 import { DataService } from '../data.service';
-import { AppView } from '../app-view.types';
+import { AdminService } from '../admin.service';
 
 interface Campaign {
   id: number;
@@ -50,6 +50,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   private readonly destroyRef = inject(DestroyRef);
 
+  isAdmin = false;
   messages: ChatMessage[] = [];
   connectionStatus: ConnectionStatus = 'disconnected';
   isAgentTyping = false;
@@ -69,10 +70,23 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     private readonly aiService: AiSessionManagerService,
     private readonly campaignService: CampaignService,
     private readonly dataService: DataService,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly adminService: AdminService
   ) {}
 
   ngOnInit(): void {
+    // Check admin role
+    this.adminService.isAdmin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+        if (isAdmin) {
+          this.aiService.connect();
+        } else {
+          this.aiService.disconnect();
+        }
+      });
+
     // Subscribe to real-time agent status (tools, reasoning)
     this.aiService.currentStatus$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -136,9 +150,6 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .subscribe(players => {
         this.activePlayers = (players || []) as Player[];
       });
-
-    // Connect to the AGY bridge
-    this.aiService.connect();
 
     // Collapse sidebar on mobile by default
     if (window.innerWidth <= 768) {

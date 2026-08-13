@@ -1,5 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
+import { AuthService } from '../auth.service';
+import { AdminService } from '../admin.service';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
@@ -49,6 +51,11 @@ export class AiSessionManagerService implements OnDestroy {
   currentStatus$: Observable<string | null> = this.currentStatusSubject.asObservable();
   rawEvents$: Observable<AgentEvent> = this.rawEventsSubject.asObservable();
 
+  constructor(
+    private readonly authService: AuthService,
+    private readonly adminService: AdminService
+  ) {}
+
   get isConnected(): boolean {
     return this.connectionStatusSubject.value === 'connected';
   }
@@ -58,13 +65,24 @@ export class AiSessionManagerService implements OnDestroy {
   }
 
   connect(): void {
+    if (!this.adminService.hasAdminAccess) {
+      console.warn('[AI Session] Connection aborted: User lacks admin role.');
+      this.disconnect();
+      return;
+    }
+
     if (this.ws && (this.ws.readyState === WebSocket.OPEN || this.ws.readyState === WebSocket.CONNECTING)) {
       return;
     }
 
     this.connectionStatusSubject.next('connecting');
 
-    const wsUrl = this.getWebSocketUrl();
+    let wsUrl = this.getWebSocketUrl();
+    const token = this.authService.getToken();
+    if (token) {
+      const sep = wsUrl.includes('?') ? '&' : '?';
+      wsUrl += `${sep}token=${encodeURIComponent(token)}`;
+    }
 
     try {
       this.ws = new WebSocket(wsUrl);
@@ -91,10 +109,10 @@ export class AiSessionManagerService implements OnDestroy {
       }
     };
 
-    this.ws.onclose = () => {
-      console.log('[AI Session] WebSocket closed');
+    this.ws.onclose = (event) => {
+      console.log('[AI Session] WebSocket closed', event.code, event.reason);
       this.ws = null;
-      if (!this.destroyed) {
+      if (!this.destroyed && this.adminService.hasAdminAccess && event.code !== 4003 && event.code !== 4001) {
         this.connectionStatusSubject.next('reconnecting');
         this.scheduleReconnect();
       } else {

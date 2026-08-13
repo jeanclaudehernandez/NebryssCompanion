@@ -1,4 +1,8 @@
-<div class="ai-session-manager">
+<div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+  <h3>Admin Access Required</h3>
+</div>
+
+<div *ngIf="isAdmin" class="ai-session-manager">
   <!-- Context Sidebar -->
   <aside class="context-sidebar" [class.collapsed]="sidebarCollapsed">
     <div class="sidebar-header">

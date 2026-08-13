@@ -1,6 +1,10 @@
 <div class="session-admin-container">
+  <div *ngIf="!isAdmin" class="player-detail-container admin-locked">
+    <h3>Admin Access Required</h3>
+  </div>
+
   <!-- Main Editor Form -->
-  <main class="session-editor-pane">
+  <main *ngIf="isAdmin" class="session-editor-pane">
     <div class="form-card">
       <!-- Form Header -->
       <div class="form-card-header">

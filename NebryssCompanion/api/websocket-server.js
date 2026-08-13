@@ -146,6 +146,12 @@ function setupWebSocketServer(server) {
     request.user = session;
 
     if (pathname === '/ws/agent' || pathname.startsWith('/ws/agent/')) {
+      if (session.role !== 'admin' && session.role !== 'gm') {
+        console.warn(`[WebSocket] Rejected non-admin connection attempt to AI Agent bridge from user: ${session.email || session.username}`);
+        socket.write('HTTP/1.1 403 Forbidden\r\nContent-Type: text/plain\r\n\r\nForbidden: GM/Admin role required\r\n');
+        socket.destroy();
+        return;
+      }
       agentWss.handleUpgrade(request, socket, head, (ws) => {
         ws.user = session;
         agentWss.emit('connection', ws, request);

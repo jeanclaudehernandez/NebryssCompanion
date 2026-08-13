@@ -19,6 +19,18 @@
   padding: 0 4px;
 }
 
+.admin-locked {
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 32px 16px;
+}
+
+.admin-locked h3 {
+  color: #ef4444;
+  margin: 0;
+  font-size: 1.2rem;
+}
+
 .session-editor-pane {
   display: flex;
   flex-direction: column;
