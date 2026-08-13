@@ -21,6 +21,8 @@ import { AdminService } from './admin.service';
 import { ToastService } from './toast.service';
 import { SettingsModalComponent } from './settings-modal/settings-modal.component';
 import { NavigationHistoryService, AppNavigationSelectionState } from './navigation-history.service';
+import { AuthGatewayComponent } from './auth-gateway/auth-gateway.component';
+import { AuthService } from './auth.service';
 
 @Component({
   selector: 'app-root',
@@ -30,11 +32,13 @@ import { NavigationHistoryService, AppNavigationSelectionState } from './navigat
     HttpClientModule,
     SidebarComponent,
     AppViewHostComponent,
-    SettingsModalComponent
+    SettingsModalComponent,
+    AuthGatewayComponent
   ],
   template: `
-    <!-- Top App Bar Header -->
-    <header class="app-header">
+    <ng-container *ngIf="(authService.isAuthenticated$ | async); else unauthenticatedGate">
+      <!-- Top App Bar Header -->
+      <header class="app-header">
       <button type="button" class="header-action-btn" (click)="$event.stopPropagation(); sidebarComp.toggleMenu()" aria-label="Open navigation menu">
         <span class="material-icons">menu</span>
       </button>
@@ -46,8 +50,8 @@ import { NavigationHistoryService, AppNavigationSelectionState } from './navigat
         type="button"
         class="top-gm-toggle-btn"
         [class.active]="isAdmin$ | async"
-        (click)="openAdminDialog()"
-        title="GM Access & Settings"
+        (click)="toggleGmMode()"
+        title="Toggle GM Mode (Secret Vaults & Editors)"
       >
         <span class="material-icons">security</span>
         <span>{{ (isAdmin$ | async) ? 'GM ON' : 'GM OFF' }}</span>
@@ -176,91 +180,10 @@ import { NavigationHistoryService, AppNavigationSelectionState } from './navigat
         </button>
       </nav>
     }
+    </ng-container>
 
-    <ng-template #adminDialog let-check="check" let-toggleGm="toggleGm" let-logout="logout" let-cancel="cancel" let-hasAccess="hasAccess" let-isAdmin="isAdmin">
-      <div class="gm-modal-wrapper">
-        <header class="settings-header">
-          <div class="settings-title-wrap">
-            <span class="material-icons settings-header-icon">security</span>
-            <h2>GM & Admin Access</h2>
-          </div>
-          <button type="button" class="settings-close-btn" (click)="cancel()" aria-label="Close">
-            <span class="material-icons">close</span>
-          </button>
-        </header>
-
-        <div class="settings-body">
-          <!-- When NOT authenticated -->
-          <div class="action-card" *ngIf="!hasAccess">
-            <div class="action-card-header">
-              <span class="material-icons action-icon">lock</span>
-              <div class="action-card-info">
-                <strong>Unlock GM Mode</strong>
-                <small>Unlock Game Master tools, admin editors, and secret campaign content</small>
-              </div>
-            </div>
-            <div class="admin-input-group">
-              <div class="password-field-wrapper">
-                <span class="material-icons input-icon">key</span>
-                <input
-                  #passwordInput
-                  [type]="showAdminPasswordHeader ? 'text' : 'password'"
-                  class="settings-input"
-                  placeholder="Enter admin password..."
-                  (keyup.enter)="check(passwordInput.value)"
-                  autofocus
-                />
-                <button
-                  type="button"
-                  class="btn-toggle-eye"
-                  (click)="showAdminPasswordHeader = !showAdminPasswordHeader"
-                  aria-label="Toggle password visibility"
-                >
-                  <span class="material-icons">{{ showAdminPasswordHeader ? 'visibility_off' : 'visibility' }}</span>
-                </button>
-              </div>
-              <button type="button" class="btn-accent-action" (click)="check(passwordInput.value)">
-                <span class="material-icons">vpn_key</span>
-                <span>Unlock</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- When authenticated -->
-          <div class="action-card gm-active" *ngIf="hasAccess">
-            <div class="action-card-header">
-              <div class="status-indicator">
-                <span class="status-dot"></span>
-                <div class="action-card-info">
-                  <strong>{{ isAdmin ? 'GM Mode ACTIVE' : 'Player View (GM OFF)' }}</strong>
-                  <small>{{ isAdmin ? 'Secret vaults, NPC secrets, and entity editors are visible.' : 'Admin tools and secrets are hidden.' }}</small>
-                </div>
-              </div>
-              <span class="status-badge" [class.badge-active]="isAdmin">
-                {{ isAdmin ? 'GM ON' : 'GM OFF' }}
-              </span>
-            </div>
-            <div class="admin-actions-row">
-              <button
-                type="button"
-                class="mode-card"
-                [class.active]="isAdmin"
-                (click)="toggleGm()"
-              >
-                <span class="material-icons">{{ isAdmin ? 'visibility_off' : 'visibility' }}</span>
-                <div class="mode-card-info">
-                  <strong>{{ isAdmin ? 'Switch to Player View' : 'Activate GM Mode' }}</strong>
-                  <small>{{ isAdmin ? 'Hide GM tools' : 'Show GM secrets' }}</small>
-                </div>
-              </button>
-              <button type="button" class="btn-subtle-danger" (click)="logout()">
-                <span class="material-icons">lock</span>
-                <span>Lock GM Access</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <ng-template #unauthenticatedGate>
+      <app-auth-gateway></app-auth-gateway>
     </ng-template>
 
     <ng-template #campaignPromptDialog let-campaigns="campaigns" let-select="select">
@@ -305,7 +228,6 @@ import { NavigationHistoryService, AppNavigationSelectionState } from './navigat
 })
 export class AppComponent {
   @ViewChild('sidebarComp') sidebarComp?: SidebarComponent;
-  @ViewChild('adminDialog') adminDialogTemplate?: TemplateRef<any>;
   @ViewChild('campaignPromptDialog') campaignPromptDialogTemplate?: TemplateRef<any>;
   private readonly destroyRef = inject(DestroyRef);
 
@@ -326,7 +248,6 @@ export class AppComponent {
   bestiaryMaterialsCount = 0;
   bestiaryMaterialsSidebarOpen = false;
   rickrollVisible = false;
-  showAdminPasswordHeader = false;
 
   // Shake detection state
   private shakeLastX = 0;
@@ -348,7 +269,8 @@ export class AppComponent {
     private bestiaryMaterialsService: BestiaryMaterialsService,
     private modalService: ModalService,
     public campaignService: CampaignService,
-    private navigationHistory: NavigationHistoryService
+    private navigationHistory: NavigationHistoryService,
+    public authService: AuthService
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -942,48 +864,12 @@ export class AppComponent {
     this.bestiaryMaterialsService.toggle();
   }
 
-  openAdminDialog(): void {
-    if (!this.adminDialogTemplate) {
-      return;
-    }
-    this.showAdminPasswordHeader = false;
-
-    const dialogContext = {
-      hasAccess: this.adminService.hasAdminAccess,
-      isAdmin: this.adminService.isAdmin,
-      check: (password: string) => {
-        if (password === '2602') {
-          this.adminService.setAdminAuthenticated(true);
-          this.modalService.close();
-          this.toastService.show('GM Access Granted! GM Mode is ON.', 'success');
-        } else {
-          this.toastService.show('Incorrect admin password', 'error');
-        }
-      },
-      toggleGm: () => {
-        const nextState = !this.adminService.isAdmin;
-        this.adminService.setAdminStatus(nextState);
-        this.modalService.close();
-        this.toastService.show(nextState ? 'GM Mode ON (Secret Vaults & GM Tools visible)' : 'Player View Active (GM OFF)', 'info');
-      },
-      logout: () => {
-        this.adminService.setAdminAuthenticated(false);
-        this.modalService.close();
-        this.toastService.show('Logged out of GM mode', 'info');
-      },
-      cancel: () => {
-        this.modalService.close();
-      }
-    };
-
-    this.modalService.openFromTemplate(this.adminDialogTemplate, dialogContext, {
-      showCloseButton: false,
-      contentClass: 'settings-style-dialog'
-    });
-    setTimeout(() => {
-      const input = document.querySelector<HTMLInputElement>('.gm-modal-wrapper input[type="password"]');
-      input?.focus();
-    }, 50);
+  toggleGmMode(): void {
+    const nextState = this.adminService.toggleGmMode();
+    this.toastService.show(
+      nextState ? 'GM Mode ON (Secret Vaults & GM Tools visible)' : 'Player View Active (GM OFF)',
+      'info'
+    );
   }
 
   @HostListener('click', ['$event'])

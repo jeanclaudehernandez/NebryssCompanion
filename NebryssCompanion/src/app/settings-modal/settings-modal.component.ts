@@ -123,82 +123,7 @@ import { Campaign } from '../model';
             </div>
           </section>
 
-          <!-- SECTION 3: GM & ADMIN ACCESS -->
-          <section class="settings-section">
-            <h3 class="section-title">
-              <span class="material-icons">security</span>
-              GM & Admin Access
-            </h3>
-
-            <!-- When not authenticated -->
-            <div class="action-card" *ngIf="!adminService.hasAdminAccess">
-              <div class="action-card-header">
-              </div>
-              <div class="admin-input-group">
-                <div class="password-field-wrapper">
-                  <span class="material-icons input-icon">key</span>
-                  <input
-                    [type]="showAdminPassword ? 'text' : 'password'"
-                    class="settings-input"
-                    placeholder="Enter password..."
-                    [(ngModel)]="adminPassword"
-                    (keyup.enter)="onUnlockAdmin()"
-                  />
-                  <button
-                    type="button"
-                    class="btn-toggle-eye"
-                    (click)="showAdminPassword = !showAdminPassword"
-                    aria-label="Toggle password visibility"
-                  >
-                    <span class="material-icons">{{ showAdminPassword ? 'visibility_off' : 'visibility' }}</span>
-                  </button>
-                </div>
-                <button type="button" class="btn-accent-action" (click)="onUnlockAdmin()">
-                  <span class="material-icons">vpn_key</span>
-                </button>
-              </div>
-              <div class="input-error" *ngIf="adminPasswordError">
-                <span class="material-icons">error_outline</span>
-                <span>{{ adminPasswordError }}</span>
-              </div>
-            </div>
-
-            <!-- When authenticated -->
-            <div class="action-card gm-active" *ngIf="adminService.hasAdminAccess">
-              <div class="action-card-header">
-                <div class="status-indicator">
-                  <span class="status-dot"></span>
-                  <div class="action-card-info">
-                    <strong>{{ adminService.isAdmin ? 'GM Mode ACTIVE' : 'Player View (GM OFF)' }}</strong>
-                    <small>{{ adminService.isAdmin ? 'Secret vaults, NPC secrets, and entity editors are visible.' : 'Admin tools and secrets are hidden.' }}</small>
-                  </div>
-                </div>
-                <span class="status-badge" [class.badge-active]="adminService.isAdmin">
-                  {{ adminService.isAdmin ? 'GM ON' : 'GM OFF' }}
-                </span>
-              </div>
-              <div class="admin-actions-row">
-                <button
-                  type="button"
-                  class="mode-card"
-                  [class.active]="adminService.isAdmin"
-                  (click)="onToggleGmMode()"
-                >
-                  <span class="material-icons">{{ adminService.isAdmin ? 'visibility_off' : 'visibility' }}</span>
-                  <div class="mode-card-info">
-                    <strong>{{ adminService.isAdmin ? 'Switch to Player View' : 'Activate GM Mode' }}</strong>
-                    <small>{{ adminService.isAdmin ? 'Hide GM tools' : 'Show GM secrets' }}</small>
-                  </div>
-                </button>
-                <button type="button" class="btn-subtle-danger" (click)="onLogoutAdmin()">
-                  <span class="material-icons">lock</span>
-                  <span>Lock GM Access</span>
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <!-- SECTION 4: DATA & STORAGE MANAGEMENT -->
+          <!-- SECTION 3: DATA & STORAGE MANAGEMENT -->
           <section class="settings-section">
             <h3 class="section-title">
               <span class="material-icons">sync</span>
@@ -834,10 +759,6 @@ export class SettingsModalComponent {
 
   campaigns: Campaign[] = [];
   selectedCampaign: Campaign | null = null;
-
-  adminPassword = '';
-  showAdminPassword = false;
-  adminPasswordError = '';
   isConfirmingRefresh = false;
   isRefreshingData = false;
 
@@ -889,32 +810,6 @@ export class SettingsModalComponent {
 
   onSelectManualSkin(skin: CharacterSkin): void {
     this.themeService.setManualSkin(skin);
-  }
-
-  onUnlockAdmin(): void {
-    if (this.adminPassword.trim() === '2602') {
-      this.adminService.setAdminAuthenticated(true);
-      this.adminPassword = '';
-      this.adminPasswordError = '';
-      this.toastService.show('GM Access Granted! GM Mode is ON.', 'success');
-    } else {
-      this.adminPasswordError = 'Incorrect admin password';
-      this.toastService.show('Incorrect admin password', 'error');
-    }
-  }
-
-  onToggleGmMode(): void {
-    const nextState = !this.adminService.isAdmin;
-    this.adminService.setAdminStatus(nextState);
-    this.toastService.show(
-      nextState ? 'GM Mode ON (Secret Vaults & GM Tools visible)' : 'Player View Active (GM OFF)',
-      'info'
-    );
-  }
-
-  onLogoutAdmin(): void {
-    this.adminService.setAdminAuthenticated(false);
-    this.toastService.show('Logged out of GM mode', 'info');
   }
 
   onPromptRefresh(): void {

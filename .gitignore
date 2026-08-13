@@ -26,9 +26,13 @@ WiredTiger*
 # Environment variables & secrets
 .env
 .env.*
+.env.duckdns
 !.env.example
 *.env
 *.env.*
+**/.env
+**/.env.*
+**/.env.duckdns
 
 # IDEs & System files
 .vscode/*

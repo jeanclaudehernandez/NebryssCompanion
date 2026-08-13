@@ -1,0 +1,247 @@
+<div class="auth-gateway-overlay">
+  <div class="auth-backdrop-effects">
+    <div class="nebula-glow nebula-glow-1"></div>
+    <div class="nebula-glow nebula-glow-2"></div>
+    <div class="stars-grid"></div>
+  </div>
+
+  <div class="auth-card">
+    <!-- Brand Header -->
+    <div class="brand-header">
+      <div class="emblem-wrapper">
+        <span class="material-icons emblem-icon">military_tech</span>
+      </div>
+      <h1 class="brand-title">NEBRYSS COMPANION</h1>
+      <div class="brand-badge">Imperial Terminal Access</div>
+    </div>
+
+    <!-- Navigation Tabs (Login / Register) -->
+    <div class="auth-tabs" *ngIf="mode !== 'verify'">
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="mode === 'login'"
+        (click)="setMode('login')"
+      >
+        <span class="material-icons tab-icon">login</span>
+        <span>Log In</span>
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="mode === 'register'"
+        (click)="setMode('register')"
+      >
+        <span class="material-icons tab-icon">person_add</span>
+        <span>Register</span>
+      </button>
+    </div>
+
+    <!-- Alerts / Messages -->
+    <div class="alert-box alert-error" *ngIf="errorMessage">
+      <span class="material-icons alert-icon">error_outline</span>
+      <span class="alert-text">{{ errorMessage }}</span>
+    </div>
+
+    <div class="alert-box alert-success" *ngIf="successMessage">
+      <span class="material-icons alert-icon">check_circle_outline</span>
+      <span class="alert-text">{{ successMessage }}</span>
+    </div>
+
+    <!-- ─── LOGIN FORM ─────────────────────────────────────────────── -->
+    <form *ngIf="mode === 'login'" (ngSubmit)="onLogin()" class="auth-form" autocomplete="on">
+      <div class="form-group">
+        <label for="login-id" class="form-label">Imperial Email Address</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">email</span>
+          <input
+            id="login-id"
+            name="email"
+            type="email"
+            class="form-input"
+            [(ngModel)]="loginIdentifier"
+            placeholder="player@domain.com"
+            autocomplete="email"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="login-pwd" class="form-label">Password</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">lock</span>
+          <input
+            id="login-pwd"
+            name="password"
+            type="password"
+            class="form-input"
+            [(ngModel)]="loginPassword"
+            placeholder="••••••••••••"
+            autocomplete="current-password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="session-info-note">
+        <span class="material-icons note-icon">verified_user</span>
+        <span>Active sessions are preserved securely for <strong>30 days</strong>.</span>
+      </div>
+
+      <button type="submit" class="submit-btn primary-glow-btn" [disabled]="isLoading">
+        <div class="spinner-inline" *ngIf="isLoading"></div>
+        <span class="material-icons btn-icon" *ngIf="!isLoading">login</span>
+        <span>{{ isLoading ? 'Authorizing...' : 'Enter Nebryss' }}</span>
+      </button>
+
+      <div class="form-footer-links">
+        <span>Need to verify an existing code?</span>
+        <button type="button" class="link-btn" (click)="setMode('verify')">Verify Email</button>
+      </div>
+    </form>
+
+    <!-- ─── REGISTER FORM ──────────────────────────────────────────── -->
+    <form *ngIf="mode === 'register'" (ngSubmit)="onRegister()" class="auth-form" autocomplete="on">
+      <div class="form-group">
+        <label for="reg-email" class="form-label">Imperial Email Address</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">email</span>
+          <input
+            id="reg-email"
+            name="reg-email"
+            type="email"
+            class="form-input"
+            [(ngModel)]="registerEmail"
+            placeholder="player@domain.com"
+            autocomplete="email"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-password" class="form-label">Password (Min. 6 characters)</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">lock</span>
+          <input
+            id="reg-password"
+            name="reg-password"
+            type="password"
+            class="form-input"
+            [(ngModel)]="registerPassword"
+            placeholder="••••••••••••"
+            autocomplete="new-password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reg-confirm" class="form-label">Confirm Password</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">lock_outline</span>
+          <input
+            id="reg-confirm"
+            name="reg-confirm"
+            type="password"
+            class="form-input"
+            [(ngModel)]="registerConfirmPassword"
+            placeholder="••••••••••••"
+            autocomplete="new-password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn primary-glow-btn" [disabled]="isLoading">
+        <div class="spinner-inline" *ngIf="isLoading"></div>
+        <span class="material-icons btn-icon" *ngIf="!isLoading">how_to_reg</span>
+        <span>{{ isLoading ? 'Creating Record...' : 'Register & Receive Code' }}</span>
+      </button>
+
+      <div class="form-footer-links">
+        <span>Already have clearance?</span>
+        <button type="button" class="link-btn" (click)="setMode('login')">Back to Login</button>
+      </div>
+    </form>
+
+    <!-- ─── VERIFY EMAIL FORM ──────────────────────────────────────── -->
+    <form *ngIf="mode === 'verify'" (ngSubmit)="onVerify()" class="auth-form">
+      <div class="verify-header">
+        <div class="verify-icon-bubble">
+          <span class="material-icons">mark_email_read</span>
+        </div>
+        <h2 class="verify-title">Validate Transmission</h2>
+        <p class="verify-desc">
+          Enter the 6-digit authentication code dispatched to:
+          <strong class="verify-target-email">{{ verifyEmail || 'your email' }}</strong>
+        </p>
+      </div>
+
+      <div class="form-group" *ngIf="!verifyEmail">
+        <label for="verify-email-input" class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">email</span>
+          <input
+            id="verify-email-input"
+            name="verify-email-input"
+            type="email"
+            class="form-input"
+            [(ngModel)]="verifyEmail"
+            placeholder="player@domain.com"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="verify-code-input" class="form-label">6-Digit Access Code</label>
+        <div class="input-wrapper code-input-wrapper">
+          <input
+            id="verify-code-input"
+            name="verify-code-input"
+            type="text"
+            maxlength="6"
+            class="form-input code-input"
+            [(ngModel)]="verifyCode"
+            placeholder="••••••"
+            autocomplete="one-time-code"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn primary-glow-btn" [disabled]="isLoading || !verifyCode">
+        <div class="spinner-inline" *ngIf="isLoading"></div>
+        <span class="material-icons btn-icon" *ngIf="!isLoading">verified</span>
+        <span>{{ isLoading ? 'Verifying...' : 'Authenticate & Enter' }}</span>
+      </button>
+
+      <div class="resend-wrapper">
+        <button
+          type="button"
+          class="resend-btn"
+          (click)="onResendCode()"
+          [disabled]="isLoading || resendCooldown > 0 || !verifyEmail"
+        >
+          <span class="material-icons resend-icon">refresh</span>
+          <span *ngIf="resendCooldown === 0">Resend 6-Digit Code</span>
+          <span *ngIf="resendCooldown > 0">Resend Code in {{ resendCooldown }}s</span>
+        </button>
+      </div>
+
+      <div class="form-footer-links">
+        <button type="button" class="link-btn" (click)="setMode('login')">← Back to Log In</button>
+      </div>
+    </form>
+
+  </div>
+</div>

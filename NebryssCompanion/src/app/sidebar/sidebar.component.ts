@@ -7,6 +7,7 @@ import { AdminService } from '../admin.service';
 import { AppView } from '../app-view.types';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +19,6 @@ import { DataService } from '../data.service';
 export class SidebarComponent {
   @ViewChild('sidebar') sidebarElement!: ElementRef;
   @ViewChild('burger') burgerElement!: ElementRef;
-  @ViewChild('adminDialog') adminDialogTemplate!: TemplateRef<any>;
   @Output() viewChange = new EventEmitter<AppView>();
   @Output() openSettings = new EventEmitter<void>();
   isOpen = false;
@@ -29,11 +29,17 @@ export class SidebarComponent {
     private modalService: ModalService,
     public themeService: ThemeService,
     private adminService: AdminService,
-    private dataService: DataService
+    private dataService: DataService,
+    public authService: AuthService
   ) {
     this.adminService.isAdmin$.subscribe(isAdmin => {
       this.isAdmin = isAdmin;
     });
+  }
+
+  onLogout(): void {
+    this.isOpen = false;
+    this.authService.logout().subscribe();
   }
 
   @HostListener('document:click', ['$event'])
@@ -72,116 +78,34 @@ export class SidebarComponent {
   }
 
   openAdminItemCreator(): void {
-    if (this.isAdmin) {
-      this.changeView('adminItemCreator');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminItemCreator');
-    });
+    this.changeView('adminItemCreator');
   }
 
   openAdminLocationCreator(): void {
-    if (this.isAdmin) {
-      this.changeView('adminLocationCreator');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminLocationCreator');
-    });
+    this.changeView('adminLocationCreator');
   }
 
   openAdminPlayerEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminPlayerEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminPlayerEditor');
-    });
+    this.changeView('adminPlayerEditor');
   }
 
   openAdminNpcEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminNpcEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminNpcEditor');
-    });
+    this.changeView('adminNpcEditor');
   }
 
   openAdminShopEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminShopEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminShopEditor');
-    });
+    this.changeView('adminShopEditor');
   }
 
   openAdminCreatureEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminCreatureEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminCreatureEditor');
-    });
+    this.changeView('adminCreatureEditor');
   }
 
   openAdminCampaignEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminCampaignEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminCampaignEditor');
-    });
+    this.changeView('adminCampaignEditor');
   }
 
   openAdminRulesEditor(): void {
-    if (this.isAdmin) {
-      this.changeView('adminRulesEditor');
-      return;
-    }
-
-    this.openAdminDialog(this.adminDialogTemplate, () => {
-      this.changeView('adminRulesEditor');
-    });
-  }
-
-  openAdminDialog(template: TemplateRef<any>, onSuccess?: () => void) {
-    const dialogContext = {
-      check: (password: string) => {
-        if (password === '2602') {
-          this.adminService.setAdminAuthenticated(true);
-          this.modalService.close();
-          onSuccess?.();
-        } else {
-          alert('Incorrect password');
-        }
-      },
-      cancel: () => {
-        this.modalService.close();
-      }
-    };
-    this.modalService.openFromTemplate(template, dialogContext);
-    setTimeout(() => {
-      const input = document.querySelector<HTMLInputElement>('.confirmation-dialog input[type="password"]');
-      input?.focus();
-    }, 50);
-  }
-
-  logoutAdmin() {
-    this.adminService.setAdminAuthenticated(false);
+    this.changeView('adminRulesEditor');
   }
 }

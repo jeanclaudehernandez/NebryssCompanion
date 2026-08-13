@@ -15,8 +15,8 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
     headers = headers.set('ngsw-bypass', 'true');
   }
 
-  if (!activeCampaign) {
-    return next(req.clone({ headers }));
+  if (!activeCampaign || req.url.includes('/api/auth')) {
+    return next(req.clone({ headers, withCredentials: true }));
   }
 
   // Intercept outgoing API requests

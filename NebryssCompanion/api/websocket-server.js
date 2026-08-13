@@ -118,21 +118,41 @@ function setupWebSocketServer(server) {
     }));
   });
 
-  // ─── Upgrade handler — route /ws/agent to agentWss, everything else to wss ──
+  // ─── Upgrade handler with Authentication ────────────────────────
+  const { verifySessionToken, parseCookies, COOKIE_NAME } = require('./auth');
+
   server.on('upgrade', (request, socket, head) => {
-    let pathname = '/';
+    let parsedUrl;
     try {
-      pathname = new URL(request.url, `http://${request.headers.host || 'localhost'}`).pathname;
+      parsedUrl = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
     } catch (e) {
-      pathname = request.url || '/';
+      parsedUrl = { pathname: request.url || '/', searchParams: new URLSearchParams() };
     }
+
+    const pathname = parsedUrl.pathname;
+
+    // Validate Authentication
+    const cookies = parseCookies(request.headers.cookie);
+    const token = cookies[COOKIE_NAME] || parsedUrl.searchParams.get('token');
+    const session = verifySessionToken(token);
+
+    if (!session) {
+      console.warn(`[WebSocket] Rejected unauthenticated connection attempt to ${pathname}`);
+      socket.write('HTTP/1.1 401 Unauthorized\r\nContent-Type: text/plain\r\n\r\nUnauthorized: Session required\r\n');
+      socket.destroy();
+      return;
+    }
+
+    request.user = session;
 
     if (pathname === '/ws/agent' || pathname.startsWith('/ws/agent/')) {
       agentWss.handleUpgrade(request, socket, head, (ws) => {
+        ws.user = session;
         agentWss.emit('connection', ws, request);
       });
     } else if (pathname === '/ws' || pathname === '/' || pathname.startsWith('/ws/')) {
       wss.handleUpgrade(request, socket, head, (ws) => {
+        ws.user = session;
         wss.emit('connection', ws, request);
       });
     } else {

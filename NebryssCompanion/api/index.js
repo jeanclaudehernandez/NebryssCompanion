@@ -10,7 +10,10 @@ const app = express();
 const server = http.createServer(app);
 const { broadcastDataUpdate } = setupWebSocketServer(server);
 
-app.use(cors());
+app.use(cors({
+  origin: true,
+  credentials: true,
+}));
 app.use(express.json({ limit: '10mb' }));
 app.disable('x-powered-by');
 
@@ -136,6 +139,21 @@ async function getDatabases() {
     return null;
   }
 }
+
+// Initialize Authentication Module
+const { createAuthModule } = require('./auth');
+const authModule = createAuthModule(getDatabases, assetsDir);
+
+// Public Authentication endpoints (/api/auth/register, /api/auth/login, /api/auth/validate-email, /api/auth/resend-code, /api/auth/logout, /api/auth/me)
+app.use('/api/auth', authModule.router);
+
+// Strict Authentication enforcement for ALL other /api endpoints
+app.use('/api', (req, res, next) => {
+  if (req.path.startsWith('/auth') || req.path === '/auth') {
+    return next();
+  }
+  return authModule.requireAuth(req, res, next);
+});
 
 // Maps prefixed campaign collection names back to their base JSON asset filename
 const COLLECTION_TO_JSON_FILE = {

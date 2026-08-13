@@ -134,20 +134,10 @@
       <span class="material-icons">settings</span>
       <span>Settings</span>
     </div>
+    <div class="menu-item menu-logout-item" (click)="onLogout()">
+       <span class="material-icons">logout</span>
+       <span>Log Out</span>
+    </div>
 
   </div>
 </nav>
-
-<ng-template #adminDialog let-check="check" let-cancel="cancel">
-  <div class="confirmation-dialog">
-    <h3>Admin Access</h3>
-    <p>Enter admin password:</p>
-    <input #passwordInput type="password" autofocus
-      style="margin-bottom: 10px; padding: 8px; width: 100%; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;"
-      (keyup.enter)="check(passwordInput.value)">
-    <div class="dialog-buttons">
-      <button class="btn-cancel" (click)="cancel()">Cancel</button>
-      <button class="btn-confirm" (click)="check(passwordInput.value)">Submit</button>
-    </div>
-  </div>
-</ng-template>

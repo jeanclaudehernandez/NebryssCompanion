@@ -1,5 +1,6 @@
-import { Injectable, OnDestroy } from '@angular/core';
-import { Subject, Observable } from 'rxjs';
+import { Injectable, OnDestroy, inject } from '@angular/core';
+import { Subject, Observable, Subscription } from 'rxjs';
+import { AuthService } from './auth.service';
 
 export interface EntityUpdateEvent {
   type: string;
@@ -17,14 +18,27 @@ export class WebSocketService implements OnDestroy {
   private messageSubject = new Subject<EntityUpdateEvent>();
   private reconnectTimer: any = null;
   private isDestroyed = false;
+  private authSub: Subscription | null = null;
+  private isAuthenticated = false;
 
   readonly messages$: Observable<EntityUpdateEvent> = this.messageSubject.asObservable();
 
-  constructor() {
-    this.connect();
+  constructor(private authService: AuthService) {
+    this.authSub = this.authService.isAuthenticated$.subscribe((auth) => {
+      this.isAuthenticated = auth;
+      if (auth) {
+        this.connect();
+      } else {
+        this.disconnect();
+      }
+    });
   }
 
   connect(customUrl?: string): void {
+    if (!this.isAuthenticated) {
+      return;
+    }
+
     if (this.socket && (this.socket.readyState === WebSocket.OPEN || this.socket.readyState === WebSocket.CONNECTING)) {
       return;
     }
@@ -66,6 +80,19 @@ export class WebSocketService implements OnDestroy {
     }
   }
 
+  disconnect(): void {
+    if (this.reconnectTimer) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    if (this.socket) {
+      try {
+        this.socket.close();
+      } catch (e) {}
+      this.socket = null;
+    }
+  }
+
   send(event: EntityUpdateEvent): void {
     if (this.socket && this.socket.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(event));
@@ -73,35 +100,33 @@ export class WebSocketService implements OnDestroy {
   }
 
   private scheduleReconnect(): void {
-    if (this.isDestroyed) return;
+    if (this.isDestroyed || !this.isAuthenticated) return;
     if (this.reconnectTimer) return;
 
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
-      this.connect();
+      if (this.isAuthenticated) {
+        this.connect();
+      }
     }, 4000);
   }
 
   private getWebSocketUrl(): string {
     const win = window as any;
 
-    // 1. Injected at runtime by the server (api/index.js injects this into index.html)
     if (win.WS_URL) {
       return win.WS_URL;
     }
 
-    // 2. Derive from current page origin — works for localhost, ngrok, or any other host
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     return `${protocol}//${window.location.host}/ws`;
   }
 
   ngOnDestroy(): void {
     this.isDestroyed = true;
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
+    if (this.authSub) {
+      this.authSub.unsubscribe();
     }
-    if (this.socket) {
-      this.socket.close();
-    }
+    this.disconnect();
   }
 }

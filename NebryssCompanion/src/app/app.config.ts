@@ -7,6 +7,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { provideServiceWorker } from '@angular/service-worker';
 import { loadingInterceptor } from './loading.interceptor';
 import { campaignInterceptor } from './campaign.interceptor';
+import { authInterceptor } from './auth.interceptor';
 import { GlobalErrorHandler } from './global-error-handler';
 
 export const appConfig: ApplicationConfig = {
@@ -22,7 +23,7 @@ export const appConfig: ApplicationConfig = {
     ), 
     provideHttpClient(
       withFetch(),
-      withInterceptors([campaignInterceptor, loadingInterceptor])
+      withInterceptors([authInterceptor, campaignInterceptor, loadingInterceptor])
     ), 
     provideAnimationsAsync(), 
     provideServiceWorker('ngsw-worker.js', {
