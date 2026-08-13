@@ -22,6 +22,7 @@ import {
 import { CampaignService } from '../campaign.service';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
+import { AppView } from '../app-view.types';
 
 interface Campaign {
   id: number;
