@@ -28,6 +28,8 @@ for (const envFile of envFiles) {
 }
 
 // Ensure local development defaults
+process.env.ALLOW_LOCALHOST = 'true';
+process.env.ALLOW_LOCAL_ORIGINS = 'true';
 const port = process.env.PORT || 8080;
 process.env.PORT = port;
 process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCompanion';

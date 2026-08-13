@@ -118,10 +118,20 @@ function setupWebSocketServer(server) {
     }));
   });
 
-  // ─── Upgrade handler with Authentication ────────────────────────
+  // ─── Upgrade handler with Origin & Authentication Validation ──────
   const { verifySessionToken, parseCookies, COOKIE_NAME } = require('./auth');
+  const { validateWsOrigin, corsOptions } = require('./cors-config');
 
   server.on('upgrade', (request, socket, head) => {
+    // 1. Validate CORS / Origin Header
+    if (!validateWsOrigin(request)) {
+      const origin = request.headers.origin || request.headers.referer || 'unknown';
+      console.warn(`[WebSocket] Rejected upgrade from unauthorized origin: ${origin}`);
+      socket.write('HTTP/1.1 403 Forbidden\r\nContent-Type: text/plain\r\n\r\nForbidden: Origin not allowed\r\n');
+      socket.destroy();
+      return;
+    }
+
     let parsedUrl;
     try {
       parsedUrl = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
@@ -131,7 +141,7 @@ function setupWebSocketServer(server) {
 
     const pathname = parsedUrl.pathname;
 
-    // Validate Authentication
+    // 2. Validate Authentication
     const cookies = parseCookies(request.headers.cookie);
     const token = cookies[COOKIE_NAME] || parsedUrl.searchParams.get('token');
     const session = verifySessionToken(token);
@@ -190,9 +200,11 @@ function setupWebSocketServer(server) {
 if (require.main === module) {
   const express = require('express');
   const cors = require('cors');
+  const { corsOptions, originValidationMiddleware } = require('./cors-config');
 
   const app = express();
-  app.use(cors());
+  app.use(cors(corsOptions));
+  app.use(originValidationMiddleware);
   app.use(express.json());
 
   const server = http.createServer(app);

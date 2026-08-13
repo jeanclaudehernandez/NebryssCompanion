@@ -6,14 +6,23 @@ const fs = require('fs');
 const { MongoClient } = require('mongodb');
 const { setupWebSocketServer } = require('./websocket-server');
 
+const { corsOptions, originValidationMiddleware } = require('./cors-config');
+
 const app = express();
 const server = http.createServer(app);
 const { broadcastDataUpdate } = setupWebSocketServer(server);
 
-app.use(cors({
-  origin: true,
-  credentials: true,
-}));
+app.use(cors(corsOptions));
+app.use(originValidationMiddleware);
+
+// Handle CORS errors with 403 Forbidden JSON response
+app.use((err, req, res, next) => {
+  if (err && err.message === 'CORS origin not allowed') {
+    return res.status(403).json({ error: 'Forbidden: CORS origin not allowed' });
+  }
+  next(err);
+});
+
 app.use(express.json({ limit: '10mb' }));
 app.disable('x-powered-by');
 

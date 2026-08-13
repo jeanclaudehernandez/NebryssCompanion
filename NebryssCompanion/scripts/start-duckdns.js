@@ -18,6 +18,10 @@ if (fs.existsSync(envPath)) {
   });
 }
 
+// Disallow localhost / local network origins in remote DuckDNS & Ngrok mode
+process.env.ALLOW_LOCALHOST = 'false';
+process.env.ALLOW_LOCAL_ORIGINS = 'false';
+
 const port = process.env.PORT || 8080;
 const domain = process.env.DUCKDNS_DOMAIN || 'nebryss';
 const ngrokDomain = process.env.NGROK_DOMAIN;
@@ -28,6 +32,7 @@ console.log('  NebryssCompanion - Permanent Local Server Launcher');
 console.log('====================================================');
 console.log(`DuckDNS    : ${domain}.duckdns.org`);
 console.log(`Local Port : ${port}`);
+console.log(`Localhost  : Blocked (Remote/Ngrok Only)`);
 if (ngrokDomain) {
   console.log(`Fixed Domain: ${ngrokDomain}`);
 }
