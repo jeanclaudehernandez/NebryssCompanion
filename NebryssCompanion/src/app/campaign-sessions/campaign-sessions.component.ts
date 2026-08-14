@@ -22,7 +22,13 @@ import {
   NPC,
   Location,
   Shop,
-  BestiaryEntry
+  BestiaryEntry,
+  Letter,
+  Item,
+  Weapon,
+  WeaponRule,
+  AlteredState,
+  Affliction
 } from '../model';
 import { AppView } from '../app-view.types';
 import { AdminEditorSession } from '../admin-editor.models';
@@ -35,6 +41,7 @@ interface ParsedSession {
   parsedContent: SafeHtml;
   parsedConclusion: SafeHtml;
   isConcluded: boolean;
+  isLatest: boolean;
   expanded: boolean;
   branches: string[];
   playerVisibleBranches: string[];
@@ -42,7 +49,7 @@ interface ParsedSession {
   playerBranchesLabel: string;
 }
 
-type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary';
+type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary' | 'letter' | 'item' | 'weapon' | 'weaponrule' | 'weaponRule' | 'alteredstate' | 'alteredState' | 'affliction';
 
 interface EntityLookup {
   players: Player[];
@@ -50,14 +57,28 @@ interface EntityLookup {
   locations: Location[];
   shops: Shop[];
   bestiary: BestiaryEntry[];
+  letters: Letter[];
+  items: Item[];
+  weapons: Weapon[];
+  weaponRules: WeaponRule[];
+  alteredStates: AlteredState[];
+  afflictions: Affliction[];
 }
 
-const ENTITY_CONFIG: Record<EntityType, { icon: string; cssClass: string; label: string }> = {
+const ENTITY_CONFIG: Record<string, { icon: string; cssClass: string; label: string }> = {
   player: { icon: 'person', cssClass: 'entity-chip--player', label: 'Player' },
   npc: { icon: 'badge', cssClass: 'entity-chip--npc', label: 'NPC' },
   location: { icon: 'place', cssClass: 'entity-chip--location', label: 'Location' },
   shop: { icon: 'storefront', cssClass: 'entity-chip--shop', label: 'Shop' },
-  bestiary: { icon: 'pets', cssClass: 'entity-chip--bestiary', label: 'Creature' }
+  bestiary: { icon: 'pets', cssClass: 'entity-chip--bestiary', label: 'Creature' },
+  letter: { icon: 'mail', cssClass: 'entity-chip--letter', label: 'Letter' },
+  item: { icon: 'inventory_2', cssClass: 'entity-chip--item', label: 'Item' },
+  weapon: { icon: 'gavel', cssClass: 'entity-chip--weapon', label: 'Weapon' },
+  weaponrule: { icon: 'auto_fix_high', cssClass: 'entity-chip--weaponrule', label: 'Weapon Rule' },
+  weaponRule: { icon: 'auto_fix_high', cssClass: 'entity-chip--weaponrule', label: 'Weapon Rule' },
+  alteredstate: { icon: 'flash_on', cssClass: 'entity-chip--alteredstate', label: 'Altered State' },
+  alteredState: { icon: 'flash_on', cssClass: 'entity-chip--alteredstate', label: 'Altered State' },
+  affliction: { icon: 'healing', cssClass: 'entity-chip--affliction', label: 'Affliction' }
 };
 
 @Component({
@@ -81,13 +102,22 @@ export class CampaignSessionsComponent implements OnInit {
   isAdmin = false;
   isLoading = true;
   hasSessions = false;
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  private hasAutoScrolledOnEntry = false;
 
   private lookup: EntityLookup = {
     players: [],
     npcs: [],
     locations: [],
     shops: [],
-    bestiary: []
+    bestiary: [],
+    letters: [],
+    items: [],
+    weapons: [],
+    weaponRules: [],
+    alteredStates: [],
+    afflictions: []
   };
 
   constructor(
@@ -109,6 +139,7 @@ export class CampaignSessionsComponent implements OnInit {
     this.campaignService.selectedCampaign$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(campaign => {
+        this.hasAutoScrolledOnEntry = false;
         this.loadSessionsForCampaign(campaign?.id);
       });
 
@@ -121,11 +152,14 @@ export class CampaignSessionsComponent implements OnInit {
           ? (allSessions || []).filter(s => s.campaignId === campaignId)
           : (allSessions || []);
 
-        this.allSessions = filtered
-          .slice()
-          .sort((a, b) => b.sessionId - a.sessionId);
-
+        this.allSessions = filtered.slice();
+        this.sortSessions();
         this.rebuildVisibleSessions();
+
+        if (!this.hasAutoScrolledOnEntry && this.hasSessions && !this.isLoading) {
+          this.hasAutoScrolledOnEntry = true;
+          this.scrollToBottomIfOverflowing();
+        }
       });
   }
 
@@ -138,25 +172,41 @@ export class CampaignSessionsComponent implements OnInit {
       npcs: this.dataService.getNpcs(),
       locations: this.dataService.getLocations(),
       shops: this.dataService.getShops(),
-      bestiary: this.dataService.getBestiary()
+      bestiary: this.dataService.getBestiary(),
+      letters: this.dataService.getLetters(),
+      items: this.dataService.getItems(),
+      weapons: this.dataService.getWeapons(),
+      weaponRules: this.dataService.getWeaponRules(),
+      alteredStates: this.dataService.getAlteredStates(),
+      afflictions: this.dataService.getAfflictions()
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ sessions, players, npcs, locations, shops, bestiary }) => {
+        next: ({ sessions, players, npcs, locations, shops, bestiary, letters, items, weapons, weaponRules, alteredStates, afflictions }) => {
           this.lookup = {
             players: players || [],
             npcs: npcs || [],
             locations: (locations as any)?.locations ?? locations ?? [],
             shops: shops || [],
-            bestiary: bestiary || []
+            bestiary: bestiary || [],
+            letters: letters || [],
+            items: Array.isArray(items) ? items : (items?.items || []),
+            weapons: weapons || [],
+            weaponRules: weaponRules || [],
+            alteredStates: alteredStates || [],
+            afflictions: afflictions || []
           };
 
-          this.allSessions = (sessions || [])
-            .slice()
-            .sort((a, b) => b.sessionId - a.sessionId);
+          this.allSessions = (sessions || []).slice();
+          this.sortSessions();
 
           this.rebuildVisibleSessions();
           this.isLoading = false;
+
+          if (!this.hasAutoScrolledOnEntry && this.hasSessions) {
+            this.hasAutoScrolledOnEntry = true;
+            this.scrollToBottomIfOverflowing();
+          }
         },
         error: () => {
           this.isLoading = false;
@@ -166,10 +216,43 @@ export class CampaignSessionsComponent implements OnInit {
 
   private allSessions: CampaignSession[] = [];
 
+  private sortSessions(): void {
+    if (this.sortDirection === 'asc') {
+      this.allSessions.sort((a, b) => a.sessionId - b.sessionId);
+    } else {
+      this.allSessions.sort((a, b) => b.sessionId - a.sessionId);
+    }
+  }
+
+  toggleSortDirection(): void {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    this.sortSessions();
+    this.rebuildVisibleSessions();
+  }
+
+  private scrollToBottomIfOverflowing(): void {
+    setTimeout(() => {
+      const scrollHeight = Math.max(
+        document.documentElement.scrollHeight,
+        document.body.scrollHeight
+      );
+      const clientHeight = window.innerHeight || document.documentElement.clientHeight;
+
+      if (scrollHeight > clientHeight + 20) {
+        window.scrollTo({
+          top: scrollHeight,
+          behavior: 'smooth'
+        });
+      }
+    }, 120);
+  }
+
   private rebuildVisibleSessions(): void {
     const visible = this.isAdmin
       ? this.allSessions
       : this.allSessions.filter(s => this.isConcluded(s));
+
+    const latestSessionId = visible.reduce((max, s) => s.sessionId > max ? s.sessionId : max, 0);
 
     this.parsedSessions = visible.map(session => {
       const rawTitle = this.extractTitle(session.content || '', session.sessionId);
@@ -196,6 +279,7 @@ export class CampaignSessionsComponent implements OnInit {
         parsedContent: this.renderMarkdown(session.content || '', true, playerVisibleBranches, this.isAdmin),
         parsedConclusion: this.renderMarkdown(session.conclussion || '', true, playerVisibleBranches, this.isAdmin),
         isConcluded: this.isConcluded(session),
+        isLatest: session.sessionId === latestSessionId && latestSessionId > 0,
         expanded: false,
         branches,
         playerVisibleBranches,
@@ -641,12 +725,13 @@ export class CampaignSessionsComponent implements OnInit {
     // Italic (*text*)
     escaped = escaped.replace(/(^|[^*])\*([^*]+)\*([^*]|$)/g, '$1<em class="narrative-italic">$2</em>$3');
 
-    // Entity Chips: @(player|npc|location|shop|bestiary)[tagContent]
+    // Entity Chips: @(player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)[tagContent]
     escaped = escaped.replace(
-      /@(player|npc|location|shop|bestiary)\[([^\]]+)\]/g,
-      (_match, type: EntityType, tagContent: string) => {
+      /@(player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)\[([^\]]+)\]/gi,
+      (_match, rawType: string, tagContent: string) => {
+        const type = (rawType.toLowerCase() === 'weaponrules' ? 'weaponrule' : (rawType.toLowerCase() === 'alteredstates' ? 'alteredstate' : rawType.toLowerCase())) as EntityType;
         const { id, name } = this.resolveEntity(type, tagContent.trim());
-        const config = ENTITY_CONFIG[type];
+        const config = ENTITY_CONFIG[type] || { icon: 'bookmark', cssClass: 'entity-chip--item', label: 'Entity' };
         const isDiscovered = this.isEntityDiscovered(type, id, name);
         const undiscoveredClass = isDiscovered ? '' : 'entity-chip--undiscovered';
         const titleText = isDiscovered
@@ -674,7 +759,9 @@ export class CampaignSessionsComponent implements OnInit {
       return true;
     }
 
-    switch (type) {
+    const normType = String(type).toLowerCase();
+
+    switch (normType) {
       case 'player': {
         const player = (id > 0 ? this.lookup.players.find(p => p.id === id) : null)
           || (nameHint ? this.lookup.players.find(p => p.name.toLowerCase() === nameHint.toLowerCase()) : null);
@@ -735,6 +822,17 @@ export class CampaignSessionsComponent implements OnInit {
         }
         return creature.isDiscovered !== false && (creature as any).discovered !== false;
       }
+      case 'letter': {
+        const letter = (id > 0 ? this.lookup.letters.find(l => l.id === id) : null)
+          || (nameHint ? this.lookup.letters.find(l => (l.subject || '').toLowerCase() === nameHint.toLowerCase()) : null);
+        return !!letter && !letter.isDeleted;
+      }
+      case 'item':
+      case 'weapon':
+      case 'weaponrule':
+      case 'alteredstate':
+      case 'affliction':
+        return true;
       default:
         return true;
     }
@@ -762,7 +860,9 @@ export class CampaignSessionsComponent implements OnInit {
       }
     }
 
-    switch (type) {
+    const normType = String(type).toLowerCase();
+
+    switch (normType) {
       case 'player': {
         const player = rawId !== null
           ? this.lookup.players.find(p => p.id === rawId)
@@ -806,6 +906,60 @@ export class CampaignSessionsComponent implements OnInit {
         return {
           id: creature?.id ?? rawId ?? 0,
           name: creature?.name ?? labelHint ?? `Creature #${rawId ?? tagContent}`
+        };
+      }
+      case 'letter': {
+        const letter = rawId !== null
+          ? this.lookup.letters.find(l => l.id === rawId)
+          : this.lookup.letters.find(l => (l.subject || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: letter?.id ?? rawId ?? 0,
+          name: letter?.subject ?? labelHint ?? `Letter #${rawId ?? tagContent}`
+        };
+      }
+      case 'item': {
+        const item = rawId !== null
+          ? this.lookup.items.find(i => i.id === rawId)
+          : this.lookup.items.find(i => (i.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: item?.id ?? rawId ?? 0,
+          name: item?.name ?? labelHint ?? `Item #${rawId ?? tagContent}`
+        };
+      }
+      case 'weapon': {
+        const weapon = rawId !== null
+          ? this.lookup.weapons.find(w => w.id === rawId)
+          : this.lookup.weapons.find(w => (w.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: weapon?.id ?? rawId ?? 0,
+          name: weapon?.name ?? labelHint ?? `Weapon #${rawId ?? tagContent}`
+        };
+      }
+      case 'weaponrule': {
+        const rule = rawId !== null
+          ? this.lookup.weaponRules.find(r => r.id === rawId)
+          : this.lookup.weaponRules.find(r => (r.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: rule?.id ?? rawId ?? 0,
+          name: rule?.name ?? labelHint ?? `Rule #${rawId ?? tagContent}`
+        };
+      }
+      case 'alteredstate': {
+        const state = rawId !== null
+          ? this.lookup.alteredStates.find(s => s.id === rawId)
+          : this.lookup.alteredStates.find(s => (s.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: state?.id ?? rawId ?? 0,
+          name: state?.name ?? labelHint ?? `State #${rawId ?? tagContent}`
+        };
+      }
+      case 'affliction': {
+        const aff = rawId !== null
+          ? this.lookup.afflictions.find(a => String(a.id) === String(rawId))
+          : this.lookup.afflictions.find(a => (a.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return {
+          id: aff ? Number(aff.id) : (rawId ?? 0),
+          name: aff?.name ?? labelHint ?? `Affliction #${rawId ?? tagContent}`
         };
       }
       default:
@@ -870,7 +1024,9 @@ export class CampaignSessionsComponent implements OnInit {
       return;
     }
 
-    switch (type) {
+    const normType = String(type).toLowerCase();
+
+    switch (normType) {
       case 'player': {
         const player = (id > 0 ? this.lookup.players.find(p => p.id === id) : null)
           || (nameHint ? this.lookup.players.find(p => p.name.toLowerCase() === nameHint.toLowerCase()) : null);
@@ -911,6 +1067,27 @@ export class CampaignSessionsComponent implements OnInit {
         if (resolvedId > 0) {
           this.navigateToBestiary.emit(resolvedId);
         }
+        break;
+      }
+      case 'letter': {
+        this.viewChange.emit('letters');
+        break;
+      }
+      case 'item': {
+        this.viewChange.emit('items');
+        break;
+      }
+      case 'weapon':
+      case 'weaponrule': {
+        this.viewChange.emit('weaponRules');
+        break;
+      }
+      case 'alteredstate': {
+        this.viewChange.emit('alteredStates');
+        break;
+      }
+      case 'affliction': {
+        this.viewChange.emit('afflictions');
         break;
       }
     }

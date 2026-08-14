@@ -495,4 +495,5 @@ export interface Letter {
   readBy: number[];
   recipientIds: number[];
   targetNames: string[];
+  isDeleted?: boolean;
 }

@@ -58,6 +58,7 @@ async function getClient() {
   }
 }
 
+// Read-only fallback helper for reading contexts when MongoDB is offline
 function readJsonFallback(filename) {
   const localPath = path.join(localDbDir, filename);
   const assetPath = path.join(assetsDir, filename);
@@ -70,24 +71,27 @@ function readJsonFallback(filename) {
   return [];
 }
 
-function writeJsonFallback(filename, data) {
-  const localPath = path.join(localDbDir, filename);
-  const assetPath = path.join(assetsDir, filename);
-  const jsonStr = JSON.stringify(data, null, 2);
-  try {
-    if (!fs.existsSync(path.dirname(localPath))) fs.mkdirSync(path.dirname(localPath), { recursive: true });
-    fs.writeFileSync(localPath, jsonStr, 'utf8');
-  } catch (e) {}
-  try {
-    if (!fs.existsSync(path.dirname(assetPath))) fs.mkdirSync(path.dirname(assetPath), { recursive: true });
-    fs.writeFileSync(assetPath, jsonStr, 'utf8');
-  } catch (e) {}
-}
-
-const ENTITY_REGEX = /@(player|npc|location|shop|bestiary)\[([^\]]+)\]/g;
+const ENTITY_REGEX = /@(player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)\[([^\]]+)\]/gi;
 
 function cleanString(str) {
   return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function normalizeEntityType(type) {
+  const t = String(type || '').toLowerCase().trim();
+  if (t === 'weaponrule' || t === 'weaponrules') return 'weaponrule';
+  if (t === 'alteredstate' || t === 'alteredstates' || t === 'status') return 'alteredstate';
+  if (t === 'creature' || t === 'creatures') return 'bestiary';
+  if (t === 'players') return 'player';
+  if (t === 'npcs') return 'npc';
+  if (t === 'locations') return 'location';
+  if (t === 'shops') return 'shop';
+  if (t === 'letters') return 'letter';
+  if (t === 'items') return 'item';
+  if (t === 'weapons') return 'weapon';
+  if (t === 'afflictions') return 'affliction';
+  if (t === 'sessions') return 'session';
+  return t;
 }
 
 function findEntityId(type, identifier, context) {
@@ -103,49 +107,71 @@ function findEntityId(type, identifier, context) {
   }
 
   const cleaned = cleanString(raw);
+  const normType = normalizeEntityType(type);
   let list = [];
-  if (type === 'player') list = context.players || [];
-  else if (type === 'npc') list = context.npcs || [];
-  else if (type === 'location') list = context.locations || [];
-  else if (type === 'shop') list = context.shops || [];
-  else if (type === 'bestiary') list = context.bestiary || [];
+  if (normType === 'player') list = context.players || [];
+  else if (normType === 'npc') list = context.npcs || [];
+  else if (normType === 'location') list = context.locations || [];
+  else if (normType === 'shop') list = context.shops || [];
+  else if (normType === 'bestiary') list = context.bestiary || [];
+  else if (normType === 'letter') list = context.letters || [];
+  else if (normType === 'item') list = context.items || [];
+  else if (normType === 'weapon') list = context.weapons || [];
+  else if (normType === 'weaponrule') list = context.weaponRules || [];
+  else if (normType === 'alteredstate') list = context.alteredStates || [];
+  else if (normType === 'affliction') list = context.afflictions || [];
 
-  const exact = list.find(item => cleanString(item.name) === cleaned || String(item.id) === raw);
+  const exact = list.find(item => cleanString(item.name || item.subject || item.title) === cleaned || String(item.id) === raw);
   if (exact) return exact.id;
 
-  const partial = list.find(item => cleanString(item.name).includes(cleaned) || cleaned.includes(cleanString(item.name)));
+  const partial = list.find(item => {
+    const label = cleanString(item.name || item.subject || item.title);
+    return label && (label.includes(cleaned) || cleaned.includes(label));
+  });
   if (partial) return partial.id;
 
   return raw;
 }
 
 function findEntityName(type, id, context) {
+  const normType = normalizeEntityType(type);
   let list = [];
-  if (type === 'player') list = context.players || [];
-  else if (type === 'npc') list = context.npcs || [];
-  else if (type === 'location') list = context.locations || [];
-  else if (type === 'shop') list = context.shops || [];
-  else if (type === 'bestiary') list = context.bestiary || [];
+  if (normType === 'player') list = context.players || [];
+  else if (normType === 'npc') list = context.npcs || [];
+  else if (normType === 'location') list = context.locations || [];
+  else if (normType === 'shop') list = context.shops || [];
+  else if (normType === 'bestiary') list = context.bestiary || [];
+  else if (normType === 'letter') list = context.letters || [];
+  else if (normType === 'item') list = context.items || [];
+  else if (normType === 'weapon') list = context.weapons || [];
+  else if (normType === 'weaponrule') list = context.weaponRules || [];
+  else if (normType === 'alteredstate') list = context.alteredStates || [];
+  else if (normType === 'affliction') list = context.afflictions || [];
 
   const found = list.find(item => String(item.id) === String(id));
-  return found ? found.name : null;
+  if (!found) return null;
+  return found.name || found.subject || found.title || null;
 }
 
 function normalizeToIdTags(text, context) {
   if (!text) return '';
-  return text.replace(ENTITY_REGEX, (match, type, content) => {
+  const regex = new RegExp(ENTITY_REGEX.source, 'gi');
+  return text.replace(regex, (match, type, content) => {
     const id = findEntityId(type, content, context);
-    return `@${type}[${id}]`;
+    const normType = normalizeEntityType(type);
+    return `@${normType}[${id}]`;
   });
 }
 
 function expandToDisplayTags(text, context) {
   if (!text) return '';
-  return text.replace(ENTITY_REGEX, (match, type, content) => {
+  const regex = new RegExp(ENTITY_REGEX.source, 'gi');
+  return text.replace(regex, (match, type, content) => {
     const raw = String(content).trim();
+    const normType = normalizeEntityType(type);
     if (/^\d+$/.test(raw)) {
-      const name = findEntityName(type, Number(raw), context);
-      return name ? `@${type}[${raw}: ${name}]` : match;
+      const name = findEntityName(normType, Number(raw), context);
+      return name ? `@${normType}[${raw}: ${name}]` : match;
     }
     return match;
   });
@@ -153,17 +179,19 @@ function expandToDisplayTags(text, context) {
 
 function toCleanText(text, context) {
   if (!text) return '';
-  return text.replace(ENTITY_REGEX, (match, type, content) => {
+  const regex = new RegExp(ENTITY_REGEX.source, 'gi');
+  return text.replace(regex, (match, type, content) => {
     const raw = String(content).trim();
+    const normType = normalizeEntityType(type);
     let name = null;
     if (/^\d+$/.test(raw)) {
-      name = findEntityName(type, Number(raw), context);
+      name = findEntityName(normType, Number(raw), context);
     } else if (raw.includes(':')) {
       const parts = raw.split(':');
       name = parts.slice(1).join(':').trim();
     } else {
-      const id = findEntityId(type, raw, context);
-      name = findEntityName(type, id, context) || raw;
+      const id = findEntityId(normType, raw, context);
+      name = findEntityName(normType, id, context) || raw;
     }
     return name || match;
   });
@@ -173,7 +201,7 @@ function autoTagEntities(text, context) {
   if (!text) return '';
   let result = text;
 
-  // First, normalize any existing tag syntax like @player[Wendy] -> @player[1]
+  // First normalize any existing tag syntax
   result = normalizeToIdTags(result, context);
 
   // Build candidate entity search terms (sorted by name length descending to match full names first)
@@ -188,6 +216,7 @@ function autoTagEntities(text, context) {
       }
     }
   });
+
   (context.npcs || []).forEach(n => {
     if (n.name) {
       candidates.push({ type: 'npc', id: n.id, name: n.name.trim() });
@@ -201,12 +230,15 @@ function autoTagEntities(text, context) {
       }
     }
   });
+
   (context.locations || []).forEach(l => {
     if (l.name) candidates.push({ type: 'location', id: l.id, name: l.name.trim() });
   });
+
   (context.shops || []).forEach(s => {
     if (s.name) candidates.push({ type: 'shop', id: s.id, name: s.name.trim() });
   });
+
   (context.bestiary || []).forEach(b => {
     if (b.name) {
       candidates.push({ type: 'bestiary', id: b.id, name: b.name.trim() });
@@ -216,14 +248,51 @@ function autoTagEntities(text, context) {
     }
   });
 
-  // Sort longest names first
+  (context.letters || []).forEach(l => {
+    const label = l.subject || l.title;
+    if (label && label.trim().length >= 4) {
+      candidates.push({ type: 'letter', id: l.id, name: label.trim() });
+    }
+  });
+
+  (context.items || []).forEach(i => {
+    if (i.name && i.name.trim().length >= 3) {
+      candidates.push({ type: 'item', id: i.id, name: i.name.trim() });
+    }
+  });
+
+  (context.weapons || []).forEach(w => {
+    if (w.name && w.name.trim().length >= 3) {
+      candidates.push({ type: 'weapon', id: w.id, name: w.name.trim() });
+    }
+  });
+
+  (context.weaponRules || []).forEach(r => {
+    if (r.name && r.name.trim().length >= 3) {
+      candidates.push({ type: 'weaponrule', id: r.id, name: r.name.trim() });
+    }
+  });
+
+  (context.alteredStates || []).forEach(s => {
+    if (s.name && s.name.trim().length >= 3) {
+      candidates.push({ type: 'alteredstate', id: s.id, name: s.name.trim() });
+    }
+  });
+
+  (context.afflictions || []).forEach(a => {
+    if (a.name && a.name.trim().length >= 3) {
+      candidates.push({ type: 'affliction', id: a.id, name: a.name.trim() });
+    }
+  });
+
+  // Sort longest names first to prevent partial substring clashes
   candidates.sort((a, b) => b.name.length - a.name.length);
 
   // Replace occurrences not already inside a tag
   for (const cand of candidates) {
-    if (cand.name.length < 3) continue; // skip too-short names to avoid false positives
+    if (cand.name.length < 3) continue;
     const escapedName = cand.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(`(?<!@(?:player|npc|location|shop|bestiary)\\[[^\\]]*)(?:^|(?<=[^\\p{L}\\p{N}_]))${escapedName}(?:(?=[^\\p{L}\\p{N}_])|$)`, 'gu');
+    const pattern = new RegExp(`(?<!@(?:player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)\\[[^\\]]*)(?:^|(?<=[^\\p{L}\\p{N}_]))${escapedName}(?:(?=[^\\p{L}\\p{N}_])|$)`, 'gu');
     result = result.replace(pattern, `@${cand.type}[${cand.id}]`);
   }
 
@@ -234,9 +303,9 @@ function parseEntities(text, context = null) {
   if (!text) return [];
   const matches = [];
   let match;
-  const regex = new RegExp(ENTITY_REGEX.source, 'g');
+  const regex = new RegExp(ENTITY_REGEX.source, 'gi');
   while ((match = regex.exec(text)) !== null) {
-    const type = match[1];
+    const type = normalizeEntityType(match[1]);
     const rawVal = match[2].trim();
     const id = context ? findEntityId(type, rawVal, context) : (/^\d+$/.test(rawVal) ? Number(rawVal) : rawVal);
     const name = context ? (findEntityName(type, id, context) || rawVal) : rawVal;
@@ -259,17 +328,15 @@ async function getAllWeaponsAndRules() {
     try {
       const mainDb = client.db(mainDbName);
       weapons = await mainDb.collection('weapon').find().toArray();
+      if (!weapons.length) weapons = await mainDb.collection('weapons').find().toArray();
       weaponRules = await mainDb.collection('weaponRule').find().toArray();
+      if (!weaponRules.length) weaponRules = await mainDb.collection('weaponRules').find().toArray();
     } finally {
       await client.close();
     }
   }
-  if (!weapons.length) {
-    weapons = readJsonFallback('weapons.json');
-  }
-  if (!weaponRules.length) {
-    weaponRules = readJsonFallback('weaponRules.json');
-  }
+  if (!weapons.length) weapons = readJsonFallback('weapons.json');
+  if (!weaponRules.length) weaponRules = readJsonFallback('weaponRules.json');
   return { weapons, weaponRules };
 }
 
@@ -399,6 +466,10 @@ async function getCampaignContext(campaignId = 1) {
   let bestiary = [];
   let weapons = [];
   let weaponRules = [];
+  let letters = [];
+  let items = [];
+  let alteredStates = [];
+  let afflictions = [];
 
   if (client) {
     try {
@@ -422,13 +493,31 @@ async function getCampaignContext(campaignId = 1) {
 
       locations = await playersDb.collection(`${prefix}-location`).find().toArray();
       if (!locations.length) locations = await playersDb.collection('location').find().toArray();
+      if (!locations.length) locations = await mainDb.collection('location').find().toArray();
 
       shops = await playersDb.collection(`${prefix}-shop`).find().toArray();
       if (!shops.length) shops = await playersDb.collection('shop').find().toArray();
 
       bestiary = await mainDb.collection('bestiary').find().toArray();
+
       weapons = await mainDb.collection('weapon').find().toArray();
+      if (!weapons.length) weapons = await mainDb.collection('weapons').find().toArray();
+
       weaponRules = await mainDb.collection('weaponRule').find().toArray();
+      if (!weaponRules.length) weaponRules = await mainDb.collection('weaponRules').find().toArray();
+
+      letters = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
+      if (!letters.length) letters = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
+      if (!letters.length) letters = await mainDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
+
+      items = await mainDb.collection('item').find().toArray();
+      if (!items.length) items = await mainDb.collection('items').find().toArray();
+
+      alteredStates = await mainDb.collection('alteredState').find().toArray();
+      if (!alteredStates.length) alteredStates = await mainDb.collection('status').find().toArray();
+
+      afflictions = await mainDb.collection('affliction').find().toArray();
+      if (!afflictions.length) afflictions = await mainDb.collection('afflictions').find().toArray();
     } finally {
       await client.close();
     }
@@ -443,10 +532,12 @@ async function getCampaignContext(campaignId = 1) {
     bestiary = readJsonFallback('bestiary.json');
     weapons = readJsonFallback('weapons.json');
     weaponRules = readJsonFallback('weaponRules.json');
+    letters = readJsonFallback('letters.json').filter(l => !l.isDeleted);
+    const rawItems = readJsonFallback('items.json');
+    items = Array.isArray(rawItems) ? rawItems : (rawItems.items || []);
+    alteredStates = readJsonFallback('alteredStates.json');
+    afflictions = readJsonFallback('afflictions.json');
   }
-
-  if (!weapons.length) weapons = readJsonFallback('weapons.json');
-  if (!weaponRules.length) weaponRules = readJsonFallback('weaponRules.json');
 
   const context = {
     campaignId: Number(campaignId),
@@ -458,7 +549,11 @@ async function getCampaignContext(campaignId = 1) {
     shops: shops.map(s => ({ id: s.id, name: s.name, locationName: s.locationName || s.location, owner: s.owner })),
     bestiary: bestiary.map(b => ({ id: b.id, name: b.name, faction: b.faction, pr: b.pr, weapons: b.weapons })),
     weapons: weapons.map(w => ({ id: w.id, name: w.name, price: w.price, profiles: w.profiles })),
-    weaponRules: weaponRules.map(r => ({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier }))
+    weaponRules: weaponRules.map(r => ({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier })),
+    letters: letters.map(l => ({ id: l.id, subject: l.subject, title: l.subject, senderName: l.senderName, date: l.date })),
+    items: items.map(i => ({ id: i.id, name: i.name, price: i.price, type: i.type })),
+    alteredStates: alteredStates.map(s => ({ id: s.id, name: s.name, effect: s.effect })),
+    afflictions: afflictions.map(a => ({ id: a.id, name: a.name, treatment: a.treatment, effect: a.effect }))
   };
 
   return context;
@@ -495,6 +590,10 @@ async function saveSession({ campaignId, sessionId, content, conclussion, player
       : []);
 
   const client = await getClient();
+  if (!client) {
+    throw new Error('Database connection failed. Cannot save session.');
+  }
+
   const sessionDoc = {
     campaignId: Number(campaignId),
     sessionId: Number(sessionId),
@@ -503,54 +602,36 @@ async function saveSession({ campaignId, sessionId, content, conclussion, player
     playerVisibleBranches: branchesArray
   };
 
-  let resultDoc = null;
+  try {
+    const mainDb = client.db(mainDbName);
+    const collection = mainDb.collection('campaignSession');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const collection = mainDb.collection('campaignSession');
-      
-      const existing = await collection.findOne({
-        campaignId: Number(campaignId),
-        sessionId: Number(sessionId)
-      });
+    const existing = await collection.findOne({
+      campaignId: Number(campaignId),
+      sessionId: Number(sessionId)
+    });
 
-      if (existing) {
-        await collection.updateOne(
-          { _id: existing._id },
-          {
-            $set: {
-              content: sessionDoc.content,
-              conclussion: sessionDoc.conclussion,
-              playerVisibleBranches: sessionDoc.playerVisibleBranches
-            }
+    if (existing) {
+      await collection.updateOne(
+        { _id: existing._id },
+        {
+          $set: {
+            content: sessionDoc.content,
+            conclussion: sessionDoc.conclussion,
+            playerVisibleBranches: sessionDoc.playerVisibleBranches
           }
-        );
-        resultDoc = { ...existing, ...sessionDoc };
-      } else {
-        const all = await collection.find().toArray();
-        const maxId = all.reduce((m, s) => (s.id && typeof s.id === 'number' && s.id > m ? s.id : m), 0);
-        sessionDoc.id = maxId + 1;
-        const res = await collection.insertOne(sessionDoc);
-        resultDoc = { _id: res.insertedId, ...sessionDoc };
-      }
-    } finally {
-      await client.close();
+        }
+      );
+      sessionDoc.id = existing.id || Number(sessionId);
+    } else {
+      const all = await collection.find().toArray();
+      const maxId = all.reduce((m, s) => (s.id && typeof s.id === 'number' && s.id > m ? s.id : m), 0);
+      sessionDoc.id = maxId + 1;
+      await collection.insertOne(sessionDoc);
     }
+  } finally {
+    await client.close();
   }
-
-  const allJson = readJsonFallback('campaignSessions.json');
-  const idx = allJson.findIndex(s => Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === Number(sessionId));
-  if (idx !== -1) {
-    allJson[idx] = { ...allJson[idx], ...sessionDoc };
-  } else {
-    if (!sessionDoc.id) {
-      sessionDoc.id = allJson.reduce((m, s) => (s.id && typeof s.id === 'number' && s.id > m ? s.id : m), 0) + 1;
-    }
-    allJson.push(sessionDoc);
-  }
-  writeJsonFallback('campaignSession.json', allJson);
-  writeJsonFallback('campaignSessions.json', allJson);
 
   return {
     ...sessionDoc,
@@ -573,40 +654,31 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
     : undefined;
 
   const client = await getClient();
-  let updated = null;
-
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const collection = mainDb.collection('campaignSession');
-      const query = {
-        campaignId: Number(campaignId),
-        sessionId: Number(sessionId)
-      };
-      const existing = await collection.findOne(query);
-      if (existing) {
-        const updateFields = { conclussion: processedConclussion };
-        if (branchesArray !== undefined) {
-          updateFields.playerVisibleBranches = branchesArray;
-        }
-        await collection.updateOne({ _id: existing._id }, { $set: updateFields });
-        updated = { ...existing, ...updateFields };
-      }
-    } finally {
-      await client.close();
-    }
+  if (!client) {
+    throw new Error('Database connection failed. Cannot finalize session.');
   }
 
-  const allJson = readJsonFallback('campaignSessions.json');
-  const idx = allJson.findIndex(s => Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === Number(sessionId));
-  if (idx !== -1) {
-    allJson[idx].conclussion = processedConclussion;
-    if (branchesArray !== undefined) {
-      allJson[idx].playerVisibleBranches = branchesArray;
+  let updated = null;
+  try {
+    const mainDb = client.db(mainDbName);
+    const collection = mainDb.collection('campaignSession');
+    const query = {
+      campaignId: Number(campaignId),
+      sessionId: Number(sessionId)
+    };
+    const existing = await collection.findOne(query);
+    if (!existing) {
+      throw new Error(`Session ${sessionId} in campaign ${campaignId} not found in database.`);
     }
-    writeJsonFallback('campaignSession.json', allJson);
-    writeJsonFallback('campaignSessions.json', allJson);
-    if (!updated) updated = allJson[idx];
+
+    const updateFields = { conclussion: processedConclussion };
+    if (branchesArray !== undefined) {
+      updateFields.playerVisibleBranches = branchesArray;
+    }
+    await collection.updateOne({ _id: existing._id }, { $set: updateFields });
+    updated = { ...existing, ...updateFields };
+  } finally {
+    await client.close();
   }
 
   if (updated) {
@@ -645,82 +717,118 @@ async function createNPC(npcData) {
   }
 
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let existingNpcs = [];
+  if (!client) throw new Error('Database connection failed. Cannot create NPC.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      existingNpcs = await playersDb.collection(`${prefix}-npc`).find().toArray();
-      if (!existingNpcs.length) {
-        existingNpcs = await playersDb.collection('npc').find().toArray();
-      }
-    } finally {
-      await client.close();
-    }
+    const col = playersDb.collection(`${prefix}-npc`);
+    const allExisting = await col.find().toArray();
+    const genericExisting = await playersDb.collection('npc').find().toArray();
+    const maxId = [...allExisting, ...genericExisting].reduce((max, n) => (n && typeof n.id === 'number' && n.id > max ? n.id : max), 0);
+    const newId = maxId + 1;
+
+    const parsedBestiaryId = (bestiaryId !== null && bestiaryId !== undefined && !isNaN(Number(bestiaryId)))
+      ? Number(bestiaryId)
+      : undefined;
+
+    const npcDoc = {
+      id: newId,
+      name: name.trim(),
+      faction: faction.trim(),
+      subgroup: subgroup ? subgroup.trim() : faction.trim(),
+      ...(role ? { role: role.trim() } : {}),
+      ...(mission ? { mission: mission.trim() } : {}),
+      ...(methods ? { methods: methods.trim() } : {}),
+      ...(personality ? { personality: personality.trim() } : {}),
+      ...(location ? { location: location.trim() } : {}),
+      ...(parsedBestiaryId !== undefined ? { bestiaryId: parsedBestiaryId } : {}),
+      ...(reputation ? { reputation: reputation.trim() } : {}),
+      ...(backstory ? { backstory: backstory.trim() } : {}),
+      ...(description ? { description: description.trim() } : {}),
+      ...(fleetSize ? { fleetSize: fleetSize.trim() } : {}),
+      ...(flagship ? { flagship: flagship.trim() } : {}),
+      ...(tactics ? { tactics: tactics.trim() } : {}),
+      ...(motivations ? { motivations: motivations.trim() } : {}),
+      ...(Array.isArray(wargear) && wargear.length > 0 ? { wargear } : {}),
+      discovered: discovered !== undefined ? !!discovered : true
+    };
+
+    await col.insertOne({ ...npcDoc });
+    await playersDb.collection('npc').updateOne({ id: newId }, { $set: npcDoc }, { upsert: true });
+
+    return {
+      ...npcDoc,
+      entityTag: `@npc[${npcDoc.id}]`,
+      displayTag: `@npc[${npcDoc.id}: ${npcDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateNPC(npcUpdateData) {
+  const { id, campaignId = 1, ...updates } = npcUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateNPC requires an "id" property to identify the NPC.');
   }
 
-  const jsonNpcs = readJsonFallback('npcs.json');
-  const allExisting = [...existingNpcs, ...jsonNpcs];
-  const maxId = allExisting.reduce((max, n) => (n && typeof n.id === 'number' && n.id > max ? n.id : max), 0);
-  const newId = maxId + 1;
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update NPC.');
 
-  const parsedBestiaryId = (bestiaryId !== null && bestiaryId !== undefined && !isNaN(Number(bestiaryId)))
-    ? Number(bestiaryId)
-    : undefined;
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-  const npcDoc = {
-    id: newId,
-    name: name.trim(),
-    faction: faction.trim(),
-    subgroup: subgroup ? subgroup.trim() : faction.trim(),
-    ...(role ? { role: role.trim() } : {}),
-    ...(mission ? { mission: mission.trim() } : {}),
-    ...(methods ? { methods: methods.trim() } : {}),
-    ...(personality ? { personality: personality.trim() } : {}),
-    ...(location ? { location: location.trim() } : {}),
-    ...(parsedBestiaryId !== undefined ? { bestiaryId: parsedBestiaryId } : {}),
-    ...(reputation ? { reputation: reputation.trim() } : {}),
-    ...(backstory ? { backstory: backstory.trim() } : {}),
-    ...(description ? { description: description.trim() } : {}),
-    ...(fleetSize ? { fleetSize: fleetSize.trim() } : {}),
-    ...(flagship ? { flagship: flagship.trim() } : {}),
-    ...(tactics ? { tactics: tactics.trim() } : {}),
-    ...(motivations ? { motivations: motivations.trim() } : {}),
-    ...(Array.isArray(wargear) && wargear.length > 0 ? { wargear } : {}),
-    discovered: discovered !== undefined ? !!discovered : true
-  };
+    const col = playersDb.collection(`${prefix}-npc`);
+    let targetNPC = await col.findOne({ id: numericId });
+    if (!targetNPC) targetNPC = await playersDb.collection('npc').findOne({ id: numericId });
+    if (!targetNPC) throw new Error(`NPC with ID ${numericId} not found in database.`);
 
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-npc`).insertOne({ ...npcDoc });
-      const genericCol = playersDb.collection('npc');
-      const genExists = await genericCol.findOne({ id: newId });
-      if (!genExists) {
-        await genericCol.insertOne({ ...npcDoc });
-      }
-    } finally {
-      await writeClient.close();
-    }
+    const updatedDoc = {
+      ...targetNPC,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+      ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+      ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
+      ...(updates.mission !== undefined ? { mission: updates.mission.trim() } : {}),
+      ...(updates.methods !== undefined ? { methods: updates.methods.trim() } : {}),
+      ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
+      ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+      ...(updates.bestiaryId !== undefined ? { bestiaryId: (updates.bestiaryId !== null && !isNaN(Number(updates.bestiaryId))) ? Number(updates.bestiaryId) : undefined } : {}),
+      ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
+      ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
+      ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+      ...(updates.fleetSize !== undefined ? { fleetSize: updates.fleetSize.trim() } : {}),
+      ...(updates.flagship !== undefined ? { flagship: updates.flagship.trim() } : {}),
+      ...(updates.tactics !== undefined ? { tactics: updates.tactics.trim() } : {}),
+      ...(updates.motivations !== undefined ? { motivations: updates.motivations.trim() } : {}),
+      ...(Array.isArray(updates.wargear) ? { wargear: updates.wargear } : {}),
+      ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await playersDb.collection('npc').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@npc[${numericId}]`,
+      displayTag: `@npc[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
   }
-
-  const updatedJson = jsonNpcs.filter(n => n.id !== newId);
-  updatedJson.push(npcDoc);
-  writeJsonFallback('npc.json', updatedJson);
-  writeJsonFallback('npcs.json', updatedJson);
-
-  return {
-    ...npcDoc,
-    entityTag: `@npc[${npcDoc.id}]`,
-    displayTag: `@npc[${npcDoc.id}: ${npcDoc.name}]`
-  };
 }
 
 async function createBestiaryEntry(bestiaryData) {
@@ -756,67 +864,118 @@ async function createBestiaryEntry(bestiaryData) {
   };
 
   const client = await getClient();
-  let existingBestiary = [];
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      existingBestiary = await mainDb.collection('bestiary').find().toArray();
-    } finally {
-      await client.close();
-    }
+  if (!client) throw new Error('Database connection failed. Cannot create Bestiary entry.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingBestiary = await mainDb.collection('bestiary').find().toArray();
+    const maxId = existingBestiary.reduce((max, b) => (b && typeof b.id === 'number' && b.id > max ? b.id : max), 0);
+    const newId = maxId + 1;
+
+    const prBreakdown = calculatePR({
+      attributes: finalAttributes,
+      weapons: validatedWeaponIds,
+      abilities: Array.isArray(abilities) ? abilities : []
+    }, allWeapons, allRules);
+
+    const finalPR = (typeof pr === 'number' && pr > 0) ? pr : prBreakdown.total;
+
+    const finalDiscoveredCampaignIds = Array.isArray(discoveredCampaignIds)
+      ? discoveredCampaignIds
+      : (isDiscovered !== false ? (campaignId ? [Number(campaignId)] : [1]) : []);
+
+    const bestiaryDoc = {
+      id: newId,
+      name: name.trim(),
+      faction: faction.trim(),
+      subgroup: subgroup ? subgroup.trim() : faction.trim(),
+      pr: finalPR,
+      attributes: finalAttributes,
+      weapons: validatedWeaponIds,
+      abilities: Array.isArray(abilities) ? abilities : [],
+      ...(Array.isArray(deployables) && deployables.length > 0 ? { deployables } : {}),
+      isDiscovered: finalDiscoveredCampaignIds.length > 0,
+      discoveredCampaignIds: finalDiscoveredCampaignIds
+    };
+
+    await mainDb.collection('bestiary').insertOne({ ...bestiaryDoc });
+
+    return {
+      ...bestiaryDoc,
+      prBreakdown,
+      entityTag: `@bestiary[${bestiaryDoc.id}]`,
+      displayTag: `@bestiary[${bestiaryDoc.id}: ${bestiaryDoc.name}]`
+    };
+  } finally {
+    await client.close();
   }
-  const jsonBestiary = readJsonFallback('bestiary.json');
-  const allExisting = [...existingBestiary, ...jsonBestiary];
-  const maxId = allExisting.reduce((max, b) => (b && typeof b.id === 'number' && b.id > max ? b.id : max), 0);
-  const newId = maxId + 1;
+}
 
-  const prBreakdown = calculatePR({
-    attributes: finalAttributes,
-    weapons: validatedWeaponIds,
-    abilities: Array.isArray(abilities) ? abilities : []
-  }, allWeapons, allRules);
-
-  const finalPR = (typeof pr === 'number' && pr > 0) ? pr : prBreakdown.total;
-
-  const finalDiscoveredCampaignIds = Array.isArray(discoveredCampaignIds)
-    ? discoveredCampaignIds
-    : (isDiscovered !== false ? (campaignId ? [Number(campaignId)] : [1]) : []);
-
-  const bestiaryDoc = {
-    id: newId,
-    name: name.trim(),
-    faction: faction.trim(),
-    subgroup: subgroup ? subgroup.trim() : faction.trim(),
-    pr: finalPR,
-    attributes: finalAttributes,
-    weapons: validatedWeaponIds,
-    abilities: Array.isArray(abilities) ? abilities : [],
-    ...(Array.isArray(deployables) && deployables.length > 0 ? { deployables } : {}),
-    isDiscovered: finalDiscoveredCampaignIds.length > 0,
-    discoveredCampaignIds: finalDiscoveredCampaignIds
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const mainDb = writeClient.db(mainDbName);
-      await mainDb.collection('bestiary').insertOne({ ...bestiaryDoc });
-    } finally {
-      await writeClient.close();
-    }
+async function updateBestiaryEntry(bestiaryUpdateData) {
+  const { id, ...updates } = bestiaryUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateBestiaryEntry requires an "id" property to identify the creature.');
   }
 
-  const updatedJson = jsonBestiary.filter(b => b.id !== newId);
-  updatedJson.push(bestiaryDoc);
-  writeJsonFallback('bestiary.json', updatedJson);
-  writeJsonFallback('bestiaries.json', updatedJson);
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Bestiary entry.');
 
-  return {
-    ...bestiaryDoc,
-    prBreakdown,
-    entityTag: `@bestiary[${bestiaryDoc.id}]`,
-    displayTag: `@bestiary[${bestiaryDoc.id}: ${bestiaryDoc.name}]`
-  };
+  try {
+    const mainDb = client.db(mainDbName);
+    const targetBestiary = await mainDb.collection('bestiary').findOne({ id: numericId });
+    if (!targetBestiary) throw new Error(`Bestiary entry with ID ${numericId} not found in database.`);
+
+    const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
+
+    let finalWeapons = targetBestiary.weapons || [];
+    if (Array.isArray(updates.weapons)) {
+      finalWeapons = validateWeaponsExist(updates.weapons, allWeapons);
+    }
+
+    const finalAttributes = {
+      ...(targetBestiary.attributes || {}),
+      ...(updates.attributes || {})
+    };
+
+    const finalAbilities = Array.isArray(updates.abilities) ? updates.abilities : (targetBestiary.abilities || []);
+
+    const prBreakdown = calculatePR({
+      attributes: finalAttributes,
+      weapons: finalWeapons,
+      abilities: finalAbilities
+    }, allWeapons, allRules);
+
+    const finalPR = (typeof updates.pr === 'number' && updates.pr > 0) ? updates.pr : prBreakdown.total;
+
+    const updatedDoc = {
+      ...targetBestiary,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+      ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+      pr: finalPR,
+      attributes: finalAttributes,
+      weapons: finalWeapons,
+      abilities: finalAbilities,
+      ...(Array.isArray(updates.deployables) ? { deployables: updates.deployables } : {}),
+      ...(updates.isDiscovered !== undefined ? { isDiscovered: !!updates.isDiscovered } : {}),
+      ...(Array.isArray(updates.discoveredCampaignIds) ? { discoveredCampaignIds: updates.discoveredCampaignIds } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('bestiary').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      prBreakdown,
+      entityTag: `@bestiary[${numericId}]`,
+      displayTag: `@bestiary[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
 }
 
 async function createCombatNPC(combatData) {
@@ -853,7 +1012,8 @@ async function createCombatNPC(combatData) {
     weapons,
     abilities,
     deployables,
-    isDiscovered: discovered
+    isDiscovered: discovered,
+    campaignId
   });
 
   const npcDoc = await createNPC({
@@ -919,82 +1079,120 @@ async function createLocation(locationData) {
   }
 
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let existingLocations = [];
+  if (!client) throw new Error('Database connection failed. Cannot create Location.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      existingLocations = await playersDb.collection(`${prefix}-location`).find().toArray();
-      if (!existingLocations.length) {
-        existingLocations = await playersDb.collection('location').find().toArray();
-      }
-      if (!existingLocations.length) {
-        existingLocations = await mainDb.collection('location').find().toArray();
-      }
-    } finally {
-      await client.close();
-    }
+    const col = playersDb.collection(`${prefix}-location`);
+    const allExisting = await col.find().toArray();
+    const genericExisting = await playersDb.collection('location').find().toArray();
+    const mainExisting = await mainDb.collection('location').find().toArray();
+    const maxId = [...allExisting, ...genericExisting, ...mainExisting].reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
+    const newId = maxId + 1;
+
+    const locationDoc = {
+      id: newId,
+      name: name.trim(),
+      faction: faction ? faction.trim() : 'Unaligned',
+      description: description ? description.trim() : '',
+      ...(category ? { category: category.trim() } : {}),
+      ...(categorySize !== undefined ? { categorySize } : {}),
+      isCapital: !!isCapital,
+      ...(isWorldMap ? { isWorldMap: true } : {}),
+      ...(typeof mapX === 'number' && !isNaN(mapX) ? { mapX } : {}),
+      ...(typeof mapY === 'number' && !isNaN(mapY) ? { mapY } : {}),
+      discovered: discovered !== undefined ? !!discovered : true,
+      ...(rpgMapLayout ? { rpgMapLayout } : {}),
+      ...(privateNotes ? { privateNotes } : {}),
+      ...(Array.isArray(secrets) && secrets.length > 0 ? { secrets } : {}),
+      ...(isSecret ? { isSecret: true } : {}),
+      ...(isSecretRevealed ? { isSecretRevealed: true } : {}),
+      ...(Array.isArray(notableFeatures) && notableFeatures.length > 0 ? { notableFeatures } : {}),
+      ...(Array.isArray(shops) && shops.length > 0 ? { shops } : {}),
+      ...(imgUrl ? { imgUrl } : {}),
+      ...(thumbnail ? { thumbnail } : {})
+    };
+
+    await col.insertOne({ ...locationDoc });
+    await playersDb.collection('location').updateOne({ id: newId }, { $set: locationDoc }, { upsert: true });
+    await mainDb.collection('location').updateOne({ id: newId }, { $set: locationDoc }, { upsert: true });
+
+    return {
+      ...locationDoc,
+      entityTag: `@location[${locationDoc.id}]`,
+      displayTag: `@location[${locationDoc.id}: ${locationDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateLocation(locationUpdateData) {
+  const { id, campaignId = 1, ...updates } = locationUpdateData;
+  if (id === undefined || id === null) {
+    throw new Error('updateLocation requires an "id" property to identify the location.');
   }
 
-  const jsonLocations = readJsonFallback('locations.json');
-  const allExisting = [...existingLocations, ...jsonLocations];
-  const maxId = allExisting.reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
-  const newId = maxId + 1;
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Location.');
 
-  const locationDoc = {
-    id: newId,
-    name: name.trim(),
-    faction: faction ? faction.trim() : 'Unaligned',
-    description: description ? description.trim() : '',
-    ...(category ? { category: category.trim() } : {}),
-    ...(categorySize !== undefined ? { categorySize } : {}),
-    isCapital: !!isCapital,
-    ...(isWorldMap ? { isWorldMap: true } : {}),
-    ...(typeof mapX === 'number' && !isNaN(mapX) ? { mapX } : {}),
-    ...(typeof mapY === 'number' && !isNaN(mapY) ? { mapY } : {}),
-    discovered: discovered !== undefined ? !!discovered : true,
-    ...(rpgMapLayout ? { rpgMapLayout } : {}),
-    ...(privateNotes ? { privateNotes } : {}),
-    ...(Array.isArray(secrets) && secrets.length > 0 ? { secrets } : {}),
-    ...(isSecret ? { isSecret: true } : {}),
-    ...(isSecretRevealed ? { isSecretRevealed: true } : {}),
-    ...(Array.isArray(notableFeatures) && notableFeatures.length > 0 ? { notableFeatures } : {}),
-    ...(Array.isArray(shops) && shops.length > 0 ? { shops } : {}),
-    ...(imgUrl ? { imgUrl } : {}),
-    ...(thumbnail ? { thumbnail } : {})
-  };
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-location`).insertOne({ ...locationDoc });
-      const genericCol = playersDb.collection('location');
-      const genExists = await genericCol.findOne({ id: newId });
-      if (!genExists) {
-        await genericCol.insertOne({ ...locationDoc });
-      }
-    } finally {
-      await writeClient.close();
-    }
+    const col = playersDb.collection(`${prefix}-location`);
+    let targetLoc = await col.findOne({ id: numericId });
+    if (!targetLoc) targetLoc = await playersDb.collection('location').findOne({ id: numericId });
+    if (!targetLoc) targetLoc = await mainDb.collection('location').findOne({ id: numericId });
+    if (!targetLoc) throw new Error(`Location with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...targetLoc,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.faction !== undefined ? { faction: updates.faction.trim() } : {}),
+      ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+      ...(updates.category !== undefined ? { category: updates.category.trim() } : {}),
+      ...(updates.categorySize !== undefined ? { categorySize: updates.categorySize } : {}),
+      ...(updates.isCapital !== undefined ? { isCapital: !!updates.isCapital } : {}),
+      ...(updates.isWorldMap !== undefined ? { isWorldMap: !!updates.isWorldMap } : {}),
+      ...(updates.mapX !== undefined ? { mapX: Number(updates.mapX) } : {}),
+      ...(updates.mapY !== undefined ? { mapY: Number(updates.mapY) } : {}),
+      ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
+      ...(updates.rpgMapLayout !== undefined ? { rpgMapLayout: updates.rpgMapLayout } : {}),
+      ...(updates.privateNotes !== undefined ? { privateNotes: updates.privateNotes } : {}),
+      ...(Array.isArray(updates.secrets) ? { secrets: updates.secrets } : {}),
+      ...(updates.isSecret !== undefined ? { isSecret: !!updates.isSecret } : {}),
+      ...(updates.isSecretRevealed !== undefined ? { isSecretRevealed: !!updates.isSecretRevealed } : {}),
+      ...(Array.isArray(updates.notableFeatures) ? { notableFeatures: updates.notableFeatures } : {}),
+      ...(Array.isArray(updates.shops) ? { shops: updates.shops } : {}),
+      ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
+      ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await playersDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@location[${numericId}]`,
+      displayTag: `@location[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
   }
-
-  const updatedJson = jsonLocations.filter(l => l.id !== newId);
-  updatedJson.push(locationDoc);
-  writeJsonFallback('location.json', updatedJson);
-  writeJsonFallback('locations.json', updatedJson);
-
-  return {
-    ...locationDoc,
-    entityTag: `@location[${locationDoc.id}]`,
-    displayTag: `@location[${locationDoc.id}: ${locationDoc.name}]`
-  };
 }
 
 async function createShop(shopData) {
@@ -1019,379 +1217,51 @@ async function createShop(shopData) {
   }
 
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let existingShops = [];
+  if (!client) throw new Error('Database connection failed. Cannot create Shop.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      existingShops = await playersDb.collection(`${prefix}-shop`).find().toArray();
-      if (!existingShops.length) {
-        existingShops = await playersDb.collection('shop').find().toArray();
-      }
-    } finally {
-      await client.close();
-    }
-  }
+    const col = playersDb.collection(`${prefix}-shop`);
+    const allExisting = await col.find().toArray();
+    const genericExisting = await playersDb.collection('shop').find().toArray();
+    const maxId = [...allExisting, ...genericExisting].reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
+    const newId = maxId + 1;
 
-  const jsonShops = readJsonFallback('shops.json');
-  const allExisting = [...existingShops, ...jsonShops];
-  const maxId = allExisting.reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
-  const newId = maxId + 1;
+    const parsedOwner = (owner !== null && owner !== undefined && !isNaN(Number(owner))) ? Number(owner) : undefined;
+    const parsedLocId = (locationId !== null && locationId !== undefined && !isNaN(Number(locationId))) ? Number(locationId) : undefined;
 
-  const parsedOwner = (owner !== null && owner !== undefined && !isNaN(Number(owner))) ? Number(owner) : undefined;
-  const parsedLocId = (locationId !== null && locationId !== undefined && !isNaN(Number(locationId))) ? Number(locationId) : undefined;
-
-  const shopDoc = {
-    id: newId,
-    name: name.trim(),
-    ...(parsedOwner !== undefined ? { owner: parsedOwner } : {}),
-    ...(parsedLocId !== undefined ? { locationId: parsedLocId } : {}),
-    ...(locationName ? { locationName: locationName.trim() } : {}),
-    ...(location ? { location: location.trim() } : {}),
-    description: description ? description.trim() : '',
-    discovered: discovered !== undefined ? !!discovered : true,
-    ...(imgUrl ? { imgUrl } : {}),
-    ...(thumbnail ? { thumbnail } : {}),
-    categories: Array.isArray(categories) && categories.length > 0 ? categories : [1],
-    paymentMethod: paymentMethod && typeof paymentMethod === 'object' ? paymentMethod : { digital: true, physical: true },
-    items: Array.isArray(items) ? items : []
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-shop`).insertOne({ ...shopDoc });
-      const genericCol = playersDb.collection('shop');
-      const genExists = await genericCol.findOne({ id: newId });
-      if (!genExists) {
-        await genericCol.insertOne({ ...shopDoc });
-      }
-    } finally {
-      await writeClient.close();
-    }
-  }
-
-  const updatedJson = jsonShops.filter(s => s.id !== newId);
-  updatedJson.push(shopDoc);
-  writeJsonFallback('shop.json', updatedJson);
-  writeJsonFallback('shops.json', updatedJson);
-
-  return {
-    ...shopDoc,
-    entityTag: `@shop[${shopDoc.id}]`,
-    displayTag: `@shop[${shopDoc.id}: ${shopDoc.name}]`
-  };
-}
-
-async function updatePlayer(playerUpdateData) {
-  const { id, campaignId = 1, ...updates } = playerUpdateData;
-  if (id === undefined || id === null) {
-    throw new Error('updatePlayer requires an "id" property to identify the player.');
-  }
-
-  const numericId = Number(id);
-  const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let targetPlayer = null;
-
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
-
-      const col = playersDb.collection(`${prefix}-player`);
-      targetPlayer = await col.findOne({ id: numericId });
-      if (!targetPlayer) {
-        targetPlayer = await playersDb.collection('player').findOne({ id: numericId });
-      }
-    } finally {
-      await client.close();
-    }
-  }
-
-  const jsonPlayers = readJsonFallback('players.json');
-  if (!targetPlayer) {
-    targetPlayer = jsonPlayers.find(p => p.id === numericId);
-  }
-
-  if (!targetPlayer) {
-    throw new Error(`Player with ID ${numericId} not found in database or local storage.`);
-  }
-
-  // Merge attributes safely if provided
-  let finalAttributes = targetPlayer.attributes;
-  if (updates.attributes && typeof updates.attributes === 'object') {
-    finalAttributes = {
-      ...(targetPlayer.attributes || {}),
-      ...updates.attributes
+    const shopDoc = {
+      id: newId,
+      name: name.trim(),
+      ...(parsedOwner !== undefined ? { owner: parsedOwner } : {}),
+      ...(parsedLocId !== undefined ? { locationId: parsedLocId } : {}),
+      ...(locationName ? { locationName: locationName.trim() } : {}),
+      ...(location ? { location: location.trim() } : {}),
+      description: description ? description.trim() : '',
+      discovered: discovered !== undefined ? !!discovered : true,
+      ...(imgUrl ? { imgUrl } : {}),
+      ...(thumbnail ? { thumbnail } : {}),
+      categories: Array.isArray(categories) && categories.length > 0 ? categories : [1],
+      paymentMethod: paymentMethod && typeof paymentMethod === 'object' ? paymentMethod : { digital: true, physical: true },
+      items: Array.isArray(items) ? items : []
     };
-  }
 
-  // Merge progression safely if provided
-  let finalProgression = targetPlayer.progression;
-  if (updates.progression && typeof updates.progression === 'object') {
-    finalProgression = {
-      ...(targetPlayer.progression || {}),
-      ...updates.progression,
-      mistrals: {
-        ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
-        ...(updates.progression.mistrals || {})
-      }
+    await col.insertOne({ ...shopDoc });
+    await playersDb.collection('shop').updateOne({ id: newId }, { $set: shopDoc }, { upsert: true });
+
+    return {
+      ...shopDoc,
+      entityTag: `@shop[${shopDoc.id}]`,
+      displayTag: `@shop[${shopDoc.id}: ${shopDoc.name}]`
     };
-  } else if (
-    updates.talentPoints !== undefined ||
-    updates.digitalMistrals !== undefined ||
-    updates.physicalMistrals !== undefined ||
-    updates.talents !== undefined ||
-    updates.afflictions !== undefined ||
-    updates.equipment !== undefined
-  ) {
-    finalProgression = {
-      ...(targetPlayer.progression || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] }),
-      ...(updates.talentPoints !== undefined ? { talentPoints: Number(updates.talentPoints) } : {}),
-      mistrals: {
-        ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
-        ...(updates.digitalMistrals !== undefined ? { digital: Number(updates.digitalMistrals) } : {}),
-        ...(updates.physicalMistrals !== undefined ? { physical: Number(updates.physicalMistrals) } : {})
-      },
-      ...(Array.isArray(updates.talents) ? { talents: updates.talents } : {}),
-      ...(Array.isArray(updates.afflictions) ? { afflictions: updates.afflictions } : {}),
-      ...(Array.isArray(updates.equipment) ? { equipment: updates.equipment } : {})
-    };
+  } finally {
+    await client.close();
   }
-
-  // Merge weapons if provided
-  let finalWeapons = targetPlayer.weapons;
-  if (Array.isArray(updates.weapons)) {
-    finalWeapons = updates.weapons.map(Number).filter(n => !isNaN(n));
-  }
-
-  // Merge items / inventory if provided
-  let finalItems = targetPlayer.items;
-  if (Array.isArray(updates.items)) {
-    finalItems = updates.items;
-  }
-
-  // Merge abilities if provided
-  let finalAbilities = targetPlayer.abilities;
-  if (Array.isArray(updates.abilities)) {
-    finalAbilities = updates.abilities;
-  }
-
-  const updatedDoc = {
-    ...targetPlayer,
-    ...(updates.name ? { name: updates.name.trim() } : {}),
-    ...(updates.race ? { race: updates.race.trim() } : {}),
-    ...(updates.origin ? { origin: updates.origin.trim() } : {}),
-    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
-    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
-    ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
-    ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
-    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
-    ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
-    ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
-    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
-    ...(finalAttributes ? { attributes: finalAttributes } : {}),
-    ...(finalWeapons ? { weapons: finalWeapons } : {}),
-    ...(finalAbilities ? { abilities: finalAbilities } : {}),
-    ...(finalProgression ? { progression: finalProgression } : {}),
-    ...(finalItems ? { items: finalItems } : {})
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-player`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-      await playersDb.collection('player').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    } finally {
-      await writeClient.close();
-    }
-  }
-
-  // Note: Per design constraints, player updates are persisted strictly to MongoDB without modifying local JSON files.
-
-  return {
-    ...updatedDoc,
-    entityTag: `@player[${updatedDoc.id}]`,
-    displayTag: `@player[${updatedDoc.id}: ${updatedDoc.name}]`
-  };
-}
-
-async function updateNPC(npcUpdateData) {
-  const { id, campaignId = 1, ...updates } = npcUpdateData;
-  if (id === undefined || id === null) {
-    throw new Error('updateNPC requires an "id" property to identify the NPC.');
-  }
-
-  const numericId = Number(id);
-  const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let targetNPC = null;
-
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
-
-      const col = playersDb.collection(`${prefix}-npc`);
-      targetNPC = await col.findOne({ id: numericId });
-      if (!targetNPC) {
-        targetNPC = await playersDb.collection('npc').findOne({ id: numericId });
-      }
-    } finally {
-      await client.close();
-    }
-  }
-
-  const jsonNpcs = readJsonFallback('npcs.json');
-  if (!targetNPC) {
-    targetNPC = jsonNpcs.find(n => n.id === numericId);
-  }
-
-  if (!targetNPC) {
-    throw new Error(`NPC with ID ${numericId} not found in database or local storage.`);
-  }
-
-  const updatedDoc = {
-    ...targetNPC,
-    ...(updates.name ? { name: updates.name.trim() } : {}),
-    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
-    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
-    ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
-    ...(updates.mission !== undefined ? { mission: updates.mission.trim() } : {}),
-    ...(updates.methods !== undefined ? { methods: updates.methods.trim() } : {}),
-    ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
-    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
-    ...(updates.bestiaryId !== undefined ? { bestiaryId: (updates.bestiaryId !== null && !isNaN(Number(updates.bestiaryId))) ? Number(updates.bestiaryId) : undefined } : {}),
-    ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
-    ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
-    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
-    ...(updates.fleetSize !== undefined ? { fleetSize: updates.fleetSize.trim() } : {}),
-    ...(updates.flagship !== undefined ? { flagship: updates.flagship.trim() } : {}),
-    ...(updates.tactics !== undefined ? { tactics: updates.tactics.trim() } : {}),
-    ...(updates.motivations !== undefined ? { motivations: updates.motivations.trim() } : {}),
-    ...(Array.isArray(updates.wargear) ? { wargear: updates.wargear } : {}),
-    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {})
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-npc`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-      await playersDb.collection('npc').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    } finally {
-      await writeClient.close();
-    }
-  }
-
-  const updatedJson = jsonNpcs.filter(n => n.id !== numericId);
-  updatedJson.push(updatedDoc);
-  writeJsonFallback('npc.json', updatedJson);
-  writeJsonFallback('npcs.json', updatedJson);
-
-  return {
-    ...updatedDoc,
-    entityTag: `@npc[${updatedDoc.id}]`,
-    displayTag: `@npc[${updatedDoc.id}: ${updatedDoc.name}]`
-  };
-}
-
-async function updateLocation(locationUpdateData) {
-  const { id, campaignId = 1, ...updates } = locationUpdateData;
-  if (id === undefined || id === null) {
-    throw new Error('updateLocation requires an "id" property to identify the location.');
-  }
-
-  const numericId = Number(id);
-  const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let targetLoc = null;
-
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
-
-      const col = playersDb.collection(`${prefix}-location`);
-      targetLoc = await col.findOne({ id: numericId });
-      if (!targetLoc) targetLoc = await playersDb.collection('location').findOne({ id: numericId });
-      if (!targetLoc) targetLoc = await mainDb.collection('location').findOne({ id: numericId });
-    } finally {
-      await client.close();
-    }
-  }
-
-  const jsonLocations = readJsonFallback('locations.json');
-  if (!targetLoc) {
-    targetLoc = jsonLocations.find(l => l.id === numericId);
-  }
-
-  if (!targetLoc) {
-    throw new Error(`Location with ID ${numericId} not found in database or local storage.`);
-  }
-
-  const updatedDoc = {
-    ...targetLoc,
-    ...(updates.name ? { name: updates.name.trim() } : {}),
-    ...(updates.faction !== undefined ? { faction: updates.faction.trim() } : {}),
-    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
-    ...(updates.category !== undefined ? { category: updates.category.trim() } : {}),
-    ...(updates.categorySize !== undefined ? { categorySize: updates.categorySize } : {}),
-    ...(updates.isCapital !== undefined ? { isCapital: !!updates.isCapital } : {}),
-    ...(updates.isWorldMap !== undefined ? { isWorldMap: !!updates.isWorldMap } : {}),
-    ...(updates.mapX !== undefined ? { mapX: Number(updates.mapX) } : {}),
-    ...(updates.mapY !== undefined ? { mapY: Number(updates.mapY) } : {}),
-    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
-    ...(updates.rpgMapLayout !== undefined ? { rpgMapLayout: updates.rpgMapLayout } : {}),
-    ...(updates.privateNotes !== undefined ? { privateNotes: updates.privateNotes } : {}),
-    ...(Array.isArray(updates.secrets) ? { secrets: updates.secrets } : {}),
-    ...(updates.isSecret !== undefined ? { isSecret: !!updates.isSecret } : {}),
-    ...(updates.isSecretRevealed !== undefined ? { isSecretRevealed: !!updates.isSecretRevealed } : {}),
-    ...(Array.isArray(updates.notableFeatures) ? { notableFeatures: updates.notableFeatures } : {}),
-    ...(Array.isArray(updates.shops) ? { shops: updates.shops } : {}),
-    ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
-    ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-location`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-      await playersDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    } finally {
-      await writeClient.close();
-    }
-  }
-
-  const updatedJson = jsonLocations.filter(l => l.id !== numericId);
-  updatedJson.push(updatedDoc);
-  writeJsonFallback('location.json', updatedJson);
-  writeJsonFallback('locations.json', updatedJson);
-
-  return {
-    ...updatedDoc,
-    entityTag: `@location[${updatedDoc.id}]`,
-    displayTag: `@location[${updatedDoc.id}: ${updatedDoc.name}]`
-  };
 }
 
 async function updateShop(shopUpdateData) {
@@ -1402,169 +1272,665 @@ async function updateShop(shopUpdateData) {
 
   const numericId = Number(id);
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let targetShop = null;
+  if (!client) throw new Error('Database connection failed. Cannot update Shop.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      const col = playersDb.collection(`${prefix}-shop`);
-      targetShop = await col.findOne({ id: numericId });
-      if (!targetShop) targetShop = await playersDb.collection('shop').findOne({ id: numericId });
-    } finally {
-      await client.close();
+    const col = playersDb.collection(`${prefix}-shop`);
+    let targetShop = await col.findOne({ id: numericId });
+    if (!targetShop) targetShop = await playersDb.collection('shop').findOne({ id: numericId });
+    if (!targetShop) throw new Error(`Shop with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...targetShop,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.owner !== undefined ? { owner: updates.owner !== null ? Number(updates.owner) : null } : {}),
+      ...(updates.locationId !== undefined ? { locationId: updates.locationId !== null ? Number(updates.locationId) : null } : {}),
+      ...(updates.locationName !== undefined ? { locationName: updates.locationName.trim() } : {}),
+      ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+      ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+      ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
+      ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
+      ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
+    };
+
+    if (Array.isArray(updates.categories)) {
+      updatedDoc.categories = updates.categories;
     }
-  }
-
-  const jsonShops = readJsonFallback('shops.json');
-  if (!targetShop) {
-    targetShop = jsonShops.find(s => s.id === numericId);
-  }
-
-  if (!targetShop) {
-    throw new Error(`Shop with ID ${numericId} not found in database or local storage.`);
-  }
-
-  const updatedDoc = {
-    ...targetShop,
-    ...(updates.name ? { name: updates.name.trim() } : {}),
-    ...(updates.owner !== undefined ? { owner: updates.owner !== null ? Number(updates.owner) : null } : {}),
-    ...(updates.locationId !== undefined ? { locationId: updates.locationId !== null ? Number(updates.locationId) : null } : {}),
-    ...(updates.locationName !== undefined ? { locationName: updates.locationName.trim() } : {}),
-    ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
-    ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
-    ...(updates.discovered !== undefined ? { discovered: !!updates.discovered } : {}),
-    ...(updates.imgUrl !== undefined ? { imgUrl: updates.imgUrl } : {}),
-    ...(updates.thumbnail !== undefined ? { thumbnail: updates.thumbnail } : {})
-  };
-
-  if (Array.isArray(updates.categories)) {
-    updatedDoc.categories = updates.categories;
-  }
-  if (updates.paymentMethod && typeof updates.paymentMethod === 'object') {
-    updatedDoc.paymentMethod = { ...targetShop.paymentMethod, ...updates.paymentMethod };
-  }
-  if (Array.isArray(updates.items)) {
-    updatedDoc.items = updates.items;
-  }
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const playersDb = writeClient.db(playersDbName);
-      await playersDb.collection(`${prefix}-shop`).updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-      await playersDb.collection('shop').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    } finally {
-      await writeClient.close();
+    if (updates.paymentMethod && typeof updates.paymentMethod === 'object') {
+      updatedDoc.paymentMethod = { ...targetShop.paymentMethod, ...updates.paymentMethod };
     }
+    if (Array.isArray(updates.items)) {
+      updatedDoc.items = updates.items;
+    }
+
+    delete updatedDoc._id;
+
+    await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await playersDb.collection('shop').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@shop[${numericId}]`,
+      displayTag: `@shop[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
   }
-
-  const updatedJson = jsonShops.filter(s => s.id !== numericId);
-  updatedJson.push(updatedDoc);
-  writeJsonFallback('shop.json', updatedJson);
-  writeJsonFallback('shops.json', updatedJson);
-
-  return {
-    ...updatedDoc,
-    entityTag: `@shop[${updatedDoc.id}]`,
-    displayTag: `@shop[${updatedDoc.id}: ${updatedDoc.name}]`
-  };
 }
 
-async function updateBestiaryEntry(bestiaryUpdateData) {
-  const { id, ...updates } = bestiaryUpdateData;
+async function updatePlayer(playerUpdateData) {
+  const { id, campaignId = 1, ...updates } = playerUpdateData;
   if (id === undefined || id === null) {
-    throw new Error('updateBestiaryEntry requires an "id" property to identify the creature.');
+    throw new Error('updatePlayer requires an "id" property to identify the player.');
   }
 
   const numericId = Number(id);
   const client = await getClient();
-  let targetBestiary = null;
+  if (!client) throw new Error('Database connection failed. Cannot update Player.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      targetBestiary = await mainDb.collection('bestiary').findOne({ id: numericId });
-    } finally {
-      await client.close();
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+    const col = playersDb.collection(`${prefix}-player`);
+    let targetPlayer = await col.findOne({ id: numericId });
+    if (!targetPlayer) {
+      targetPlayer = await playersDb.collection('player').findOne({ id: numericId });
     }
-  }
-
-  const jsonBestiary = readJsonFallback('bestiary.json');
-  if (!targetBestiary) {
-    targetBestiary = jsonBestiary.find(b => b.id === numericId);
-  }
-
-  if (!targetBestiary) {
-    throw new Error(`Bestiary entry with ID ${numericId} not found in database or local storage.`);
-  }
-
-  const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
-
-  let finalWeapons = targetBestiary.weapons || [];
-  if (Array.isArray(updates.weapons)) {
-    finalWeapons = validateWeaponsExist(updates.weapons, allWeapons);
-  }
-
-  const finalAttributes = {
-    ...(targetBestiary.attributes || {}),
-    ...(updates.attributes || {})
-  };
-
-  const finalAbilities = Array.isArray(updates.abilities) ? updates.abilities : (targetBestiary.abilities || []);
-
-  const prBreakdown = calculatePR({
-    attributes: finalAttributes,
-    weapons: finalWeapons,
-    abilities: finalAbilities
-  }, allWeapons, allRules);
-
-  const finalPR = (typeof updates.pr === 'number' && updates.pr > 0) ? updates.pr : prBreakdown.total;
-
-  const updatedDoc = {
-    ...targetBestiary,
-    ...(updates.name ? { name: updates.name.trim() } : {}),
-    ...(updates.faction ? { faction: updates.faction.trim() } : {}),
-    ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
-    pr: finalPR,
-    attributes: finalAttributes,
-    weapons: finalWeapons,
-    abilities: finalAbilities,
-    ...(Array.isArray(updates.deployables) ? { deployables: updates.deployables } : {}),
-    ...(updates.isDiscovered !== undefined ? { isDiscovered: !!updates.isDiscovered } : {}),
-    ...(Array.isArray(updates.discoveredCampaignIds) ? { discoveredCampaignIds: updates.discoveredCampaignIds } : {})
-  };
-
-  const writeClient = await getClient();
-  if (writeClient) {
-    try {
-      const mainDb = writeClient.db(mainDbName);
-      await mainDb.collection('bestiary').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    } finally {
-      await writeClient.close();
+    if (!targetPlayer) {
+      throw new Error(`Player with ID ${numericId} not found in database.`);
     }
+
+    let finalAttributes = targetPlayer.attributes;
+    if (updates.attributes && typeof updates.attributes === 'object') {
+      finalAttributes = {
+        ...(targetPlayer.attributes || {}),
+        ...updates.attributes
+      };
+    }
+
+    let finalProgression = targetPlayer.progression;
+    if (updates.progression && typeof updates.progression === 'object') {
+      finalProgression = {
+        ...(targetPlayer.progression || {}),
+        ...updates.progression,
+        mistrals: {
+          ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
+          ...(updates.progression.mistrals || {})
+        }
+      };
+    } else if (
+      updates.talentPoints !== undefined ||
+      updates.digitalMistrals !== undefined ||
+      updates.physicalMistrals !== undefined ||
+      updates.talents !== undefined ||
+      updates.afflictions !== undefined ||
+      updates.equipment !== undefined
+    ) {
+      finalProgression = {
+        ...(targetPlayer.progression || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] }),
+        ...(updates.talentPoints !== undefined ? { talentPoints: Number(updates.talentPoints) } : {}),
+        mistrals: {
+          ...((targetPlayer.progression && targetPlayer.progression.mistrals) || { digital: 0, physical: 0 }),
+          ...(updates.digitalMistrals !== undefined ? { digital: Number(updates.digitalMistrals) } : {}),
+          ...(updates.physicalMistrals !== undefined ? { physical: Number(updates.physicalMistrals) } : {})
+        },
+        ...(Array.isArray(updates.talents) ? { talents: updates.talents } : {}),
+        ...(Array.isArray(updates.afflictions) ? { afflictions: updates.afflictions } : {}),
+        ...(Array.isArray(updates.equipment) ? { equipment: updates.equipment } : {})
+      };
+    }
+
+    let finalWeapons = targetPlayer.weapons;
+    if (Array.isArray(updates.weapons)) {
+      finalWeapons = updates.weapons.map(Number).filter(n => !isNaN(n));
+    }
+
+    let finalItems = targetPlayer.items;
+    if (Array.isArray(updates.items)) {
+      finalItems = updates.items;
+    }
+
+    let finalAbilities = targetPlayer.abilities;
+    if (Array.isArray(updates.abilities)) {
+      finalAbilities = updates.abilities;
+    }
+
+    const updatedDoc = {
+      ...targetPlayer,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.race ? { race: updates.race.trim() } : {}),
+      ...(updates.origin ? { origin: updates.origin.trim() } : {}),
+      ...(updates.faction ? { faction: updates.faction.trim() } : {}),
+      ...(updates.subgroup !== undefined ? { subgroup: updates.subgroup.trim() } : {}),
+      ...(updates.role !== undefined ? { role: updates.role.trim() } : {}),
+      ...(updates.personality !== undefined ? { personality: updates.personality.trim() } : {}),
+      ...(updates.location !== undefined ? { location: updates.location.trim() } : {}),
+      ...(updates.reputation !== undefined ? { reputation: updates.reputation.trim() } : {}),
+      ...(updates.backstory !== undefined ? { backstory: updates.backstory.trim() } : {}),
+      ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+      ...(finalAttributes ? { attributes: finalAttributes } : {}),
+      ...(finalWeapons ? { weapons: finalWeapons } : {}),
+      ...(finalAbilities ? { abilities: finalAbilities } : {}),
+      ...(finalProgression ? { progression: finalProgression } : {}),
+      ...(finalItems ? { items: finalItems } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await playersDb.collection('player').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@player[${numericId}]`,
+      displayTag: `@player[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
   }
+}
 
-  const updatedJson = jsonBestiary.filter(b => b.id !== numericId);
-  updatedJson.push(updatedDoc);
-  writeJsonFallback('bestiary.json', updatedJson);
-  writeJsonFallback('bestiaries.json', updatedJson);
+async function createLetter(letterData) {
+  const {
+    campaignId = 1,
+    subject = '',
+    senderId = null,
+    senderName = '',
+    message = '',
+    date = '',
+    readBy = [],
+    recipientIds = [],
+    targetNames = []
+  } = letterData;
 
-  return {
-    ...updatedDoc,
-    prBreakdown,
-    entityTag: `@bestiary[${updatedDoc.id}]`,
-    displayTag: `@bestiary[${updatedDoc.id}: ${updatedDoc.name}]`
-  };
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Letter.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+    const col = playersDb.collection(`${prefix}-letter`);
+    const allExisting = await col.find().toArray();
+    const genericExisting = await playersDb.collection('letter').find().toArray();
+    const mainExisting = await mainDb.collection('letter').find().toArray();
+    const maxId = [...allExisting, ...genericExisting, ...mainExisting].reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
+    const newId = maxId + 1;
+
+    const letterDoc = {
+      id: newId,
+      subject: subject ? subject.trim() : `Letter #${newId}`,
+      senderId: (senderId !== null && senderId !== undefined && !isNaN(Number(senderId))) ? Number(senderId) : null,
+      senderName: senderName ? senderName.trim() : null,
+      message: message || '',
+      date: date || new Date().toISOString().slice(0, 10),
+      readBy: Array.isArray(readBy) ? readBy.map(Number) : [],
+      recipientIds: Array.isArray(recipientIds) ? recipientIds.map(Number) : [],
+      targetNames: Array.isArray(targetNames) ? targetNames : []
+    };
+
+    await col.insertOne({ ...letterDoc });
+    await playersDb.collection('letter').updateOne({ id: newId }, { $set: letterDoc }, { upsert: true });
+    await mainDb.collection('letter').updateOne({ id: newId }, { $set: letterDoc }, { upsert: true });
+
+    return {
+      ...letterDoc,
+      entityTag: `@letter[${letterDoc.id}]`,
+      displayTag: `@letter[${letterDoc.id}: ${letterDoc.subject}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateLetter(letterUpdateData) {
+  const { id, campaignId = 1, ...updates } = letterUpdateData;
+  if (id === undefined || id === null) throw new Error('updateLetter requires an "id" property.');
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Letter.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+
+    const col = playersDb.collection(`${prefix}-letter`);
+    let existing = await col.findOne({ id: numericId });
+    if (!existing) existing = await playersDb.collection('letter').findOne({ id: numericId });
+    if (!existing) existing = await mainDb.collection('letter').findOne({ id: numericId });
+    if (!existing) throw new Error(`Letter with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.subject !== undefined ? { subject: updates.subject ? updates.subject.trim() : null } : {}),
+      ...(updates.senderId !== undefined ? { senderId: updates.senderId !== null ? Number(updates.senderId) : null } : {}),
+      ...(updates.senderName !== undefined ? { senderName: updates.senderName ? updates.senderName.trim() : null } : {}),
+      ...(updates.message !== undefined ? { message: updates.message } : {}),
+      ...(updates.date !== undefined ? { date: updates.date } : {}),
+      ...(Array.isArray(updates.readBy) ? { readBy: updates.readBy.map(Number) } : {}),
+      ...(Array.isArray(updates.recipientIds) ? { recipientIds: updates.recipientIds.map(Number) } : {}),
+      ...(Array.isArray(updates.targetNames) ? { targetNames: updates.targetNames } : {}),
+      ...(updates.isDeleted !== undefined ? { isDeleted: !!updates.isDeleted } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await playersDb.collection('letter').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('letter').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@letter[${numericId}]`,
+      displayTag: `@letter[${numericId}: ${updatedDoc.subject || `Letter #${numericId}`}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function createItem(itemData) {
+  const {
+    name,
+    price = 0,
+    description = '',
+    type = 'general',
+    subtype = '',
+    raceReq = 'universal',
+    quantity = 1,
+    isEquippable = false,
+    statModifications = [],
+    ...otherProps
+  } = itemData;
+  if (!name) throw new Error('Item requires at least "name".');
+
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Item.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingItems = await mainDb.collection('item').find().toArray();
+    const existingPlural = await mainDb.collection('items').find().toArray();
+    const maxId = [...existingItems, ...existingPlural].reduce((max, i) => (i && typeof i.id === 'number' && i.id > max ? i.id : max), 0);
+    const newId = maxId + 1;
+
+    const itemDoc = {
+      id: newId,
+      name: name.trim(),
+      price: Number(price) || 0,
+      description: description ? description.trim() : '',
+      type: type ? type.trim() : 'general',
+      ...(subtype ? { subtype: subtype.trim() } : {}),
+      raceReq: raceReq ? raceReq.trim() : 'universal',
+      quantity: Number(quantity) || 1,
+      isEquippable: !!isEquippable,
+      ...(Array.isArray(statModifications) && statModifications.length > 0 ? { statModifications } : {}),
+      ...otherProps
+    };
+
+    await mainDb.collection('item').insertOne({ ...itemDoc });
+    await mainDb.collection('items').updateOne({ id: newId }, { $set: itemDoc }, { upsert: true });
+
+    return {
+      ...itemDoc,
+      entityTag: `@item[${itemDoc.id}]`,
+      displayTag: `@item[${itemDoc.id}: ${itemDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateItem(itemUpdateData) {
+  const { id, ...updates } = itemUpdateData;
+  if (id === undefined || id === null) throw new Error('updateItem requires an "id" property.');
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Item.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    let existing = await mainDb.collection('item').findOne({ id: numericId });
+    if (!existing) existing = await mainDb.collection('items').findOne({ id: numericId });
+    if (!existing) throw new Error(`Item with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.price !== undefined ? { price: Number(updates.price) } : {}),
+      ...(updates.description !== undefined ? { description: updates.description.trim() } : {}),
+      ...(updates.type !== undefined ? { type: updates.type.trim() } : {}),
+      ...(updates.subtype !== undefined ? { subtype: updates.subtype.trim() } : {}),
+      ...(updates.raceReq !== undefined ? { raceReq: updates.raceReq.trim() } : {}),
+      ...(updates.quantity !== undefined ? { quantity: Number(updates.quantity) } : {}),
+      ...(updates.isEquippable !== undefined ? { isEquippable: !!updates.isEquippable } : {}),
+      ...(Array.isArray(updates.statModifications) ? { statModifications: updates.statModifications } : {}),
+      ...(updates.buildMaterials ? { buildMaterials: updates.buildMaterials } : {}),
+      ...(updates.weapons ? { weapons: updates.weapons } : {}),
+      ...(updates.bestiaryId !== undefined ? { bestiaryId: updates.bestiaryId } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('item').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('items').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@item[${numericId}]`,
+      displayTag: `@item[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function createWeapon(weaponData) {
+  const { name, price = 0, profiles = [] } = weaponData;
+  if (!name) throw new Error('Weapon requires at least "name".');
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Weapon.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingWeapons = await mainDb.collection('weapon').find().toArray();
+    const existingPlural = await mainDb.collection('weapons').find().toArray();
+    const maxId = [...existingWeapons, ...existingPlural].reduce((max, w) => (w && typeof w.id === 'number' && w.id > max ? w.id : max), 0);
+    const newId = maxId + 1;
+
+    const weaponDoc = {
+      id: newId,
+      name: name.trim(),
+      price: Number(price) || 0,
+      profiles: Array.isArray(profiles) ? profiles : []
+    };
+
+    await mainDb.collection('weapon').insertOne({ ...weaponDoc });
+    await mainDb.collection('weapons').updateOne({ id: newId }, { $set: weaponDoc }, { upsert: true });
+
+    return {
+      ...weaponDoc,
+      entityTag: `@weapon[${weaponDoc.id}]`,
+      displayTag: `@weapon[${weaponDoc.id}: ${weaponDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateWeapon(weaponUpdateData) {
+  const { id, ...updates } = weaponUpdateData;
+  if (id === undefined || id === null) throw new Error('updateWeapon requires an "id" property.');
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Weapon.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    let existing = await mainDb.collection('weapon').findOne({ id: numericId });
+    if (!existing) existing = await mainDb.collection('weapons').findOne({ id: numericId });
+    if (!existing) throw new Error(`Weapon with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.price !== undefined ? { price: Number(updates.price) } : {}),
+      ...(Array.isArray(updates.profiles) ? { profiles: updates.profiles } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('weapon').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('weapons').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@weapon[${numericId}]`,
+      displayTag: `@weapon[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function createWeaponRule(ruleData) {
+  const { name, effect, prModifier = null } = ruleData;
+  if (!name || !effect) throw new Error('Weapon rule requires "name" and "effect".');
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Weapon Rule.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingRules = await mainDb.collection('weaponRule').find().toArray();
+    const existingPlural = await mainDb.collection('weaponRules').find().toArray();
+    const maxId = [...existingRules, ...existingPlural].reduce((max, r) => (r && typeof r.id === 'number' && r.id > max ? r.id : max), 0);
+    const newId = maxId + 1;
+
+    const ruleDoc = {
+      id: newId,
+      name: name.trim(),
+      effect: effect.trim(),
+      prModifier: prModifier !== null && prModifier !== undefined && !isNaN(Number(prModifier)) ? Number(prModifier) : null
+    };
+
+    await mainDb.collection('weaponRule').insertOne({ ...ruleDoc });
+    await mainDb.collection('weaponRules').updateOne({ id: newId }, { $set: ruleDoc }, { upsert: true });
+
+    return {
+      ...ruleDoc,
+      entityTag: `@weaponrule[${ruleDoc.id}]`,
+      displayTag: `@weaponrule[${ruleDoc.id}: ${ruleDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateWeaponRule(ruleUpdateData) {
+  const { id, ...updates } = ruleUpdateData;
+  if (id === undefined || id === null) throw new Error('updateWeaponRule requires an "id" property.');
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Weapon Rule.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    let existing = await mainDb.collection('weaponRule').findOne({ id: numericId });
+    if (!existing) existing = await mainDb.collection('weaponRules').findOne({ id: numericId });
+    if (!existing) throw new Error(`Weapon rule with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.effect ? { effect: updates.effect.trim() } : {}),
+      ...(updates.prModifier !== undefined ? { prModifier: updates.prModifier !== null && !isNaN(Number(updates.prModifier)) ? Number(updates.prModifier) : null } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('weaponRule').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('weaponRules').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@weaponrule[${numericId}]`,
+      displayTag: `@weaponrule[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function createAlteredState(stateData) {
+  const { name, effect } = stateData;
+  if (!name || !effect) throw new Error('Altered state requires "name" and "effect".');
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Altered State.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingStates = await mainDb.collection('alteredState').find().toArray();
+    const existingStatus = await mainDb.collection('status').find().toArray();
+    const maxId = [...existingStates, ...existingStatus].reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
+    const newId = maxId + 1;
+
+    const stateDoc = {
+      id: newId,
+      name: name.trim(),
+      effect: effect.trim()
+    };
+
+    await mainDb.collection('alteredState').insertOne({ ...stateDoc });
+    await mainDb.collection('status').updateOne({ id: newId }, { $set: stateDoc }, { upsert: true });
+
+    return {
+      ...stateDoc,
+      entityTag: `@alteredstate[${stateDoc.id}]`,
+      displayTag: `@alteredstate[${stateDoc.id}: ${stateDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateAlteredState(stateUpdateData) {
+  const { id, ...updates } = stateUpdateData;
+  if (id === undefined || id === null) throw new Error('updateAlteredState requires an "id" property.');
+  const numericId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Altered State.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    let existing = await mainDb.collection('alteredState').findOne({ id: numericId });
+    if (!existing) existing = await mainDb.collection('status').findOne({ id: numericId });
+    if (!existing) throw new Error(`Altered state with ID ${numericId} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.effect ? { effect: updates.effect.trim() } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('alteredState').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('status').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: numericId,
+      entityTag: `@alteredstate[${numericId}]`,
+      displayTag: `@alteredstate[${numericId}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function createAffliction(afflictionData) {
+  const { name, effect = '', treatment = 'Resting', toHeal = 3, progress = 0, statModifications = [] } = afflictionData;
+  if (!name) throw new Error('Affliction requires at least "name".');
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot create Affliction.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    const existingAffs = await mainDb.collection('affliction').find().toArray();
+    const existingPlural = await mainDb.collection('afflictions').find().toArray();
+    const maxId = [...existingAffs, ...existingPlural].reduce((max, a) => {
+      const num = Number(a.id);
+      return !isNaN(num) && num > max ? num : max;
+    }, 0);
+    const newId = String(maxId + 1);
+
+    const affDoc = {
+      id: newId,
+      name: name.trim(),
+      effect: effect ? effect.trim() : '',
+      treatment: treatment ? treatment.trim() : 'Resting',
+      toHeal: Number(toHeal) || 3,
+      progress: Number(progress) || 0,
+      ...(Array.isArray(statModifications) && statModifications.length > 0 ? { statModifications } : {})
+    };
+
+    await mainDb.collection('affliction').insertOne({ ...affDoc });
+    await mainDb.collection('afflictions').updateOne({ id: newId }, { $set: affDoc }, { upsert: true });
+
+    return {
+      ...affDoc,
+      entityTag: `@affliction[${affDoc.id}]`,
+      displayTag: `@affliction[${affDoc.id}: ${affDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
+}
+
+async function updateAffliction(afflictionUpdateData) {
+  const { id, ...updates } = afflictionUpdateData;
+  if (id === undefined || id === null) throw new Error('updateAffliction requires an "id" property.');
+  const strId = String(id).trim();
+  const numId = Number(id);
+  const client = await getClient();
+  if (!client) throw new Error('Database connection failed. Cannot update Affliction.');
+
+  try {
+    const mainDb = client.db(mainDbName);
+    let existing = await mainDb.collection('affliction').findOne({ $or: [{ id: strId }, { id: numId }] });
+    if (!existing) existing = await mainDb.collection('afflictions').findOne({ $or: [{ id: strId }, { id: numId }] });
+    if (!existing) throw new Error(`Affliction with ID ${id} not found in database.`);
+
+    const updatedDoc = {
+      ...existing,
+      ...(updates.name ? { name: updates.name.trim() } : {}),
+      ...(updates.effect !== undefined ? { effect: updates.effect.trim() } : {}),
+      ...(updates.treatment !== undefined ? { treatment: updates.treatment.trim() } : {}),
+      ...(updates.toHeal !== undefined ? { toHeal: Number(updates.toHeal) } : {}),
+      ...(updates.progress !== undefined ? { progress: Number(updates.progress) } : {}),
+      ...(Array.isArray(updates.statModifications) ? { statModifications: updates.statModifications } : {})
+    };
+
+    delete updatedDoc._id;
+
+    await mainDb.collection('affliction').updateOne({ id: existing.id }, { $set: updatedDoc }, { upsert: true });
+    await mainDb.collection('afflictions').updateOne({ id: existing.id }, { $set: updatedDoc }, { upsert: true });
+
+    return {
+      ...updatedDoc,
+      id: existing.id,
+      entityTag: `@affliction[${existing.id}]`,
+      displayTag: `@affliction[${existing.id}: ${updatedDoc.name}]`
+    };
+  } finally {
+    await client.close();
+  }
 }
 
 async function readEntities({ type, campaignId = 1, filter = {}, search = '', limit = null }) {
-  const normalizedType = String(type || '').toLowerCase().trim();
+  const normalizedType = normalizeEntityType(type);
   const client = await getClient();
   let prefix = 'nebryss-voss-succession';
   let docs = [];
@@ -1577,70 +1943,72 @@ async function readEntities({ type, campaignId = 1, filter = {}, search = '', li
       const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
       prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      if (normalizedType === 'player' || normalizedType === 'players') {
+      if (normalizedType === 'player') {
         docs = await playersDb.collection(`${prefix}-player`).find().toArray();
         if (!docs.length) docs = await playersDb.collection('player').find().toArray();
-      } else if (normalizedType === 'npc' || normalizedType === 'npcs') {
+      } else if (normalizedType === 'npc') {
         docs = await playersDb.collection(`${prefix}-npc`).find().toArray();
         if (!docs.length) docs = await playersDb.collection('npc').find().toArray();
-      } else if (normalizedType === 'location' || normalizedType === 'locations') {
+      } else if (normalizedType === 'location') {
         docs = await playersDb.collection(`${prefix}-location`).find().toArray();
         if (!docs.length) docs = await playersDb.collection('location').find().toArray();
-      } else if (normalizedType === 'shop' || normalizedType === 'shops') {
+        if (!docs.length) docs = await mainDb.collection('location').find().toArray();
+      } else if (normalizedType === 'shop') {
         docs = await playersDb.collection(`${prefix}-shop`).find().toArray();
         if (!docs.length) docs = await playersDb.collection('shop').find().toArray();
-      } else if (normalizedType === 'bestiary' || normalizedType === 'creature' || normalizedType === 'creatures') {
+      } else if (normalizedType === 'bestiary') {
         docs = await mainDb.collection('bestiary').find().toArray();
-      } else if (normalizedType === 'session' || normalizedType === 'sessions' || normalizedType === 'campaignsession') {
-        docs = await mainDb.collection('campaignSession').find({ campaignId: Number(campaignId) }).toArray();
-      } else if (normalizedType === 'weapon' || normalizedType === 'weapons') {
+      } else if (normalizedType === 'session') {
+        docs = await mainDb.collection('campaignSession').find({
+          $or: [{ campaignId: Number(campaignId) }, { campaignId: String(campaignId) }]
+        }).toArray();
+      } else if (normalizedType === 'weapon') {
         docs = await mainDb.collection('weapon').find().toArray();
         if (!docs.length) docs = await mainDb.collection('weapons').find().toArray();
-      } else if (normalizedType === 'weaponrule' || normalizedType === 'weaponrules') {
+      } else if (normalizedType === 'weaponrule') {
         docs = await mainDb.collection('weaponRule').find().toArray();
         if (!docs.length) docs = await mainDb.collection('weaponRules').find().toArray();
+      } else if (normalizedType === 'letter') {
+        docs = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
+        if (!docs.length) docs = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
+        if (!docs.length) docs = await mainDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
+      } else if (normalizedType === 'item') {
+        docs = await mainDb.collection('item').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('items').find().toArray();
+      } else if (normalizedType === 'alteredstate') {
+        docs = await mainDb.collection('alteredState').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('status').find().toArray();
+      } else if (normalizedType === 'affliction') {
+        docs = await mainDb.collection('affliction').find().toArray();
+        if (!docs.length) docs = await mainDb.collection('afflictions').find().toArray();
       } else if (normalizedType === 'talent' || normalizedType === 'talents') {
         docs = await mainDb.collection('talent').find().toArray();
         if (!docs.length) docs = await mainDb.collection('talents').find().toArray();
-      } else if (normalizedType === 'affliction' || normalizedType === 'afflictions') {
-        docs = await mainDb.collection('affliction').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('afflictions').find().toArray();
-      } else if (normalizedType === 'alteredstate' || normalizedType === 'alteredstates' || normalizedType === 'status') {
-        docs = await mainDb.collection('alteredState').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('status').find().toArray();
       } else {
-        throw new Error(`Unknown entity type "${type}". Allowed types: player, npc, location, shop, bestiary, session, weapon, weaponRule, talent, affliction, alteredState.`);
+        throw new Error(`Unknown entity type "${type}". Allowed types: player, npc, location, shop, bestiary, session, letter, item, weapon, weaponrule, alteredstate, affliction, talent.`);
       }
     } finally {
       await client.close();
     }
-  }
-
-  // If no docs from DB, fallback to JSON files
-  if (!docs || docs.length === 0) {
-    if (normalizedType === 'player' || normalizedType === 'players') {
-      docs = readJsonFallback('players.json');
-    } else if (normalizedType === 'npc' || normalizedType === 'npcs') {
-      docs = readJsonFallback('npcs.json');
-    } else if (normalizedType === 'location' || normalizedType === 'locations') {
-      docs = readJsonFallback('locations.json');
-    } else if (normalizedType === 'shop' || normalizedType === 'shops') {
-      docs = readJsonFallback('shops.json');
-    } else if (normalizedType === 'bestiary' || normalizedType === 'creature' || normalizedType === 'creatures') {
-      docs = readJsonFallback('bestiary.json');
-    } else if (normalizedType === 'session' || normalizedType === 'sessions' || normalizedType === 'campaignsession') {
-      docs = readJsonFallback('campaignSessions.json').filter(s => Number(s.campaignId) === Number(campaignId));
-    } else if (normalizedType === 'weapon' || normalizedType === 'weapons') {
-      docs = readJsonFallback('weapons.json');
-    } else if (normalizedType === 'weaponrule' || normalizedType === 'weaponrules') {
-      docs = readJsonFallback('weaponRules.json');
-    } else if (normalizedType === 'talent' || normalizedType === 'talents') {
-      docs = readJsonFallback('talents.json');
-    } else if (normalizedType === 'affliction' || normalizedType === 'afflictions') {
-      docs = readJsonFallback('afflictions.json');
-    } else if (normalizedType === 'alteredstate' || normalizedType === 'alteredstates' || normalizedType === 'status') {
-      docs = readJsonFallback('alteredStates.json');
-    }
+  } else {
+    // Read fallback if MongoDB client failed
+    if (normalizedType === 'player') docs = readJsonFallback('players.json');
+    else if (normalizedType === 'npc') docs = readJsonFallback('npcs.json');
+    else if (normalizedType === 'location') {
+      const locData = readJsonFallback('locations.json');
+      docs = locData && locData.locations ? locData.locations : locData;
+    } else if (normalizedType === 'shop') docs = readJsonFallback('shops.json');
+    else if (normalizedType === 'bestiary') docs = readJsonFallback('bestiary.json');
+    else if (normalizedType === 'session') docs = readJsonFallback('campaignSessions.json').filter(s => Number(s.campaignId) === Number(campaignId));
+    else if (normalizedType === 'weapon') docs = readJsonFallback('weapons.json');
+    else if (normalizedType === 'weaponrule') docs = readJsonFallback('weaponRules.json');
+    else if (normalizedType === 'letter') docs = readJsonFallback('letters.json').filter(l => !l.isDeleted);
+    else if (normalizedType === 'item') {
+      const raw = readJsonFallback('items.json');
+      docs = Array.isArray(raw) ? raw : (raw.items || []);
+    } else if (normalizedType === 'alteredstate') docs = readJsonFallback('alteredStates.json');
+    else if (normalizedType === 'affliction') docs = readJsonFallback('afflictions.json');
+    else if (normalizedType === 'talent') docs = readJsonFallback('talents.json');
   }
 
   // Apply filters
@@ -1671,14 +2039,16 @@ async function readEntities({ type, campaignId = 1, filter = {}, search = '', li
   if (search && typeof search === 'string' && search.trim() !== '') {
     const q = search.trim().toLowerCase();
     filtered = filtered.filter(item => {
-      const matchName = item.name && String(item.name).toLowerCase().includes(q);
+      const matchName = (item.name || item.subject || item.title) && String(item.name || item.subject || item.title).toLowerCase().includes(q);
       const matchDesc = item.description && String(item.description).toLowerCase().includes(q);
       const matchLore = item.lore && String(item.lore).toLowerCase().includes(q);
       const matchFaction = item.faction && String(item.faction).toLowerCase().includes(q);
       const matchRole = item.role && String(item.role).toLowerCase().includes(q);
       const matchLocation = (item.location || item.locationName) && String(item.location || item.locationName).toLowerCase().includes(q);
+      const matchEffect = item.effect && String(item.effect).toLowerCase().includes(q);
+      const matchMessage = item.message && String(item.message).toLowerCase().includes(q);
       const matchId = String(item.id) === q;
-      return matchName || matchDesc || matchLore || matchFaction || matchRole || matchLocation || matchId;
+      return matchName || matchDesc || matchLore || matchFaction || matchRole || matchLocation || matchEffect || matchMessage || matchId;
     });
   }
 
@@ -1699,94 +2069,85 @@ async function getEntity({ type, id, name, campaignId = 1 }) {
   }
   if (name) {
     const cleaned = cleanString(name);
-    const exact = docs.find(d => cleanString(d.name) === cleaned || String(d.id) === String(name));
+    const exact = docs.find(d => cleanString(d.name || d.subject || d.title) === cleaned || String(d.id) === String(name));
     if (exact) return exact;
-    const partial = docs.find(d => cleanString(d.name).includes(cleaned) || cleaned.includes(cleanString(d.name)));
+    const partial = docs.find(d => {
+      const label = cleanString(d.name || d.subject || d.title);
+      return label && (label.includes(cleaned) || cleaned.includes(label));
+    });
     if (partial) return partial;
   }
   return null;
 }
 
 async function deleteEntity({ type, id, campaignId = 1 }) {
-  const normalizedType = String(type || '').toLowerCase().trim();
+  const normalizedType = normalizeEntityType(type);
   if (id === undefined || id === null) {
     throw new Error('deleteEntity requires an "id" property.');
   }
 
   const numericId = Number(id);
+  const strId = String(id).trim();
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
-  let deletedFromDb = false;
+  if (!client) throw new Error('Database connection failed. Cannot delete entity.');
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
+    const campaigns = await mainDb.collection('campaign').find().toArray();
+    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
+    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-      if (normalizedType === 'player') {
-        await playersDb.collection(`${prefix}-player`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        await playersDb.collection('player').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        deletedFromDb = true;
-      } else if (normalizedType === 'npc') {
-        await playersDb.collection(`${prefix}-npc`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        await playersDb.collection('npc').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        deletedFromDb = true;
-      } else if (normalizedType === 'location') {
-        await playersDb.collection(`${prefix}-location`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        await playersDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        deletedFromDb = true;
-      } else if (normalizedType === 'shop') {
-        await playersDb.collection(`${prefix}-shop`).deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        await playersDb.collection('shop').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        deletedFromDb = true;
-      } else if (normalizedType === 'bestiary') {
-        await mainDb.collection('bestiary').deleteOne({ $or: [{ id: numericId }, { id: String(numericId) }] });
-        deletedFromDb = true;
-      } else if (normalizedType === 'session') {
-        await mainDb.collection('campaignSession').deleteOne({ campaignId: Number(campaignId), sessionId: numericId });
-        deletedFromDb = true;
-      } else {
-        throw new Error(`Unknown or unsupported entity type for delete: "${type}".`);
-      }
-    } finally {
-      await client.close();
+    if (normalizedType === 'player') {
+      await playersDb.collection(`${prefix}-player`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await playersDb.collection('player').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'npc') {
+      await playersDb.collection(`${prefix}-npc`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await playersDb.collection('npc').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'location') {
+      await playersDb.collection(`${prefix}-location`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await playersDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'shop') {
+      await playersDb.collection(`${prefix}-shop`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await playersDb.collection('shop').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'bestiary') {
+      await mainDb.collection('bestiary').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'session') {
+      await mainDb.collection('campaignSession').deleteOne({ campaignId: Number(campaignId), sessionId: numericId });
+    } else if (normalizedType === 'letter') {
+      await playersDb.collection(`${prefix}-letter`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await playersDb.collection('letter').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('letter').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'item') {
+      await mainDb.collection('item').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('items').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'weapon') {
+      await mainDb.collection('weapon').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('weapons').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'weaponrule') {
+      await mainDb.collection('weaponRule').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('weaponRules').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'alteredstate') {
+      await mainDb.collection('alteredState').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('status').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else if (normalizedType === 'affliction') {
+      await mainDb.collection('affliction').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      await mainDb.collection('afflictions').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    } else {
+      throw new Error(`Unknown or unsupported entity type for delete: "${type}".`);
     }
-  }
 
-  // For non-player entities, also update local JSON files
-  if (normalizedType === 'npc') {
-    const jsonDocs = readJsonFallback('npcs.json').filter(n => Number(n.id) !== numericId);
-    writeJsonFallback('npc.json', jsonDocs);
-    writeJsonFallback('npcs.json', jsonDocs);
-  } else if (normalizedType === 'location') {
-    const jsonDocs = readJsonFallback('locations.json').filter(l => Number(l.id) !== numericId);
-    writeJsonFallback('location.json', jsonDocs);
-    writeJsonFallback('locations.json', jsonDocs);
-  } else if (normalizedType === 'shop') {
-    const jsonDocs = readJsonFallback('shops.json').filter(s => Number(s.id) !== numericId);
-    writeJsonFallback('shop.json', jsonDocs);
-    writeJsonFallback('shops.json', jsonDocs);
-  } else if (normalizedType === 'bestiary') {
-    const jsonDocs = readJsonFallback('bestiary.json').filter(b => Number(b.id) !== numericId);
-    writeJsonFallback('bestiary.json', jsonDocs);
-    writeJsonFallback('bestiaries.json', jsonDocs);
-  } else if (normalizedType === 'session') {
-    const jsonDocs = readJsonFallback('campaignSessions.json').filter(s => !(Number(s.campaignId) === Number(campaignId) && Number(s.sessionId) === numericId));
-    writeJsonFallback('campaignSession.json', jsonDocs);
-    writeJsonFallback('campaignSessions.json', jsonDocs);
+    return {
+      success: true,
+      type: normalizedType,
+      id: numericId || strId,
+      campaignId: Number(campaignId),
+      message: `Successfully deleted ${normalizedType} with ID ${numericId || strId} from database`
+    };
+  } finally {
+    await client.close();
   }
-
-  return {
-    success: true,
-    type: normalizedType,
-    id: numericId,
-    campaignId: Number(campaignId),
-    deletedFromDb,
-    message: `Successfully deleted ${normalizedType} with ID ${numericId}`
-  };
 }
 
 function parseArgJson(raw) {
@@ -1803,15 +2164,6 @@ function parseArgJson(raw) {
   }
 }
 
-function readFileContentSafe(filePath) {
-  if (!filePath) return null;
-  const resolved = path.isAbsolute(filePath) ? filePath : path.resolve(process.cwd(), filePath);
-  if (fs.existsSync(resolved)) {
-    return fs.readFileSync(resolved, 'utf8');
-  }
-  return null;
-}
-
 // CLI handler
 async function main() {
   const args = process.argv.slice(2);
@@ -1819,34 +2171,31 @@ async function main() {
 
   if (!command || command === 'help' || command === '--help') {
     console.log(`
-Nebryss Campaign Session Tool v2.1
+Nebryss Campaign Session Tool v3.0 (Pure Database Operations)
 Usage:
   node scripts/campaign-session-tool.js get-context [campaignId]
   node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
   node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
-  node scripts/campaign-session-tool.js get-entity <player|npc|location|shop|bestiary> [id or name] [--campaignId=1]
-  node scripts/campaign-session-tool.js auto-tag [campaignId] [--input="..." | --file="..."]
-  node scripts/campaign-session-tool.js clean-text [campaignId] [--input="..." | --file="..."]
-  node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 [--content="..." | --content-file="..."] [--conclussion="..." | --conclussion-file="..."] [--branches="..."]
-  node scripts/campaign-session-tool.js finalize --campaignId=1 --sessionId=1 [--conclussion="..." | --conclussion-file="..."] [--branches="..."]
+  node scripts/campaign-session-tool.js get-entity <type> [id or name] [--campaignId=1]
+  node scripts/campaign-session-tool.js list-entities <type> [--campaignId=1] [--filter='...'] [--search="..."] [--limit=N]
+  node scripts/campaign-session-tool.js delete-entity <type> <id> [--campaignId=1]
+  node scripts/campaign-session-tool.js auto-tag [campaignId] [--input="..."]
+  node scripts/campaign-session-tool.js clean-text [campaignId] [--input="..."]
+  node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 [--content="..."] [--conclussion="..."] [--branches="..."]
+  node scripts/campaign-session-tool.js finalize --campaignId=1 --sessionId=1 [--conclussion="..."] [--branches="..."]
 
-Weapon Compendium:
-  node scripts/campaign-session-tool.js list-weapons [query]
-  node scripts/campaign-session-tool.js calculate-pr --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2}' --abilities='[{"name":"X","effect":"Y","prModifier":10}]'
-
-Entity Creation:
-  node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Name" --faction="Faction" [--json-file="..."]
-  node scripts/campaign-session-tool.js create-bestiary --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
-  node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Name" --faction="Faction" --weapons="2,31" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' [--json-file="..."]
-  node scripts/campaign-session-tool.js create-location --campaignId=1 --name="Location Name" --faction="Faction" --description="Lore" [--json-file="..."]
-  node scripts/campaign-session-tool.js create-shop --campaignId=1 --name="Shop Name" --owner=1 --locationId=1 --description="Lore" [--items='[{"id":16,"price":5,"type":"item"}]'] [--json-file="..."]
-
-Entity Updates / Edits:
-  node scripts/campaign-session-tool.js update-player --id=1 [--campaignId=1] [--talentPoints=2] [--digitalMistrals=50] [--physicalMistrals=10] [--weapons="23,1"] [--attributes='...'] [--json-file="..."]
-  node scripts/campaign-session-tool.js update-npc --id=1 [--campaignId=1] [--name="..."] [--faction="..."] [--role="..."] [--json-file="..."]
-  node scripts/campaign-session-tool.js update-location --id=1 [--campaignId=1] [--name="..."] [--description="..."] [--json-file="..."]
-  node scripts/campaign-session-tool.js update-shop --id=1 [--campaignId=1] [--name="..."] [--description="..."] [--items='...'] [--json-file="..."]
-  node scripts/campaign-session-tool.js update-bestiary --id=1 [--name="..."] [--weapons="2,31"] [--attributes='...'] [--json-file="..."]
+Entity Management (Pure MongoDB Persistence):
+  - NPC:            create-npc, update-npc
+  - Location:       create-location, update-location
+  - Shop:           create-shop, update-shop
+  - Bestiary:       create-bestiary, update-bestiary, create-combat-npc
+  - Player:         update-player
+  - Letter:         create-letter, update-letter
+  - Item:           create-item, update-item
+  - Weapon:         create-weapon, update-weapon, list-weapons, calculate-pr
+  - Weapon Rule:    create-weapon-rule, update-weapon-rule
+  - Altered State:  create-altered-state, update-altered-state
+  - Affliction:     create-affliction, update-affliction
     `);
     process.exit(0);
   }
@@ -1896,11 +2245,6 @@ Entity Updates / Edits:
       else if (arg.startsWith('--filter=')) queryParams.filter = parseArgJson(arg.substring('--filter='.length));
       else if (arg.startsWith('--search=')) queryParams.search = arg.substring('--search='.length);
       else if (arg.startsWith('--limit=')) queryParams.limit = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(queryParams, parsed);
-      }
     });
     queryParams.type = type;
     const res = await readEntities(queryParams);
@@ -1926,7 +2270,6 @@ Entity Updates / Edits:
     let text = '';
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
-      else if (arg.startsWith('--file=')) text = readFileContentSafe(arg.substring('--file='.length)) || '';
     });
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
     const tagged = autoTagEntities(text, context);
@@ -1937,7 +2280,6 @@ Entity Updates / Edits:
     let text = '';
     args.slice(1).forEach(arg => {
       if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
-      else if (arg.startsWith('--file=')) text = readFileContentSafe(arg.substring('--file='.length)) || '';
     });
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
     const clean = toCleanText(text, context);
@@ -1964,15 +2306,6 @@ Entity Updates / Edits:
       if (arg.startsWith('--abilities=')) {
         const parsed = parseArgJson(arg.substring('--abilities='.length));
         if (parsed && Array.isArray(parsed)) abilities = parsed;
-      }
-      if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) {
-          if (parsed.weapons) weapons = parsed.weapons;
-          if (parsed.attributes) attributes = parsed.attributes;
-          if (parsed.abilities) abilities = parsed.abilities;
-        }
       }
     });
 
@@ -2001,50 +2334,8 @@ Entity Updates / Edits:
       else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
       else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length)) || [];
       else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(npcParams, parsed);
-      }
     });
-
     const res = await createNPC(npcParams);
-    console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'update-player') {
-    const playerParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) playerParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) playerParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) playerParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--race=')) playerParams.race = arg.substring('--race='.length);
-      else if (arg.startsWith('--origin=')) playerParams.origin = arg.substring('--origin='.length);
-      else if (arg.startsWith('--faction=')) playerParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) playerParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--role=')) playerParams.role = arg.substring('--role='.length);
-      else if (arg.startsWith('--personality=')) playerParams.personality = arg.substring('--personality='.length);
-      else if (arg.startsWith('--location=')) playerParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--reputation=')) playerParams.reputation = arg.substring('--reputation='.length);
-      else if (arg.startsWith('--backstory=')) playerParams.backstory = arg.substring('--backstory='.length);
-      else if (arg.startsWith('--description=')) playerParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--weapons=')) {
-        const rawW = arg.substring('--weapons='.length);
-        playerParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--attributes=')) playerParams.attributes = parseArgJson(arg.substring('--attributes='.length));
-      else if (arg.startsWith('--abilities=')) playerParams.abilities = parseArgJson(arg.substring('--abilities='.length));
-      else if (arg.startsWith('--progression=')) playerParams.progression = parseArgJson(arg.substring('--progression='.length));
-      else if (arg.startsWith('--items=')) playerParams.items = parseArgJson(arg.substring('--items='.length));
-      else if (arg.startsWith('--talentPoints=')) playerParams.talentPoints = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--digitalMistrals=')) playerParams.digitalMistrals = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--physicalMistrals=')) playerParams.physicalMistrals = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(playerParams, parsed);
-      }
-    });
-
-    const res = await updatePlayer(playerParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-npc') {
     const npcParams = { campaignId: 1 };
@@ -2069,14 +2360,106 @@ Entity Updates / Edits:
       else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
       else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length));
       else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(npcParams, parsed);
-      }
     });
-
     const res = await updateNPC(npcParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-location') {
+    const locParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
+      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
+      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
+      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
+      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
+      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
+      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
+      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
+    });
+    const res = await createLocation(locParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-location') {
+    const locParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) locParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
+      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
+      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
+      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
+      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
+      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
+      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
+      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
+    });
+    const res = await updateLocation(locParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-shop') {
+    const shopParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--owner=')) shopParams.owner = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationId=')) shopParams.locationId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
+      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--categories=')) {
+        const raw = arg.substring('--categories='.length);
+        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
+      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
+    });
+    const res = await createShop(shopParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-shop') {
+    const shopParams = { campaignId: 1 };
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) shopParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--owner=')) shopParams.owner = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationId=')) shopParams.locationId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
+      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
+      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
+      else if (arg.startsWith('--categories=')) {
+        const raw = arg.substring('--categories='.length);
+        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
+      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
+    });
+    const res = await updateShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-bestiary') {
     const bestiaryParams = {};
@@ -2093,13 +2476,7 @@ Entity Updates / Edits:
       else if (arg.startsWith('--deployables=')) bestiaryParams.deployables = parseArgJson(arg.substring('--deployables='.length));
       else if (arg.startsWith('--isDiscovered=')) bestiaryParams.isDiscovered = arg.split('=')[1] === 'true';
       else if (arg.startsWith('--pr=')) bestiaryParams.pr = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(bestiaryParams, parsed);
-      }
     });
-
     const res = await createBestiaryEntry(bestiaryParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-bestiary') {
@@ -2118,13 +2495,7 @@ Entity Updates / Edits:
       else if (arg.startsWith('--deployables=')) bestiaryParams.deployables = parseArgJson(arg.substring('--deployables='.length));
       else if (arg.startsWith('--isDiscovered=')) bestiaryParams.isDiscovered = arg.split('=')[1] === 'true';
       else if (arg.startsWith('--pr=')) bestiaryParams.pr = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(bestiaryParams, parsed);
-      }
     });
-
     const res = await updateBestiaryEntry(bestiaryParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-combat-npc') {
@@ -2155,136 +2526,197 @@ Entity Updates / Edits:
       else if (arg.startsWith('--attributes=')) combatParams.attributes = parseArgJson(arg.substring('--attributes='.length));
       else if (arg.startsWith('--abilities=')) combatParams.abilities = parseArgJson(arg.substring('--abilities='.length));
       else if (arg.startsWith('--deployables=')) combatParams.deployables = parseArgJson(arg.substring('--deployables='.length));
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(combatParams, parsed);
-      }
     });
-
     const res = await createCombatNPC(combatParams);
     console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'create-location') {
-    const locParams = { campaignId: 1 };
+  } else if (command === 'update-player') {
+    const playerParams = { campaignId: 1 };
     args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
-      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
-      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
-      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
-      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
-      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
-      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
-      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(locParams, parsed);
+      if (arg.startsWith('--id=')) playerParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) playerParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) playerParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--race=')) playerParams.race = arg.substring('--race='.length);
+      else if (arg.startsWith('--origin=')) playerParams.origin = arg.substring('--origin='.length);
+      else if (arg.startsWith('--faction=')) playerParams.faction = arg.substring('--faction='.length);
+      else if (arg.startsWith('--subgroup=')) playerParams.subgroup = arg.substring('--subgroup='.length);
+      else if (arg.startsWith('--role=')) playerParams.role = arg.substring('--role='.length);
+      else if (arg.startsWith('--personality=')) playerParams.personality = arg.substring('--personality='.length);
+      else if (arg.startsWith('--location=')) playerParams.location = arg.substring('--location='.length);
+      else if (arg.startsWith('--reputation=')) playerParams.reputation = arg.substring('--reputation='.length);
+      else if (arg.startsWith('--backstory=')) playerParams.backstory = arg.substring('--backstory='.length);
+      else if (arg.startsWith('--description=')) playerParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--weapons=')) {
+        const rawW = arg.substring('--weapons='.length);
+        playerParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
       }
+      else if (arg.startsWith('--attributes=')) playerParams.attributes = parseArgJson(arg.substring('--attributes='.length));
+      else if (arg.startsWith('--abilities=')) playerParams.abilities = parseArgJson(arg.substring('--abilities='.length));
+      else if (arg.startsWith('--progression=')) playerParams.progression = parseArgJson(arg.substring('--progression='.length));
+      else if (arg.startsWith('--items=')) playerParams.items = parseArgJson(arg.substring('--items='.length));
+      else if (arg.startsWith('--talentPoints=')) playerParams.talentPoints = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--digitalMistrals=')) playerParams.digitalMistrals = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--physicalMistrals=')) playerParams.physicalMistrals = Number(arg.split('=')[1]);
     });
-
-    const res = await createLocation(locParams);
+    const res = await updatePlayer(playerParams);
     console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'update-location') {
-    const locParams = { campaignId: 1 };
+  } else if (command === 'create-letter') {
+    const letterParams = { campaignId: 1 };
     args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) locParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
-      else if (arg.startsWith('--categorySize=')) locParams.categorySize = arg.substring('--categorySize='.length);
-      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--isWorldMap=')) locParams.isWorldMap = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--privateNotes=')) locParams.privateNotes = arg.substring('--privateNotes='.length);
-      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
-      else if (arg.startsWith('--isSecret=')) locParams.isSecret = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--isSecretRevealed=')) locParams.isSecretRevealed = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
-      else if (arg.startsWith('--notableFeatures=')) locParams.notableFeatures = parseArgJson(arg.substring('--notableFeatures='.length));
-      else if (arg.startsWith('--shops=')) locParams.shops = parseArgJson(arg.substring('--shops='.length));
-      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(locParams, parsed);
+      if (arg.startsWith('--campaignId=')) letterParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--subject=')) letterParams.subject = arg.substring('--subject='.length);
+      else if (arg.startsWith('--senderId=')) letterParams.senderId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--senderName=')) letterParams.senderName = arg.substring('--senderName='.length);
+      else if (arg.startsWith('--message=')) letterParams.message = arg.substring('--message='.length);
+      else if (arg.startsWith('--date=')) letterParams.date = arg.substring('--date='.length);
+      else if (arg.startsWith('--readBy=')) {
+        const raw = arg.substring('--readBy='.length);
+        letterParams.readBy = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--recipientIds=')) {
+        const raw = arg.substring('--recipientIds='.length);
+        letterParams.recipientIds = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      }
+      else if (arg.startsWith('--targetNames=')) {
+        letterParams.targetNames = parseArgJson(arg.substring('--targetNames='.length)) || arg.substring('--targetNames='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
     });
-
-    const res = await updateLocation(locParams);
+    const res = await createLetter(letterParams);
     console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'create-shop') {
-    const shopParams = { campaignId: 1 };
+  } else if (command === 'update-letter') {
+    const letterParams = { campaignId: 1 };
     args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--owner=')) shopParams.owner = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--locationId=')) shopParams.locationId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
-      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
-      else if (arg.startsWith('--categories=')) {
-        const raw = arg.substring('--categories='.length);
-        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
+      if (arg.startsWith('--id=')) letterParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--campaignId=')) letterParams.campaignId = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--subject=')) letterParams.subject = arg.substring('--subject='.length);
+      else if (arg.startsWith('--senderId=')) letterParams.senderId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+      else if (arg.startsWith('--senderName=')) letterParams.senderName = arg.substring('--senderName='.length);
+      else if (arg.startsWith('--message=')) letterParams.message = arg.substring('--message='.length);
+      else if (arg.startsWith('--date=')) letterParams.date = arg.substring('--date='.length);
+      else if (arg.startsWith('--readBy=')) {
+        const raw = arg.substring('--readBy='.length);
+        letterParams.readBy = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
       }
-      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
-      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(shopParams, parsed);
+      else if (arg.startsWith('--recipientIds=')) {
+        const raw = arg.substring('--recipientIds='.length);
+        letterParams.recipientIds = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
       }
+      else if (arg.startsWith('--targetNames=')) {
+        letterParams.targetNames = parseArgJson(arg.substring('--targetNames='.length)) || arg.substring('--targetNames='.length).split(',').map(s => s.trim()).filter(Boolean);
+      }
+      else if (arg.startsWith('--isDeleted=')) letterParams.isDeleted = arg.split('=')[1] === 'true';
     });
-
-    const res = await createShop(shopParams);
+    const res = await updateLetter(letterParams);
     console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'update-shop') {
-    const shopParams = { campaignId: 1 };
+  } else if (command === 'create-item') {
+    const itemParams = {};
     args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) shopParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--owner=')) shopParams.owner = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
-      else if (arg.startsWith('--locationId=')) shopParams.locationId = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
-      else if (arg.startsWith('--locationName=')) shopParams.locationName = arg.substring('--locationName='.length);
-      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--description=')) shopParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--discovered=')) shopParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--imgUrl=')) shopParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) shopParams.thumbnail = arg.substring('--thumbnail='.length);
-      else if (arg.startsWith('--categories=')) {
-        const raw = arg.substring('--categories='.length);
-        shopParams.categories = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--paymentMethod=')) shopParams.paymentMethod = parseArgJson(arg.substring('--paymentMethod='.length));
-      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
-      else if (arg.startsWith('--json-file=')) {
-        const fileContent = readFileContentSafe(arg.substring('--json-file='.length));
-        const parsed = parseArgJson(fileContent);
-        if (parsed) Object.assign(shopParams, parsed);
-      }
+      if (arg.startsWith('--name=')) itemParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--price=')) itemParams.price = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--description=')) itemParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--type=')) itemParams.type = arg.substring('--type='.length);
+      else if (arg.startsWith('--subtype=')) itemParams.subtype = arg.substring('--subtype='.length);
+      else if (arg.startsWith('--raceReq=')) itemParams.raceReq = arg.substring('--raceReq='.length);
+      else if (arg.startsWith('--quantity=')) itemParams.quantity = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--isEquippable=')) itemParams.isEquippable = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--statModifications=')) itemParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
     });
-
-    const res = await updateShop(shopParams);
+    const res = await createItem(itemParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-item') {
+    const itemParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) itemParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) itemParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--price=')) itemParams.price = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--description=')) itemParams.description = arg.substring('--description='.length);
+      else if (arg.startsWith('--type=')) itemParams.type = arg.substring('--type='.length);
+      else if (arg.startsWith('--subtype=')) itemParams.subtype = arg.substring('--subtype='.length);
+      else if (arg.startsWith('--raceReq=')) itemParams.raceReq = arg.substring('--raceReq='.length);
+      else if (arg.startsWith('--quantity=')) itemParams.quantity = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--isEquippable=')) itemParams.isEquippable = arg.split('=')[1] === 'true';
+      else if (arg.startsWith('--statModifications=')) itemParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
+    });
+    const res = await updateItem(itemParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-weapon') {
+    const weaponParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--name=')) weaponParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--price=')) weaponParams.price = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--profiles=')) weaponParams.profiles = parseArgJson(arg.substring('--profiles='.length));
+    });
+    const res = await createWeapon(weaponParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-weapon') {
+    const weaponParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) weaponParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) weaponParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--price=')) weaponParams.price = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--profiles=')) weaponParams.profiles = parseArgJson(arg.substring('--profiles='.length));
+    });
+    const res = await updateWeapon(weaponParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-weapon-rule') {
+    const ruleParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--name=')) ruleParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) ruleParams.effect = arg.substring('--effect='.length);
+      else if (arg.startsWith('--prModifier=')) ruleParams.prModifier = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+    });
+    const res = await createWeaponRule(ruleParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-weapon-rule') {
+    const ruleParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) ruleParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) ruleParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) ruleParams.effect = arg.substring('--effect='.length);
+      else if (arg.startsWith('--prModifier=')) ruleParams.prModifier = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
+    });
+    const res = await updateWeaponRule(ruleParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-altered-state') {
+    const stateParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--name=')) stateParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) stateParams.effect = arg.substring('--effect='.length);
+    });
+    const res = await createAlteredState(stateParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-altered-state') {
+    const stateParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) stateParams.id = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--name=')) stateParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) stateParams.effect = arg.substring('--effect='.length);
+    });
+    const res = await updateAlteredState(stateParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-affliction') {
+    const affParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--name=')) affParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) affParams.effect = arg.substring('--effect='.length);
+      else if (arg.startsWith('--treatment=')) affParams.treatment = arg.substring('--treatment='.length);
+      else if (arg.startsWith('--toHeal=')) affParams.toHeal = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--progress=')) affParams.progress = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--statModifications=')) affParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
+    });
+    const res = await createAffliction(affParams);
+    console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'update-affliction') {
+    const affParams = {};
+    args.slice(1).forEach(arg => {
+      if (arg.startsWith('--id=')) affParams.id = arg.split('=')[1];
+      else if (arg.startsWith('--name=')) affParams.name = arg.substring('--name='.length);
+      else if (arg.startsWith('--effect=')) affParams.effect = arg.substring('--effect='.length);
+      else if (arg.startsWith('--treatment=')) affParams.treatment = arg.substring('--treatment='.length);
+      else if (arg.startsWith('--toHeal=')) affParams.toHeal = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--progress=')) affParams.progress = Number(arg.split('=')[1]);
+      else if (arg.startsWith('--statModifications=')) affParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
+    });
+    const res = await updateAffliction(affParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'save') {
     let campaignId = 1;
@@ -2298,22 +2730,7 @@ Entity Updates / Edits:
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--content=')) content = arg.substring('--content='.length);
-      else if (arg.startsWith('--content-file=')) content = readFileContentSafe(arg.substring('--content-file='.length)) || '';
-      else if (arg.startsWith('--file=')) {
-        const raw = readFileContentSafe(arg.substring('--file='.length)) || '';
-        const parsed = parseArgJson(raw);
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.campaignId) campaignId = Number(parsed.campaignId);
-          if (parsed.sessionId) sessionId = Number(parsed.sessionId);
-          if (parsed.content) content = parsed.content;
-          if (parsed.conclussion) conclussion = parsed.conclussion;
-          if (parsed.playerVisibleBranches) playerVisibleBranches = parsed.playerVisibleBranches;
-        } else {
-          content = raw;
-        }
-      }
       else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
-      else if (arg.startsWith('--conclussion-file=')) conclussion = readFileContentSafe(arg.substring('--conclussion-file='.length)) || '';
       else if (arg.startsWith('--playerVisibleBranches=')) {
         playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
@@ -2338,19 +2755,6 @@ Entity Updates / Edits:
       if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
       else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
-      else if (arg.startsWith('--conclussion-file=')) conclussion = readFileContentSafe(arg.substring('--conclussion-file='.length)) || '';
-      else if (arg.startsWith('--file=')) {
-        const raw = readFileContentSafe(arg.substring('--file='.length)) || '';
-        const parsed = parseArgJson(raw);
-        if (parsed && typeof parsed === 'object') {
-          if (parsed.campaignId) campaignId = Number(parsed.campaignId);
-          if (parsed.sessionId) sessionId = Number(parsed.sessionId);
-          if (parsed.conclussion) conclussion = parsed.conclussion;
-          if (parsed.playerVisibleBranches) playerVisibleBranches = parsed.playerVisibleBranches;
-        } else {
-          conclussion = raw;
-        }
-      }
       else if (arg.startsWith('--playerVisibleBranches=')) {
         playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
       }
@@ -2399,9 +2803,20 @@ module.exports = {
   updateLocation,
   createShop,
   updateShop,
+  createLetter,
+  updateLetter,
+  createItem,
+  updateItem,
+  createWeapon,
+  updateWeapon,
+  createWeaponRule,
+  updateWeaponRule,
+  createAlteredState,
+  updateAlteredState,
+  createAffliction,
+  updateAffliction,
   getEntity,
   readEntities,
   deleteEntity,
   main
 };
-

@@ -120,6 +120,36 @@
               <span class="material-icons">pets</span>
               <span>&#64;Creature</span>
             </button>
+            <button type="button" class="tag-btn tag-btn--letter" (click)="openEntityPicker('letter', 'content')"
+              title="Tag a Letter / Message">
+              <span class="material-icons">mail</span>
+              <span>&#64;Letter</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--item" (click)="openEntityPicker('item', 'content')"
+              title="Tag an Item / Equipment">
+              <span class="material-icons">inventory_2</span>
+              <span>&#64;Item</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--weapon" (click)="openEntityPicker('weapon', 'content')"
+              title="Tag a Weapon">
+              <span class="material-icons">gavel</span>
+              <span>&#64;Weapon</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--weaponrule" (click)="openEntityPicker('weaponrule', 'content')"
+              title="Tag a Weapon Special Rule">
+              <span class="material-icons">auto_fix_high</span>
+              <span>&#64;Rule</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--alteredstate" (click)="openEntityPicker('alteredstate', 'content')"
+              title="Tag an Altered State / Status Condition">
+              <span class="material-icons">flash_on</span>
+              <span>&#64;State</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--affliction" (click)="openEntityPicker('affliction', 'content')"
+              title="Tag an Affliction / Injury">
+              <span class="material-icons">healing</span>
+              <span>&#64;Affliction</span>
+            </button>
           </div>
 
           <!-- Snippets Inserter -->
@@ -190,6 +220,36 @@
               (click)="openEntityPicker('bestiary', 'conclussion')">
               <span class="material-icons">pets</span>
               <span>&#64;Creature</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--letter" (click)="openEntityPicker('letter', 'conclussion')"
+              title="Tag a Letter / Message">
+              <span class="material-icons">mail</span>
+              <span>&#64;Letter</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--item" (click)="openEntityPicker('item', 'conclussion')"
+              title="Tag an Item / Equipment">
+              <span class="material-icons">inventory_2</span>
+              <span>&#64;Item</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--weapon" (click)="openEntityPicker('weapon', 'conclussion')"
+              title="Tag a Weapon">
+              <span class="material-icons">gavel</span>
+              <span>&#64;Weapon</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--weaponrule" (click)="openEntityPicker('weaponrule', 'conclussion')"
+              title="Tag a Weapon Special Rule">
+              <span class="material-icons">auto_fix_high</span>
+              <span>&#64;Rule</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--alteredstate" (click)="openEntityPicker('alteredstate', 'conclussion')"
+              title="Tag an Altered State / Status Condition">
+              <span class="material-icons">flash_on</span>
+              <span>&#64;State</span>
+            </button>
+            <button type="button" class="tag-btn tag-btn--affliction" (click)="openEntityPicker('affliction', 'conclussion')"
+              title="Tag an Affliction / Injury">
+              <span class="material-icons">healing</span>
+              <span>&#64;Affliction</span>
             </button>
           </div>
 
@@ -360,6 +420,36 @@
           (click)="pickerEntityType = 'bestiary'">
           <span class="material-icons">pets</span>
           <span>Creature</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'letter'"
+          (click)="pickerEntityType = 'letter'">
+          <span class="material-icons">mail</span>
+          <span>Letter</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'item'"
+          (click)="pickerEntityType = 'item'">
+          <span class="material-icons">inventory_2</span>
+          <span>Item</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'weapon'"
+          (click)="pickerEntityType = 'weapon'">
+          <span class="material-icons">gavel</span>
+          <span>Weapon</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'weaponrule'"
+          (click)="pickerEntityType = 'weaponrule'">
+          <span class="material-icons">auto_fix_high</span>
+          <span>Rule</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'alteredstate'"
+          (click)="pickerEntityType = 'alteredstate'">
+          <span class="material-icons">flash_on</span>
+          <span>State</span>
+        </button>
+        <button type="button" class="picker-tab-btn" [class.active]="pickerEntityType === 'affliction'"
+          (click)="pickerEntityType = 'affliction'">
+          <span class="material-icons">healing</span>
+          <span>Affliction</span>
         </button>
       </div>
 

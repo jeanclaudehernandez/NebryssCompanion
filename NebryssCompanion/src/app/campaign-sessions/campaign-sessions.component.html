@@ -19,10 +19,28 @@
 
 
 
+  <!-- Sessions Toolbar & Sort Controls -->
+  <div class="sessions-toolbar" *ngIf="!isLoading && hasSessions">
+    <div class="sessions-count-label">
+      <span class="material-icons sessions-count-icon">menu_book</span>
+      <span>{{ parsedSessions.length }} {{ parsedSessions.length === 1 ? 'Session' : 'Sessions' }}</span>
+    </div>
+
+    <div class="sessions-controls">
+      <button type="button" class="sessions-ctrl-btn sessions-sort-btn" (click)="toggleSortDirection()"
+        [attr.aria-label]="'Sort order: ' + (sortDirection === 'asc' ? 'Ascending (Oldest First)' : 'Descending (Newest First)')"
+        [title]="'Switch to ' + (sortDirection === 'asc' ? 'Newest first (Descending)' : 'Oldest first (Ascending)')">
+        <span class="material-icons">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</span>
+        <span>{{ sortDirection === 'asc' ? 'Oldest First' : 'Newest First' }}</span>
+      </button>
+    </div>
+  </div>
+
   <!-- Session Cards -->
   <div class="sessions-list" *ngIf="!isLoading && hasSessions">
     <div *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId" class="session-card"
-      [class.session-card--expanded]="entry.expanded" [class.session-card--draft]="!entry.isConcluded">
+      [class.session-card--expanded]="entry.expanded" [class.session-card--draft]="!entry.isConcluded"
+      [class.session-card--latest]="entry.isLatest">
       <!-- Session Header -->
       <button type="button" class="session-card-header" (click)="toggleSession(i)" [attr.aria-expanded]="entry.expanded"
         [attr.aria-label]="'Toggle Session ' + entry.session.sessionId">
@@ -33,6 +51,9 @@
               <span class="session-title-parsed" [innerHTML]="entry.titleHtml"></span>
             </h3>
             <div class="session-header-badges">
+              <span class="session-badge session-badge--latest" *ngIf="entry.isLatest" title="Most recent chronicle">
+                <span class="material-icons">auto_awesome</span> Latest
+              </span>
               <span class="session-badge session-badge--draft" *ngIf="!entry.isConcluded && isAdmin">
                 <span class="material-icons">edit_note</span> Draft — GM Only
               </span>

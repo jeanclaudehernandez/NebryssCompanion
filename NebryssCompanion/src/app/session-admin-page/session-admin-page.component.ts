@@ -29,11 +29,17 @@ import {
   NPC,
   Location,
   Shop,
-  BestiaryEntry
+  BestiaryEntry,
+  Letter,
+  Item,
+  Weapon,
+  WeaponRule,
+  AlteredState,
+  Affliction
 } from '../model';
 import { AppView } from '../app-view.types';
 
-export type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary';
+export type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary' | 'letter' | 'item' | 'weapon' | 'weaponrule' | 'weaponRule' | 'alteredstate' | 'alteredState' | 'affliction';
 
 interface EntityLookup {
   players: Player[];
@@ -41,14 +47,28 @@ interface EntityLookup {
   locations: Location[];
   shops: Shop[];
   bestiary: BestiaryEntry[];
+  letters: Letter[];
+  items: Item[];
+  weapons: Weapon[];
+  weaponRules: WeaponRule[];
+  alteredStates: AlteredState[];
+  afflictions: Affliction[];
 }
 
-const ENTITY_CONFIG: Record<EntityType, { icon: string; cssClass: string; label: string }> = {
+const ENTITY_CONFIG: Record<string, { icon: string; cssClass: string; label: string }> = {
   player: { icon: 'person', cssClass: 'entity-chip--player', label: 'Player' },
   npc: { icon: 'badge', cssClass: 'entity-chip--npc', label: 'NPC' },
   location: { icon: 'place', cssClass: 'entity-chip--location', label: 'Location' },
   shop: { icon: 'storefront', cssClass: 'entity-chip--shop', label: 'Shop' },
-  bestiary: { icon: 'pets', cssClass: 'entity-chip--bestiary', label: 'Creature' }
+  bestiary: { icon: 'pets', cssClass: 'entity-chip--bestiary', label: 'Creature' },
+  letter: { icon: 'mail', cssClass: 'entity-chip--letter', label: 'Letter' },
+  item: { icon: 'inventory_2', cssClass: 'entity-chip--item', label: 'Item' },
+  weapon: { icon: 'gavel', cssClass: 'entity-chip--weapon', label: 'Weapon' },
+  weaponrule: { icon: 'auto_fix_high', cssClass: 'entity-chip--weaponrule', label: 'Weapon Rule' },
+  weaponRule: { icon: 'auto_fix_high', cssClass: 'entity-chip--weaponrule', label: 'Weapon Rule' },
+  alteredstate: { icon: 'flash_on', cssClass: 'entity-chip--alteredstate', label: 'Altered State' },
+  alteredState: { icon: 'flash_on', cssClass: 'entity-chip--alteredstate', label: 'Altered State' },
+  affliction: { icon: 'healing', cssClass: 'entity-chip--affliction', label: 'Affliction' }
 };
 
 @Component({
@@ -111,7 +131,13 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
     npcs: [],
     locations: [],
     shops: [],
-    bestiary: []
+    bestiary: [],
+    letters: [],
+    items: [],
+    weapons: [],
+    weaponRules: [],
+    alteredStates: [],
+    afflictions: []
   };
 
   get isEditing(): boolean {
@@ -233,11 +259,17 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
       npcs: this.dataService.getNpcs(),
       locations: this.dataService.getLocations(),
       shops: this.dataService.getShops(),
-      bestiary: this.dataService.getBestiary()
+      bestiary: this.dataService.getBestiary(),
+      letters: this.dataService.getLetters(),
+      items: this.dataService.getItems(),
+      weapons: this.dataService.getWeapons(),
+      weaponRules: this.dataService.getWeaponRules(),
+      alteredStates: this.dataService.getAlteredStates(),
+      afflictions: this.dataService.getAfflictions()
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ sessions, campaigns, players, npcs, locations, shops, bestiary }) => {
+        next: ({ sessions, campaigns, players, npcs, locations, shops, bestiary, letters, items, weapons, weaponRules, alteredStates, afflictions }) => {
           this.sessions = sessions || [];
           this.campaigns = campaigns || [];
           this.lookup = {
@@ -245,7 +277,13 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
             npcs: npcs || [],
             locations: (locations as any)?.locations ?? locations ?? [],
             shops: shops || [],
-            bestiary: bestiary || []
+            bestiary: bestiary || [],
+            letters: letters || [],
+            items: Array.isArray(items) ? items : (items?.items || []),
+            weapons: weapons || [],
+            weaponRules: weaponRules || [],
+            alteredStates: alteredStates || [],
+            afflictions: afflictions || []
           };
 
           const activeCampaign = this.campaignService.getSelectedCampaign();
@@ -392,8 +430,9 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
 
   get entityPickerList(): { id: number; name: string; subtitle?: string }[] {
     const term = this.pickerSearchTerm.toLowerCase().trim();
+    const normType = String(this.pickerEntityType).toLowerCase();
 
-    switch (this.pickerEntityType) {
+    switch (normType) {
       case 'player':
         return this.lookup.players
           .filter(p => !term || p.name.toLowerCase().includes(term) || (p.race && p.race.toLowerCase().includes(term)) || (p.origin && p.origin.toLowerCase().includes(term)))
@@ -414,6 +453,32 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
         return this.lookup.bestiary
           .filter(b => !term || b.name.toLowerCase().includes(term) || (b.faction && b.faction.toLowerCase().includes(term)) || (b.subgroup && b.subgroup.toLowerCase().includes(term)))
           .map(b => ({ id: b.id, name: b.name, subtitle: `${b.faction || 'Creature'}${b.subgroup ? ' • ' + b.subgroup : ''} (PR ${b.pr})` }));
+      case 'letter':
+        return this.lookup.letters
+          .filter(l => !term || ((l.subject || '').toLowerCase().includes(term)) || ((l.senderName || '').toLowerCase().includes(term)))
+          .map(l => ({ id: l.id, name: l.subject || `Letter #${l.id}`, subtitle: l.senderName ? `From: ${l.senderName} (${l.date})` : `Date: ${l.date}` }));
+      case 'item':
+        return this.lookup.items
+          .filter(i => !term || ((i.name || '').toLowerCase().includes(term)) || ((i.type || '').toLowerCase().includes(term)))
+          .map(i => ({ id: i.id ?? 0, name: i.name || 'Item', subtitle: `${i.type || 'item'} • ${i.price || 0} Mistrals` }));
+      case 'weapon':
+        return this.lookup.weapons
+          .filter(w => !term || ((w.name || '').toLowerCase().includes(term)))
+          .map(w => ({ id: w.id ?? 0, name: w.name || 'Weapon', subtitle: `${w.price || 0} Mistrals` }));
+      case 'weaponrule':
+        return this.lookup.weaponRules
+          .filter(r => !term || ((r.name || '').toLowerCase().includes(term)) || ((r.effect || '').toLowerCase().includes(term)))
+          .map(r => ({ id: r.id ?? 0, name: r.name || 'Rule', subtitle: r.effect || '' }));
+      case 'alteredstate':
+        return this.lookup.alteredStates
+          .filter(s => !term || ((s.name || '').toLowerCase().includes(term)) || ((s.effect || '').toLowerCase().includes(term)))
+          .map(s => ({ id: s.id ?? 0, name: s.name || 'State', subtitle: s.effect || '' }));
+      case 'affliction':
+        return this.lookup.afflictions
+          .filter(a => !term || ((a.name || '').toLowerCase().includes(term)) || ((a.effect || '').toLowerCase().includes(term)))
+          .map(a => ({ id: Number(a.id) || 0, name: a.name || 'Affliction', subtitle: a.effect || a.treatment || '' }));
+      default:
+        return [];
     }
   }
 
@@ -854,12 +919,13 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
     // Italic (*text*)
     escaped = escaped.replace(/(^|[^*])\*([^*]+)\*([^*]|$)/g, '$1<em class="narrative-italic">$2</em>$3');
 
-    // Entity Chips: @(player|npc|location|shop|bestiary)[tagContent]
+    // Entity Chips: @(player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)[tagContent]
     escaped = escaped.replace(
-      /@(player|npc|location|shop|bestiary)\[([^\]]+)\]/g,
-      (_match, type: EntityType, tagContent: string) => {
+      /@(player|npc|location|shop|bestiary|letter|item|weapon|weaponrule|weaponRule|alteredstate|alteredState|affliction)\[([^\]]+)\]/gi,
+      (_match, rawType: string, tagContent: string) => {
+        const type = (rawType.toLowerCase() === 'weaponrules' ? 'weaponrule' : (rawType.toLowerCase() === 'alteredstates' ? 'alteredstate' : rawType.toLowerCase())) as EntityType;
         const { id, name } = this.resolveEntity(type, tagContent.trim());
-        const config = ENTITY_CONFIG[type];
+        const config = ENTITY_CONFIG[type] || { icon: 'bookmark', cssClass: 'entity-chip--item', label: 'Entity' };
 
         return `<span class="entity-chip ${config.cssClass}" title="${config.label}: ${name} (ID: ${id})">${name}</span>`;
       }
@@ -887,7 +953,9 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
       }
     }
 
-    switch (type) {
+    const normType = String(type).toLowerCase();
+
+    switch (normType) {
       case 'player': {
         const player = rawId !== null
           ? this.lookup.players.find(p => p.id === rawId)
@@ -917,6 +985,42 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
           ? this.lookup.bestiary.find(b => b.id === rawId)
           : this.lookup.bestiary.find(b => b.name.toLowerCase() === (labelHint || '').toLowerCase());
         return { id: creature?.id ?? rawId ?? 0, name: creature?.name ?? labelHint ?? `Creature #${rawId ?? tagContent}` };
+      }
+      case 'letter': {
+        const letter = rawId !== null
+          ? this.lookup.letters.find(l => l.id === rawId)
+          : this.lookup.letters.find(l => (l.subject || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: letter?.id ?? rawId ?? 0, name: letter?.subject ?? labelHint ?? `Letter #${rawId ?? tagContent}` };
+      }
+      case 'item': {
+        const item = rawId !== null
+          ? this.lookup.items.find(i => i.id === rawId)
+          : this.lookup.items.find(i => (i.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: item?.id ?? rawId ?? 0, name: item?.name ?? labelHint ?? `Item #${rawId ?? tagContent}` };
+      }
+      case 'weapon': {
+        const weapon = rawId !== null
+          ? this.lookup.weapons.find(w => w.id === rawId)
+          : this.lookup.weapons.find(w => (w.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: weapon?.id ?? rawId ?? 0, name: weapon?.name ?? labelHint ?? `Weapon #${rawId ?? tagContent}` };
+      }
+      case 'weaponrule': {
+        const rule = rawId !== null
+          ? this.lookup.weaponRules.find(r => r.id === rawId)
+          : this.lookup.weaponRules.find(r => (r.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: rule?.id ?? rawId ?? 0, name: rule?.name ?? labelHint ?? `Rule #${rawId ?? tagContent}` };
+      }
+      case 'alteredstate': {
+        const state = rawId !== null
+          ? this.lookup.alteredStates.find(s => s.id === rawId)
+          : this.lookup.alteredStates.find(s => (s.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: state?.id ?? rawId ?? 0, name: state?.name ?? labelHint ?? `State #${rawId ?? tagContent}` };
+      }
+      case 'affliction': {
+        const aff = rawId !== null
+          ? this.lookup.afflictions.find(a => String(a.id) === String(rawId))
+          : this.lookup.afflictions.find(a => (a.name || '').toLowerCase() === (labelHint || '').toLowerCase());
+        return { id: aff ? Number(aff.id) : (rawId ?? 0), name: aff?.name ?? labelHint ?? `Affliction #${rawId ?? tagContent}` };
       }
       default:
         return { id: rawId ?? 0, name: labelHint ?? tagContent };

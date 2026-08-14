@@ -108,7 +108,30 @@
   line-height: 1.6;
 }
 
-/* --- Expand/Collapse Controls --- */
+/* --- Toolbar & Controls --- */
+.sessions-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px 2px 4px;
+  gap: 12px;
+}
+
+.sessions-count-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #a3a3a3;
+  letter-spacing: 0.02em;
+}
+
+.sessions-count-icon {
+  font-size: 18px;
+  color: #c9a84c;
+}
+
 .sessions-controls {
   display: flex;
   align-items: center;
@@ -119,16 +142,18 @@
 .sessions-ctrl-btn {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   padding: 6px 14px;
   border: 1px solid rgba(201, 168, 76, 0.25);
   border-radius: 8px;
   background: rgba(201, 168, 76, 0.08);
   color: #c9a84c;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .sessions-ctrl-btn .material-icons {
@@ -139,6 +164,10 @@
   background: rgba(201, 168, 76, 0.18);
   border-color: rgba(201, 168, 76, 0.45);
   transform: translateY(-1px);
+}
+
+.sessions-ctrl-btn:active {
+  transform: translateY(0);
 }
 
 /* --- Session Cards --- */
@@ -169,6 +198,22 @@
 
 .session-card--draft {
   border-style: dashed;
+}
+
+.session-card--latest {
+  border-color: rgba(201, 168, 76, 0.45);
+  box-shadow: 0 0 20px rgba(201, 168, 76, 0.12);
+  position: relative;
+}
+
+.session-card--latest:hover {
+  border-color: rgba(201, 168, 76, 0.65);
+  box-shadow: 0 0 26px rgba(201, 168, 76, 0.22);
+}
+
+.session-card--latest.session-card--expanded {
+  border-color: rgba(201, 168, 76, 0.7);
+  box-shadow: 0 6px 30px rgba(201, 168, 76, 0.2);
 }
 
 /* --- Card Header --- */
@@ -267,6 +312,31 @@
 
 .session-badge .material-icons {
   font-size: 14px;
+}
+
+.session-badge--latest {
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.25) 0%, rgba(245, 158, 11, 0.22) 100%);
+  color: #fcd34d;
+  border: 1px solid rgba(245, 158, 11, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+  font-weight: 700;
+}
+
+.session-badge--latest .material-icons {
+  color: #fbbf24;
+  font-size: 13px;
+  animation: sessionStarPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes sessionStarPulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
 }
 
 .session-badge--concluded {
@@ -578,6 +648,27 @@
   border-color: rgba(100, 116, 139, 0.25);
 }
 
+:host-context(body:not(.dark-theme)) .sessions-count-label {
+  color: #6b7280;
+}
+
+:host-context(body:not(.dark-theme)) .session-card--latest {
+  border-color: rgba(180, 130, 20, 0.45);
+  box-shadow: 0 4px 18px rgba(180, 130, 20, 0.12);
+}
+
+:host-context(body:not(.dark-theme)) .session-card--latest:hover {
+  border-color: rgba(180, 130, 20, 0.65);
+  box-shadow: 0 6px 22px rgba(180, 130, 20, 0.18);
+}
+
+:host-context(body:not(.dark-theme)) .session-badge--latest {
+  background: rgba(245, 158, 11, 0.12);
+  color: #b45309;
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.15);
+}
+
 /* ===================================================================
    Mobile Responsive
    =================================================================== */
@@ -585,6 +676,16 @@
 @media (max-width: 768px) {
   .sessions-page {
     gap: 14px;
+  }
+
+  .sessions-toolbar {
+    padding: 0 2px 2px 2px;
+  }
+
+  .sessions-ctrl-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+    min-height: 38px;
   }
 
   .sessions-title {
@@ -619,10 +720,6 @@
     line-height: 1.7;
   }
 
-  :host ::ng-deep .entity-chip {
-    font-size: 0.78rem;
-    padding: 2px 8px 2px 5px;
-  }
 
   :host ::ng-deep .entity-chip-name {
     max-width: 150px;

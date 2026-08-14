@@ -3220,6 +3220,18 @@ body.skin-karumnekia .items-tab-bar {
 .entity-chip--shop:hover { color: #93c5fd; text-shadow: 0 0 8px rgba(96, 165, 250, 0.4); }
 .entity-chip--bestiary { color: #f87171; }
 .entity-chip--bestiary:hover { color: #fca5a5; text-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
+.entity-chip--letter { color: #38bdf8; }
+.entity-chip--letter:hover { color: #7dd3fc; text-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
+.entity-chip--item { color: #a78bfa; }
+.entity-chip--item:hover { color: #c4b5fd; text-shadow: 0 0 8px rgba(167, 139, 250, 0.4); }
+.entity-chip--weapon { color: #fb923c; }
+.entity-chip--weapon:hover { color: #fdba74; text-shadow: 0 0 8px rgba(251, 146, 60, 0.4); }
+.entity-chip--weaponrule { color: #facc15; }
+.entity-chip--weaponrule:hover { color: #fde047; text-shadow: 0 0 8px rgba(250, 204, 21, 0.4); }
+.entity-chip--alteredstate { color: #f472b6; }
+.entity-chip--alteredstate:hover { color: #f9a8d4; text-shadow: 0 0 8px rgba(244, 114, 182, 0.4); }
+.entity-chip--affliction { color: #f87171; }
+.entity-chip--affliction:hover { color: #fca5a5; text-shadow: 0 0 8px rgba(248, 113, 113, 0.4); }
 
 /* --- Light Theme Overrides for Entity Chips --- */
 body:not(.dark-theme) .entity-chip--player { color: #7c3aed; }
@@ -3227,6 +3239,12 @@ body:not(.dark-theme) .entity-chip--npc { color: #d97706; }
 body:not(.dark-theme) .entity-chip--location { color: #059669; }
 body:not(.dark-theme) .entity-chip--shop { color: #2563eb; }
 body:not(.dark-theme) .entity-chip--bestiary { color: #dc2626; }
+body:not(.dark-theme) .entity-chip--letter { color: #0284c7; }
+body:not(.dark-theme) .entity-chip--item { color: #7c3aed; }
+body:not(.dark-theme) .entity-chip--weapon { color: #c2410c; }
+body:not(.dark-theme) .entity-chip--weaponrule { color: #ca8a04; }
+body:not(.dark-theme) .entity-chip--alteredstate { color: #db2777; }
+body:not(.dark-theme) .entity-chip--affliction { color: #dc2626; }
 
 /* --- Light Theme Overrides for Narrative Elements --- */
 body:not(.dark-theme) .narrative-h2 { color: #1e293b; }
