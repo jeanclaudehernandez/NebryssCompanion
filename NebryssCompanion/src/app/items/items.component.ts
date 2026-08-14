@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChild, TemplateRef, Output, EventEmitter, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, TemplateRef, Output, EventEmitter, ElementRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DataService } from '../data.service';
@@ -178,7 +178,9 @@ interface ItemsTab {
   `,
   styleUrls: ['./items.component.css']
 })
-export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
+  @Input() initialSearchQuery: string | null = null;
+  @Input() initialItemName: string | null = null;
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
 
   itemsData!: Items; // Use Items interface
@@ -353,6 +355,22 @@ export class ItemsComponent implements OnInit, AfterViewInit, OnDestroy {
 
       this.refreshCategoryData();
     });
+
+    if (this.initialSearchQuery || this.initialItemName) {
+      this.searchQuery = (this.initialSearchQuery || this.initialItemName || '').trim();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialSearchQuery'] || changes['initialItemName']) {
+      const newQuery = (this.initialSearchQuery || this.initialItemName || '').trim();
+      if (newQuery !== this.searchQuery) {
+        this.searchQuery = newQuery;
+        if (this.weaponsData.length > 0 || (this.itemsData && (this.itemsData as any).items)) {
+          this.refreshCategoryData();
+        }
+      }
+    }
   }
 
   toggleWeaponsCollapsed() {

@@ -1,6 +1,6 @@
 <div class="player-detail-container" style="max-width: 1000px; margin: 20px auto;">
-  <p *ngIf="!activePlayer">Select an active player to view their letters and recovered documents.</p>
-  <p *ngIf="activePlayer && !visibleLetters.length">No letters or documents are available for {{ activePlayer.name }}.</p>
+  <p *ngIf="!activePlayer && !isAdmin">Select an active player to view their letters and recovered documents.</p>
+  <p *ngIf="(activePlayer || isAdmin) && !visibleLetters.length">No letters or documents are available{{ activePlayer ? ' for ' + activePlayer.name : '' }}.</p>
 
   <div
     *ngFor="let letter of visibleLetters; trackBy: trackByLetterId"

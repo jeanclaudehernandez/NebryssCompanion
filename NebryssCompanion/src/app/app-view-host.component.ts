@@ -35,6 +35,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() selectedNpcName: string | null = null;
   @Input() selectedShopName: string | null = null;
   @Input() selectedBestiaryId: number | null = null;
+  @Input() selectedItemName: string | null = null;
+  @Input() selectedLetterId: number | null = null;
+  @Input() selectedLetterSubject: string | null = null;
   @Input() adminEditSession: AdminEditorSession | null = null;
   @Input() adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
 
@@ -46,6 +49,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() navigateToShop = new EventEmitter<{ shopId?: number; shopName?: string }>();
   @Output() navigateToNpc = new EventEmitter<{ npcId?: number; npcName?: string }>();
   @Output() navigateToBestiary = new EventEmitter<number>();
+  @Output() navigateToItem = new EventEmitter<{ itemId?: number; itemName?: string }>();
+  @Output() navigateToLetter = new EventEmitter<{ letterId?: number; letterSubject?: string }>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
   @Output() pinSelected = new EventEmitter<string | null>();
   @Output() locationSelected = new EventEmitter<string | null>();
@@ -189,6 +194,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToLocation', target => this.navigateToLocation.emit(target));
         subscribeToOutput('navigateToShop', target => this.navigateToShop.emit(target));
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
+        subscribeToOutput('navigateToItem', target => this.navigateToItem.emit(target));
+        subscribeToOutput('navigateToLetter', target => this.navigateToLetter.emit(target));
         break;
       case 'aiSessionManager':
         subscribeToOutput('viewChange', view => this.viewChange.emit(view));
@@ -220,6 +227,14 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     switch (this.view) {
       case 'bestiary':
         this.componentRef.setInput('initialBestiaryId', this.selectedBestiaryId);
+        break;
+      case 'items':
+        this.componentRef.setInput('initialItemName', this.selectedItemName);
+        this.componentRef.setInput('initialSearchQuery', this.selectedItemName);
+        break;
+      case 'letters':
+        this.componentRef.setInput('initialLetterId', this.selectedLetterId);
+        this.componentRef.setInput('initialLetterSubject', this.selectedLetterSubject);
         break;
       case 'lore':
         this.componentRef.setInput('initialFactionName', this.selectedFactionName);

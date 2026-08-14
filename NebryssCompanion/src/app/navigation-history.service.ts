@@ -15,6 +15,9 @@ export interface AppNavigationSelectionState {
   selectedNpcName: string | null;
   selectedShopName: string | null;
   selectedBestiaryId: number | null;
+  selectedItemName: string | null;
+  selectedLetterId: number | null;
+  selectedLetterSubject: string | null;
   adminEditSession: AdminEditorSession | null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null;
 }
@@ -191,6 +194,9 @@ export class NavigationHistoryService {
       a.selectedNpcName === b.selectedNpcName &&
       a.selectedShopName === b.selectedShopName &&
       a.selectedBestiaryId === b.selectedBestiaryId &&
+      a.selectedItemName === b.selectedItemName &&
+      a.selectedLetterId === b.selectedLetterId &&
+      a.selectedLetterSubject === b.selectedLetterSubject &&
       this.areAdminSessionsEqual(a.adminEditSession, b.adminEditSession) &&
       a.adminLocationDraft?.mapX === b.adminLocationDraft?.mapX &&
       a.adminLocationDraft?.mapY === b.adminLocationDraft?.mapY &&

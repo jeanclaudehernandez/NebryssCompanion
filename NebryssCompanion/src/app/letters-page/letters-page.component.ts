@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, DestroyRef, OnInit, TemplateRef, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { ActivePlayerService } from '../active-player.service';
+import { AdminService } from '../admin.service';
 import { DataService } from '../data.service';
 import { ModalService } from '../modal.service';
 import { Letter, NPC, Player } from '../model';
@@ -13,12 +14,17 @@ import { Letter, NPC, Player } from '../model';
   imports: [CommonModule],
   templateUrl: './letters-page.component.html'
 })
-export class LettersPageComponent implements OnInit {
+export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges {
+  @Input() initialLetterId: number | null = null;
+  @Input() initialLetterSubject: string | null = null;
   @ViewChild('letterModal') letterModal!: TemplateRef<any>;
 
   private readonly destroyRef = inject(DestroyRef);
+  private isViewInitialized = false;
+  private openedLetterId: number | null = null;
 
   activePlayer: Player | null = null;
+  isAdmin = false;
   players: Player[] = [];
   npcs: NPC[] = [];
   allLetters: Letter[] = [];
@@ -27,11 +33,19 @@ export class LettersPageComponent implements OnInit {
 
   constructor(
     private readonly activePlayerService: ActivePlayerService,
+    private readonly adminService: AdminService,
     private readonly dataService: DataService,
     public readonly modalService: ModalService
   ) {}
 
   ngOnInit(): void {
+    this.adminService.isAdmin$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(isAdmin => {
+        this.isAdmin = isAdmin;
+        this.updateVisibleLetters();
+      });
+
     this.activePlayerService.activePlayer$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(player => {
@@ -46,6 +60,7 @@ export class LettersPageComponent implements OnInit {
         this.allLetters = letters;
         this.updateVisibleLetters();
         this.syncSelectedLetter();
+        this.checkAndOpenInitialLetter();
       });
 
     forkJoin({
@@ -59,7 +74,45 @@ export class LettersPageComponent implements OnInit {
         this.npcs = npcs;
         this.allLetters = letters;
         this.updateVisibleLetters();
+        this.checkAndOpenInitialLetter();
       });
+  }
+
+  ngAfterViewInit(): void {
+    this.isViewInitialized = true;
+    this.checkAndOpenInitialLetter();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialLetterId'] || changes['initialLetterSubject']) {
+      if (this.initialLetterId !== this.openedLetterId) {
+        this.openedLetterId = null;
+        this.checkAndOpenInitialLetter();
+      }
+    }
+  }
+
+  private checkAndOpenInitialLetter(): void {
+    if (!this.isViewInitialized || !this.letterModal || !this.allLetters.length) {
+      return;
+    }
+
+    const targetId = this.initialLetterId;
+    const targetSubject = (this.initialLetterSubject || '').trim().toLowerCase();
+
+    if (!targetId && !targetSubject) {
+      return;
+    }
+
+    const targetLetter = (targetId ? this.allLetters.find(l => l.id === targetId) : null)
+      || (targetSubject ? this.allLetters.find(l => (l.subject || '').toLowerCase() === targetSubject) : null);
+
+    if (targetLetter && this.openedLetterId !== targetLetter.id) {
+      this.openedLetterId = targetLetter.id;
+      setTimeout(() => {
+        this.openLetter(targetLetter);
+      }, 50);
+    }
   }
 
   openLetter(letter: Letter): void {
@@ -132,13 +185,20 @@ export class LettersPageComponent implements OnInit {
   }
 
   private updateVisibleLetters(): void {
+    if (this.isAdmin) {
+      this.visibleLetters = [...this.allLetters]
+        .filter(letter => !letter.isDeleted)
+        .sort((left, right) => this.getSortTimestamp(right.date) - this.getSortTimestamp(left.date));
+      return;
+    }
+
     if (!this.activePlayer) {
       this.visibleLetters = [];
       return;
     }
 
     this.visibleLetters = [...this.allLetters]
-      .filter(letter => letter.recipientIds.includes(this.activePlayer!.id))
+      .filter(letter => !letter.isDeleted && letter.recipientIds.includes(this.activePlayer!.id))
       .sort((left, right) => this.getSortTimestamp(right.date) - this.getSortTimestamp(left.date));
   }
 

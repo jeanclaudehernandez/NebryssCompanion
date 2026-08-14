@@ -95,6 +95,8 @@ export class CampaignSessionsComponent implements OnInit {
   @Output() navigateToLocation = new EventEmitter<{ locationName: string; backTarget: string | null }>();
   @Output() navigateToShop = new EventEmitter<{ shopName?: string }>();
   @Output() navigateToBestiary = new EventEmitter<number>();
+  @Output() navigateToItem = new EventEmitter<{ itemName?: string; itemId?: number }>();
+  @Output() navigateToLetter = new EventEmitter<{ letterId?: number; letterSubject?: string }>();
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -1070,14 +1072,29 @@ export class CampaignSessionsComponent implements OnInit {
         break;
       }
       case 'letter': {
-        this.viewChange.emit('letters');
+        const letter = (id > 0 ? this.lookup.letters.find(l => l.id === id) : null)
+          || (nameHint ? this.lookup.letters.find(l => (l.subject || '').toLowerCase() === nameHint.toLowerCase()) : null);
+        const resolvedId = letter?.id ?? id;
+        const resolvedSubject = letter?.subject ?? nameHint;
+        this.navigateToLetter.emit({ letterId: resolvedId, letterSubject: resolvedSubject });
         break;
       }
       case 'item': {
-        this.viewChange.emit('items');
+        const item = (id > 0 ? this.lookup.items.find(i => i.id === id) : null)
+          || (nameHint ? this.lookup.items.find(i => (i.name || '').toLowerCase() === nameHint.toLowerCase()) : null);
+        const resolvedName = item?.name ?? nameHint;
+        const resolvedId = item?.id ?? id;
+        this.navigateToItem.emit({ itemName: resolvedName, itemId: resolvedId });
         break;
       }
-      case 'weapon':
+      case 'weapon': {
+        const weapon = (id > 0 ? this.lookup.weapons.find(w => w.id === id) : null)
+          || (nameHint ? this.lookup.weapons.find(w => (w.name || '').toLowerCase() === nameHint.toLowerCase()) : null);
+        const resolvedName = weapon?.name ?? nameHint;
+        const resolvedId = weapon?.id ?? id;
+        this.navigateToItem.emit({ itemName: resolvedName, itemId: resolvedId });
+        break;
+      }
       case 'weaponrule': {
         this.viewChange.emit('weaponRules');
         break;

@@ -113,6 +113,9 @@ import { AuthService } from './auth.service';
         [selectedNpcName]="selectedNpcName"
         [selectedShopName]="selectedShopName"
         [selectedBestiaryId]="selectedBestiaryId"
+        [selectedItemName]="selectedItemName"
+        [selectedLetterId]="selectedLetterId"
+        [selectedLetterSubject]="selectedLetterSubject"
         [adminEditSession]="adminEditSession"
         [adminLocationDraft]="adminLocationDraft"
         (viewChange)="onViewChange($event)"
@@ -123,6 +126,8 @@ import { AuthService } from './auth.service';
         (navigateToShop)="onNavigateToShop($event)"
         (navigateToNpc)="onNavigateToNpc($event)"
         (navigateToBestiary)="onNavigateToBestiary($event)"
+        (navigateToItem)="onNavigateToItem($event)"
+        (navigateToLetter)="onNavigateToLetter($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
         (pinSelected)="onPinSelected($event)"
         (locationSelected)="onLocationSelected($event)"
@@ -242,6 +247,9 @@ export class AppComponent {
   selectedNpcName: string | null = null;
   selectedShopName: string | null = null;
   selectedBestiaryId: number | null = null;
+  selectedItemName: string | null = null;
+  selectedLetterId: number | null = null;
+  selectedLetterSubject: string | null = null;
   adminEditSession: AdminEditorSession | null = null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
@@ -662,6 +670,9 @@ export class AppComponent {
       selectedNpcName: this.selectedNpcName,
       selectedShopName: this.selectedShopName,
       selectedBestiaryId: this.selectedBestiaryId,
+      selectedItemName: this.selectedItemName,
+      selectedLetterId: this.selectedLetterId,
+      selectedLetterSubject: this.selectedLetterSubject,
       adminEditSession: this.adminEditSession,
       adminLocationDraft: this.adminLocationDraft
     };
@@ -678,6 +689,9 @@ export class AppComponent {
     this.selectedNpcName = state.selectedNpcName;
     this.selectedShopName = state.selectedShopName;
     this.selectedBestiaryId = state.selectedBestiaryId;
+    this.selectedItemName = state.selectedItemName;
+    this.selectedLetterId = state.selectedLetterId;
+    this.selectedLetterSubject = state.selectedLetterSubject;
     this.adminEditSession = state.adminEditSession;
     this.adminLocationDraft = state.adminLocationDraft;
     localStorage.setItem('lastView', state.view);
@@ -746,6 +760,9 @@ export class AppComponent {
     this.selectedNpcName = null;
     this.selectedShopName = null;
     this.selectedBestiaryId = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     if (view !== 'adminLocationCreator') {
       this.adminLocationDraft = null;
     }
@@ -776,6 +793,9 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', this.currentView);
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
@@ -794,6 +814,9 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', 'adminLocationCreator');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
@@ -805,6 +828,9 @@ export class AppComponent {
     this.currentView = 'locations';
     this.selectedWorldMapLocationName = null;
     this.adminLocationDraft = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', 'locations');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
@@ -818,6 +844,9 @@ export class AppComponent {
     this.selectedFactionName = null;
     this.selectedRuleName = null;
     this.selectedStateName = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'worldMap');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
@@ -828,6 +857,9 @@ export class AppComponent {
     this.selectedFactionName = factionName;
     this.currentView = 'lore';
     this.selectedWorldMapLocationName = null;
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     this.adminLocationDraft = null;
     localStorage.setItem('lastView', 'lore');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
@@ -838,6 +870,9 @@ export class AppComponent {
     const shopName = typeof target === 'string' ? target : target.shopName || null;
     this.selectedShopName = shopName;
     this.currentView = 'shops';
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', 'shops');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
@@ -847,6 +882,9 @@ export class AppComponent {
     const npcName = typeof target === 'string' ? target : target.npcName || null;
     this.selectedNpcName = npcName;
     this.currentView = 'npcs';
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', 'npcs');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
@@ -855,7 +893,53 @@ export class AppComponent {
   onNavigateToBestiary(bestiaryId: number) {
     this.selectedBestiaryId = bestiaryId;
     this.currentView = 'bestiary';
+    this.selectedItemName = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
     localStorage.setItem('lastView', 'bestiary');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToItem(target: { itemId?: number; itemName?: string } | string) {
+    const itemName = typeof target === 'string' ? target : target.itemName || null;
+    this.selectedItemName = itemName;
+    this.currentView = 'items';
+    this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
+    this.selectedWorldMapLocationName = null;
+    this.selectedFactionName = null;
+    this.selectedRuleName = null;
+    this.selectedStateName = null;
+    this.selectedNpcName = null;
+    this.selectedShopName = null;
+    this.selectedBestiaryId = null;
+    this.selectedLetterId = null;
+    this.selectedLetterSubject = null;
+    this.adminLocationDraft = null;
+    localStorage.setItem('lastView', 'items');
+    this.navigationHistory.pushState(this.getCurrentNavigationState());
+    window.scrollTo({ top: 0 });
+  }
+
+  onNavigateToLetter(target: { letterId?: number; letterSubject?: string } | number) {
+    const letterId = typeof target === 'number' ? target : target.letterId ?? null;
+    const letterSubject = typeof target === 'object' ? target.letterSubject ?? null : null;
+    this.selectedLetterId = letterId;
+    this.selectedLetterSubject = letterSubject;
+    this.currentView = 'letters';
+    this.selectedLocationName = null;
+    this.selectedLocationBackTarget = null;
+    this.selectedWorldMapLocationName = null;
+    this.selectedFactionName = null;
+    this.selectedRuleName = null;
+    this.selectedStateName = null;
+    this.selectedNpcName = null;
+    this.selectedShopName = null;
+    this.selectedBestiaryId = null;
+    this.selectedItemName = null;
+    this.adminLocationDraft = null;
+    localStorage.setItem('lastView', 'letters');
     this.navigationHistory.pushState(this.getCurrentNavigationState());
     window.scrollTo({ top: 0 });
   }
