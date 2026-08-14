@@ -32,7 +32,7 @@ const collectionsMap = [
   { jsonFile: 'campaignSessions.json', collection: 'campaignSession', usePlayersDb: false },
   { jsonFile: 'itemCategories.json', collection: 'itemCategory', usePlayersDb: false },
   { jsonFile: 'items.json', collection: 'item', usePlayersDb: false },
-  { jsonFile: 'letters.json', collection: 'letters', usePlayersDb: false },
+  { jsonFile: 'letters.json', collection: 'letter', usePlayersDb: true },
   { jsonFile: 'locations.json', collection: 'location', usePlayersDb: true },
   { jsonFile: 'lore.json', collection: 'lore', usePlayersDb: false },
   { jsonFile: 'mistEffects.json', collection: 'mistEffect', usePlayersDb: false },
@@ -88,6 +88,9 @@ async function populateDatabase() {
       // Save to local-db folder as filesystem database
       const localFile = path.join(localDbDir, `${item.collection}.json`);
       fs.writeFileSync(localFile, JSON.stringify(data, null, 2));
+      if (item.collection === 'letter') {
+        fs.writeFileSync(path.join(localDbDir, 'letters.json'), JSON.stringify(data, null, 2));
+      }
 
       if (mongoConnected && client) {
         const targetDb = client.db(item.usePlayersDb ? playersDbName : mainDbName);
@@ -107,13 +110,11 @@ async function populateDatabase() {
             console.log(`[MongoDB] ${item.collection} -> Populated ${res.insertedCount} items.`);
 
             if (item.usePlayersDb) {
-              const prefixes = ['nebryss-voss-sucession', 'nebryss-voss-succession'];
-              for (const pfx of prefixes) {
-                const prefixedColl = targetDb.collection(`${pfx}-${item.collection}`);
-                await prefixedColl.deleteMany({});
-                await prefixedColl.insertMany(docsToInsert.map(d => ({ ...d })));
-              }
-              console.log(`[MongoDB] nebryss-voss-sucession-${item.collection} -> Populated ${docsToInsert.length} items.`);
+              const pfx = 'nebryss-voss-sucession';
+              const prefixedColl = targetDb.collection(`${pfx}-${item.collection}`);
+              await prefixedColl.deleteMany({});
+              await prefixedColl.insertMany(docsToInsert.map(d => ({ ...d })));
+              console.log(`[MongoDB] ${pfx}-${item.collection} -> Populated ${docsToInsert.length} items.`);
             }
           }
         } else if (typeof data === 'object') {

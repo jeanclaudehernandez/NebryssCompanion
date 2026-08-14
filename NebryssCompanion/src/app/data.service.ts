@@ -141,6 +141,10 @@ export class DataService {
       this.campaignSessionsSubject.next([]);
       this.campaignSessionsCache$ = null;
 
+      this.letters = [];
+      this.lettersSubject.next([]);
+      this.lettersCache$ = null;
+
       this.allDataCache$ = null;
 
       this.refreshPlayers().subscribe();
@@ -148,6 +152,7 @@ export class DataService {
       this.refreshLocations().subscribe();
       this.refreshNpcs().subscribe();
       this.refreshCampaignSessions().subscribe();
+      this.refreshLetters().subscribe();
     });
   }
 
@@ -199,6 +204,7 @@ export class DataService {
       this.afflictionsSubject.next([...this.afflictions]);
       this.afflictionsCache$ = of(this.afflictions);
     } else if (normalizedEntity === 'letter' || normalizedEntity === 'letters') {
+      if (!this.isEventForCurrentCampaign(event.campaign)) return;
       const normalizedLetter = this.normalizeLetter(data);
       this.updateArrayCollection(this.letters, normalizedLetter, action, l => l.id);
       this.lettersSubject.next([...this.letters]);

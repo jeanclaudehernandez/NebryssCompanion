@@ -495,7 +495,8 @@ app.post('/api/campaign', async (req, res) => {
       `${campaignPrefix}-player`,
       `${campaignPrefix}-shop`,
       `${campaignPrefix}-location`,
-      `${campaignPrefix}-npc`
+      `${campaignPrefix}-npc`,
+      `${campaignPrefix}-letter`
     ];
 
     for (const targetColl of collectionsToCreate) {
@@ -858,28 +859,29 @@ createDeleteRoute('/api/afflictions', {
 });
 
 createCollectionRoute('/api/letter', {
-  usePlayersDb: false,
-  collectionName: 'letters',
+  usePlayersDb: true,
+  collectionName: 'letter',
 });
 
 createUpdateRoute('/api/letter', {
-  usePlayersDb: false,
-  collectionName: 'letters',
+  usePlayersDb: true,
+  collectionName: 'letter',
 });
 
 createInsertRoute('/api/letter', {
-  usePlayersDb: false,
-  collectionName: 'letters',
+  usePlayersDb: true,
+  collectionName: 'letter',
 });
 
 createDeleteRoute('/api/letter', {
-  usePlayersDb: false,
-  collectionName: 'letters',
+  usePlayersDb: true,
+  collectionName: 'letter',
 });
 
 app.post('/api/letter/:id/read', async (req, res) => {
   const idParam = req.params.id;
-  const { playerId } = req.body.payload ?? {};
+  const { payload, campaign } = extractPayloadAndCampaign(req);
+  const playerId = payload?.playerId ?? req.body?.playerId;
 
   if (!idParam) {
     return res.status(400).json({ error: 'Letter id is required' });
@@ -891,20 +893,21 @@ app.post('/api/letter/:id/read', async (req, res) => {
 
   try {
     const dbs = await getDatabases();
+    const targetCollection = campaign ? getCampaignCollectionName(campaign, 'letter') : 'letter';
 
     if (!dbs) {
       // Local JSON fallback
-      const docs = await fetchCollection(null, 'letters');
+      const docs = await fetchCollection(null, targetCollection);
       const idx = docs.findIndex(d => String(d.id) === String(idParam) && !d.isDeleted);
       if (idx === -1) return res.status(404).json({ error: 'Letter not found' });
       if (!docs[idx].readBy) { docs[idx].readBy = []; }
       if (!docs[idx].readBy.includes(playerId)) { docs[idx].readBy.push(playerId); }
-      await saveToLocalJson('letters', docs);
-      notifyChange('letters', 'update', docs[idx]);
+      await saveToLocalJson(targetCollection, docs);
+      notifyChange('letter', 'update', docs[idx], campaign);
       return res.json(docs[idx]);
     }
 
-    const collection = dbs.mainDb.collection('letters');
+    const collection = dbs.playersDb.collection(targetCollection);
     const query = {
       id: { $in: [idParam, Number(idParam)] },
       isDeleted: { $ne: true }
@@ -914,7 +917,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
       return res.status(404).json({ error: 'Letter not found' });
     }
     const updatedLetter = await collection.findOne(query);
-    notifyChange('letters', 'update', updatedLetter);
+    notifyChange('letter', 'update', updatedLetter, campaign);
     res.json(updatedLetter);
   } catch (error) {
     console.error(error);
@@ -926,7 +929,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
 const collectionAliases = [
   { singular: '/api/location', plural: '/api/locations', usePlayersDb: true, collectionName: 'location' },
   { singular: '/api/affliction', plural: '/api/afflictions', usePlayersDb: false, collectionName: 'affliction' },
-  { singular: '/api/letter', plural: '/api/letters', usePlayersDb: false, collectionName: 'letters' },
+  { singular: '/api/letter', plural: '/api/letters', usePlayersDb: true, collectionName: 'letter' },
   { singular: '/api/item', plural: '/api/items', usePlayersDb: false, collectionName: 'item' },
   { singular: '/api/weapon', plural: '/api/weapons', usePlayersDb: false, collectionName: 'weapon' },
   { singular: '/api/player', plural: '/api/players', usePlayersDb: true, collectionName: 'player' },

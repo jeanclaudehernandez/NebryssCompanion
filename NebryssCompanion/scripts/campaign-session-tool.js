@@ -508,7 +508,6 @@ async function getCampaignContext(campaignId = 1) {
 
       letters = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
       if (!letters.length) letters = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
-      if (!letters.length) letters = await mainDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
 
       items = await mainDb.collection('item').find().toArray();
       if (!items.length) items = await mainDb.collection('items').find().toArray();
@@ -1486,7 +1485,6 @@ async function createLetter(letterData) {
 
     await col.insertOne({ ...letterDoc });
     await playersDb.collection('letter').updateOne({ id: newId }, { $set: letterDoc }, { upsert: true });
-    await mainDb.collection('letter').updateOne({ id: newId }, { $set: letterDoc }, { upsert: true });
 
     return {
       ...letterDoc,
@@ -1535,7 +1533,6 @@ async function updateLetter(letterUpdateData) {
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
     await playersDb.collection('letter').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('letter').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1971,7 +1968,6 @@ async function readEntities({ type, campaignId = 1, filter = {}, search = '', li
       } else if (normalizedType === 'letter') {
         docs = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
         if (!docs.length) docs = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
-        if (!docs.length) docs = await mainDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
       } else if (normalizedType === 'item') {
         docs = await mainDb.collection('item').find().toArray();
         if (!docs.length) docs = await mainDb.collection('items').find().toArray();
@@ -2118,7 +2114,6 @@ async function deleteEntity({ type, id, campaignId = 1 }) {
     } else if (normalizedType === 'letter') {
       await playersDb.collection(`${prefix}-letter`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
       await playersDb.collection('letter').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('letter').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
     } else if (normalizedType === 'item') {
       await mainDb.collection('item').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
       await mainDb.collection('items').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
