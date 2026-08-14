@@ -88,6 +88,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
       campaignId ? `The active campaign ID is: ${campaignId}.` : '',
       '10. PRESENTATION RULE: When presenting session plans, narrative drafts, entity proposals, or conclusion drafts in chat for user review, DO NOT display raw reference tag syntax (@player[id], @npc[id], @letter[id], @item[id], @weapon[id], etc.); display natural, clean entity names so the text is natural and easy to read.',
       '11. PERSISTENCE RULE: When saving or updating entities and sessions using campaign-session-tool.js, ensure all entity references are converted to exact numeric tags (@player[id], @npc[id], @location[id], @shop[id], @bestiary[id], @letter[id], @item[id], @weapon[id], @weaponrule[id], @alteredstate[id], @affliction[id]).',
+      '12. STRICT COLLECTION HANDLING & NO DUAL WRITES: All campaign entities must be stored directly in their specific campaign collection in NebryssCampaignAssets (e.g. `<campaign-prefix>-player`, `<campaign-prefix>-npc`, `<campaign-prefix>-location`, `<campaign-prefix>-shop`, `<campaign-prefix>-letter`). There are no fallback generic collections or dual writes. If the campaign collection is not present or an error is returned indicating that the collection does not exist in database, DO NOT guess or attempt to create fallback collections; immediately inform and prompt the user to indicate the collection/campaign name again.',
     ].filter(Boolean).join('\n');
   }
 

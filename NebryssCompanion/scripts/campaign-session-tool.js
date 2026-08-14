@@ -94,6 +94,46 @@ function normalizeEntityType(type) {
   return t;
 }
 
+async function resolveCampaign(mainDb, campaignId = 1) {
+  const campaigns = await mainDb.collection('campaign').find().toArray();
+  if (!campaigns.length) {
+    throw new Error('No campaigns found in database. Please configure campaigns first.');
+  }
+  const search = String(campaignId !== undefined && campaignId !== null ? campaignId : 1).trim().toLowerCase();
+  const campaign = campaigns.find(c =>
+    String(c.id) === search ||
+    String(c.name || '').toLowerCase() === search ||
+    String(c.prefix || '').toLowerCase() === search
+  );
+  if (!campaign) {
+    const list = campaigns.map(c => `ID ${c.id}: "${c.name}" (prefix: "${c.prefix}")`).join(', ');
+    throw new Error(`Campaign '${campaignId}' not found in database. Existing campaigns: [${list}]. Please indicate the correct campaign.`);
+  }
+  const prefix = String(campaign.prefix || campaign.name || '').trim();
+  if (!prefix) {
+    throw new Error(`Campaign '${campaign.name || campaignId}' has no prefix configured in database.`);
+  }
+  return { campaign, prefix };
+}
+
+async function getCampaignCollection(playersDb, mainDb, campaignId, entityType) {
+  const { campaign, prefix } = await resolveCampaign(mainDb, campaignId);
+  const normType = normalizeEntityType(entityType);
+  const collectionName = `${prefix}-${normType}`;
+
+  const collList = await playersDb.listCollections({ name: collectionName }).toArray();
+  if (!collList.length) {
+    throw new Error(`Collection '${collectionName}' does not exist in database for campaign '${campaign.name || campaignId}'. Please indicate the correct collection or campaign.`);
+  }
+
+  return {
+    collection: playersDb.collection(collectionName),
+    collectionName,
+    campaign,
+    prefix
+  };
+}
+
 function findEntityId(type, identifier, context) {
   const raw = String(identifier).trim();
   if (/^\d+$/.test(raw)) {
@@ -328,9 +368,7 @@ async function getAllWeaponsAndRules() {
     try {
       const mainDb = client.db(mainDbName);
       weapons = await mainDb.collection('weapon').find().toArray();
-      if (!weapons.length) weapons = await mainDb.collection('weapons').find().toArray();
       weaponRules = await mainDb.collection('weaponRule').find().toArray();
-      if (!weaponRules.length) weaponRules = await mainDb.collection('weaponRules').find().toArray();
     } finally {
       await client.close();
     }
@@ -476,47 +514,36 @@ async function getCampaignContext(campaignId = 1) {
       const mainDb = client.db(mainDbName);
       const playersDb = client.db(playersDbName);
 
+      const { campaign, prefix } = await resolveCampaign(mainDb, campaignId);
+      const resolvedCampaignId = campaign.id;
       campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
-      const resolvedCampaignId = campaign ? campaign.id : Number(campaignId);
+
+      // Verify campaign collections exist in playersDb
+      const requiredEntities = ['player', 'npc', 'location', 'shop', 'letter'];
+      for (const ent of requiredEntities) {
+        const colName = `${prefix}-${ent}`;
+        const existing = await playersDb.listCollections({ name: colName }).toArray();
+        if (!existing.length) {
+          throw new Error(`Collection '${colName}' does not exist in database for campaign '${campaign.name || campaignId}'. Please indicate the correct collection or campaign.`);
+        }
+      }
 
       sessions = await mainDb.collection('campaignSession').find({
         $or: [{ campaignId: Number(resolvedCampaignId) }, { campaignId: String(resolvedCampaignId) }]
       }).sort({ sessionId: 1 }).toArray();
 
       players = await playersDb.collection(`${prefix}-player`).find().toArray();
-      if (!players.length) players = await playersDb.collection('player').find().toArray();
-
       npcs = await playersDb.collection(`${prefix}-npc`).find().toArray();
-      if (!npcs.length) npcs = await playersDb.collection('npc').find().toArray();
-
       locations = await playersDb.collection(`${prefix}-location`).find().toArray();
-      if (!locations.length) locations = await playersDb.collection('location').find().toArray();
-      if (!locations.length) locations = await mainDb.collection('location').find().toArray();
-
       shops = await playersDb.collection(`${prefix}-shop`).find().toArray();
-      if (!shops.length) shops = await playersDb.collection('shop').find().toArray();
+      letters = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
 
       bestiary = await mainDb.collection('bestiary').find().toArray();
-
       weapons = await mainDb.collection('weapon').find().toArray();
-      if (!weapons.length) weapons = await mainDb.collection('weapons').find().toArray();
-
       weaponRules = await mainDb.collection('weaponRule').find().toArray();
-      if (!weaponRules.length) weaponRules = await mainDb.collection('weaponRules').find().toArray();
-
-      letters = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
-      if (!letters.length) letters = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
-
       items = await mainDb.collection('item').find().toArray();
-      if (!items.length) items = await mainDb.collection('items').find().toArray();
-
       alteredStates = await mainDb.collection('alteredState').find().toArray();
-      if (!alteredStates.length) alteredStates = await mainDb.collection('status').find().toArray();
-
       afflictions = await mainDb.collection('affliction').find().toArray();
-      if (!afflictions.length) afflictions = await mainDb.collection('afflictions').find().toArray();
     } finally {
       await client.close();
     }
@@ -721,14 +748,10 @@ async function createNPC(npcData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col } = await getCampaignCollection(playersDb, mainDb, campaignId, 'npc');
 
-    const col = playersDb.collection(`${prefix}-npc`);
     const allExisting = await col.find().toArray();
-    const genericExisting = await playersDb.collection('npc').find().toArray();
-    const maxId = [...allExisting, ...genericExisting].reduce((max, n) => (n && typeof n.id === 'number' && n.id > max ? n.id : max), 0);
+    const maxId = allExisting.reduce((max, n) => (n && typeof n.id === 'number' && n.id > max ? n.id : max), 0);
     const newId = maxId + 1;
 
     const parsedBestiaryId = (bestiaryId !== null && bestiaryId !== undefined && !isNaN(Number(bestiaryId)))
@@ -758,7 +781,6 @@ async function createNPC(npcData) {
     };
 
     await col.insertOne({ ...npcDoc });
-    await playersDb.collection('npc').updateOne({ id: newId }, { $set: npcDoc }, { upsert: true });
 
     return {
       ...npcDoc,
@@ -783,14 +805,10 @@ async function updateNPC(npcUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, 'npc');
 
-    const col = playersDb.collection(`${prefix}-npc`);
     let targetNPC = await col.findOne({ id: numericId });
-    if (!targetNPC) targetNPC = await playersDb.collection('npc').findOne({ id: numericId });
-    if (!targetNPC) throw new Error(`NPC with ID ${numericId} not found in database.`);
+    if (!targetNPC) throw new Error(`NPC with ID ${numericId} not found in collection '${collectionName}'.`);
 
     const updatedDoc = {
       ...targetNPC,
@@ -817,7 +835,6 @@ async function updateNPC(npcUpdateData) {
     delete updatedDoc._id;
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await playersDb.collection('npc').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1083,15 +1100,10 @@ async function createLocation(locationData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col } = await getCampaignCollection(playersDb, mainDb, campaignId, 'location');
 
-    const col = playersDb.collection(`${prefix}-location`);
     const allExisting = await col.find().toArray();
-    const genericExisting = await playersDb.collection('location').find().toArray();
-    const mainExisting = await mainDb.collection('location').find().toArray();
-    const maxId = [...allExisting, ...genericExisting, ...mainExisting].reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
+    const maxId = allExisting.reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
     const newId = maxId + 1;
 
     const locationDoc = {
@@ -1118,8 +1130,6 @@ async function createLocation(locationData) {
     };
 
     await col.insertOne({ ...locationDoc });
-    await playersDb.collection('location').updateOne({ id: newId }, { $set: locationDoc }, { upsert: true });
-    await mainDb.collection('location').updateOne({ id: newId }, { $set: locationDoc }, { upsert: true });
 
     return {
       ...locationDoc,
@@ -1144,15 +1154,10 @@ async function updateLocation(locationUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, 'location');
 
-    const col = playersDb.collection(`${prefix}-location`);
     let targetLoc = await col.findOne({ id: numericId });
-    if (!targetLoc) targetLoc = await playersDb.collection('location').findOne({ id: numericId });
-    if (!targetLoc) targetLoc = await mainDb.collection('location').findOne({ id: numericId });
-    if (!targetLoc) throw new Error(`Location with ID ${numericId} not found in database.`);
+    if (!targetLoc) throw new Error(`Location with ID ${numericId} not found in collection '${collectionName}'.`);
 
     const updatedDoc = {
       ...targetLoc,
@@ -1180,8 +1185,6 @@ async function updateLocation(locationUpdateData) {
     delete updatedDoc._id;
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await playersDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('location').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1221,14 +1224,10 @@ async function createShop(shopData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col } = await getCampaignCollection(playersDb, mainDb, campaignId, 'shop');
 
-    const col = playersDb.collection(`${prefix}-shop`);
     const allExisting = await col.find().toArray();
-    const genericExisting = await playersDb.collection('shop').find().toArray();
-    const maxId = [...allExisting, ...genericExisting].reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
+    const maxId = allExisting.reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
     const newId = maxId + 1;
 
     const parsedOwner = (owner !== null && owner !== undefined && !isNaN(Number(owner))) ? Number(owner) : undefined;
@@ -1251,7 +1250,6 @@ async function createShop(shopData) {
     };
 
     await col.insertOne({ ...shopDoc });
-    await playersDb.collection('shop').updateOne({ id: newId }, { $set: shopDoc }, { upsert: true });
 
     return {
       ...shopDoc,
@@ -1276,14 +1274,10 @@ async function updateShop(shopUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, 'shop');
 
-    const col = playersDb.collection(`${prefix}-shop`);
     let targetShop = await col.findOne({ id: numericId });
-    if (!targetShop) targetShop = await playersDb.collection('shop').findOne({ id: numericId });
-    if (!targetShop) throw new Error(`Shop with ID ${numericId} not found in database.`);
+    if (!targetShop) throw new Error(`Shop with ID ${numericId} not found in collection '${collectionName}'.`);
 
     const updatedDoc = {
       ...targetShop,
@@ -1311,7 +1305,6 @@ async function updateShop(shopUpdateData) {
     delete updatedDoc._id;
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await playersDb.collection('shop').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1337,17 +1330,11 @@ async function updatePlayer(playerUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, 'player');
 
-    const col = playersDb.collection(`${prefix}-player`);
     let targetPlayer = await col.findOne({ id: numericId });
     if (!targetPlayer) {
-      targetPlayer = await playersDb.collection('player').findOne({ id: numericId });
-    }
-    if (!targetPlayer) {
-      throw new Error(`Player with ID ${numericId} not found in database.`);
+      throw new Error(`Player with ID ${numericId} not found in collection '${collectionName}'.`);
     }
 
     let finalAttributes = targetPlayer.attributes;
@@ -1428,7 +1415,6 @@ async function updatePlayer(playerUpdateData) {
     delete updatedDoc._id;
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await playersDb.collection('player').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1460,15 +1446,10 @@ async function createLetter(letterData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col } = await getCampaignCollection(playersDb, mainDb, campaignId, 'letter');
 
-    const col = playersDb.collection(`${prefix}-letter`);
     const allExisting = await col.find().toArray();
-    const genericExisting = await playersDb.collection('letter').find().toArray();
-    const mainExisting = await mainDb.collection('letter').find().toArray();
-    const maxId = [...allExisting, ...genericExisting, ...mainExisting].reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
+    const maxId = allExisting.reduce((max, l) => (l && typeof l.id === 'number' && l.id > max ? l.id : max), 0);
     const newId = maxId + 1;
 
     const letterDoc = {
@@ -1484,7 +1465,6 @@ async function createLetter(letterData) {
     };
 
     await col.insertOne({ ...letterDoc });
-    await playersDb.collection('letter').updateOne({ id: newId }, { $set: letterDoc }, { upsert: true });
 
     return {
       ...letterDoc,
@@ -1506,15 +1486,10 @@ async function updateLetter(letterUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+    const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, 'letter');
 
-    const col = playersDb.collection(`${prefix}-letter`);
     let existing = await col.findOne({ id: numericId });
-    if (!existing) existing = await playersDb.collection('letter').findOne({ id: numericId });
-    if (!existing) existing = await mainDb.collection('letter').findOne({ id: numericId });
-    if (!existing) throw new Error(`Letter with ID ${numericId} not found in database.`);
+    if (!existing) throw new Error(`Letter with ID ${numericId} not found in collection '${collectionName}'.`);
 
     const updatedDoc = {
       ...existing,
@@ -1532,7 +1507,6 @@ async function updateLetter(letterUpdateData) {
     delete updatedDoc._id;
 
     await col.updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await playersDb.collection('letter').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1566,8 +1540,7 @@ async function createItem(itemData) {
   try {
     const mainDb = client.db(mainDbName);
     const existingItems = await mainDb.collection('item').find().toArray();
-    const existingPlural = await mainDb.collection('items').find().toArray();
-    const maxId = [...existingItems, ...existingPlural].reduce((max, i) => (i && typeof i.id === 'number' && i.id > max ? i.id : max), 0);
+    const maxId = existingItems.reduce((max, i) => (i && typeof i.id === 'number' && i.id > max ? i.id : max), 0);
     const newId = maxId + 1;
 
     const itemDoc = {
@@ -1585,7 +1558,6 @@ async function createItem(itemData) {
     };
 
     await mainDb.collection('item').insertOne({ ...itemDoc });
-    await mainDb.collection('items').updateOne({ id: newId }, { $set: itemDoc }, { upsert: true });
 
     return {
       ...itemDoc,
@@ -1607,7 +1579,6 @@ async function updateItem(itemUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     let existing = await mainDb.collection('item').findOne({ id: numericId });
-    if (!existing) existing = await mainDb.collection('items').findOne({ id: numericId });
     if (!existing) throw new Error(`Item with ID ${numericId} not found in database.`);
 
     const updatedDoc = {
@@ -1629,7 +1600,6 @@ async function updateItem(itemUpdateData) {
     delete updatedDoc._id;
 
     await mainDb.collection('item').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('items').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1651,8 +1621,7 @@ async function createWeapon(weaponData) {
   try {
     const mainDb = client.db(mainDbName);
     const existingWeapons = await mainDb.collection('weapon').find().toArray();
-    const existingPlural = await mainDb.collection('weapons').find().toArray();
-    const maxId = [...existingWeapons, ...existingPlural].reduce((max, w) => (w && typeof w.id === 'number' && w.id > max ? w.id : max), 0);
+    const maxId = existingWeapons.reduce((max, w) => (w && typeof w.id === 'number' && w.id > max ? w.id : max), 0);
     const newId = maxId + 1;
 
     const weaponDoc = {
@@ -1663,7 +1632,6 @@ async function createWeapon(weaponData) {
     };
 
     await mainDb.collection('weapon').insertOne({ ...weaponDoc });
-    await mainDb.collection('weapons').updateOne({ id: newId }, { $set: weaponDoc }, { upsert: true });
 
     return {
       ...weaponDoc,
@@ -1685,7 +1653,6 @@ async function updateWeapon(weaponUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     let existing = await mainDb.collection('weapon').findOne({ id: numericId });
-    if (!existing) existing = await mainDb.collection('weapons').findOne({ id: numericId });
     if (!existing) throw new Error(`Weapon with ID ${numericId} not found in database.`);
 
     const updatedDoc = {
@@ -1698,7 +1665,6 @@ async function updateWeapon(weaponUpdateData) {
     delete updatedDoc._id;
 
     await mainDb.collection('weapon').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('weapons').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1720,8 +1686,7 @@ async function createWeaponRule(ruleData) {
   try {
     const mainDb = client.db(mainDbName);
     const existingRules = await mainDb.collection('weaponRule').find().toArray();
-    const existingPlural = await mainDb.collection('weaponRules').find().toArray();
-    const maxId = [...existingRules, ...existingPlural].reduce((max, r) => (r && typeof r.id === 'number' && r.id > max ? r.id : max), 0);
+    const maxId = existingRules.reduce((max, r) => (r && typeof r.id === 'number' && r.id > max ? r.id : max), 0);
     const newId = maxId + 1;
 
     const ruleDoc = {
@@ -1732,7 +1697,6 @@ async function createWeaponRule(ruleData) {
     };
 
     await mainDb.collection('weaponRule').insertOne({ ...ruleDoc });
-    await mainDb.collection('weaponRules').updateOne({ id: newId }, { $set: ruleDoc }, { upsert: true });
 
     return {
       ...ruleDoc,
@@ -1754,7 +1718,6 @@ async function updateWeaponRule(ruleUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     let existing = await mainDb.collection('weaponRule').findOne({ id: numericId });
-    if (!existing) existing = await mainDb.collection('weaponRules').findOne({ id: numericId });
     if (!existing) throw new Error(`Weapon rule with ID ${numericId} not found in database.`);
 
     const updatedDoc = {
@@ -1767,7 +1730,6 @@ async function updateWeaponRule(ruleUpdateData) {
     delete updatedDoc._id;
 
     await mainDb.collection('weaponRule').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('weaponRules').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1789,8 +1751,7 @@ async function createAlteredState(stateData) {
   try {
     const mainDb = client.db(mainDbName);
     const existingStates = await mainDb.collection('alteredState').find().toArray();
-    const existingStatus = await mainDb.collection('status').find().toArray();
-    const maxId = [...existingStates, ...existingStatus].reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
+    const maxId = existingStates.reduce((max, s) => (s && typeof s.id === 'number' && s.id > max ? s.id : max), 0);
     const newId = maxId + 1;
 
     const stateDoc = {
@@ -1800,7 +1761,6 @@ async function createAlteredState(stateData) {
     };
 
     await mainDb.collection('alteredState').insertOne({ ...stateDoc });
-    await mainDb.collection('status').updateOne({ id: newId }, { $set: stateDoc }, { upsert: true });
 
     return {
       ...stateDoc,
@@ -1822,7 +1782,6 @@ async function updateAlteredState(stateUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     let existing = await mainDb.collection('alteredState').findOne({ id: numericId });
-    if (!existing) existing = await mainDb.collection('status').findOne({ id: numericId });
     if (!existing) throw new Error(`Altered state with ID ${numericId} not found in database.`);
 
     const updatedDoc = {
@@ -1834,7 +1793,6 @@ async function updateAlteredState(stateUpdateData) {
     delete updatedDoc._id;
 
     await mainDb.collection('alteredState').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('status').updateOne({ id: numericId }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1856,8 +1814,7 @@ async function createAffliction(afflictionData) {
   try {
     const mainDb = client.db(mainDbName);
     const existingAffs = await mainDb.collection('affliction').find().toArray();
-    const existingPlural = await mainDb.collection('afflictions').find().toArray();
-    const maxId = [...existingAffs, ...existingPlural].reduce((max, a) => {
+    const maxId = existingAffs.reduce((max, a) => {
       const num = Number(a.id);
       return !isNaN(num) && num > max ? num : max;
     }, 0);
@@ -1874,7 +1831,6 @@ async function createAffliction(afflictionData) {
     };
 
     await mainDb.collection('affliction').insertOne({ ...affDoc });
-    await mainDb.collection('afflictions').updateOne({ id: newId }, { $set: affDoc }, { upsert: true });
 
     return {
       ...affDoc,
@@ -1897,7 +1853,6 @@ async function updateAffliction(afflictionUpdateData) {
   try {
     const mainDb = client.db(mainDbName);
     let existing = await mainDb.collection('affliction').findOne({ $or: [{ id: strId }, { id: numId }] });
-    if (!existing) existing = await mainDb.collection('afflictions').findOne({ $or: [{ id: strId }, { id: numId }] });
     if (!existing) throw new Error(`Affliction with ID ${id} not found in database.`);
 
     const updatedDoc = {
@@ -1913,7 +1868,6 @@ async function updateAffliction(afflictionUpdateData) {
     delete updatedDoc._id;
 
     await mainDb.collection('affliction').updateOne({ id: existing.id }, { $set: updatedDoc }, { upsert: true });
-    await mainDb.collection('afflictions').updateOne({ id: existing.id }, { $set: updatedDoc }, { upsert: true });
 
     return {
       ...updatedDoc,
@@ -1929,82 +1883,46 @@ async function updateAffliction(afflictionUpdateData) {
 async function readEntities({ type, campaignId = 1, filter = {}, search = '', limit = null }) {
   const normalizedType = normalizeEntityType(type);
   const client = await getClient();
-  let prefix = 'nebryss-voss-succession';
+  if (!client) {
+    throw new Error('Database connection failed. MongoDB is required.');
+  }
   let docs = [];
 
-  if (client) {
-    try {
-      const mainDb = client.db(mainDbName);
-      const playersDb = client.db(playersDbName);
-      const campaigns = await mainDb.collection('campaign').find().toArray();
-      const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-      prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
+  try {
+    const mainDb = client.db(mainDbName);
+    const playersDb = client.db(playersDbName);
 
-      if (normalizedType === 'player') {
-        docs = await playersDb.collection(`${prefix}-player`).find().toArray();
-        if (!docs.length) docs = await playersDb.collection('player').find().toArray();
-      } else if (normalizedType === 'npc') {
-        docs = await playersDb.collection(`${prefix}-npc`).find().toArray();
-        if (!docs.length) docs = await playersDb.collection('npc').find().toArray();
-      } else if (normalizedType === 'location') {
-        docs = await playersDb.collection(`${prefix}-location`).find().toArray();
-        if (!docs.length) docs = await playersDb.collection('location').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('location').find().toArray();
-      } else if (normalizedType === 'shop') {
-        docs = await playersDb.collection(`${prefix}-shop`).find().toArray();
-        if (!docs.length) docs = await playersDb.collection('shop').find().toArray();
-      } else if (normalizedType === 'bestiary') {
-        docs = await mainDb.collection('bestiary').find().toArray();
-      } else if (normalizedType === 'session') {
-        docs = await mainDb.collection('campaignSession').find({
-          $or: [{ campaignId: Number(campaignId) }, { campaignId: String(campaignId) }]
-        }).toArray();
-      } else if (normalizedType === 'weapon') {
-        docs = await mainDb.collection('weapon').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('weapons').find().toArray();
-      } else if (normalizedType === 'weaponrule') {
-        docs = await mainDb.collection('weaponRule').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('weaponRules').find().toArray();
-      } else if (normalizedType === 'letter') {
-        docs = await playersDb.collection(`${prefix}-letter`).find({ isDeleted: { $ne: true } }).toArray();
-        if (!docs.length) docs = await playersDb.collection('letter').find({ isDeleted: { $ne: true } }).toArray();
-      } else if (normalizedType === 'item') {
-        docs = await mainDb.collection('item').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('items').find().toArray();
-      } else if (normalizedType === 'alteredstate') {
-        docs = await mainDb.collection('alteredState').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('status').find().toArray();
-      } else if (normalizedType === 'affliction') {
-        docs = await mainDb.collection('affliction').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('afflictions').find().toArray();
-      } else if (normalizedType === 'talent' || normalizedType === 'talents') {
-        docs = await mainDb.collection('talent').find().toArray();
-        if (!docs.length) docs = await mainDb.collection('talents').find().toArray();
+    if (normalizedType === 'player' || normalizedType === 'npc' || normalizedType === 'location' || normalizedType === 'shop' || normalizedType === 'letter') {
+      const { collection: col } = await getCampaignCollection(playersDb, mainDb, campaignId, normalizedType);
+      if (normalizedType === 'letter') {
+        docs = await col.find({ isDeleted: { $ne: true } }).toArray();
       } else {
-        throw new Error(`Unknown entity type "${type}". Allowed types: player, npc, location, shop, bestiary, session, letter, item, weapon, weaponrule, alteredstate, affliction, talent.`);
+        docs = await col.find().toArray();
       }
-    } finally {
-      await client.close();
+    } else if (normalizedType === 'bestiary') {
+      docs = await mainDb.collection('bestiary').find().toArray();
+    } else if (normalizedType === 'session') {
+      const { campaign } = await resolveCampaign(mainDb, campaignId);
+      docs = await mainDb.collection('campaignSession').find({
+        $or: [{ campaignId: Number(campaign.id) }, { campaignId: String(campaign.id) }]
+      }).toArray();
+    } else if (normalizedType === 'weapon') {
+      docs = await mainDb.collection('weapon').find().toArray();
+    } else if (normalizedType === 'weaponrule') {
+      docs = await mainDb.collection('weaponRule').find().toArray();
+    } else if (normalizedType === 'item') {
+      docs = await mainDb.collection('item').find().toArray();
+    } else if (normalizedType === 'alteredstate') {
+      docs = await mainDb.collection('alteredState').find().toArray();
+    } else if (normalizedType === 'affliction') {
+      docs = await mainDb.collection('affliction').find().toArray();
+    } else if (normalizedType === 'talent' || normalizedType === 'talents') {
+      docs = await mainDb.collection('talent').find().toArray();
+    } else {
+      throw new Error(`Unknown entity type "${type}". Allowed types: player, npc, location, shop, bestiary, session, letter, item, weapon, weaponrule, alteredstate, affliction, talent.`);
     }
-  } else {
-    // Read fallback if MongoDB client failed
-    if (normalizedType === 'player') docs = readJsonFallback('players.json');
-    else if (normalizedType === 'npc') docs = readJsonFallback('npcs.json');
-    else if (normalizedType === 'location') {
-      const locData = readJsonFallback('locations.json');
-      docs = locData && locData.locations ? locData.locations : locData;
-    } else if (normalizedType === 'shop') docs = readJsonFallback('shops.json');
-    else if (normalizedType === 'bestiary') docs = readJsonFallback('bestiary.json');
-    else if (normalizedType === 'session') docs = readJsonFallback('campaignSessions.json').filter(s => Number(s.campaignId) === Number(campaignId));
-    else if (normalizedType === 'weapon') docs = readJsonFallback('weapons.json');
-    else if (normalizedType === 'weaponrule') docs = readJsonFallback('weaponRules.json');
-    else if (normalizedType === 'letter') docs = readJsonFallback('letters.json').filter(l => !l.isDeleted);
-    else if (normalizedType === 'item') {
-      const raw = readJsonFallback('items.json');
-      docs = Array.isArray(raw) ? raw : (raw.items || []);
-    } else if (normalizedType === 'alteredstate') docs = readJsonFallback('alteredStates.json');
-    else if (normalizedType === 'affliction') docs = readJsonFallback('afflictions.json');
-    else if (normalizedType === 'talent') docs = readJsonFallback('talents.json');
+  } finally {
+    await client.close();
   }
 
   // Apply filters
@@ -2090,45 +2008,35 @@ async function deleteEntity({ type, id, campaignId = 1 }) {
   try {
     const mainDb = client.db(mainDbName);
     const playersDb = client.db(playersDbName);
-    const campaigns = await mainDb.collection('campaign').find().toArray();
-    const campaign = campaigns.find(c => c.id === Number(campaignId) || String(c.name).toLowerCase() === String(campaignId).toLowerCase()) || campaigns[0];
-    const prefix = campaign ? (campaign.prefix || campaign.name) : 'nebryss-voss-succession';
 
-    if (normalizedType === 'player') {
-      await playersDb.collection(`${prefix}-player`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await playersDb.collection('player').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-    } else if (normalizedType === 'npc') {
-      await playersDb.collection(`${prefix}-npc`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await playersDb.collection('npc').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-    } else if (normalizedType === 'location') {
-      await playersDb.collection(`${prefix}-location`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await playersDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('location').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-    } else if (normalizedType === 'shop') {
-      await playersDb.collection(`${prefix}-shop`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await playersDb.collection('shop').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+    if (normalizedType === 'player' || normalizedType === 'npc' || normalizedType === 'location' || normalizedType === 'shop' || normalizedType === 'letter') {
+      const { collection: col, collectionName } = await getCampaignCollection(playersDb, mainDb, campaignId, normalizedType);
+      const res = await col.deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) {
+        throw new Error(`Entity ${normalizedType} with ID ${numericId || strId} not found in collection '${collectionName}'.`);
+      }
     } else if (normalizedType === 'bestiary') {
-      await mainDb.collection('bestiary').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('bestiary').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Bestiary entry with ID ${numericId || strId} not found in database.`);
     } else if (normalizedType === 'session') {
-      await mainDb.collection('campaignSession').deleteOne({ campaignId: Number(campaignId), sessionId: numericId });
-    } else if (normalizedType === 'letter') {
-      await playersDb.collection(`${prefix}-letter`).deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await playersDb.collection('letter').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const { campaign } = await resolveCampaign(mainDb, campaignId);
+      const res = await mainDb.collection('campaignSession').deleteOne({ campaignId: Number(campaign.id), sessionId: numericId });
+      if (res.deletedCount === 0) throw new Error(`Session with ID ${numericId} not found for campaign ${campaignId}.`);
     } else if (normalizedType === 'item') {
-      await mainDb.collection('item').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('items').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('item').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Item with ID ${numericId || strId} not found in database.`);
     } else if (normalizedType === 'weapon') {
-      await mainDb.collection('weapon').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('weapons').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('weapon').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Weapon with ID ${numericId || strId} not found in database.`);
     } else if (normalizedType === 'weaponrule') {
-      await mainDb.collection('weaponRule').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('weaponRules').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('weaponRule').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Weapon rule with ID ${numericId || strId} not found in database.`);
     } else if (normalizedType === 'alteredstate') {
-      await mainDb.collection('alteredState').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('status').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('alteredState').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Altered state with ID ${numericId || strId} not found in database.`);
     } else if (normalizedType === 'affliction') {
-      await mainDb.collection('affliction').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
-      await mainDb.collection('afflictions').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      const res = await mainDb.collection('affliction').deleteOne({ $or: [{ id: numericId }, { id: strId }] });
+      if (res.deletedCount === 0) throw new Error(`Affliction with ID ${numericId || strId} not found in database.`);
     } else {
       throw new Error(`Unknown or unsupported entity type for delete: "${type}".`);
     }
@@ -2137,7 +2045,7 @@ async function deleteEntity({ type, id, campaignId = 1 }) {
       success: true,
       type: normalizedType,
       id: numericId || strId,
-      campaignId: Number(campaignId),
+      campaignId: Number(campaignId) || campaignId,
       message: `Successfully deleted ${normalizedType} with ID ${numericId || strId} from database`
     };
   } finally {
@@ -2774,6 +2682,8 @@ if (require.main === module) {
 }
 
 module.exports = {
+  resolveCampaign,
+  getCampaignCollection,
   getCampaignContext,
   listSessions,
   saveSession,
