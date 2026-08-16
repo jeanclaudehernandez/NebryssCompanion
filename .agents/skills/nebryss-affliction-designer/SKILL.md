@@ -1,42 +1,92 @@
 ---
 name: Nebryss Affliction Designer
-description: Designs new Afflictions for the Nebryss Killteam Campaign in the exact afflictions JSON shape. Invoke when the user asks to create or balance an affliction/injury/curse or requests a new affliction.
+description: Designs and balances Afflictions (enduring physical wounds, psychological traumas, mist corruptions, and curses) for the Nebryss Kill Team Campaign in the exact Affliction schema. Invoke when the user asks to create or balance an affliction, injury, or curse.
 ---
 
-### Execution Steps
+# Nebryss Affliction Designer
 
-1. **Conceptualize:** Create a lore-friendly affliction name, a clear gameplay effect, and a plausible treatment.
-2. **Balance:** Keep effects meaningful but not run-ending; typical `toHeal` is 1–6.
-3. **Format:** Output a single JSON object strictly matching the `Affliction` schema used in `src/assets/afflictions.json`. Do not output any extra text outside the JSON.
+This skill governs the creation, balance, and stat modification structures of Afflictions within the Nebryss universe.
 
-### Output Schema (`Affliction`)
+---
+
+## 1. Execution Steps
+
+1. **Conceptualize Affliction**: Create a lore-friendly name, immersive rules/narrative effect, and a plausible treatment method.
+2. **Balance Severity & Recovery**:
+   - `toHeal`: Set the number of successful treatments or rested periods required to cure (typically `1` to `6`).
+   - `progress`: Initialized to `0`.
+   - Effects should be punishing and distinct without making characters unplayable.
+3. **Configure Stat Modifications**:
+   - For direct mechanical penalties, use structured `statModifications` objects.
+   - For purely narrative or situational rules, omit `statModifications` or keep it empty.
+4. **Format & Persist**: Output valid JSON matching the `Affliction` schema and stage the affliction creation in MongoDB via `campaign-session-tool.js`.
+
+---
+
+## 2. JSON Schema (`Affliction`)
 
 ```json
 {
-  "id": "9999",
+  "id": "aff-9999",
   "name": "string",
-  "effect": "string",
-  "treatment": "string",
-  "toHeal": 1,
+  "effect": "string (Narrative & mechanical explanation of the debuff)",
+  "treatment": "string (Specific medical, herbal, surgical, or ritual cure)",
+  "toHeal": 3,
   "progress": 0,
   "statModifications": [
     {
-      "stat": "Movement | Wounds | APL | Save | hit | damage | attacks | crit",
+      "stat": "Movement",
+      "mod": -1
+    },
+    {
+      "stat": "hit",
       "mod": -1,
-      "applyToType": "body | type | range",
-      "applyToValue": "string"
+      "applyToType": "range",
+      "applyToValue": "0"
     }
   ]
 }
 ```
 
-### Stat Modifications Notes
+---
 
-- Omit `statModifications` if the affliction is purely narrative or rules-text-only.
-- Use `stat: "Movement" | "Wounds" | "APL" | "Save"` for direct attribute changes.
-- Use `stat: "hit" | "damage" | "attacks" | "crit"` for weapon-related modifications.
-- Use targeting only when needed:
-  - `applyToType: "range"` with `applyToValue: "0"` for melee-only, or `applyToValue: "-"` for ranged-only.
-  - `applyToType: "type"` with `applyToValue` like `"rifle"`, `"pistol"`, `"sniper"`, etc.
-  - `applyToType: "body"` with `applyToValue` like `"human"`, `"astartes"`, `"spell"`, etc.
+## 3. Stat Modification Rules
 
+- **Allowed `stat` keys**:
+  - Direct attributes: `"Movement"`, `"Wounds"`, `"Save"`, `"APL"`
+  - Combat / Weapon mods: `"hit"`, `"damage"`, `"attacks"`, `"crit"`
+- **Targeting Modifiers (`applyToType` & `applyToValue`)**:
+  - `applyToType: "range"`: Use `applyToValue: "0"` for melee weapons only, or `applyToValue: "-"` for ranged weapons only.
+  - `applyToType: "type"`: Use `applyToValue` with weapon category (e.g. `"rifle"`, `"pistol"`, `"heavy"`).
+  - `applyToType: "body"`: Use `applyToValue` with operative body type (e.g. `"human"`, `"astartes"`, `"daemon"`).
+
+---
+
+## 4. Database Scoping & Reference Tagging
+
+- **Database Collection**: Afflictions are stored globally in the `Nebryss-assets` database inside the `affliction` collection.
+- **Entity Reference Tag**: `@affliction[<id>]` (e.g. `@affliction[aff-1]`) for raw database persistence.
+- **Chat Display**: When presenting affliction drafts in chat for user review, use clean text (e.g. `Mist Rot`), never raw reference tags.
+
+---
+
+## 5. Companion Tool CLI Commands
+
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+
+```bash
+# Create standard Affliction
+node scripts/campaign-session-tool.js create-affliction \
+  --name="Mist Lung" \
+  --effect="Breathing causes intense burning spasms. Operative loses 1″ Movement and suffers -1 to Save." \
+  --treatment="Inhale purified steam mixed with Silverleaf tincture (3 treatment cycles)." \
+  --toHeal=3 \
+  --progress=0 \
+  --statModifications='[{"stat":"Movement","mod":-1},{"stat":"Save","mod":-1}]'
+
+# Update existing Affliction
+node scripts/campaign-session-tool.js update-affliction \
+  --id="aff-2" \
+  --toHeal=4 \
+  --treatment="Surgical extraction of corrupted flesh at an Imperial medicae facility."
+```

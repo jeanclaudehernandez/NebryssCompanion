@@ -1,21 +1,75 @@
 ---
 name: Nebryss Altered State Designer
-description: Designs new Altered States (status effects) for the Nebryss Killteam Campaign in the exact alteredStates JSON shape. Invoke when the user asks to add a new status condition or alter states.
+description: Designs and balances Altered States (temporary combat status conditions, elemental debuffs, and psychological effects) for the Nebryss Kill Team Campaign in the exact AlteredState schema. Invoke when the user asks to create, modify, or balance status effects.
 ---
 
-### Execution Steps
+# Nebryss Altered State Designer
 
-1. **Conceptualize:** Create a short condition name and a rules-complete effect description.
-2. **Balance:** Status effects should be impactful but removable; include a clear removal condition or duration when appropriate.
-3. **Format:** Output a single JSON object strictly matching the `AlteredState` schema used in `src/assets/alteredStates.json`. Do not output any extra text outside the JSON.
+This skill governs the creation, duration rules, and mechanical definitions of Altered States (status conditions) within the Nebryss combat engine.
 
-### Output Schema (`AlteredState`)
+---
+
+## 1. Execution Steps
+
+1. **Establish Name & Triggers**: Create a clear condition name (e.g., *Entangled*, *Bleeding*, *Burning*, *Mist-Infused*) and establish trigger conditions (e.g. on crit, on entering hazardous terrain).
+2. **Define Rules & Duration**:
+   - Specify the exact mechanical effect (damage over time, movement reduction, AP loss, or visibility penalty).
+   - Specify clear removal / recovery conditions (e.g., spending 1 AP to extinguish, rolling at start of turn, taking medicae action).
+3. **Format & Persist**: Output valid JSON matching the `AlteredState` schema and stage the entity creation in MongoDB via `campaign-session-tool.js`.
+
+---
+
+## 2. JSON Schema (`AlteredState`)
 
 ```json
 {
   "id": 9999,
   "name": "string",
-  "effect": "string"
+  "effect": "string (Rules-complete text describing ongoing penalty and removal criteria)"
 }
 ```
 
+---
+
+## 3. Canonical Altered States Reference
+
+When designing weapons, spells, or abilities, reference these core existing states via `/status/:ID/`:
+
+| ID | Status Condition | Core Mechanical Effect & Removal |
+|---|---|---|
+| 1 | **Entangled** | Cannot perform Dash or Charge actions. Removed by spending 1 AP to break free. |
+| 2 | **Bleeding** | Suffers 1 mortal wound at the end of each activation. Removed with Medicae action. |
+| 3 | **Burning** | Suffers 2 mortal wounds at start of activation. Removed by spending 1 AP to extinguish flames. |
+| 4 | **Suppressed** | -1 APL on next activation. Removed at end of operative's turn. |
+| 5 | **Mist-Infused** | Attacks gain +1 Crit Damage, but operative suffers 1 wound if rolling a 1 on defense. |
+| 6 | **Electrified** | Worsens Weapon Skill (WS) by 1 and cannot use reaction abilities for 1 Turning Point. |
+| 7 | **Corrupted** | Loses 1 wound whenever psychic powers or mist abilities are activated nearby. |
+| 8 | **Disoriented** | Maximum line of sight reduced to 6″ and cannot receive command rerolls. |
+| 9 | **Poisoned** | Suffers 1 mortal wound per action performed during activation until treated. |
+| 10 | **Blinded** | Cannot perform shooting actions; melee WS worsened by 2 for 1 Turning Point. |
+
+---
+
+## 4. Database Scoping & Reference Tagging
+
+- **Database Collection**: Altered States are stored globally in the `Nebryss-assets` database inside the `status` collection.
+- **Entity Reference Tag**: `@alteredstate[<id>]` (e.g. `@alteredstate[3]`) for raw database persistence.
+- **Chat Display**: When presenting status drafts in chat for user review, use clean text (e.g. `Burning`), never raw reference tags.
+
+---
+
+## 5. Companion Tool CLI Commands
+
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+
+```bash
+# Create standard Altered State
+node scripts/campaign-session-tool.js create-altered-state \
+  --name="Chilled" \
+  --effect="Movement is reduced by 2″ and operative cannot perform Dash actions until the end of next activation."
+
+# Update existing Altered State
+node scripts/campaign-session-tool.js update-altered-state \
+  --id=8 \
+  --effect="Maximum line of sight reduced to 6″ and operative cannot receive command rerolls until spending 1 AP to recover focus."
+```
