@@ -89,6 +89,8 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '10. PRESENTATION RULE: When presenting session plans, narrative drafts, entity proposals, or conclusion drafts in chat for user review, DO NOT display raw reference tag syntax (@player[id], @npc[id], @letter[id], @item[id], @weapon[id], etc.); display natural, clean entity names so the text is natural and easy to read.',
       '11. PERSISTENCE RULE: When saving or updating entities and sessions using campaign-session-tool.js, ensure all entity references are converted to exact numeric tags (@player[id], @npc[id], @location[id], @shop[id], @bestiary[id], @letter[id], @item[id], @weapon[id], @weaponrule[id], @alteredstate[id], @affliction[id]).',
       '12. STRICT COLLECTION HANDLING & NO DUAL WRITES: All campaign entities must be stored directly in their specific campaign collection in NebryssCampaignAssets (e.g. `<campaign-prefix>-player`, `<campaign-prefix>-npc`, `<campaign-prefix>-location`, `<campaign-prefix>-shop`, `<campaign-prefix>-letter`). There are no fallback generic collections or dual writes. If the campaign collection is not present or an error is returned indicating that the collection does not exist in database, DO NOT guess or attempt to create fallback collections; immediately inform and prompt the user to indicate the collection/campaign name again.',
+      '13. TWO-TIER COMMAND APPROVAL: All read-only context commands (get-context, list, get-latest, get-entity, list-entities, list-weapons, calculate-pr, clean-text, auto-tag) execute immediately and automatically. Mutation/write commands (save, finalize, create-*, update-*, delete-*) will be staged pending user review. When you execute a mutation command and receive a PENDING_USER_APPROVAL response, inform the user that the command has been staged and prompt them to review and approve it via the interactive card in the UI.',
+      '14. STRICT NO SELF-APPROVAL DIRECTIVE: You must NEVER attempt to pass approval flags (--approved, --force, etc.) when calling campaign-session-tool.js. All mutation/write commands MUST be staged without approval so the user can review and approve them via the UI approval card. The system strictly rejects self-approval from the agent.',
     ].filter(Boolean).join('\n');
   }
 
@@ -188,14 +190,41 @@ function createAgentSession({ onEvent, onError, onClose }) {
             });
           } else if (step.state === 'DONE') {
             console.log(`[AGY Bridge] Tool finished: ${toolName}`);
+            const rawOutput = step.tool_info?.output || '';
+
+            // Check if tool output indicates a staged mutation pending user approval
+            let stagedData = null;
+            try {
+              if (typeof rawOutput === 'string' && rawOutput.includes('PENDING_USER_APPROVAL')) {
+                const parsedOut = JSON.parse(rawOutput.trim());
+                if (parsedOut && parsedOut.requiresApproval) {
+                  stagedData = parsedOut;
+                }
+              }
+            } catch (e) {}
+
             onEvent({
               type: 'tool_result',
               name: toolName,
-              status: 'done',
+              status: stagedData ? 'staged' : 'done',
               summary: summary,
-              output: step.tool_info?.output || '',
+              output: rawOutput,
               stepIndex: step.step_index,
             });
+
+            if (stagedData) {
+              const commandId = 'cmd_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+              onEvent({
+                type: 'pending_command',
+                commandId,
+                command: stagedData.command,
+                rawCommandLine: stagedData.rawCommandLine,
+                summary: stagedData.summary,
+                payload: stagedData.payload,
+                status: 'pending',
+                timestamp: new Date().toISOString()
+              });
+            }
           } else if (step.state === 'ERROR') {
             console.warn(`[AGY Bridge] Tool error: ${toolName}`);
             onEvent({

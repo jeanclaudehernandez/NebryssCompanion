@@ -132,9 +132,160 @@
           <div class="tool-calls" *ngIf="msg.toolCalls && msg.toolCalls.length > 0">
             <div *ngFor="let tc of msg.toolCalls" class="tool-chip"
                  [class.running]="tc.status === 'running'"
-                 [class.done]="tc.status === 'done' || tc.status === 'success'">
-              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : 'check_circle' }}</span>
+                 [class.done]="tc.status === 'done' || tc.status === 'success'"
+                 [class.staged]="tc.status === 'staged'">
+              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : (tc.status === 'staged' ? 'rate_review' : 'check_circle') }}</span>
               <span class="tool-name">{{ tc.summary || tc.name }}</span>
+            </div>
+          </div>
+
+          <!-- Pending / Interactive Mutation Commands -->
+          <div class="pending-commands-container" *ngIf="msg.pendingCommands && msg.pendingCommands.length > 0">
+            <div *ngFor="let cmd of msg.pendingCommands" class="command-approval-card"
+                 [class.status-pending]="cmd.status === 'pending'"
+                 [class.status-approving]="cmd.status === 'approving'"
+                 [class.status-approved]="cmd.status === 'approved'"
+                 [class.status-declined]="cmd.status === 'declined'"
+                 [class.status-error]="cmd.status === 'error'">
+              
+              <!-- Card Header -->
+              <div class="card-header">
+                <div class="header-left">
+                  <span class="material-icons command-type-icon">{{ getCommandIcon(cmd.command) }}</span>
+                  <div class="command-titles">
+                    <span class="command-badge" [class.badge-pending]="cmd.status === 'pending' || cmd.status === 'approving'"
+                          [class.badge-approved]="cmd.status === 'approved'"
+                          [class.badge-declined]="cmd.status === 'declined'"
+                          [class.badge-error]="cmd.status === 'error'">
+                      <span class="material-icons badge-icon" *ngIf="cmd.status === 'pending'">hourglass_empty</span>
+                      <span class="material-icons badge-icon spin" *ngIf="cmd.status === 'approving'">sync</span>
+                      <span class="material-icons badge-icon" *ngIf="cmd.status === 'approved'">check_circle</span>
+                      <span class="material-icons badge-icon" *ngIf="cmd.status === 'declined'">cancel</span>
+                      <span class="material-icons badge-icon" *ngIf="cmd.status === 'error'">error</span>
+                      {{ cmd.status === 'pending' ? 'Review Required' : (cmd.status === 'approving' ? 'Executing...' : (cmd.status === 'approved' ? 'Approved & Applied' : (cmd.status === 'declined' ? 'Declined' : 'Error'))) }}
+                    </span>
+                    <h4 class="command-summary">{{ cmd.summary }}</h4>
+                  </div>
+                </div>
+
+                <div class="header-actions">
+                  <button class="btn-toggle-details" (click)="toggleCommandExpanded(cmd)" [title]="cmd.expanded ? 'Collapse Details' : 'View Full Details & Command'">
+                    <span>{{ cmd.expanded ? 'Hide Details' : 'View Details' }}</span>
+                    <span class="material-icons toggle-arrow">{{ cmd.expanded ? 'expand_less' : 'expand_more' }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Card Details (Parameters, Raw Command & Execution Result) -->
+              <div class="card-details-expanded" *ngIf="cmd.expanded || cmd.status === 'approved' || cmd.status === 'error'">
+                <!-- Approved Result Highlight Card -->
+                <div class="approved-result-box" *ngIf="cmd.status === 'approved' && cmd.result">
+                  <div class="result-success-header">
+                    <span class="material-icons result-success-icon">task_alt</span>
+                    <span class="result-success-title">Successfully applied to database</span>
+                  </div>
+
+                  <!-- Entity Badges & Key Data Highlight -->
+                  <div class="result-entity-card" *ngIf="isObject(cmd.result)">
+                    <div class="entity-highlight-top">
+                      <div class="entity-name-group">
+                        <span class="entity-result-name">{{ cmd.result.name || cmd.result.title || cmd.result.subject || ('Entity #' + cmd.result.id) }}</span>
+                        <span class="entity-id-pill" *ngIf="cmd.result.id">#{{ cmd.result.id }}</span>
+                      </div>
+                      <button class="btn-copy-tag" *ngIf="cmd.result.entityTag || cmd.result.displayTag"
+                              (click)="copyText(cmd.result.entityTag || cmd.result.displayTag, 'Entity tag copied!')"
+                              title="Copy tag for notes and narrative">
+                        <span class="material-icons">sell</span>
+                        <span>{{ cmd.result.entityTag || cmd.result.displayTag }}</span>
+                      </button>
+                    </div>
+
+                    <div class="entity-fields-grid">
+                      <div class="field-item" *ngIf="cmd.result.faction">
+                        <span class="field-label">Faction:</span>
+                        <span class="field-value">{{ cmd.result.faction }}</span>
+                      </div>
+                      <div class="field-item" *ngIf="cmd.result.subgroup">
+                        <span class="field-label">Subgroup:</span>
+                        <span class="field-value">{{ cmd.result.subgroup }}</span>
+                      </div>
+                      <div class="field-item" *ngIf="cmd.result.role">
+                        <span class="field-label">Role:</span>
+                        <span class="field-value">{{ cmd.result.role }}</span>
+                      </div>
+                      <div class="field-item" *ngIf="cmd.result.location">
+                        <span class="field-label">Location:</span>
+                        <span class="field-value">{{ cmd.result.location }}</span>
+                      </div>
+                      <div class="field-item" *ngIf="cmd.result.personality">
+                        <span class="field-label">Personality:</span>
+                        <span class="field-value">{{ cmd.result.personality }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Payload Parameters Table -->
+                <div class="parameters-section" *ngIf="getPayloadEntries(cmd.payload).length > 0 && (cmd.status === 'pending' || cmd.expanded)">
+                  <div class="section-label">Staged Parameters:</div>
+                  <table class="params-table">
+                    <tbody>
+                      <tr *ngFor="let p of getPayloadEntries(cmd.payload)">
+                        <td class="param-key">{{ p.key }}</td>
+                        <td class="param-val">{{ formatPayloadValue(p.value) }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <!-- Raw Command Line Box -->
+                <div class="raw-command-section" *ngIf="cmd.expanded">
+                  <div class="raw-command-header">
+                    <span class="section-label">Raw CLI Command:</span>
+                    <button class="btn-copy-cmd" (click)="copyCommandLine(cmd, $event)" title="Copy full command">
+                      <span class="material-icons">content_copy</span>
+                      <span>Copy</span>
+                    </button>
+                  </div>
+                  <pre class="raw-command-code"><code>{{ cmd.rawCommandLine }}</code></pre>
+                </div>
+
+                <!-- Error Details -->
+                <div class="error-section" *ngIf="cmd.status === 'error' && cmd.error">
+                  <div class="error-header">
+                    <span class="material-icons">error</span>
+                    <span class="section-label">Error Details:</span>
+                  </div>
+                  <div class="error-text">{{ cmd.error }}</div>
+                </div>
+              </div>
+
+              <!-- Action Buttons (Only when pending) -->
+              <div class="card-actions-bar" *ngIf="cmd.status === 'pending' || cmd.status === 'approving'">
+                <button class="btn-approve" (click)="approveCommand(cmd)" [disabled]="cmd.status === 'approving'">
+                  <span class="material-icons" *ngIf="cmd.status !== 'approving'">check</span>
+                  <span class="material-icons spin" *ngIf="cmd.status === 'approving'">sync</span>
+                  <span>{{ cmd.status === 'approving' ? 'Applying...' : 'Approve & Execute' }}</span>
+                </button>
+                <button class="btn-decline" (click)="declineCommand(cmd)" [disabled]="cmd.status === 'approving'">
+                  <span class="material-icons">close</span>
+                  <span>Decline</span>
+                </button>
+              </div>
+
+              <!-- Status Banner (when completed/declined) -->
+              <div class="card-status-footer" *ngIf="cmd.status === 'approved'">
+                <span class="material-icons footer-icon">verified</span>
+                <span>Command successfully applied to database and live campaign state.</span>
+              </div>
+              <div class="card-status-footer declined" *ngIf="cmd.status === 'declined'">
+                <span class="material-icons footer-icon">block</span>
+                <span>Command was declined. No changes were made.</span>
+              </div>
+              <div class="card-status-footer error" *ngIf="cmd.status === 'error'">
+                <span class="material-icons footer-icon">error_outline</span>
+                <span>Execution failed. Review parameters or command line.</span>
+              </div>
             </div>
           </div>
 

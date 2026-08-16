@@ -239,10 +239,10 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
 11. **`nebryss-iphone-click-fixer`**: Diagnoses and fixes iOS Safari / WebKit touch and click events.
 
 ### 9.2 Mandatory Rules of Engagement for Agents
-1. **Chat Confirmation & Approval Protocol**:
-   - **NEVER** write or execute database changes or campaign updates automatically without explicit user approval.
-   - Always present session outlines, newly proposed NPCs, Bestiary statblocks, and narrative drafts **directly in chat**.
-   - Only execute persistence scripts (e.g. `campaign-session-tool.js`) after the user explicitly types approval (e.g. *"approve"*).
+1. **Two-Tier Command Execution & Approval Protocol**:
+   - **Read-Only Context Commands** (`get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag`): Execute automatically in the background to supply the AI with current campaign and world state.
+   - **Mutation & Write Commands** (`save`, `finalize`, `create-*`, `update-*`, `delete-*`): Are staged with an **Interactive Command Approval Card** in the UI. The user can view the full raw command line, inspect formatted parameters, and click **Approve & Execute** or **Decline**.
+   - Always present session outlines, newly proposed NPCs, Bestiary statblocks, and narrative drafts directly in chat for user review.
 2. **Branch Visibility Protocol**:
    - When concluding a session with multiple branches (e.g., Branch A vs. Branch B), **ONLY** the branch chosen and completed by the players must be added to `playerVisibleBranches` (e.g., `["Branch A"]`).
    - Unchosen or alternative branches **MUST NOT** be visible to players (remaining GM-only).

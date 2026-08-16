@@ -17,11 +17,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AiSessionManagerService,
   ChatMessage,
-  ConnectionStatus
+  ConnectionStatus,
+  PendingCommand
 } from './ai-session-manager.service';
 import { CampaignService } from '../campaign.service';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
+import { ToastService } from '../toast.service';
 import { AppView } from '../app-view.types';
 
 interface Campaign {
@@ -72,7 +74,8 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     private readonly campaignService: CampaignService,
     private readonly dataService: DataService,
     private readonly sanitizer: DomSanitizer,
-    private readonly adminService: AdminService
+    private readonly adminService: AdminService,
+    private readonly toastService: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -135,6 +138,20 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .subscribe(event => {
         if (event.type === 'response_end' && event['conversationId']) {
           this.conversationId = event['conversationId'];
+        }
+      });
+
+    // Subscribe to command execution results
+    this.aiService.commandResult$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(res => {
+        this.shouldScrollToBottom = true;
+        if (res.status === 'approved') {
+          this.toastService.show(`✓ Successfully applied: ${res.summary}`, 'success', 4500);
+        } else if (res.status === 'declined') {
+          this.toastService.show(`✕ Declined: ${res.summary}`, 'info', 3000);
+        } else if (res.status === 'error') {
+          this.toastService.show(`⚠️ Execution failed: ${res.error || 'Unknown error'}`, 'error', 6000);
         }
       });
 
@@ -317,6 +334,87 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+  }
+
+  // ─── Command Approval Management ─────────────────────────────
+
+  approveCommand(cmd: PendingCommand): void {
+    if (cmd.status === 'approving' || cmd.status === 'approved') return;
+    this.aiService.approveCommand(cmd);
+    this.toastService.show(`Executing: ${cmd.summary}`, 'info');
+  }
+
+  declineCommand(cmd: PendingCommand): void {
+    if (cmd.status === 'declined' || cmd.status === 'approving') return;
+    this.aiService.declineCommand(cmd);
+    this.toastService.show(`Declined: ${cmd.summary}`, 'info');
+  }
+
+  toggleCommandExpanded(cmd: PendingCommand): void {
+    cmd.expanded = !cmd.expanded;
+  }
+
+  copyCommandLine(cmd: PendingCommand, event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(cmd.rawCommandLine).then(() => {
+        this.toastService.show('Command copied to clipboard!', 'success');
+      });
+    }
+  }
+
+  getPayloadEntries(payload: any): { key: string; value: any }[] {
+    if (!payload || typeof payload !== 'object') return [];
+    return Object.keys(payload).map(key => ({
+      key,
+      value: payload[key]
+    }));
+  }
+
+  getCommandIcon(command: string): string {
+    const c = (command || '').toLowerCase();
+    if (c === 'save') return 'save';
+    if (c === 'finalize') return 'task_alt';
+    if (c.startsWith('create-npc') || c.startsWith('update-npc')) return 'person';
+    if (c.startsWith('create-location') || c.startsWith('update-location')) return 'place';
+    if (c.startsWith('create-shop') || c.startsWith('update-shop')) return 'storefront';
+    if (c.startsWith('create-bestiary') || c.startsWith('update-bestiary') || c.startsWith('create-combat-npc')) return 'pest_control';
+    if (c.startsWith('update-player')) return 'manage_accounts';
+    if (c.startsWith('create-letter') || c.startsWith('update-letter')) return 'mail';
+    if (c.startsWith('create-item') || c.startsWith('update-item')) return 'inventory_2';
+    if (c.startsWith('create-weapon') || c.startsWith('update-weapon')) return 'colorize';
+    if (c.startsWith('create-weapon-rule') || c.startsWith('update-weapon-rule')) return 'gavel';
+    if (c.startsWith('create-altered-state') || c.startsWith('update-altered-state')) return 'warning';
+    if (c.startsWith('create-affliction') || c.startsWith('update-affliction')) return 'healing';
+    if (c.startsWith('delete-') || c === 'delete-entity') return 'delete_forever';
+    return 'terminal';
+  }
+
+  formatPayloadValue(value: any): string {
+    if (value === null || value === undefined) return '';
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value, null, 2);
+      } catch (e) {
+        return String(value);
+      }
+    }
+    return String(value);
+  }
+
+  copyText(text: string, label: string = 'Copied to clipboard!'): void {
+    if (!text) return;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(() => {
+        this.toastService.show(label, 'success');
+      });
+    }
+  }
+
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object' && !Array.isArray(val);
   }
 
   // ─── Utilities ────────────────────────────────────────────────

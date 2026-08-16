@@ -83,6 +83,76 @@ function setupWebSocketServer(server) {
             session.sendMessage(msg.message, msg.campaignId || null);
             break;
 
+          case 'approve_command': {
+            const { commandId, rawCommandLine, command, payload } = msg;
+            console.log(`[AGY WS] Approving command ${commandId}: ${command || rawCommandLine}`);
+
+            let cmdToRun = (rawCommandLine || '').trim();
+            if (!cmdToRun) {
+              ws.send(JSON.stringify({ type: 'command_result', commandId, status: 'error', error: 'Missing rawCommandLine' }));
+              return;
+            }
+            if (!cmdToRun.includes('--approved')) {
+              cmdToRun += ' --approved';
+            }
+
+            const { exec } = require('child_process');
+            const path = require('path');
+            const cwd = path.resolve(__dirname, '../..');
+
+            exec(cmdToRun, { cwd, env: { ...process.env, NEBRYSS_UI_APPROVED: 'true' } }, (error, stdout, stderr) => {
+              if (error) {
+                console.error(`[AGY WS] Error executing approved command:`, error, stderr);
+                if (ws.readyState === WebSocket.OPEN) {
+                  ws.send(JSON.stringify({
+                    type: 'command_result',
+                    commandId,
+                    status: 'error',
+                    error: stderr?.trim() || error.message || 'Execution failed'
+                  }));
+                }
+                return;
+              }
+
+              let parsedResult = null;
+              try {
+                parsedResult = JSON.parse(stdout.trim());
+              } catch (e) {
+                parsedResult = stdout.trim();
+              }
+
+              // Broadcast update to all clients to refresh lists/rosters in real time
+              if (parsedResult && typeof parsedResult === 'object') {
+                const entityType = parsedResult.type || (command ? command.replace(/^(create|update|delete)-/, '') : 'entity');
+                broadcastDataUpdate(entityType, 'UPDATE', parsedResult, payload?.campaignId);
+              }
+
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                  type: 'command_result',
+                  commandId,
+                  status: 'approved',
+                  result: parsedResult
+                }));
+              }
+            });
+            break;
+          }
+
+          case 'decline_command': {
+            const { commandId } = msg;
+            console.log(`[AGY WS] Declining command ${commandId}`);
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'command_result',
+                commandId,
+                status: 'declined',
+                message: 'Command declined by user.'
+              }));
+            }
+            break;
+          }
+
           case 'cancel':
             session.cancel();
             break;

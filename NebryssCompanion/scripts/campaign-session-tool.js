@@ -1337,6 +1337,146 @@ function parseArgJson(raw) {
   }
 }
 
+const MUTATION_COMMANDS = new Set([
+  'save', 'finalize', 'delete-entity',
+  'create-npc', 'update-npc',
+  'create-location', 'update-location',
+  'create-shop', 'update-shop',
+  'create-bestiary', 'update-bestiary', 'create-combat-npc',
+  'update-player',
+  'create-letter', 'update-letter',
+  'create-item', 'update-item',
+  'create-weapon', 'update-weapon',
+  'create-weapon-rule', 'update-weapon-rule',
+  'create-altered-state', 'update-altered-state',
+  'create-affliction', 'update-affliction'
+]);
+
+function isMutationCommand(cmd) {
+  if (!cmd) return false;
+  const c = cmd.toLowerCase();
+  return MUTATION_COMMANDS.has(c) || c.startsWith('create-') || c.startsWith('update-') || c.startsWith('delete-');
+}
+
+function generateMutationSummary(command, params) {
+  const c = (command || '').toLowerCase();
+  const name = params.name ? ` "${params.name}"` : (params.id ? ` #${params.id}` : '');
+  const campaign = params.campaignId ? ` [Campaign ${params.campaignId}]` : '';
+
+  if (c === 'save') {
+    return `Save Session #${params.sessionId || '?'}${campaign}`;
+  }
+  if (c === 'finalize') {
+    return `Finalize Session #${params.sessionId || '?'}${campaign}`;
+  }
+  if (c.startsWith('create-npc')) {
+    return `Create NPC${name}${params.faction ? ` (${params.faction})` : ''}${campaign}`;
+  }
+  if (c.startsWith('update-npc')) {
+    return `Update NPC${name}${campaign}`;
+  }
+  if (c.startsWith('create-location')) {
+    return `Create Location${name}${campaign}`;
+  }
+  if (c.startsWith('update-location')) {
+    return `Update Location${name}${campaign}`;
+  }
+  if (c.startsWith('create-shop')) {
+    return `Create Shop${name}${campaign}`;
+  }
+  if (c.startsWith('update-shop')) {
+    return `Update Shop${name}${campaign}`;
+  }
+  if (c.startsWith('create-bestiary')) {
+    return `Create Bestiary Entry${name}${campaign}`;
+  }
+  if (c.startsWith('update-bestiary')) {
+    return `Update Bestiary Entry${name}${campaign}`;
+  }
+  if (c.startsWith('create-combat-npc')) {
+    return `Create Combat NPC${name}${campaign}`;
+  }
+  if (c.startsWith('update-player')) {
+    return `Update Player${name}${campaign}`;
+  }
+  if (c.startsWith('create-letter')) {
+    return `Create Letter: "${params.subject || params.title || 'Untitled'}"${campaign}`;
+  }
+  if (c.startsWith('update-letter')) {
+    return `Update Letter: "${params.subject || params.title || 'Untitled'}"${campaign}`;
+  }
+  if (c.startsWith('create-item')) {
+    return `Create Item${name}${campaign}`;
+  }
+  if (c.startsWith('update-item')) {
+    return `Update Item${name}${campaign}`;
+  }
+  if (c.startsWith('create-weapon-rule')) {
+    return `Create Weapon Rule${name}`;
+  }
+  if (c.startsWith('update-weapon-rule')) {
+    return `Update Weapon Rule${name}`;
+  }
+  if (c.startsWith('create-weapon')) {
+    return `Create Weapon${name}`;
+  }
+  if (c.startsWith('update-weapon')) {
+    return `Update Weapon${name}`;
+  }
+  if (c.startsWith('create-altered-state')) {
+    return `Create Altered State${name}`;
+  }
+  if (c.startsWith('update-altered-state')) {
+    return `Update Altered State${name}`;
+  }
+  if (c.startsWith('create-affliction')) {
+    return `Create Affliction${name}`;
+  }
+  if (c.startsWith('update-affliction')) {
+    return `Update Affliction${name}`;
+  }
+  if (c.startsWith('delete-') || c === 'delete-entity') {
+    return `Delete ${params.type || 'Entity'}${params.id ? ` #${params.id}` : ''}${campaign}`;
+  }
+  return `${command}${name}${campaign}`;
+}
+
+function parseCliArgs(rawArgs) {
+  const params = {};
+  let currentKey = null;
+  let currentValParts = [];
+
+  function flush() {
+    if (currentKey) {
+      let fullVal = currentValParts.join(' ').trim();
+      if ((fullVal.startsWith('"') && fullVal.endsWith('"')) || (fullVal.startsWith("'") && fullVal.endsWith("'"))) {
+        fullVal = fullVal.slice(1, -1);
+      }
+      params[currentKey] = fullVal;
+      currentKey = null;
+      currentValParts = [];
+    }
+  }
+
+  for (let i = 0; i < rawArgs.length; i++) {
+    const arg = rawArgs[i];
+    if (arg.startsWith('--')) {
+      flush();
+      const eqIdx = arg.indexOf('=');
+      if (eqIdx !== -1) {
+        currentKey = arg.slice(2, eqIdx);
+        currentValParts.push(arg.slice(eqIdx + 1));
+      } else {
+        currentKey = arg.slice(2);
+      }
+    } else if (currentKey) {
+      currentValParts.push(arg);
+    }
+  }
+  flush();
+  return params;
+}
+
 // CLI handler
 async function main() {
   const args = process.argv.slice(2);
@@ -1373,502 +1513,438 @@ Entity Management (via API):
     process.exit(0);
   }
 
+  // Intercept mutation commands without explicit user UI approval or direct interactive TTY
+  const isUiApproved = process.env.NEBRYSS_UI_APPROVED === 'true' || process.env.NEBRYSS_MUTATION_APPROVED === '1';
+  const isInteractiveHumanTty = Boolean(process.stdin.isTTY && process.stdout.isTTY && (args.includes('--approved') || args.includes('--force')));
+  const isApproved = isUiApproved || isInteractiveHumanTty;
+
+  if (isMutationCommand(command) && !isApproved) {
+    const cleanArgs = args.filter(a => a !== '--approved' && a !== '--force');
+    const parsedParams = parseCliArgs(cleanArgs.slice(1));
+    const summary = generateMutationSummary(command, parsedParams);
+
+    // Build accurately escaped and quoted raw command line
+    const quotedArgs = [command];
+    Object.keys(parsedParams).forEach(k => {
+      const v = parsedParams[k];
+      if (v === true || v === '') {
+        quotedArgs.push(`--${k}`);
+      } else {
+        const escaped = String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        quotedArgs.push(`--${k}="${escaped}"`);
+      }
+    });
+
+    const staged = {
+      status: 'PENDING_USER_APPROVAL',
+      requiresApproval: true,
+      command,
+      rawCommandLine: `node NebryssCompanion/scripts/campaign-session-tool.js ${quotedArgs.join(' ')}`,
+      summary,
+      payload: parsedParams,
+      message: `Mutation command '${command}' is staged pending interactive user review and approval in the companion UI.`
+    };
+    console.log(JSON.stringify(staged, null, 2));
+    process.exit(0);
+  }
+
+  const p = parseCliArgs(args.slice(1));
+
   if (command === 'get-context') {
-    const campaignId = args[1] || 1;
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
     const ctx = await getCampaignContext(campaignId);
     console.log(JSON.stringify(ctx, null, 2));
   } else if (command === 'list') {
-    const campaignId = args[1] || null;
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || null);
     let format = 'raw';
-    if (args.includes('--clean')) format = 'clean';
-    else if (args.includes('--expand')) format = 'expand';
+    if (args.includes('--clean') || p.clean) format = 'clean';
+    else if (args.includes('--expand') || p.expand) format = 'expand';
     const sessions = await listSessions(campaignId, format);
     console.log(JSON.stringify(sessions, null, 2));
   } else if (command === 'get-latest') {
-    const campaignId = args[1] || 1;
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
     let format = 'raw';
-    if (args.includes('--clean')) format = 'clean';
-    else if (args.includes('--expand')) format = 'expand';
+    if (args.includes('--clean') || p.clean) format = 'clean';
+    else if (args.includes('--expand') || p.expand) format = 'expand';
     const sessions = await listSessions(campaignId, format);
     const latest = sessions.length ? sessions[sessions.length - 1] : null;
     console.log(JSON.stringify(latest, null, 2));
   } else if (command === 'get-entity') {
-    const entityParams = { campaignId: 1 };
-    let type = args[1];
-    let query = args[2];
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) entityParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
-      else if (arg.startsWith('--id=')) entityParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) entityParams.name = arg.substring('--name='.length);
-    });
-    entityParams.type = type;
-    if (query && !query.startsWith('--')) {
+    const entityParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      type: p.type || args[1],
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined
+    };
+    const query = args[2];
+    if (query && !query.startsWith('--') && !entityParams.id && !entityParams.name) {
       if (/^\d+$/.test(query)) entityParams.id = Number(query);
       else entityParams.name = query;
     }
     const res = await getEntity(entityParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'list-entities' || command === 'read-entities') {
-    const queryParams = { campaignId: 1 };
-    let type = args[1];
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) queryParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
-      else if (arg.startsWith('--filter=')) queryParams.filter = parseArgJson(arg.substring('--filter='.length));
-      else if (arg.startsWith('--search=')) queryParams.search = arg.substring('--search='.length);
-      else if (arg.startsWith('--limit=')) queryParams.limit = Number(arg.split('=')[1]);
-    });
-    queryParams.type = type;
+    const queryParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      type: p.type || args[1],
+      filter: p.filter ? parseArgJson(p.filter) : undefined,
+      search: p.search || undefined,
+      limit: p.limit ? Number(p.limit) : undefined
+    };
     const res = await readEntities(queryParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'delete-entity' || command.startsWith('delete-')) {
-    const deleteParams = { campaignId: 1 };
-    let type = command.startsWith('delete-') && command !== 'delete-entity' ? command.substring('delete-'.length) : args[1];
-    let idArg = command.startsWith('delete-') && command !== 'delete-entity' ? args[1] : args[2];
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) deleteParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--type=')) type = arg.substring('--type='.length);
-      else if (arg.startsWith('--id=')) deleteParams.id = Number(arg.split('=')[1]);
-    });
-    deleteParams.type = type;
-    if (idArg && !idArg.startsWith('--')) {
-      deleteParams.id = Number(idArg);
-    }
+    const isPrefix = command.startsWith('delete-') && command !== 'delete-entity';
+    const type = isPrefix ? command.substring('delete-'.length) : (p.type || args[1]);
+    const rawId = isPrefix ? (args[1] && !args[1].startsWith('--') ? args[1] : p.id) : (args[2] && !args[2].startsWith('--') ? args[2] : p.id);
+    const deleteParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      type,
+      id: rawId !== undefined ? (isNaN(Number(rawId)) ? rawId : Number(rawId)) : undefined
+    };
     const res = await deleteEntity(deleteParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'auto-tag') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : 1;
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
     const context = await getCampaignContext(campaignId);
-    let text = '';
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
-    });
+    let text = p.input || '';
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
     const tagged = autoTagEntities(text, context);
     console.log(tagged);
   } else if (command === 'clean-text') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : 1;
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
     const context = await getCampaignContext(campaignId);
-    let text = '';
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--input=')) text = arg.substring('--input='.length);
-    });
+    let text = p.input || '';
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
     const clean = toCleanText(text, context);
     console.log(clean);
   } else if (command === 'list-weapons') {
-    const query = args[1] || '';
+    const query = args[1] || p.search || p.query || '';
     const results = await listWeapons(query);
     console.log(JSON.stringify(results, null, 2));
   } else if (command === 'calculate-pr') {
     const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
-    let weapons = [];
-    let attributes = { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['human'] };
-    let abilities = [];
-
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--weapons=')) {
-        const rawW = arg.substring('--weapons='.length);
-        weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      if (arg.startsWith('--attributes=')) {
-        const parsed = parseArgJson(arg.substring('--attributes='.length));
-        if (parsed) attributes = parsed;
-      }
-      if (arg.startsWith('--abilities=')) {
-        const parsed = parseArgJson(arg.substring('--abilities='.length));
-        if (parsed && Array.isArray(parsed)) abilities = parsed;
-      }
-    });
+    let weapons = p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [];
+    let attributes = p.attributes ? parseArgJson(p.attributes) : { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['human'] };
+    let abilities = p.abilities ? parseArgJson(p.abilities) : [];
 
     const validatedWeaponIds = validateWeaponsExist(weapons, allWeapons);
     const prRes = calculatePR({ attributes, weapons: validatedWeaponIds, abilities }, allWeapons, allRules);
     console.log(JSON.stringify(prRes, null, 2));
   } else if (command === 'create-npc') {
-    const npcParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) npcParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) npcParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) npcParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) npcParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--role=')) npcParams.role = arg.substring('--role='.length);
-      else if (arg.startsWith('--mission=')) npcParams.mission = arg.substring('--mission='.length);
-      else if (arg.startsWith('--methods=')) npcParams.methods = arg.substring('--methods='.length);
-      else if (arg.startsWith('--personality=')) npcParams.personality = arg.substring('--personality='.length);
-      else if (arg.startsWith('--location=')) npcParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--bestiaryId=')) npcParams.bestiaryId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--reputation=')) npcParams.reputation = arg.substring('--reputation='.length);
-      else if (arg.startsWith('--backstory=')) npcParams.backstory = arg.substring('--backstory='.length);
-      else if (arg.startsWith('--description=')) npcParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--fleetSize=')) npcParams.fleetSize = arg.substring('--fleetSize='.length);
-      else if (arg.startsWith('--flagship=')) npcParams.flagship = arg.substring('--flagship='.length);
-      else if (arg.startsWith('--tactics=')) npcParams.tactics = arg.substring('--tactics='.length);
-      else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
-      else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length)) || [];
-      else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
-    });
+    const npcParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name || '',
+      faction: p.faction || '',
+      subgroup: p.subgroup || '',
+      role: p.role || '',
+      mission: p.mission || '',
+      methods: p.methods || '',
+      personality: p.personality || '',
+      location: p.location || '',
+      bestiaryId: p.bestiaryId ? Number(p.bestiaryId) : undefined,
+      reputation: p.reputation || '',
+      backstory: p.backstory || '',
+      description: p.description || '',
+      fleetSize: p.fleetSize || '',
+      flagship: p.flagship || '',
+      tactics: p.tactics || '',
+      motivations: p.motivations || '',
+      wargear: p.wargear ? parseArgJson(p.wargear) : [],
+      discovered: p.discovered === 'true' || p.discovered === true,
+    };
     const res = await createNPC(npcParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-npc') {
-    const npcParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) npcParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) npcParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) npcParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) npcParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) npcParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--role=')) npcParams.role = arg.substring('--role='.length);
-      else if (arg.startsWith('--mission=')) npcParams.mission = arg.substring('--mission='.length);
-      else if (arg.startsWith('--methods=')) npcParams.methods = arg.substring('--methods='.length);
-      else if (arg.startsWith('--personality=')) npcParams.personality = arg.substring('--personality='.length);
-      else if (arg.startsWith('--location=')) npcParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--bestiaryId=')) npcParams.bestiaryId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--reputation=')) npcParams.reputation = arg.substring('--reputation='.length);
-      else if (arg.startsWith('--backstory=')) npcParams.backstory = arg.substring('--backstory='.length);
-      else if (arg.startsWith('--description=')) npcParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--fleetSize=')) npcParams.fleetSize = arg.substring('--fleetSize='.length);
-      else if (arg.startsWith('--flagship=')) npcParams.flagship = arg.substring('--flagship='.length);
-      else if (arg.startsWith('--tactics=')) npcParams.tactics = arg.substring('--tactics='.length);
-      else if (arg.startsWith('--motivations=')) npcParams.motivations = arg.substring('--motivations='.length);
-      else if (arg.startsWith('--wargear=')) npcParams.wargear = parseArgJson(arg.substring('--wargear='.length));
-      else if (arg.startsWith('--discovered=')) npcParams.discovered = arg.split('=')[1] === 'true';
-    });
+    const npcParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      faction: p.faction || undefined,
+      subgroup: p.subgroup || undefined,
+      role: p.role || undefined,
+      mission: p.mission || undefined,
+      methods: p.methods || undefined,
+      personality: p.personality || undefined,
+      location: p.location || undefined,
+      bestiaryId: p.bestiaryId ? Number(p.bestiaryId) : undefined,
+      reputation: p.reputation || undefined,
+      backstory: p.backstory || undefined,
+      description: p.description || undefined,
+      fleetSize: p.fleetSize || undefined,
+      flagship: p.flagship || undefined,
+      tactics: p.tactics || undefined,
+      motivations: p.motivations || undefined,
+      wargear: p.wargear ? parseArgJson(p.wargear) : undefined,
+      discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,
+    };
     const res = await updateNPC(npcParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-location') {
-    const locParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
-      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
-      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
-      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
-    });
+    const locParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name || '',
+      faction: p.faction || '',
+      description: p.description || '',
+      isCapital: p.isCapital === 'true' || p.isCapital === true,
+      discovered: p.discovered === 'true' || p.discovered === true,
+      category: p.category || '',
+      mapX: p.mapX ? Number(p.mapX) : undefined,
+      mapY: p.mapY ? Number(p.mapY) : undefined,
+      secrets: p.secrets ? parseArgJson(p.secrets) : undefined,
+      rpgMapLayout: p.rpgMapLayout || undefined,
+      imgUrl: p.imgUrl || undefined,
+      thumbnail: p.thumbnail || undefined
+    };
     const res = await createLocation(locParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-location') {
-    const locParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) locParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) locParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) locParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) locParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--description=')) locParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--isCapital=')) locParams.isCapital = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--discovered=')) locParams.discovered = arg.split('=')[1] === 'true';
-      else if (arg.startsWith('--category=')) locParams.category = arg.substring('--category='.length);
-      else if (arg.startsWith('--mapX=')) locParams.mapX = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--mapY=')) locParams.mapY = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--secrets=')) locParams.secrets = parseArgJson(arg.substring('--secrets='.length));
-      else if (arg.startsWith('--rpgMapLayout=')) locParams.rpgMapLayout = arg.substring('--rpgMapLayout='.length);
-      else if (arg.startsWith('--imgUrl=')) locParams.imgUrl = arg.substring('--imgUrl='.length);
-      else if (arg.startsWith('--thumbnail=')) locParams.thumbnail = arg.substring('--thumbnail='.length);
-    });
+    const locParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      faction: p.faction || undefined,
+      description: p.description || undefined,
+      isCapital: p.isCapital !== undefined ? (p.isCapital === 'true' || p.isCapital === true) : undefined,
+      discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,
+      category: p.category || undefined,
+      mapX: p.mapX ? Number(p.mapX) : undefined,
+      mapY: p.mapY ? Number(p.mapY) : undefined,
+      secrets: p.secrets ? parseArgJson(p.secrets) : undefined,
+      rpgMapLayout: p.rpgMapLayout || undefined,
+      imgUrl: p.imgUrl || undefined,
+      thumbnail: p.thumbnail || undefined
+    };
     const res = await updateLocation(locParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-shop') {
-    const shopParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--owner=')) shopParams.owner = arg.substring('--owner='.length);
-      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
-      else if (arg.startsWith('--customItems=')) shopParams.customItems = parseArgJson(arg.substring('--customItems='.length));
-      else if (arg.startsWith('--specialties=')) shopParams.specialties = parseArgJson(arg.substring('--specialties='.length));
-    });
+    const shopParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name || '',
+      location: p.location || '',
+      owner: p.owner || '',
+      items: p.items ? parseArgJson(p.items) : [],
+      customItems: p.customItems ? parseArgJson(p.customItems) : [],
+      specialties: p.specialties ? parseArgJson(p.specialties) : []
+    };
     const res = await createShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-shop') {
-    const shopParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) shopParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) shopParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) shopParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--location=')) shopParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--owner=')) shopParams.owner = arg.substring('--owner='.length);
-      else if (arg.startsWith('--items=')) shopParams.items = parseArgJson(arg.substring('--items='.length));
-      else if (arg.startsWith('--customItems=')) shopParams.customItems = parseArgJson(arg.substring('--customItems='.length));
-      else if (arg.startsWith('--specialties=')) shopParams.specialties = parseArgJson(arg.substring('--specialties='.length));
-    });
+    const shopParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      location: p.location || undefined,
+      owner: p.owner || undefined,
+      items: p.items ? parseArgJson(p.items) : undefined,
+      customItems: p.customItems ? parseArgJson(p.customItems) : undefined,
+      specialties: p.specialties ? parseArgJson(p.specialties) : undefined
+    };
     const res = await updateShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-bestiary') {
-    const bParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) bParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) bParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) bParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) bParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--attributes=')) bParams.attributes = parseArgJson(arg.substring('--attributes='.length));
-      else if (arg.startsWith('--weapons=')) {
-        const rawW = arg.substring('--weapons='.length);
-        bParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--abilities=')) bParams.abilities = parseArgJson(arg.substring('--abilities='.length));
-      else if (arg.startsWith('--deployables=')) bParams.deployables = parseArgJson(arg.substring('--deployables='.length));
-      else if (arg.startsWith('--pr=')) bParams.pr = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--isDiscovered=')) bParams.isDiscovered = arg.split('=')[1] === 'true';
-    });
+    const bParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name || '',
+      faction: p.faction || '',
+      subgroup: p.subgroup || '',
+      attributes: p.attributes ? parseArgJson(p.attributes) : { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['human'] },
+      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
+      abilities: p.abilities ? parseArgJson(p.abilities) : [],
+      deployables: p.deployables ? parseArgJson(p.deployables) : [],
+      pr: p.pr ? Number(p.pr) : undefined,
+      isDiscovered: p.isDiscovered === 'true' || p.isDiscovered === true
+    };
     const res = await createBestiaryEntry(bParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-bestiary') {
-    const bParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) bParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) bParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) bParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) bParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--attributes=')) bParams.attributes = parseArgJson(arg.substring('--attributes='.length));
-      else if (arg.startsWith('--weapons=')) {
-        const rawW = arg.substring('--weapons='.length);
-        bParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--abilities=')) bParams.abilities = parseArgJson(arg.substring('--abilities='.length));
-      else if (arg.startsWith('--deployables=')) bParams.deployables = parseArgJson(arg.substring('--deployables='.length));
-      else if (arg.startsWith('--pr=')) bParams.pr = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--isDiscovered=')) bParams.isDiscovered = arg.split('=')[1] === 'true';
-    });
+    const bParams = {
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      faction: p.faction || undefined,
+      subgroup: p.subgroup || undefined,
+      attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
+      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : undefined,
+      abilities: p.abilities ? parseArgJson(p.abilities) : undefined,
+      deployables: p.deployables ? parseArgJson(p.deployables) : undefined,
+      pr: p.pr ? Number(p.pr) : undefined,
+      isDiscovered: p.isDiscovered !== undefined ? (p.isDiscovered === 'true' || p.isDiscovered === true) : undefined
+    };
     const res = await updateBestiaryEntry(bParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-combat-npc') {
-    const cParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) cParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) cParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--faction=')) cParams.faction = arg.substring('--faction='.length);
-      else if (arg.startsWith('--subgroup=')) cParams.subgroup = arg.substring('--subgroup='.length);
-      else if (arg.startsWith('--role=')) cParams.role = arg.substring('--role='.length);
-      else if (arg.startsWith('--mission=')) cParams.mission = arg.substring('--mission='.length);
-      else if (arg.startsWith('--methods=')) cParams.methods = arg.substring('--methods='.length);
-      else if (arg.startsWith('--personality=')) cParams.personality = arg.substring('--personality='.length);
-      else if (arg.startsWith('--location=')) cParams.location = arg.substring('--location='.length);
-      else if (arg.startsWith('--reputation=')) cParams.reputation = arg.substring('--reputation='.length);
-      else if (arg.startsWith('--backstory=')) cParams.backstory = arg.substring('--backstory='.length);
-      else if (arg.startsWith('--description=')) cParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--attributes=')) cParams.attributes = parseArgJson(arg.substring('--attributes='.length));
-      else if (arg.startsWith('--weapons=')) {
-        const rawW = arg.substring('--weapons='.length);
-        cParams.weapons = rawW.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--abilities=')) cParams.abilities = parseArgJson(arg.substring('--abilities='.length));
-      else if (arg.startsWith('--wargear=')) cParams.wargear = parseArgJson(arg.substring('--wargear='.length));
-      else if (arg.startsWith('--isDiscovered=')) cParams.isDiscovered = arg.split('=')[1] === 'true';
-    });
+    const cParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name || '',
+      faction: p.faction || '',
+      subgroup: p.subgroup || '',
+      role: p.role || '',
+      mission: p.mission || '',
+      methods: p.methods || '',
+      personality: p.personality || '',
+      location: p.location || '',
+      reputation: p.reputation || '',
+      backstory: p.backstory || '',
+      description: p.description || '',
+      attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
+      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
+      abilities: p.abilities ? parseArgJson(p.abilities) : [],
+      wargear: p.wargear ? parseArgJson(p.wargear) : [],
+      isDiscovered: p.isDiscovered === 'true' || p.isDiscovered === true
+    };
     const res = await createCombatNPC(cParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-player') {
-    const pParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) pParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) pParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) pParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--race=')) pParams.race = arg.substring('--race='.length);
-      else if (arg.startsWith('--origin=')) pParams.origin = arg.substring('--origin='.length);
-      else if (arg.startsWith('--gold=')) pParams.gold = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--notes=')) pParams.notes = arg.substring('--notes='.length);
-      else if (arg.startsWith('--talents=')) pParams.talents = parseArgJson(arg.substring('--talents='.length));
-      else if (arg.startsWith('--afflictions=')) pParams.afflictions = parseArgJson(arg.substring('--afflictions='.length));
-      else if (arg.startsWith('--inventory=')) pParams.inventory = parseArgJson(arg.substring('--inventory='.length));
-    });
+    const pParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      race: p.race || undefined,
+      origin: p.origin || undefined,
+      gold: p.gold !== undefined ? Number(p.gold) : undefined,
+      notes: p.notes || undefined,
+      talents: p.talents ? parseArgJson(p.talents) : undefined,
+      afflictions: p.afflictions ? parseArgJson(p.afflictions) : undefined,
+      inventory: p.inventory ? parseArgJson(p.inventory) : undefined
+    };
     const res = await updatePlayer(pParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-letter') {
-    const lParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) lParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--subject=')) lParams.subject = arg.substring('--subject='.length);
-      else if (arg.startsWith('--title=')) lParams.subject = arg.substring('--title='.length);
-      else if (arg.startsWith('--content=')) lParams.content = arg.substring('--content='.length);
-      else if (arg.startsWith('--senderName=')) lParams.senderName = arg.substring('--senderName='.length);
-      else if (arg.startsWith('--senderRole=')) lParams.senderRole = arg.substring('--senderRole='.length);
-      else if (arg.startsWith('--senderAvatarUrl=')) lParams.senderAvatarUrl = arg.substring('--senderAvatarUrl='.length);
-      else if (arg.startsWith('--recipientIds=')) {
-        const raw = arg.substring('--recipientIds='.length);
-        lParams.recipientIds = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--date=')) lParams.date = arg.substring('--date='.length);
-    });
+    const lParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      subject: p.subject || p.title || '',
+      content: p.content || '',
+      senderName: p.senderName || '',
+      senderRole: p.senderRole || '',
+      senderAvatarUrl: p.senderAvatarUrl || '',
+      recipientIds: p.recipientIds ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
+      date: p.date || ''
+    };
     const res = await createLetter(lParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-letter') {
-    const lParams = { campaignId: 1 };
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) lParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--campaignId=')) lParams.campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--subject=')) lParams.subject = arg.substring('--subject='.length);
-      else if (arg.startsWith('--title=')) lParams.subject = arg.substring('--title='.length);
-      else if (arg.startsWith('--content=')) lParams.content = arg.substring('--content='.length);
-      else if (arg.startsWith('--senderName=')) lParams.senderName = arg.substring('--senderName='.length);
-      else if (arg.startsWith('--senderRole=')) lParams.senderRole = arg.substring('--senderRole='.length);
-      else if (arg.startsWith('--senderAvatarUrl=')) lParams.senderAvatarUrl = arg.substring('--senderAvatarUrl='.length);
-      else if (arg.startsWith('--recipientIds=')) {
-        const raw = arg.substring('--recipientIds='.length);
-        lParams.recipientIds = raw.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n));
-      }
-      else if (arg.startsWith('--date=')) lParams.date = arg.substring('--date='.length);
-    });
+    const lParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      id: p.id ? Number(p.id) : undefined,
+      subject: p.subject || p.title || undefined,
+      content: p.content || undefined,
+      senderName: p.senderName || undefined,
+      senderRole: p.senderRole || undefined,
+      senderAvatarUrl: p.senderAvatarUrl || undefined,
+      recipientIds: p.recipientIds ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : undefined,
+      date: p.date || undefined
+    };
     const res = await updateLetter(lParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-item') {
-    const itemParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--name=')) itemParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--type=')) itemParams.type = arg.substring('--type='.length);
-      else if (arg.startsWith('--price=')) itemParams.price = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--description=')) itemParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--effects=')) itemParams.effects = parseArgJson(arg.substring('--effects='.length));
-    });
+    const itemParams = {
+      name: p.name || '',
+      type: p.type || '',
+      price: p.price !== undefined ? Number(p.price) : 0,
+      description: p.description || '',
+      effects: p.effects ? parseArgJson(p.effects) : undefined
+    };
     const res = await createItem(itemParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-item') {
-    const itemParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) itemParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) itemParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--type=')) itemParams.type = arg.substring('--type='.length);
-      else if (arg.startsWith('--price=')) itemParams.price = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--description=')) itemParams.description = arg.substring('--description='.length);
-      else if (arg.startsWith('--effects=')) itemParams.effects = parseArgJson(arg.substring('--effects='.length));
-    });
+    const itemParams = {
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      type: p.type || undefined,
+      price: p.price !== undefined ? Number(p.price) : undefined,
+      description: p.description || undefined,
+      effects: p.effects ? parseArgJson(p.effects) : undefined
+    };
     const res = await updateItem(itemParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-weapon') {
-    const weaponParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--name=')) weaponParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--price=')) weaponParams.price = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--profiles=')) weaponParams.profiles = parseArgJson(arg.substring('--profiles='.length));
-    });
+    const weaponParams = {
+      name: p.name || '',
+      price: p.price !== undefined ? Number(p.price) : 0,
+      profiles: p.profiles ? parseArgJson(p.profiles) : []
+    };
     const res = await createWeapon(weaponParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-weapon') {
-    const weaponParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) weaponParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) weaponParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--price=')) weaponParams.price = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--profiles=')) weaponParams.profiles = parseArgJson(arg.substring('--profiles='.length));
-    });
+    const weaponParams = {
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      price: p.price !== undefined ? Number(p.price) : undefined,
+      profiles: p.profiles ? parseArgJson(p.profiles) : undefined
+    };
     const res = await updateWeapon(weaponParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-weapon-rule') {
-    const ruleParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--name=')) ruleParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) ruleParams.effect = arg.substring('--effect='.length);
-      else if (arg.startsWith('--prModifier=')) ruleParams.prModifier = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
-    });
+    const ruleParams = {
+      name: p.name || '',
+      effect: p.effect || '',
+      prModifier: p.prModifier !== undefined ? (p.prModifier === 'null' ? null : Number(p.prModifier)) : null
+    };
     const res = await createWeaponRule(ruleParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-weapon-rule') {
-    const ruleParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) ruleParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) ruleParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) ruleParams.effect = arg.substring('--effect='.length);
-      else if (arg.startsWith('--prModifier=')) ruleParams.prModifier = arg.split('=')[1] === 'null' ? null : Number(arg.split('=')[1]);
-    });
+    const ruleParams = {
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      effect: p.effect || undefined,
+      prModifier: p.prModifier !== undefined ? (p.prModifier === 'null' ? null : Number(p.prModifier)) : undefined
+    };
     const res = await updateWeaponRule(ruleParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-altered-state') {
-    const stateParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--name=')) stateParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) stateParams.effect = arg.substring('--effect='.length);
-    });
+    const stateParams = {
+      name: p.name || '',
+      effect: p.effect || ''
+    };
     const res = await createAlteredState(stateParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-altered-state') {
-    const stateParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) stateParams.id = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--name=')) stateParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) stateParams.effect = arg.substring('--effect='.length);
-    });
+    const stateParams = {
+      id: p.id ? Number(p.id) : undefined,
+      name: p.name || undefined,
+      effect: p.effect || undefined
+    };
     const res = await updateAlteredState(stateParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-affliction') {
-    const affParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--name=')) affParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) affParams.effect = arg.substring('--effect='.length);
-      else if (arg.startsWith('--treatment=')) affParams.treatment = arg.substring('--treatment='.length);
-      else if (arg.startsWith('--toHeal=')) affParams.toHeal = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--progress=')) affParams.progress = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--statModifications=')) affParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
-    });
+    const affParams = {
+      name: p.name || '',
+      effect: p.effect || '',
+      treatment: p.treatment || '',
+      toHeal: p.toHeal ? Number(p.toHeal) : 1,
+      progress: p.progress ? Number(p.progress) : 0,
+      statModifications: p.statModifications ? parseArgJson(p.statModifications) : {}
+    };
     const res = await createAffliction(affParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-affliction') {
-    const affParams = {};
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--id=')) affParams.id = arg.split('=')[1];
-      else if (arg.startsWith('--name=')) affParams.name = arg.substring('--name='.length);
-      else if (arg.startsWith('--effect=')) affParams.effect = arg.substring('--effect='.length);
-      else if (arg.startsWith('--treatment=')) affParams.treatment = arg.substring('--treatment='.length);
-      else if (arg.startsWith('--toHeal=')) affParams.toHeal = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--progress=')) affParams.progress = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--statModifications=')) affParams.statModifications = parseArgJson(arg.substring('--statModifications='.length));
-    });
+    const affParams = {
+      id: p.id ? p.id : undefined,
+      name: p.name || undefined,
+      effect: p.effect || undefined,
+      treatment: p.treatment || undefined,
+      toHeal: p.toHeal ? Number(p.toHeal) : undefined,
+      progress: p.progress ? Number(p.progress) : undefined,
+      statModifications: p.statModifications ? parseArgJson(p.statModifications) : undefined
+    };
     const res = await updateAffliction(affParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'save') {
-    let campaignId = 1;
-    let sessionId = 1;
-    let content = '';
-    let conclussion = '';
-    let playerVisibleBranches = [];
-    let autoTag = true;
-
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--content=')) content = arg.substring('--content='.length);
-      else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
-      else if (arg.startsWith('--playerVisibleBranches=')) {
-        playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
-      }
-      else if (arg.startsWith('--branches=')) {
-        playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
-      }
-      else if (arg === '--no-auto-tag') {
-        autoTag = false;
-      }
-    });
+    const campaignId = p.campaignId ? Number(p.campaignId) : 1;
+    const sessionId = p.sessionId ? Number(p.sessionId) : 1;
+    const content = p.content || '';
+    const conclussion = p.conclussion || '';
+    const playerVisibleBranches = p.playerVisibleBranches ? p.playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean) : (p.branches ? p.branches.split(',').map(s => s.trim()).filter(Boolean) : []);
+    const autoTag = p['no-auto-tag'] ? false : true;
 
     const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'finalize') {
-    let campaignId = 1;
-    let sessionId = 1;
-    let conclussion = '';
-    let playerVisibleBranches = undefined;
-    let autoTag = true;
-
-    args.slice(1).forEach(arg => {
-      if (arg.startsWith('--campaignId=')) campaignId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--sessionId=')) sessionId = Number(arg.split('=')[1]);
-      else if (arg.startsWith('--conclussion=')) conclussion = arg.substring('--conclussion='.length);
-      else if (arg.startsWith('--playerVisibleBranches=')) {
-        playerVisibleBranches = arg.substring('--playerVisibleBranches='.length).split(',').map(s => s.trim()).filter(Boolean);
-      }
-      else if (arg.startsWith('--branches=')) {
-        playerVisibleBranches = arg.substring('--branches='.length).split(',').map(s => s.trim()).filter(Boolean);
-      }
-      else if (arg === '--no-auto-tag') {
-        autoTag = false;
-      }
-    });
+    const campaignId = p.campaignId ? Number(p.campaignId) : 1;
+    const sessionId = p.sessionId ? Number(p.sessionId) : 1;
+    const conclussion = p.conclussion || '';
+    const playerVisibleBranches = p.playerVisibleBranches ? p.playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean) : (p.branches ? p.branches.split(',').map(s => s.trim()).filter(Boolean) : undefined);
+    const autoTag = p['no-auto-tag'] ? false : true;
 
     const res = await finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));

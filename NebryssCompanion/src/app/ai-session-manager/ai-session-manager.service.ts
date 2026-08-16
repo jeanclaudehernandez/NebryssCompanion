@@ -5,6 +5,19 @@ import { AdminService } from '../admin.service';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
 
+export interface PendingCommand {
+  id: string;
+  command: string;
+  rawCommandLine: string;
+  summary: string;
+  payload?: Record<string, any>;
+  status: 'pending' | 'approving' | 'approved' | 'declining' | 'declined' | 'error';
+  result?: any;
+  error?: string;
+  timestamp: Date;
+  expanded?: boolean;
+}
+
 export interface ChatMessage {
   id: string;
   role: 'user' | 'agent' | 'system';
@@ -12,6 +25,7 @@ export interface ChatMessage {
   timestamp: Date;
   isStreaming?: boolean;
   toolCalls?: ToolCallInfo[];
+  pendingCommands?: PendingCommand[];
 }
 
 export interface ToolCallInfo {
@@ -40,6 +54,9 @@ export class AiSessionManagerService implements OnDestroy {
   private isAgentTypingSubject = new BehaviorSubject<boolean>(false);
   private currentStatusSubject = new BehaviorSubject<string | null>(null);
   private rawEventsSubject = new Subject<AgentEvent>();
+
+  private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
+  public commandResult$ = this.commandResultSubject.asObservable();
 
   // Currently streaming agent message (accumulates tokens)
   private currentStreamingMessage: ChatMessage | null = null;
@@ -221,6 +238,23 @@ export class AiSessionManagerService implements OnDestroy {
         this.finalizeResponse(event['conversationId'], event['status']);
         break;
 
+      case 'pending_command':
+        this.addPendingCommand({
+          id: event['commandId'] || this.generateId(),
+          command: event['command'] || 'unknown',
+          rawCommandLine: event['rawCommandLine'] || '',
+          summary: event['summary'] || event['command'] || 'Command',
+          payload: event['payload'] || {},
+          status: 'pending',
+          timestamp: new Date(),
+          expanded: false
+        });
+        break;
+
+      case 'command_result':
+        this.handleCommandResult(event['commandId'], event['status'], event['result'], event['error'] || event['message']);
+        break;
+
       case 'task_update':
         if (event['summary']) {
           this.currentStatusSubject.next(event['summary']);
@@ -237,6 +271,86 @@ export class AiSessionManagerService implements OnDestroy {
         console.log('[AI Session] Unhandled agent event:', event);
         break;
     }
+  }
+
+  approveCommand(cmd: PendingCommand): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.error('[AI Session] Cannot approve command — WebSocket disconnected');
+      return;
+    }
+    cmd.status = 'approving';
+    this.emitMessages();
+
+    this.ws.send(JSON.stringify({
+      type: 'approve_command',
+      commandId: cmd.id,
+      command: cmd.command,
+      rawCommandLine: cmd.rawCommandLine,
+      payload: cmd.payload,
+    }));
+  }
+
+  declineCommand(cmd: PendingCommand): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      console.error('[AI Session] Cannot decline command — WebSocket disconnected');
+      return;
+    }
+    cmd.status = 'declining';
+    this.emitMessages();
+
+    this.ws.send(JSON.stringify({
+      type: 'decline_command',
+      commandId: cmd.id,
+    }));
+  }
+
+  private addPendingCommand(cmd: PendingCommand): void {
+    const targetMsg = this.currentStreamingMessage || this.getLastAgentMessage();
+    if (!targetMsg) return;
+    if (!targetMsg.pendingCommands) {
+      targetMsg.pendingCommands = [];
+    }
+    if (!targetMsg.pendingCommands.some(c => c.id === cmd.id)) {
+      targetMsg.pendingCommands.push(cmd);
+      this.emitMessages();
+    }
+  }
+
+  private handleCommandResult(commandId: string, status: string, result?: any, error?: string): void {
+    const messages = this.messagesSubject.value;
+    const finalStatus: 'approved' | 'declined' | 'error' = status === 'approved' ? 'approved' : (status === 'declined' ? 'declined' : 'error');
+    for (const msg of messages) {
+      if (msg.pendingCommands) {
+        const cmd = msg.pendingCommands.find(c => c.id === commandId);
+        if (cmd) {
+          cmd.status = finalStatus;
+          cmd.result = result;
+          cmd.error = error;
+          if (finalStatus === 'approved') {
+            cmd.expanded = true;
+          }
+          this.emitMessages();
+          this.commandResultSubject.next({
+            commandId,
+            status: finalStatus,
+            summary: cmd.summary,
+            result,
+            error
+          });
+          return;
+        }
+      }
+    }
+  }
+
+  private getLastAgentMessage(): ChatMessage | null {
+    const messages = this.messagesSubject.value;
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === 'agent') {
+        return messages[i];
+      }
+    }
+    return null;
   }
 
   private appendToken(content: string): void {
