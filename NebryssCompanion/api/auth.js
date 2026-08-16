@@ -577,6 +577,7 @@ function createAuthModule(getDatabasesFn, assetsDir) {
 
 module.exports = {
   createAuthModule,
+  signSessionToken,
   verifySessionToken,
   parseCookies,
   COOKIE_NAME,
