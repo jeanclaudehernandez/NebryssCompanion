@@ -15,6 +15,7 @@ This skill governs the creation, balance, pricing, and category-specific propert
    - `consumable`, `armor`, `ammunition`, `mistEngine`, `shipHull`, `cannon`, `cannonball`, `deployable`, `modification`, `material`, `blueprint`
 2. **Balance Costs & Effects**: Assign an appropriate price in Mistrals and clear mechanical rules.
 3. **Format & Persist**: Output valid JSON matching the exact schema for the selected type, inserting weapon rule references as `/weaponRule/:ID/` and status references as `/status/:ID/`. Stage in MongoDB via `campaign-session-tool.js`.
+4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-item`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity item <id>`), merge changes into the full document, and pass the **entire object with all category-specific fields** (`id`, `name`, `type`, `price`, `description`, and any category properties like `raceReq`, `isEquippable`, `statModifications`, `quantity`, `subtype`, `optimalConditions`, `maxSpeed`, `maxWeight`, `weight`, `shipWounds`, `defense`, `maxCargo`, `ammoType`, `damage`, `part`, `attachedTo`, `bestiaryId`, `blueprintFor`, `buildMaterials`), NOT only the modified fields.
 
 ---
 
@@ -187,19 +188,12 @@ This skill governs the creation, balance, pricing, and category-specific propert
 
 ## 4. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard item
-node scripts/campaign-session-tool.js create-item \
-  --name="Aetheric Healing Balm" \
-  --type="consumable" \
-  --price=15 \
-  --description="Restores 1D3+2 lost Wounds and removes the Bleeding status."
+node scripts/campaign-session-tool.js create-item --name="Aetheric Healing Balm" --type="consumable" --price=15 --description="Restores 1D3+2 lost Wounds and removes the Bleeding status."
 
-# Update existing item
-node scripts/campaign-session-tool.js update-item \
-  --id=12 \
-  --price=22 \
-  --description="Updated description and price."
+# Update existing item (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-item --id=12 --name="Refined Mist Filter Capsule" --type="consumable" --price=22 --description="Purges inhaled toxins and environmental spores. Grants immunity to mist-induced status effects for 2 Turning Points."
 ```

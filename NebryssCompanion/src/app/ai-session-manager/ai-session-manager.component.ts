@@ -404,6 +404,115 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     return String(value);
   }
 
+  rawResultExpanded: Record<string, boolean> = {};
+
+  toggleRawResult(commandId: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.rawResultExpanded[commandId] = !this.rawResultExpanded[commandId];
+  }
+
+  isRawResultExpanded(commandId: string): boolean {
+    return Boolean(this.rawResultExpanded[commandId]);
+  }
+
+  getEntityTag(cmd: PendingCommand): string {
+    if (!cmd.result) return '';
+    if (cmd.result.entityTag) return cmd.result.entityTag;
+    if (cmd.result.displayTag) return cmd.result.displayTag;
+
+    const id = cmd.result.id !== undefined ? cmd.result.id : (cmd.result.sessionId !== undefined ? cmd.result.sessionId : null);
+    if (id === null || id === undefined) return '';
+
+    const c = (cmd.command || '').toLowerCase();
+    if (c.includes('npc')) return `@npc[${id}]`;
+    if (c.includes('location')) return `@location[${id}]`;
+    if (c.includes('shop')) return `@shop[${id}]`;
+    if (c.includes('bestiary')) return `@bestiary[${id}]`;
+    if (c.includes('player')) return `@player[${id}]`;
+    if (c.includes('letter')) return `@letter[${id}]`;
+    if (c.includes('item')) return `@item[${id}]`;
+    if (c.includes('weapon-rule') || c.includes('weaponrule')) return `@weaponrule[${id}]`;
+    if (c.includes('weapon')) return `@weapon[${id}]`;
+    if (c.includes('altered-state') || c.includes('alteredstate')) return `@alteredstate[${id}]`;
+    if (c.includes('affliction')) return `@affliction[${id}]`;
+    if (c.includes('save') || c.includes('finalize') || c.includes('session')) return `@session[${id}]`;
+
+    return `@entity[${id}]`;
+  }
+
+  getEntityDisplayFields(result: any): { label: string; value: string }[] {
+    if (!result || typeof result !== 'object') return [];
+    const fields: { label: string; value: string }[] = [];
+
+    const addField = (label: string, val: any) => {
+      if (val !== undefined && val !== null && val !== '') {
+        if (typeof val === 'object') {
+          try {
+            fields.push({ label, value: JSON.stringify(val) });
+          } catch (e) {
+            fields.push({ label, value: String(val) });
+          }
+        } else {
+          fields.push({ label, value: String(val) });
+        }
+      }
+    };
+
+    addField('Faction', result.faction);
+    addField('Subgroup', result.subgroup);
+    addField('Role', result.role);
+    addField('Location', result.location || result.locationName);
+    addField('Category', result.category);
+    addField('Type', result.type || result.subtype);
+    if (result.price !== undefined) addField('Price', `${result.price} Gold`);
+    if (result.pr !== undefined) addField('PR', String(result.pr));
+    if (result.prModifier !== undefined) addField('PR Mod', result.prModifier > 0 ? `+${result.prModifier}` : String(result.prModifier));
+    addField('Race', result.race || result.raceReq);
+    addField('Origin', result.origin);
+    addField('Personality', result.personality);
+    addField('Mission', result.mission);
+    addField('Effect', result.effect);
+    addField('Treatment', result.treatment);
+    if (result.toHeal !== undefined) addField('To Heal', String(result.toHeal));
+    if (result.sessionId !== undefined) addField('Session #', String(result.sessionId));
+    addField('Date', result.date);
+    addField('Sender', result.senderName || result.senderRole);
+
+    if (result.attributes && typeof result.attributes === 'object') {
+      if (result.attributes.Movement) addField('Movement', `${result.attributes.Movement}"`);
+      if (result.attributes.Wounds) addField('Wounds', String(result.attributes.Wounds));
+      if (result.attributes.Save) addField('Save', `${result.attributes.Save}+`);
+      if (result.attributes.APL) addField('APL', String(result.attributes.APL));
+    }
+
+    if (result.shipWounds) addField('Ship Wounds', String(result.shipWounds));
+    if (result.defense) addField('Defense', String(result.defense));
+    if (result.maxSpeed) addField('Max Speed', String(result.maxSpeed));
+    if (result.maxCargo) addField('Max Cargo', String(result.maxCargo));
+
+    if (Array.isArray(result.weapons) && result.weapons.length > 0) {
+      addField('Weapons', result.weapons.join(', '));
+    }
+    if (Array.isArray(result.playerVisibleBranches) && result.playerVisibleBranches.length > 0) {
+      addField('Visible Branches', result.playerVisibleBranches.join(', '));
+    }
+    if (result.message && !result.name && !result.title) {
+      addField('Message', result.message);
+    }
+
+    return fields;
+  }
+
+  formatJson(val: any): string {
+    if (val === null || val === undefined) return '';
+    if (typeof val === 'string') return val;
+    try {
+      return JSON.stringify(val, null, 2);
+    } catch (e) {
+      return String(val);
+    }
+  }
+
   copyText(text: string, label: string = 'Copied to clipboard!'): void {
     if (!text) return;
     if (navigator.clipboard) {

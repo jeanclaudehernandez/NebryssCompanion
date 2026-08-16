@@ -20,6 +20,7 @@ This skill governs the creation, balance, and stat modification structures of Af
    - For direct mechanical penalties, use structured `statModifications` objects.
    - For purely narrative or situational rules, omit `statModifications` or keep it empty.
 4. **Format & Persist**: Output valid JSON matching the `Affliction` schema and stage the affliction creation in MongoDB via `campaign-session-tool.js`.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-affliction`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity affliction <id>`), merge changes into the full document, and pass the **entire object with all fields** (`id`, `name`, `effect`, `treatment`, `toHeal`, `progress`, `statModifications`), NOT only the modified fields.
 
 ---
 
@@ -72,21 +73,13 @@ This skill governs the creation, balance, and stat modification structures of Af
 
 ## 5. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Affliction
-node scripts/campaign-session-tool.js create-affliction \
-  --name="Mist Lung" \
-  --effect="Breathing causes intense burning spasms. Operative loses 1″ Movement and suffers -1 to Save." \
-  --treatment="Inhale purified steam mixed with Silverleaf tincture (3 treatment cycles)." \
-  --toHeal=3 \
-  --progress=0 \
-  --statModifications='[{"stat":"Movement","mod":-1},{"stat":"Save","mod":-1}]'
+node scripts/campaign-session-tool.js create-affliction --name="Mist Lung" --effect="Breathing causes intense burning spasms. Operative loses 1″ Movement and suffers -1 to Save." --treatment="Inhale purified steam mixed with Silverleaf tincture (3 treatment cycles)." --toHeal=3 --progress=0 --statModifications='[{"stat":"Movement","mod":-1},{"stat":"Save","mod":-1}]'
 
-# Update existing Affliction
-node scripts/campaign-session-tool.js update-affliction \
-  --id="aff-2" \
-  --toHeal=4 \
-  --treatment="Surgical extraction of corrupted flesh at an Imperial medicae facility."
+# Update existing Affliction (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-affliction --id="aff-2" --name="Mist Rot" --effect="Deep cellular necrosis caused by prolonged exposure to high-density mist. Operative loses 1″ Movement and suffers -1 to Save." --treatment="Surgical extraction of corrupted flesh at an Imperial medicae facility (4 treatment cycles)." --toHeal=4 --progress=1 --statModifications='[{"stat":"Movement","mod":-1},{"stat":"Save","mod":-1}]'
 ```
+

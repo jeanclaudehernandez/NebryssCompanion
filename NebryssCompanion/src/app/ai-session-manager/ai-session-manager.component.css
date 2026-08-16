@@ -1206,11 +1206,109 @@ body:not(.dark-theme) .quick-action-btn {
 .result-success-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: space-between;
+  gap: 8px;
   margin-bottom: 8px;
   color: #34d399;
   font-size: 12.5px;
   font-weight: 600;
+}
+
+.header-left-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-toggle-raw-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-toggle-raw-result:hover {
+  background: rgba(16, 185, 129, 0.28);
+  color: #ffffff;
+}
+
+.btn-toggle-raw-result .material-icons {
+  font-size: 13px;
+}
+
+.btn-copy-raw-result {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #6ee7b7;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-copy-raw-result:hover {
+  background: rgba(16, 185, 129, 0.28);
+  color: #ffffff;
+}
+
+.btn-copy-raw-result .material-icons {
+  font-size: 13px;
+}
+
+.result-text-box {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.raw-response-drawer {
+  margin-top: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.raw-response-header {
+  margin-bottom: 4px;
+}
+
+.raw-response-code {
+  margin: 0;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  color: #a7f3d0;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .result-success-icon {
@@ -1562,4 +1660,34 @@ body:not(.dark-theme) .field-label {
 
 body:not(.dark-theme) .field-value {
   color: #0f172a;
+}
+
+body:not(.dark-theme) .result-text-box {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #1e293b;
+}
+
+body:not(.dark-theme) .raw-response-drawer {
+  background: rgba(248, 250, 252, 0.95);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+body:not(.dark-theme) .raw-response-code {
+  background: #ffffff;
+  color: #065f46;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+body:not(.dark-theme) .btn-toggle-raw-result,
+body:not(.dark-theme) .btn-copy-raw-result {
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #047857;
+}
+
+body:not(.dark-theme) .btn-toggle-raw-result:hover,
+body:not(.dark-theme) .btn-copy-raw-result:hover {
+  background: rgba(16, 185, 129, 0.22);
+  color: #065f46;
 }

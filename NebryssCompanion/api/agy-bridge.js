@@ -77,7 +77,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '   - Location: create-location, update-location',
       '   - Shop: create-shop, update-shop',
       '   - Bestiary / Combat: create-bestiary, update-bestiary, create-combat-npc',
-      '   - Player: update-player',
+      '   - Player: create-player, update-player',
       '   - Letter: create-letter, update-letter',
       '   - Item: create-item, update-item',
       '   - Weapon: create-weapon, update-weapon, list-weapons, calculate-pr',
@@ -91,6 +91,8 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '12. STRICT COLLECTION HANDLING & NO DUAL WRITES: All campaign entities must be stored directly in their specific campaign collection in NebryssCampaignAssets (e.g. `<campaign-prefix>-player`, `<campaign-prefix>-npc`, `<campaign-prefix>-location`, `<campaign-prefix>-shop`, `<campaign-prefix>-letter`). There are no fallback generic collections or dual writes. If the campaign collection is not present or an error is returned indicating that the collection does not exist in database, DO NOT guess or attempt to create fallback collections; immediately inform and prompt the user to indicate the collection/campaign name again.',
       '13. TWO-TIER COMMAND APPROVAL: All read-only context commands (get-context, list, get-latest, get-entity, list-entities, list-weapons, calculate-pr, clean-text, auto-tag) execute immediately and automatically. Mutation/write commands (save, finalize, create-*, update-*, delete-*) will be staged pending user review. When you execute a mutation command and receive a PENDING_USER_APPROVAL response, inform the user that the command has been staged and prompt them to review and approve it via the interactive card in the UI.',
       '14. STRICT NO SELF-APPROVAL DIRECTIVE: You must NEVER attempt to pass approval flags (--approved, --force, etc.) when calling campaign-session-tool.js. All mutation/write commands MUST be staged without approval so the user can review and approve them via the UI approval card. The system strictly rejects self-approval from the agent.',
+      '15. STRICT CAMPAIGN ISOLATION: All session planning, history analysis, debriefing, narrative drafting, and entity manipulation workflows must strictly and exclusively target the active campaign. You must completely ignore all other campaigns in the database; never query, reference, mix, or allow characters, plot lines, sessions, or lore from other campaigns to bleed into the active campaign.',
+      '16. CONCISE CONFIRMATIONS (NO UNPROMPTED EXTRA STEPS OR SESSION PROPOSALS): When the user requests creating, updating, or deleting an entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, etc.) and the command completes or is approved, concisely confirm the operation and summarize key details using clean names. Strictly DO NOT suggest unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions unless the user explicitly requested session planning.',
     ].filter(Boolean).join('\n');
   }
 

@@ -18,6 +18,7 @@ This skill governs the creation and column binding of Item Categories (`itemCate
    - `headers`: Array of human-readable column titles (e.g. `["Name", "Price", "Optimal Conditions", "Max Speed", "Max Weight"]`).
    - `keys`: Array of exact `Item` property keys corresponding 1:1 with each header in order (e.g. `["name", "price", "optimalConditions", "maxSpeed", "maxWeight"]`).
 3. **Format & Persist**: Output valid JSON matching the `ItemCategory` schema.
+4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating an Item Category (`PUT /api/itemCategory`), always pass the **entire object with all fields** (`id`, `name`, `key`, `headers`, `keys`), NOT only the modified fields.
 
 ---
 
@@ -65,6 +66,8 @@ This skill governs the creation and column binding of Item Categories (`itemCate
 
 ---
 
-## 4. Database Scoping
+## 4. Database Scoping & API Operations
 
 - **Database Collection**: Item Categories are stored globally in the `Nebryss-assets` database inside the `itemCategory` collection.
+- **Update Rule (`PUT /api/itemCategory`)**: Always send the entire category object (`id`, `name`, `key`, `headers`, `keys`) to prevent losing column configurations during `replaceOne` overwrite.
+

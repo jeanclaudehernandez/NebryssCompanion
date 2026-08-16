@@ -181,47 +181,57 @@
                 <!-- Approved Result Highlight Card -->
                 <div class="approved-result-box" *ngIf="cmd.status === 'approved' && cmd.result">
                   <div class="result-success-header">
-                    <span class="material-icons result-success-icon">task_alt</span>
-                    <span class="result-success-title">Successfully applied to database</span>
+                    <div class="header-left-title">
+                      <span class="material-icons result-success-icon">task_alt</span>
+                      <span class="result-success-title">Successfully applied to database</span>
+                    </div>
+                    <div class="header-right-actions">
+                      <button class="btn-toggle-raw-result" (click)="toggleRawResult(cmd.id, $event)" [title]="isRawResultExpanded(cmd.id) ? 'Hide raw JSON response' : 'View raw JSON response'">
+                        <span class="material-icons">data_object</span>
+                        <span>{{ isRawResultExpanded(cmd.id) ? 'Hide JSON' : 'View JSON' }}</span>
+                      </button>
+                      <button class="btn-copy-raw-result" (click)="copyText(formatJson(cmd.result), 'Response JSON copied!')" title="Copy full response JSON">
+                        <span class="material-icons">content_copy</span>
+                      </button>
+                    </div>
                   </div>
 
-                  <!-- Entity Badges & Key Data Highlight -->
+                  <!-- Entity Badges & Key Data Highlight (Objects) -->
                   <div class="result-entity-card" *ngIf="isObject(cmd.result)">
                     <div class="entity-highlight-top">
                       <div class="entity-name-group">
-                        <span class="entity-result-name">{{ cmd.result.name || cmd.result.title || cmd.result.subject || ('Entity #' + cmd.result.id) }}</span>
+                        <span class="entity-result-name">{{ cmd.result.name || cmd.result.title || cmd.result.subject || (cmd.result.sessionId ? ('Session #' + cmd.result.sessionId) : ('Entity #' + (cmd.result.id || ''))) }}</span>
                         <span class="entity-id-pill" *ngIf="cmd.result.id">#{{ cmd.result.id }}</span>
+                        <span class="entity-id-pill" *ngIf="cmd.result.sessionId && !cmd.result.id">Session #{{ cmd.result.sessionId }}</span>
                       </div>
-                      <button class="btn-copy-tag" *ngIf="cmd.result.entityTag || cmd.result.displayTag"
-                              (click)="copyText(cmd.result.entityTag || cmd.result.displayTag, 'Entity tag copied!')"
+                      <button class="btn-copy-tag" *ngIf="getEntityTag(cmd)"
+                              (click)="copyText(getEntityTag(cmd), 'Entity tag copied!')"
                               title="Copy tag for notes and narrative">
                         <span class="material-icons">sell</span>
-                        <span>{{ cmd.result.entityTag || cmd.result.displayTag }}</span>
+                        <span>{{ getEntityTag(cmd) }}</span>
                       </button>
                     </div>
 
-                    <div class="entity-fields-grid">
-                      <div class="field-item" *ngIf="cmd.result.faction">
-                        <span class="field-label">Faction:</span>
-                        <span class="field-value">{{ cmd.result.faction }}</span>
-                      </div>
-                      <div class="field-item" *ngIf="cmd.result.subgroup">
-                        <span class="field-label">Subgroup:</span>
-                        <span class="field-value">{{ cmd.result.subgroup }}</span>
-                      </div>
-                      <div class="field-item" *ngIf="cmd.result.role">
-                        <span class="field-label">Role:</span>
-                        <span class="field-value">{{ cmd.result.role }}</span>
-                      </div>
-                      <div class="field-item" *ngIf="cmd.result.location">
-                        <span class="field-label">Location:</span>
-                        <span class="field-value">{{ cmd.result.location }}</span>
-                      </div>
-                      <div class="field-item" *ngIf="cmd.result.personality">
-                        <span class="field-label">Personality:</span>
-                        <span class="field-value">{{ cmd.result.personality }}</span>
+                    <!-- Dynamic Entity Display Fields Grid -->
+                    <div class="entity-fields-grid" *ngIf="getEntityDisplayFields(cmd.result).length > 0">
+                      <div class="field-item" *ngFor="let f of getEntityDisplayFields(cmd.result)">
+                        <span class="field-label">{{ f.label }}:</span>
+                        <span class="field-value">{{ f.value }}</span>
                       </div>
                     </div>
+                  </div>
+
+                  <!-- String or Primitive Result Text -->
+                  <div class="result-text-box" *ngIf="!isObject(cmd.result)">
+                    <span class="result-text-content">{{ cmd.result }}</span>
+                  </div>
+
+                  <!-- Expandable Raw JSON Response View -->
+                  <div class="raw-response-drawer" *ngIf="isRawResultExpanded(cmd.id)">
+                    <div class="raw-response-header">
+                      <span class="section-label">Database Response Payload:</span>
+                    </div>
+                    <pre class="raw-response-code"><code>{{ formatJson(cmd.result) }}</code></pre>
                   </div>
                 </div>
 

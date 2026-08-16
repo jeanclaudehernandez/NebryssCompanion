@@ -198,12 +198,14 @@ const COLLECTION_TO_JSON_FILE = {
 };
 
 function resolveLocalJsonFile(collectionName) {
+  const isTrash = collectionName.endsWith('-trash');
+  const cleanName = isTrash ? collectionName.slice(0, -6) : collectionName;
   // Strip campaign prefix (e.g. 'nebryss-voss-succession-location' -> 'location')
-  const baseName = collectionName.includes('-')
-    ? collectionName.split('-').pop()
-    : collectionName;
-  const mapped = COLLECTION_TO_JSON_FILE[baseName] || COLLECTION_TO_JSON_FILE[collectionName] || collectionName;
-  return path.join(assetsDir, `${mapped}.json`);
+  const baseName = cleanName.includes('-')
+    ? cleanName.split('-').pop()
+    : cleanName;
+  const mapped = COLLECTION_TO_JSON_FILE[baseName] || COLLECTION_TO_JSON_FILE[cleanName] || cleanName;
+  return path.join(assetsDir, `${mapped}${isTrash ? '-trash' : ''}.json`);
 }
 
 async function fetchCollection(db, collectionName) {
@@ -388,30 +390,71 @@ function createDeleteRoute(routePath, options) {
     try {
       const dbs = await getDatabases();
       const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const trashCollectionName = `${targetCollection}-trash`;
 
       if (!dbs) {
-        // Local JSON fallback: soft-delete
+        // Local JSON fallback: move to trash file
         const docs = await fetchCollection(null, targetCollection);
-        const idx = docs.findIndex(d => String(d.id) === String(idParam));
+        const idx = docs.findIndex(d => String(d.id) === String(idParam) || (d._id && String(d._id) === String(idParam)));
         if (idx === -1) return res.status(404).json({ error: 'Item not found' });
-        docs[idx].isDeleted = true;
+        const [deletedItem] = docs.splice(idx, 1);
         await saveToLocalJson(targetCollection, docs);
-        notifyChange(collectionName, 'delete', { id: idParam }, campaign);
-        return res.json({ success: true, id: idParam });
+
+        // Move to trash file
+        const trashDocs = await fetchCollection(null, trashCollectionName);
+        const trashEntry = { ...deletedItem, deletedAt: new Date().toISOString() };
+        delete trashEntry.isDeleted;
+        const trashIdx = trashDocs.findIndex(d => String(d.id) === String(idParam) || (d._id && String(d._id) === String(idParam)));
+        if (trashIdx !== -1) {
+          trashDocs[trashIdx] = trashEntry;
+        } else {
+          trashDocs.push(trashEntry);
+        }
+        await saveToLocalJson(trashCollectionName, trashDocs);
+
+        notifyChange(collectionName, 'delete', { id: idParam, deletedItem }, campaign);
+        return res.json({ success: true, id: idParam, movedTo: trashCollectionName, deletedItem });
       }
 
       const db = usePlayersDb ? dbs.playersDb : dbs.mainDb;
       const collection = db.collection(targetCollection);
-      let query = { id: idParam };
-      if (!isNaN(Number(idParam))) {
-        query = { id: { $in: [idParam, Number(idParam)] } };
+      const trashCollection = db.collection(trashCollectionName);
+
+      const strId = String(idParam);
+      const numId = !isNaN(Number(idParam)) ? Number(idParam) : null;
+      const orConditions = [
+        { id: idParam },
+        { id: strId },
+        { sessionId: idParam },
+        { sessionId: strId }
+      ];
+      if (numId !== null) {
+        orConditions.push({ id: numId });
+        orConditions.push({ sessionId: numId });
       }
-      const result = await collection.updateOne(query, { $set: { isDeleted: true } });
-      if (result.matchedCount === 0) {
+      if (typeof idParam === 'string' && /^[0-9a-fA-F]{24}$/.test(idParam) && ObjectId.isValid(idParam)) {
+        try {
+          orConditions.push({ _id: new ObjectId(idParam) });
+        } catch (e) {}
+      }
+
+      const query = { $or: orConditions };
+      const existing = await collection.findOne(query);
+      if (!existing) {
         return res.status(404).json({ error: 'Item not found' });
       }
-      notifyChange(collectionName, 'delete', { id: idParam }, campaign);
-      res.json({ success: true, id: idParam });
+
+      // Upsert document into the trash collection
+      const trashItem = { ...existing, deletedAt: new Date() };
+      delete trashItem.isDeleted;
+      const trashQuery = existing._id ? { _id: existing._id } : { id: existing.id };
+      await trashCollection.replaceOne(trashQuery, trashItem, { upsert: true });
+
+      // Remove from the active collection
+      await collection.deleteOne({ _id: existing._id });
+
+      notifyChange(collectionName, 'delete', { id: idParam, deletedItem: existing }, campaign);
+      res.json({ success: true, id: idParam, movedTo: trashCollectionName, deletedItem: existing });
     } catch (error) {
       console.error(`[API] Error deleting ${collectionName}:`, error);
       res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });

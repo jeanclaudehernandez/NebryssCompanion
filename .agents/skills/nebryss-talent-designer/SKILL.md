@@ -22,6 +22,7 @@ This skill governs the creation, balance, stat modifications, prerequisite trees
    - If the talent mechanically alters operative attributes, add structured `statModifications` objects.
    - Use HTML formatting (e.g., `<strong>+1 die</strong>`) in `effect` for readable rendering in the UI.
 4. **Format Output**: Output valid JSON matching the `Talent` or `TalentCategory` schema.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating a Talent Category (`PUT /api/talent`), always pass the **entire category object with all fields and the full `talents` array** (`id`, `name`, `description`, `talents`), NOT only the modified fields or individual talent slices.
 
 ---
 
@@ -102,6 +103,8 @@ This skill governs the creation, balance, stat modifications, prerequisite trees
 
 ---
 
-## 5. Database Scoping
+## 5. Database Scoping & API Operations
 
 - **Database Collection**: Talents and Talent Categories are stored globally in the `Nebryss-assets` database inside the `talent` collection.
+- **Update Rule (`PUT /api/talent`)**: Always send the entire category object with its complete array of talents to prevent losing existing talents during `replaceOne` document replacement.
+

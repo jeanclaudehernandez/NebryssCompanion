@@ -583,7 +583,7 @@ async function getCampaignContext(campaignId = 1) {
     campaignId: Number(resolvedCampaignId),
     campaign,
     prefix,
-    campaigns: campaigns || [],
+    campaigns: [campaign],
     sessions: campaignSessions,
     players: (players || []).map(p => ({ id: p.id, name: p.name, race: p.race, origin: p.origin })),
     npcs: (npcs || []).map(n => ({ id: n.id, name: n.name, faction: n.faction, role: n.role, location: n.location, bestiaryId: n.bestiaryId })),
@@ -769,6 +769,60 @@ async function updateNPC(npcUpdateData) {
     ...updated,
     entityTag: `@npc[${updatedDoc.id}]`,
     displayTag: `@npc[${updatedDoc.id}: ${updatedDoc.name}]`
+  };
+}
+
+async function createPlayer(playerData) {
+  const { campaignId = 1, ...fields } = playerData;
+  const { campaign } = await resolveCampaign(campaignId);
+  if (!fields.name) {
+    throw new Error('Player requires at least a "name".');
+  }
+
+  const doc = {
+    name: fields.name,
+    race: fields.race || 'Human',
+    origin: fields.origin || '',
+    attributes: typeof fields.attributes === 'string'
+      ? (parseArgJson(fields.attributes) || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] })
+      : (fields.attributes || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] }),
+    weapons: typeof fields.weapons === 'string'
+      ? (fields.weapons.includes(',') ? fields.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(fields.weapons) || []))
+      : (fields.weapons || []),
+    abilities: typeof fields.abilities === 'string'
+      ? (parseArgJson(fields.abilities) || [])
+      : (fields.abilities || []),
+    items: typeof fields.items === 'string'
+      ? (parseArgJson(fields.items) || [])
+      : (fields.items || (typeof fields.inventory === 'string' ? parseArgJson(fields.inventory) : (fields.inventory || []))),
+    progression: typeof fields.progression === 'string'
+      ? (parseArgJson(fields.progression) || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] })
+      : (fields.progression || {
+          talentPoints: fields.talentPoints !== undefined ? Number(fields.talentPoints) : 0,
+          mistrals: {
+            digital: fields.digitalGold !== undefined ? Number(fields.digitalGold) : 0,
+            physical: fields.gold !== undefined ? Number(fields.gold) : 0
+          },
+          talents: typeof fields.talents === 'string' ? (parseArgJson(fields.talents) || []) : (fields.talents || []),
+          afflictions: typeof fields.afflictions === 'string' ? (parseArgJson(fields.afflictions) || []) : (fields.afflictions || []),
+          equipment: typeof fields.equipment === 'string' ? (parseArgJson(fields.equipment) || []) : (fields.equipment || [])
+        })
+  };
+
+  if (fields.gold !== undefined && (!fields.progression || !fields.progression.mistrals)) {
+    if (!doc.progression) doc.progression = { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] };
+    if (!doc.progression.mistrals) doc.progression.mistrals = { digital: 0, physical: 0 };
+    doc.progression.mistrals.physical = Number(fields.gold);
+  }
+
+  if (fields.notes) doc.notes = fields.notes;
+
+  delete doc._id;
+  const created = await apiRequest('/player', 'POST', doc, campaign);
+  return {
+    ...created,
+    entityTag: `@player[${created.id}]`,
+    displayTag: `@player[${created.id}: ${created.name}]`
   };
 }
 
@@ -1402,22 +1456,180 @@ async function deleteEntity({ type, id, campaignId = 1 }) {
     id,
     campaignId: Number(campaignId) || campaignId,
     apiResponse: res,
-    message: `Successfully deleted ${normalizedType} with ID ${id} via API`
+    message: `Successfully moved ${normalizedType} with ID ${id} to ${res?.movedTo || normalizedType + '-trash'}`
   };
 }
 
 function parseArgJson(raw) {
   if (!raw) return null;
-  const str = String(raw).trim();
+  let str = String(raw).trim();
+
+  // Strip wrapping quotes if any (single, double, or escaped quotes)
+  if ((str.startsWith('"') && str.endsWith('"')) || (str.startsWith("'") && str.endsWith("'"))) {
+    str = str.slice(1, -1).trim();
+  }
+  if ((str.startsWith('\\"') && str.endsWith('\\"')) || (str.startsWith("\\'") && str.endsWith("\\'"))) {
+    str = str.slice(2, -2).trim();
+  }
+
+  // Handle base64 encoded JSON
+  if (str.startsWith('base64:')) {
+    try {
+      const decoded = Buffer.from(str.slice(7), 'base64').toString('utf8');
+      return JSON.parse(decoded);
+    } catch (e) {}
+  }
+
+  // 1. Direct JSON parse
   try {
     return JSON.parse(str);
-  } catch (e) {
-    try {
-      return Function(`"use strict"; return (${str});`)();
-    } catch (e2) {
-      return null;
-    }
+  } catch (e) {}
+
+  // 2. Normalize escaped quotes like \" or \\"
+  try {
+    const unescaped = str.replace(/\\"/g, '"');
+    return JSON.parse(unescaped);
+  } catch (e) {}
+
+  // 3. Relaxed JS evaluation
+  try {
+    return Function(`"use strict"; return (${str});`)();
+  } catch (e) {}
+
+  // 4. Tokenizer/Parser for PowerShell-stripped quotes:
+  // e.g. {Movement:6,Wounds:14,Save:4,APL:2,body:[construct,human]}
+  // or [{name:Vigilance,effect:Overwatch attacks hit on 4+ instead of 5+,prModifier:8}]
+  try {
+    const repaired = repairStrippedJson(str);
+    if (repaired !== null && repaired !== undefined) return repaired;
+  } catch (e) {}
+
+  return null;
+}
+
+function repairStrippedJson(input) {
+  if (!input) return null;
+  let s = String(input).trim();
+  let i = 0;
+
+  function skipWhitespace() {
+    while (i < s.length && /\s/.test(s[i])) i++;
   }
+
+  function parseValue() {
+    skipWhitespace();
+    if (i >= s.length) return undefined;
+    const ch = s[i];
+    if (ch === '{') return parseObject();
+    if (ch === '[') return parseArray();
+    if (ch === '"' || ch === "'") return parseQuotedString();
+    return parsePrimitiveOrUnquotedString();
+  }
+
+  function parseQuotedString() {
+    const quote = s[i++];
+    let res = '';
+    while (i < s.length) {
+      if (s[i] === '\\' && i + 1 < s.length) {
+        res += s[i + 1];
+        i += 2;
+      } else if (s[i] === quote) {
+        i++;
+        return res;
+      } else {
+        res += s[i++];
+      }
+    }
+    return res;
+  }
+
+  function parsePrimitiveOrUnquotedString() {
+    let start = i;
+    while (i < s.length && s[i] !== ',' && s[i] !== '}' && s[i] !== ']') {
+      i++;
+    }
+    let val = s.slice(start, i).trim();
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    if (val === 'null') return null;
+    if (val === 'undefined') return undefined;
+    if (!isNaN(Number(val)) && val !== '') return Number(val);
+    if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+      val = val.slice(1, -1);
+    }
+    return val;
+  }
+
+  function parseObject() {
+    i++; // skip '{'
+    const obj = {};
+    skipWhitespace();
+    if (s[i] === '}') {
+      i++;
+      return obj;
+    }
+    while (i < s.length) {
+      skipWhitespace();
+      if (s[i] === '}') {
+        i++;
+        return obj;
+      }
+      let key = '';
+      if (s[i] === '"' || s[i] === "'") {
+        key = parseQuotedString();
+      } else {
+        let keyStart = i;
+        while (i < s.length && s[i] !== ':' && s[i] !== '}' && !/\s/.test(s[i])) {
+          i++;
+        }
+        key = s.slice(keyStart, i).trim();
+      }
+      skipWhitespace();
+      if (s[i] === ':') {
+        i++; // skip ':'
+      }
+      skipWhitespace();
+      const val = parseValue();
+      obj[key] = val;
+      skipWhitespace();
+      if (s[i] === ',') {
+        i++; // skip ','
+      } else if (s[i] === '}') {
+        i++;
+        return obj;
+      }
+    }
+    return obj;
+  }
+
+  function parseArray() {
+    i++; // skip '['
+    const arr = [];
+    skipWhitespace();
+    if (s[i] === ']') {
+      i++;
+      return arr;
+    }
+    while (i < s.length) {
+      skipWhitespace();
+      if (s[i] === ']') {
+        i++;
+        return arr;
+      }
+      const val = parseValue();
+      arr.push(val);
+      skipWhitespace();
+      if (s[i] === ',') {
+        i++; // skip ','
+      } else if (s[i] === ']') {
+        i++;
+        return arr;
+      }
+    }
+    return arr;
+  }
+
+  return parseValue();
 }
 
 const MUTATION_COMMANDS = new Set([
@@ -1426,7 +1638,7 @@ const MUTATION_COMMANDS = new Set([
   'create-location', 'update-location',
   'create-shop', 'update-shop',
   'create-bestiary', 'update-bestiary', 'create-combat-npc',
-  'update-player',
+  'create-player', 'update-player',
   'create-letter', 'update-letter',
   'create-item', 'update-item',
   'create-weapon', 'update-weapon',
@@ -1478,6 +1690,9 @@ function generateMutationSummary(command, params) {
   }
   if (c.startsWith('create-combat-npc')) {
     return `Create Combat NPC${name}${campaign}`;
+  }
+  if (c.startsWith('create-player')) {
+    return `Create Player${name}${campaign}`;
   }
   if (c.startsWith('update-player')) {
     return `Update Player${name}${campaign}`;
@@ -1535,6 +1750,9 @@ function parseCliArgs(rawArgs) {
       if ((fullVal.startsWith('"') && fullVal.endsWith('"')) || (fullVal.startsWith("'") && fullVal.endsWith("'"))) {
         fullVal = fullVal.slice(1, -1);
       }
+      if (currentValParts.length === 0 && fullVal === '') {
+        fullVal = 'true';
+      }
       params[currentKey] = fullVal;
       currentKey = null;
       currentValParts = [];
@@ -1548,7 +1766,11 @@ function parseCliArgs(rawArgs) {
       const eqIdx = arg.indexOf('=');
       if (eqIdx !== -1) {
         currentKey = arg.slice(2, eqIdx);
-        currentValParts.push(arg.slice(eqIdx + 1));
+        let val = arg.slice(eqIdx + 1);
+        if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+          val = val.slice(1, -1);
+        }
+        currentValParts.push(val);
       } else {
         currentKey = arg.slice(2);
       }
@@ -1575,8 +1797,8 @@ Usage:
   node scripts/campaign-session-tool.js get-entity <type> [id or name] [--campaignId=1]
   node scripts/campaign-session-tool.js list-entities <type> [--campaignId=1] [--filter='...'] [--search="..."] [--limit=N]
   node scripts/campaign-session-tool.js delete-entity <type> <id> [--campaignId=1]
-  node scripts/campaign-session-tool.js auto-tag [campaignId] [--input="..."]
-  node scripts/campaign-session-tool.js clean-text [campaignId] [--input="..."]
+  node scripts/campaign-session-tool.js auto-tag [campaignId] --input="..."
+  node scripts/campaign-session-tool.js clean-text [campaignId] --input="..."
   node scripts/campaign-session-tool.js save --campaignId=1 --sessionId=1 [--content="..."] [--conclussion="..."] [--branches="..."]
   node scripts/campaign-session-tool.js finalize --campaignId=1 --sessionId=1 [--conclussion="..."] [--branches="..."]
 
@@ -1585,7 +1807,7 @@ Entity Management (via API):
   - Location:       create-location, update-location
   - Shop:           create-shop, update-shop
   - Bestiary:       create-bestiary, update-bestiary, create-combat-npc
-  - Player:         update-player
+  - Player:         create-player, update-player
   - Letter:         create-letter, update-letter
   - Item:           create-item, update-item
   - Weapon:         create-weapon, update-weapon, list-weapons, calculate-pr
@@ -1610,7 +1832,7 @@ Entity Management (via API):
     const quotedArgs = [command];
     Object.keys(parsedParams).forEach(k => {
       const v = parsedParams[k];
-      if (v === true || v === '') {
+      if (v === 'true' || v === true || v === '') {
         quotedArgs.push(`--${k}`);
       } else {
         const escaped = String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
@@ -1622,7 +1844,7 @@ Entity Management (via API):
       status: 'PENDING_USER_APPROVAL',
       requiresApproval: true,
       command,
-      rawCommandLine: `node NebryssCompanion/scripts/campaign-session-tool.js ${quotedArgs.join(' ')}`,
+      rawCommandLine: `node scripts/campaign-session-tool.js ${quotedArgs.join(' ')} --approved`,
       summary,
       payload: parsedParams,
       message: `Mutation command '${command}' is staged pending interactive user review and approval in the companion UI.`
@@ -1771,15 +1993,22 @@ Entity Management (via API):
       name: p.name || '',
       faction: p.faction || '',
       description: p.description || '',
-      isCapital: p.isCapital === 'true' || p.isCapital === true,
-      discovered: p.discovered === 'true' || p.discovered === true,
       category: p.category || '',
+      categorySize: p.categorySize ? Number(p.categorySize) : undefined,
+      isCapital: p.isCapital === 'true' || p.isCapital === true,
+      isWorldMap: p.isWorldMap === 'true' || p.isWorldMap === true,
       mapX: p.mapX ? Number(p.mapX) : undefined,
       mapY: p.mapY ? Number(p.mapY) : undefined,
+      discovered: p.discovered === 'true' || p.discovered === true,
+      isSecret: p.isSecret === 'true' || p.isSecret === true,
+      isSecretRevealed: p.isSecretRevealed === 'true' || p.isSecretRevealed === true,
       secrets: p.secrets ? parseArgJson(p.secrets) : undefined,
       rpgMapLayout: p.rpgMapLayout || undefined,
+      privateNotes: p.privateNotes || undefined,
       imgUrl: p.imgUrl || undefined,
-      thumbnail: p.thumbnail || undefined
+      thumbnail: p.thumbnail || undefined,
+      notableFeatures: p.notableFeatures ? parseArgJson(p.notableFeatures) : undefined,
+      shops: p.shops ? parseArgJson(p.shops) : undefined
     };
     const res = await createLocation(locParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1790,15 +2019,22 @@ Entity Management (via API):
       name: p.name || undefined,
       faction: p.faction || undefined,
       description: p.description || undefined,
-      isCapital: p.isCapital !== undefined ? (p.isCapital === 'true' || p.isCapital === true) : undefined,
-      discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,
       category: p.category || undefined,
+      categorySize: p.categorySize ? Number(p.categorySize) : undefined,
+      isCapital: p.isCapital !== undefined ? (p.isCapital === 'true' || p.isCapital === true) : undefined,
+      isWorldMap: p.isWorldMap !== undefined ? (p.isWorldMap === 'true' || p.isWorldMap === true) : undefined,
       mapX: p.mapX ? Number(p.mapX) : undefined,
       mapY: p.mapY ? Number(p.mapY) : undefined,
+      discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,
+      isSecret: p.isSecret !== undefined ? (p.isSecret === 'true' || p.isSecret === true) : undefined,
+      isSecretRevealed: p.isSecretRevealed !== undefined ? (p.isSecretRevealed === 'true' || p.isSecretRevealed === true) : undefined,
       secrets: p.secrets ? parseArgJson(p.secrets) : undefined,
       rpgMapLayout: p.rpgMapLayout || undefined,
+      privateNotes: p.privateNotes || undefined,
       imgUrl: p.imgUrl || undefined,
-      thumbnail: p.thumbnail || undefined
+      thumbnail: p.thumbnail || undefined,
+      notableFeatures: p.notableFeatures ? parseArgJson(p.notableFeatures) : undefined,
+      shops: p.shops ? parseArgJson(p.shops) : undefined
     };
     const res = await updateLocation(locParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1806,11 +2042,19 @@ Entity Management (via API):
     const shopParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       name: p.name || '',
+      owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
+      locationId: p.locationId ? Number(p.locationId) : undefined,
+      locationName: p.locationName || undefined,
       location: p.location || '',
-      owner: p.owner || '',
+      description: p.description || '',
+      discovered: p.discovered === 'true' || p.discovered === true,
+      categories: p.categories ? parseArgJson(p.categories) : [],
       items: p.items ? parseArgJson(p.items) : [],
-      customItems: p.customItems ? parseArgJson(p.customItems) : [],
-      specialties: p.specialties ? parseArgJson(p.specialties) : []
+      customItems: p.customItems ? parseArgJson(p.customItems) : undefined,
+      specialties: p.specialties ? parseArgJson(p.specialties) : undefined,
+      paymentMethod: p.paymentMethod ? parseArgJson(p.paymentMethod) : { digital: true, physical: true },
+      imgUrl: p.imgUrl || undefined,
+      thumbnail: p.thumbnail || undefined
     };
     const res = await createShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1819,11 +2063,19 @@ Entity Management (via API):
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
+      owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
+      locationId: p.locationId ? Number(p.locationId) : undefined,
+      locationName: p.locationName || undefined,
       location: p.location || undefined,
-      owner: p.owner || undefined,
+      description: p.description || undefined,
+      discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,
+      categories: p.categories ? parseArgJson(p.categories) : undefined,
       items: p.items ? parseArgJson(p.items) : undefined,
       customItems: p.customItems ? parseArgJson(p.customItems) : undefined,
-      specialties: p.specialties ? parseArgJson(p.specialties) : undefined
+      specialties: p.specialties ? parseArgJson(p.specialties) : undefined,
+      paymentMethod: p.paymentMethod ? parseArgJson(p.paymentMethod) : undefined,
+      imgUrl: p.imgUrl || undefined,
+      thumbnail: p.thumbnail || undefined
     };
     const res = await updateShop(shopParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1882,6 +2134,26 @@ Entity Management (via API):
     };
     const res = await createCombatNPC(cParams);
     console.log(JSON.stringify(res, null, 2));
+  } else if (command === 'create-player') {
+    const pParams = {
+      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      name: p.name,
+      race: p.race || undefined,
+      origin: p.origin || undefined,
+      attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
+      weapons: p.weapons ? (typeof p.weapons === 'string' && p.weapons.includes(',') ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.weapons) || [])) : undefined,
+      abilities: p.abilities ? parseArgJson(p.abilities) : undefined,
+      items: p.items ? parseArgJson(p.items) : (p.inventory ? parseArgJson(p.inventory) : undefined),
+      progression: p.progression ? parseArgJson(p.progression) : undefined,
+      gold: p.gold !== undefined ? Number(p.gold) : undefined,
+      digitalGold: p.digitalGold !== undefined ? Number(p.digitalGold) : undefined,
+      talents: p.talents ? parseArgJson(p.talents) : undefined,
+      afflictions: p.afflictions ? parseArgJson(p.afflictions) : undefined,
+      talentPoints: p.talentPoints !== undefined ? Number(p.talentPoints) : undefined,
+      notes: p.notes || undefined
+    };
+    const res = await createPlayer(pParams);
+    console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-player') {
     const pParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
@@ -1901,12 +2173,16 @@ Entity Management (via API):
     const lParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       subject: p.subject || p.title || '',
-      content: p.content || '',
+      senderId: p.senderId ? Number(p.senderId) : null,
       senderName: p.senderName || '',
       senderRole: p.senderRole || '',
       senderAvatarUrl: p.senderAvatarUrl || '',
-      recipientIds: p.recipientIds ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
-      date: p.date || ''
+      content: p.content || p.message || '',
+      date: p.date || '',
+      recipientIds: p.recipientIds ? (typeof p.recipientIds === 'string' && p.recipientIds.includes(',') ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.recipientIds) || [])) : [],
+      targetNames: p.targetNames ? parseArgJson(p.targetNames) : undefined,
+      readBy: p.readBy ? parseArgJson(p.readBy) : [],
+      isDeleted: p.isDeleted === 'true' || p.isDeleted === true
     };
     const res = await createLetter(lParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1915,12 +2191,16 @@ Entity Management (via API):
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       id: p.id ? Number(p.id) : undefined,
       subject: p.subject || p.title || undefined,
-      content: p.content || undefined,
+      senderId: p.senderId !== undefined ? (p.senderId === 'null' ? null : Number(p.senderId)) : undefined,
       senderName: p.senderName || undefined,
       senderRole: p.senderRole || undefined,
       senderAvatarUrl: p.senderAvatarUrl || undefined,
-      recipientIds: p.recipientIds ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : undefined,
-      date: p.date || undefined
+      content: p.content || p.message || undefined,
+      date: p.date || undefined,
+      recipientIds: p.recipientIds ? (typeof p.recipientIds === 'string' && p.recipientIds.includes(',') ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.recipientIds) || undefined)) : undefined,
+      targetNames: p.targetNames ? parseArgJson(p.targetNames) : undefined,
+      readBy: p.readBy ? parseArgJson(p.readBy) : undefined,
+      isDeleted: p.isDeleted !== undefined ? (p.isDeleted === 'true' || p.isDeleted === true) : undefined
     };
     const res = await updateLetter(lParams);
     console.log(JSON.stringify(res, null, 2));
@@ -1930,6 +2210,25 @@ Entity Management (via API):
       type: p.type || '',
       price: p.price !== undefined ? Number(p.price) : 0,
       description: p.description || '',
+      raceReq: p.raceReq || undefined,
+      isEquippable: p.isEquippable !== undefined ? (p.isEquippable === 'true' || p.isEquippable === true) : undefined,
+      statModifications: p.statModifications ? parseArgJson(p.statModifications) : undefined,
+      quantity: p.quantity ? Number(p.quantity) : undefined,
+      subtype: p.subtype || undefined,
+      optimalConditions: p.optimalConditions || undefined,
+      maxSpeed: p.maxSpeed || undefined,
+      maxWeight: p.maxWeight ? Number(p.maxWeight) : undefined,
+      weight: p.weight ? Number(p.weight) : undefined,
+      shipWounds: p.shipWounds ? Number(p.shipWounds) : undefined,
+      defense: p.defense ? Number(p.defense) : undefined,
+      maxCargo: p.maxCargo ? Number(p.maxCargo) : undefined,
+      ammoType: p.ammoType || undefined,
+      damage: p.damage || undefined,
+      part: p.part || undefined,
+      attachedTo: p.attachedTo ? Number(p.attachedTo) : undefined,
+      bestiaryId: p.bestiaryId ? Number(p.bestiaryId) : undefined,
+      blueprintFor: p.blueprintFor ? Number(p.blueprintFor) : undefined,
+      buildMaterials: p.buildMaterials ? parseArgJson(p.buildMaterials) : undefined,
       effects: p.effects ? parseArgJson(p.effects) : undefined
     };
     const res = await createItem(itemParams);
@@ -1941,6 +2240,25 @@ Entity Management (via API):
       type: p.type || undefined,
       price: p.price !== undefined ? Number(p.price) : undefined,
       description: p.description || undefined,
+      raceReq: p.raceReq || undefined,
+      isEquippable: p.isEquippable !== undefined ? (p.isEquippable === 'true' || p.isEquippable === true) : undefined,
+      statModifications: p.statModifications ? parseArgJson(p.statModifications) : undefined,
+      quantity: p.quantity ? Number(p.quantity) : undefined,
+      subtype: p.subtype || undefined,
+      optimalConditions: p.optimalConditions || undefined,
+      maxSpeed: p.maxSpeed || undefined,
+      maxWeight: p.maxWeight ? Number(p.maxWeight) : undefined,
+      weight: p.weight ? Number(p.weight) : undefined,
+      shipWounds: p.shipWounds ? Number(p.shipWounds) : undefined,
+      defense: p.defense ? Number(p.defense) : undefined,
+      maxCargo: p.maxCargo ? Number(p.maxCargo) : undefined,
+      ammoType: p.ammoType || undefined,
+      damage: p.damage || undefined,
+      part: p.part || undefined,
+      attachedTo: p.attachedTo ? Number(p.attachedTo) : undefined,
+      bestiaryId: p.bestiaryId ? Number(p.bestiaryId) : undefined,
+      blueprintFor: p.blueprintFor ? Number(p.blueprintFor) : undefined,
+      buildMaterials: p.buildMaterials ? parseArgJson(p.buildMaterials) : undefined,
       effects: p.effects ? parseArgJson(p.effects) : undefined
     };
     const res = await updateItem(itemParams);
@@ -2064,6 +2382,7 @@ module.exports = {
   validateWeaponsExist,
   getAllWeaponsAndRules,
   createNPC,
+  createPlayer,
   updatePlayer,
   updateNPC,
   createBestiaryEntry,

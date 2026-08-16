@@ -22,6 +22,7 @@ This skill governs the creation, density scaling, and tactical combat rules of e
    - Write clear tabletop rules for turning point triggers, activation checks, or combat dice modifications.
    - Use HTML formatting tags (`<strong>4+</strong>`, `<strong>1D3 wound</strong>`, `10″`) for bold highlighting in table cards.
 3. **Format & Persist**: Output valid JSON matching the `MistEffect` schema.
+4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating a Mist Effect (`PUT /api/mistEffect`), always pass the **entire object with all fields** (`id`, `effectName`, `densityLevel`, `description`), NOT only the modified fields.
 
 ---
 
@@ -46,6 +47,8 @@ This skill governs the creation, density scaling, and tactical combat rules of e
 
 ---
 
-## 4. Database Scoping
+## 4. Database Scoping & API Operations
 
 - **Database Collection**: Mist Effects are stored globally in the `Nebryss-assets` database inside the `mistEffect` collection.
+- **Update Rule (`PUT /api/mistEffect`)**: When updating existing mist effects, always send the full object (`id`, `effectName`, `densityLevel`, `description`) to avoid wiping out properties during `replaceOne` document replacement.
+

@@ -31,6 +31,7 @@ This skill governs the creation, faction control, interactive world map coordina
    - `notableFeatures`: Array of landmark points (`{ name, description, owner }`).
    - `shops`: Array of embedded merchants (`{ name, description, owner, imgUrl, thumbnail }`).
 6. **Format & Persist**: Output valid JSON matching the `Location` schema and stage in MongoDB via `campaign-session-tool.js`.
+7. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-location`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity location <id> --campaignId=<campaignId>`), merge changes into the full document, and pass the **entire object with all fields** (`campaignId`, `id`, `name`, `faction`, `description`, `category`, `categorySize`, `isCapital`, `isWorldMap`, `mapX`, `mapY`, `discovered`, `isSecret`, `isSecretRevealed`, `secrets`, `rpgMapLayout`, `privateNotes`, `imgUrl`, `thumbnail`, `notableFeatures`, `shops`), NOT only the modified fields.
 
 ---
 
@@ -92,25 +93,13 @@ This skill governs the creation, faction control, interactive world map coordina
 
 ## 4. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Location
-node scripts/campaign-session-tool.js create-location \
-  --campaignId=1 \
-  --name="Whispering Atoll" \
-  --faction="Forces of Nature" \
-  --description="A ring of sharp coral reefs and half-submerged spires shrouded in permanent dense mist." \
-  --category="reef" \
-  --mapX=32.5 \
-  --mapY=74.1 \
-  --discovered=true
+node scripts/campaign-session-tool.js create-location --campaignId=1 --name="Whispering Atoll" --faction="Forces of Nature" --description="A ring of sharp coral reefs and half-submerged spires shrouded in permanent dense mist." --category="reef" --categorySize=3 --isCapital=false --mapX=32.5 --mapY=74.1 --discovered=true
 
-# Update existing Location
-node scripts/campaign-session-tool.js update-location \
-  --campaignId=1 \
-  --id=3 \
-  --discovered=true \
-  --mapX=83.01 \
-  --mapY=53.9
+# Update existing Location (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-location --campaignId=1 --id=3 --name="Whispering Atoll" --faction="Forces of Nature" --description="A ring of sharp coral reefs and half-submerged spires shrouded in permanent dense mist." --category="reef" --categorySize=3 --isCapital=false --isWorldMap=false --mapX=83.01 --mapY=53.9 --discovered=true --isSecret=false --isSecretRevealed=false --secrets='[{"id":"sec-loc-1","title":"Smuggler Sea Cave","content":"Hidden cove with Corsair supplies","isRevealed":false}]' --rpgMapLayout="SECTOR 1: REEF ENTRANCE (SOUTH)\nRazor-sharp reef barriers.\n\nSECTOR 2: CENTRAL LAGOON (CENTER)\nOpen water with floating debris.\n\nSECTOR 3: ANCIENT SPIRE (NORTH)\nSubmerged obsidian tower."
 ```
+

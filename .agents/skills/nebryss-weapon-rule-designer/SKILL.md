@@ -20,6 +20,7 @@ This skill governs the creation, balance, modifier placeholders, and Points Rati
    - Use negative numbers for weapon drawbacks (e.g. `Hot`, `Break`).
    - Use `null` if the rule is purely cosmetic or strictly situational.
 4. **Format & Persist**: Output valid JSON matching the `WeaponRule` schema and stage the entity in MongoDB via `campaign-session-tool.js`.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-weapon-rule`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity weaponrule <id>`), merge changes into the full document, and pass the **entire object with all fields** (`id`, `name`, `effect`, `prModifier`), NOT only the modified fields.
 
 ---
 
@@ -63,17 +64,13 @@ This skill governs the creation, balance, modifier placeholders, and Points Rati
 
 ## 5. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Weapon Rule
-node scripts/campaign-session-tool.js create-weapon-rule \
-  --name="Mist Vortex <x>\"" \
-  --effect="Creates a dense mist vortex of radius <x> inches around the target. All operatives within treat visibility as Obscured." \
-  --prModifier=8
+node scripts/campaign-session-tool.js create-weapon-rule --name="Mist Vortex <x>\"" --effect="Creates a dense mist vortex of radius <x> inches around the target. All operatives within treat visibility as Obscured." --prModifier=8
 
-# Update existing Weapon Rule
-node scripts/campaign-session-tool.js update-weapon-rule \
-  --id=25 \
-  --prModifier=10
+# Update existing Weapon Rule (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-weapon-rule --id=25 --name="Devastating <x>" --effect="Inflicts <x> mortal wounds on a critical hit." --prModifier=10
 ```
+

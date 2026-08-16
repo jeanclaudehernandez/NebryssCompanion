@@ -21,6 +21,7 @@ This skill governs the creation, balance, profile configuration, and special rul
    - `price`: Cost in Mistrals (typically `0` to `250`).
 3. **Assign Special Rules**: Select valid rule IDs from the Weapon Rules compendium table below.
 4. **Format & Persist**: Output valid JSON matching the `Weapon` schema and stage the entity in MongoDB via `campaign-session-tool.js`.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-weapon`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity weapon <id>`), merge changes into the full document, and pass the **entire object with all fields** (`id`, `name`, `price`, `profiles`), NOT only the modified fields.
 
 ---
 
@@ -133,20 +134,15 @@ This skill governs the creation, balance, profile configuration, and special rul
 
 ## 5. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Search weapons
 node scripts/campaign-session-tool.js list-weapons "Plasma"
 
 # Create standard Weapon
-node scripts/campaign-session-tool.js create-weapon \
-  --name="Aetheric Harpoon Gun" \
-  --price=55 \
-  --profiles='[{"profileName":"Standard","rng":12,"attacks":4,"ws":3,"damage":{"min":4,"max":5},"specialRules":[{"ruleId":5,"modValue":3},{"ruleId":34,"modValue":1}],"body":"human","type":"Ranged"}]'
+node scripts/campaign-session-tool.js create-weapon --name="Aetheric Harpoon Gun" --price=55 --profiles='[{"profileName":"Standard","rng":12,"attacks":4,"ws":3,"damage":{"min":4,"max":5},"specialRules":[{"ruleId":5,"modValue":3},{"ruleId":34,"modValue":1}],"body":"human","type":"Ranged"}]'
 
-# Update existing Weapon
-node scripts/campaign-session-tool.js update-weapon \
-  --id=8 \
-  --price=70
+# Update existing Weapon (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-weapon --id=8 --name="Balefire Blade" --price=70 --profiles='[{"profileName":"Standard","rng":0,"attacks":4,"ws":3,"damage":{"min":4,"max":6},"specialRules":[{"ruleId":6,"modValue":null},{"ruleId":21,"modValue":5}],"body":"human","type":"Melee"}]'
 ```

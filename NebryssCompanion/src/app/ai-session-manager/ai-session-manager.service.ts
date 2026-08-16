@@ -220,6 +220,7 @@ export class AiSessionManagerService implements OnDestroy {
         break;
 
       case 'tool_call':
+        this.ensureStreamingMessage();
         this.currentStatusSubject.next(event['summary'] || `Running ${event['name']}`);
         this.addToolCall({
           name: event['name'] || 'unknown',
@@ -279,6 +280,8 @@ export class AiSessionManagerService implements OnDestroy {
       return;
     }
     cmd.status = 'approving';
+    this.isAgentTypingSubject.next(true);
+    this.currentStatusSubject.next(`Executing ${cmd.summary}...`);
     this.emitMessages();
 
     this.ws.send(JSON.stringify({
@@ -296,12 +299,34 @@ export class AiSessionManagerService implements OnDestroy {
       return;
     }
     cmd.status = 'declining';
+    this.isAgentTypingSubject.next(true);
+    this.currentStatusSubject.next(`Declining ${cmd.summary}...`);
     this.emitMessages();
 
     this.ws.send(JSON.stringify({
       type: 'decline_command',
       commandId: cmd.id,
+      command: cmd.command,
+      summary: cmd.summary,
+      payload: cmd.payload,
     }));
+  }
+
+  private ensureStreamingMessage(): ChatMessage {
+    if (!this.currentStreamingMessage) {
+      this.isAgentTypingSubject.next(true);
+      this.currentStreamingMessage = {
+        id: this.generateId(),
+        role: 'agent',
+        content: '',
+        timestamp: new Date(),
+        isStreaming: true,
+        toolCalls: [],
+        pendingCommands: [],
+      };
+      this.addMessage(this.currentStreamingMessage);
+    }
+    return this.currentStreamingMessage;
   }
 
   private addPendingCommand(cmd: PendingCommand): void {
@@ -354,17 +379,17 @@ export class AiSessionManagerService implements OnDestroy {
   }
 
   private appendToken(content: string): void {
-    if (!this.currentStreamingMessage) return;
-    this.currentStreamingMessage.content += content;
+    const msg = this.ensureStreamingMessage();
+    msg.content += content;
     this.emitMessages();
   }
 
   private addToolCall(toolCall: ToolCallInfo): void {
-    if (!this.currentStreamingMessage) return;
-    if (!this.currentStreamingMessage.toolCalls) {
-      this.currentStreamingMessage.toolCalls = [];
+    const msg = this.ensureStreamingMessage();
+    if (!msg.toolCalls) {
+      msg.toolCalls = [];
     }
-    this.currentStreamingMessage.toolCalls.push(toolCall);
+    msg.toolCalls.push(toolCall);
     this.emitMessages();
   }
 

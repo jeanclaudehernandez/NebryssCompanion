@@ -27,6 +27,7 @@ This skill governs the creation, inventory setup, merchant pricing, and location
    - `categories`: Array of numeric `ItemCategory` IDs stocked (e.g., `[1, 2, 3]`).
    - `paymentMethod`: Configure whether the shop accepts digital mistrals, physical coinage, or both (`{ digital: boolean, physical: boolean }`).
 6. **Format & Persist**: Output valid JSON matching the `Shop` schema and stage the shop creation in MongoDB via `campaign-session-tool.js`.
+7. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-shop`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity shop <id> --campaignId=<campaignId>`), merge changes into the full document, and pass the **entire object with all fields** (`campaignId`, `id`, `name`, `owner`, `locationId`, `locationName`, `location`, `description`, `discovered`, `categories`, `items`, `paymentMethod`, `imgUrl`, `thumbnail`), NOT only the modified fields.
 
 ---
 
@@ -76,25 +77,13 @@ This skill governs the creation, inventory setup, merchant pricing, and location
 
 ## 4. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Shop
-node scripts/campaign-session-tool.js create-shop \
-  --campaignId=1 \
-  --name="Aethelgard's Void Armory" \
-  --owner=4 \
-  --locationId=2 \
-  --locationName="Zephyria" \
-  --location="Upper Spires, Promenade 7" \
-  --description="Premier supplier of sanctioned Imperial sidearms and mist-hardened armor." \
-  --items='[{"id":1,"price":50,"type":"item"},{"id":2,"price":15,"type":"item"},{"id":8,"price":85,"type":"weapon"}]' \
-  --paymentMethod='{"digital":true,"physical":false}' \
-  --discovered=true
+node scripts/campaign-session-tool.js create-shop --campaignId=1 --name="Aethelgard's Void Armory" --owner=4 --locationId=2 --locationName="Zephyria" --location="Upper Spires, Promenade 7" --description="Premier supplier of sanctioned Imperial sidearms and mist-hardened armor." --categories='[1,2,3,9]' --items='[{"id":1,"price":50,"type":"item"},{"id":2,"price":15,"type":"item"},{"id":8,"price":85,"type":"weapon"}]' --paymentMethod='{"digital":true,"physical":false}' --discovered=true
 
-# Update existing Shop inventory / price overrides
-node scripts/campaign-session-tool.js update-shop \
-  --campaignId=1 \
-  --id=3 \
-  --items='[{"id":1,"price":40,"type":"item"},{"id":23,"price":35,"type":"weapon"}]'
+# Update existing Shop (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-shop --campaignId=1 --id=3 --name="Aethelgard's Void Armory" --owner=4 --locationId=2 --locationName="Zephyria" --location="Upper Spires, Promenade 7" --description="Premier supplier of sanctioned Imperial sidearms and mist-hardened armor." --categories='[1,2,3,9]' --items='[{"id":1,"price":40,"type":"item"},{"id":2,"price":15,"type":"item"},{"id":8,"price":85,"type":"weapon"},{"id":23,"price":35,"type":"weapon"}]' --paymentMethod='{"digital":true,"physical":false}' --discovered=true
 ```
+

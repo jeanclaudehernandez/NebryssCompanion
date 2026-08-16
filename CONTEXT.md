@@ -243,7 +243,10 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
    - **Read-Only Context Commands** (`get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag`): Execute automatically in the background to supply the AI with current campaign and world state.
    - **Mutation & Write Commands** (`save`, `finalize`, `create-*`, `update-*`, `delete-*`): Are staged with an **Interactive Command Approval Card** in the UI. The user can view the full raw command line, inspect formatted parameters, and click **Approve & Execute** or **Decline**.
    - Always present session outlines, newly proposed NPCs, Bestiary statblocks, and narrative drafts directly in chat for user review.
-2. **Branch Visibility Protocol**:
+2. **Full Object Replacement on Entity Updates (API Overwrite Rule)**:
+   - The backend API processes updates via complete document overwrite (`replaceOne` matching the `id` field).
+   - All update operations (`update-*`) must ALWAYS supply the **complete entity object with all existing and modified fields**, and NEVER send only the modified fields. If any attributes are missing from context, use `get-entity` first to retrieve the complete document before staging the update command.
+3. **Branch Visibility Protocol**:
    - When concluding a session with multiple branches (e.g., Branch A vs. Branch B), **ONLY** the branch chosen and completed by the players must be added to `playerVisibleBranches` (e.g., `["Branch A"]`).
    - Unchosen or alternative branches **MUST NOT** be visible to players (remaining GM-only).
 3. **UI & Styling Standards**:
@@ -258,3 +261,7 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
    - If asked to modify anything that is NOT an entity (source code, templates, styling, scripts, configs, documentation), the agent must instruct that it is not allowed.
 5. **Build & Git Hygiene**:
    - Do **NOT** run automatic build commands (`ng build`, `npm run build`) or git tracking commands (`git status`, `git diff`) unless explicitly instructed.
+6. **Strict Campaign Isolation (Ignore All Other Campaigns)**:
+   - All workflows (session planning, context fetching, previous session analysis, debriefing, narrative drafting, and entity manipulation) must strictly and exclusively target the active campaign. Never query, inspect, mix, reference, or allow narrative elements, plot hooks, sessions, or entities from other campaigns to bleed into the active campaign workflow. All other campaigns in the database must be completely ignored.
+7. **Concise Entity Operation Responses (No Unprompted Extra Steps or Session Proposals)**:
+   - When creating, updating, or deleting an entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, Weapon Rule, Altered State, Affliction), upon execution or approval, provide a concise confirmation highlighting the entity details. Strictly do NOT suggest unprompted extra steps, pitch unsolicited follow-up tasks, or propose creating new campaign sessions unless the user explicitly requested session planning.

@@ -22,6 +22,7 @@ This skill governs the creation, balancing, editing, and database formatting of 
    - For narrative/civilian NPCs: Omit `bestiaryId` or set to `null`.
    - For combatant/boss NPCs: Link to an existing `bestiaryId` or create a linked Bestiary creature via `create-combat-npc`.
 4. **Format & Persist**: Output valid JSON matching the `NPC` schema and stage the entity creation in MongoDB via `campaign-session-tool.js`.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-npc`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity npc <id> --campaignId=<campaignId>`), merge changes into the full document, and pass the **entire object with all fields** (`campaignId`, `id`, `name`, `factionId`, `subgroup`, `role`, `personality`, `mission`, `methods`, `location`, `bestiaryId`, `reputation`, `backstory`, `description`, `fleetSize`, `flagship`, `tactics`, `motivations`, `discovered`, `imgUrl`, `thumbnail`, `wargear`), NOT only the modified fields.
 
 ---
 
@@ -70,39 +71,16 @@ This skill governs the creation, balancing, editing, and database formatting of 
 
 ## 4. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard NPC
-node scripts/campaign-session-tool.js create-npc \
-  --campaignId=1 \
-  --name="Inquisitor Vontis Mortis" \
-  --factionId=1 \
-  --subgroup="Ordo Hereticus" \
-  --role="Witch Hunter & High Justiciar" \
-  --location="Fortress Sanctus" \
-  --personality="Zealous, merciless, analytical" \
-  --mission="Purge all Voss claimants consorting with the Mist" \
-  --methods="Interrogation, orbital blockades, localized purges" \
-  --wargear='[{"name":"Sanctified Power Sword","description":"Blessed against warp corruption"}]' \
-  --discovered=true
+node scripts/campaign-session-tool.js create-npc --campaignId=1 --name="Inquisitor Vontis Mortis" --factionId=1 --subgroup="Ordo Hereticus" --role="Witch Hunter & High Justiciar" --location="Fortress Sanctus" --personality="Zealous, merciless, analytical" --mission="Purge all Voss claimants consorting with the Mist" --methods="Interrogation, orbital blockades, localized purges" --wargear='[{"name":"Sanctified Power Sword","description":"Blessed against warp corruption"}]' --discovered=true
 
 # Create Dual Combat NPC (creates Bestiary entry + linked NPC in one atomic step)
-node scripts/campaign-session-tool.js create-combat-npc \
-  --campaignId=1 \
-  --name="Varlock the Red" \
-  --factionId=5 \
-  --subgroup="Crimson Corsairs" \
-  --role="Corsair Raidmaster" \
-  --location="Brinewake Isle" \
-  --weapons="2,52" \
-  --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":3,"body":["human"]}' \
-  --abilities='[{"name":"Bloodlust","effect":"+1 Attack when charging","prModifier":10}]'
+node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Varlock the Red" --factionId=5 --subgroup="Crimson Corsairs" --role="Corsair Raidmaster" --location="Brinewake Isle" --weapons="2,52" --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":3,"body":["human"]}' --abilities='[{"name":"Bloodlust","effect":"+1 Attack when charging","prModifier":10}]'
 
-# Update existing NPC
-node scripts/campaign-session-tool.js update-npc \
-  --campaignId=1 \
-  --id=5 \
-  --location="Zephyria Sky Docks" \
-  --discovered=true
+# Update existing NPC (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-npc --campaignId=1 --id=5 --name="Master Artificer Locke" --factionId=2 --subgroup="Merchant Syndicate" --role="Master Artificer of the Celestial Exchange" --personality="Shrewd, calculating, polite with an undercurrent of menace" --mission="Secure ancient archeotech mist-engines before the Inquisition intervenes" --methods="Employs stealth agents, black-market contracts, and economic leverage" --location="Zephyria Sky Docks" --bestiaryId=42 --reputation="Known across the archipelago for fair prices and ruthless enforcement" --backstory="A former Imperial void-master who defected to the Gilded Accord..." --description="A tall cybernetically augmented merchant clad in silk robes and brass bionics." --discovered=true --wargear='[{"name":"Master-Crafted Plasma Pistol","description":"Custom heatsink engraved with the Accord crest"}]'
 ```
+

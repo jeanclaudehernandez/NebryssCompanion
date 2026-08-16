@@ -16,6 +16,7 @@ This skill governs the creation, duration rules, and mechanical definitions of A
    - Specify the exact mechanical effect (damage over time, movement reduction, AP loss, or visibility penalty).
    - Specify clear removal / recovery conditions (e.g., spending 1 AP to extinguish, rolling at start of turn, taking medicae action).
 3. **Format & Persist**: Output valid JSON matching the `AlteredState` schema and stage the entity creation in MongoDB via `campaign-session-tool.js`.
+4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-altered-state`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity alteredstate <id>`), merge changes into the full document, and pass the **entire object with all fields** (`id`, `name`, `effect`), NOT only the modified fields.
 
 ---
 
@@ -60,16 +61,13 @@ When designing weapons, spells, or abilities, reference these core existing stat
 
 ## 5. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Altered State
-node scripts/campaign-session-tool.js create-altered-state \
-  --name="Chilled" \
-  --effect="Movement is reduced by 2″ and operative cannot perform Dash actions until the end of next activation."
+node scripts/campaign-session-tool.js create-altered-state --name="Chilled" --effect="Movement is reduced by 2″ and operative cannot perform Dash actions until the end of next activation."
 
-# Update existing Altered State
-node scripts/campaign-session-tool.js update-altered-state \
-  --id=8 \
-  --effect="Maximum line of sight reduced to 6″ and operative cannot receive command rerolls until spending 1 AP to recover focus."
+# Update existing Altered State (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-altered-state --id=8 --name="Disoriented" --effect="Maximum line of sight reduced to 6″ and operative cannot receive command rerolls until spending 1 AP to recover focus."
 ```
+

@@ -25,6 +25,7 @@ This skill governs the creation, narrative tone, recipient tracking, and formatt
    - `readBy`: Array of player IDs who have opened and read the letter (typically initialized to empty `[]` or `[1]`).
    - `isDeleted`: Soft deletion flag (`false` by default).
 4. **Format & Persist**: Output valid JSON matching the `Letter` schema and stage the entity in MongoDB via `campaign-session-tool.js`.
+5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-letter`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity letter <id> --campaignId=<campaignId>`), merge changes into the full document, and pass the **entire object with all fields** (`campaignId`, `id`, `subject`, `senderId`, `senderName`, `content` / `message`, `date`, `recipientIds`, `targetNames`, `readBy`, `isDeleted`), NOT only the modified fields.
 
 ---
 
@@ -66,21 +67,13 @@ This skill governs the creation, narrative tone, recipient tracking, and formatt
 
 ## 4. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Create standard Letter
-node scripts/campaign-session-tool.js create-letter \
-  --campaignId=1 \
-  --subject="Warning from the Docks" \
-  --senderName="Old Salt Brand" \
-  --content="<div>Keep your crews away from the eastern reef. The Corsairs have mined the narrows.</div>" \
-  --date="0.112.088.M42" \
-  --recipientIds="1,2"
+node scripts/campaign-session-tool.js create-letter --campaignId=1 --subject="Warning from the Docks" --senderName="Old Salt Brand" --content="<div>Keep your crews away from the eastern reef. The Corsairs have mined the narrows.</div>" --date="0.112.088.M42" --recipientIds="1,2"
 
-# Update existing Letter
-node scripts/campaign-session-tool.js update-letter \
-  --campaignId=1 \
-  --id=5 \
-  --subject="Voss Flagship Charter (Decrypted)"
+# Update existing Letter (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-letter --campaignId=1 --id=5 --subject="Voss Flagship Charter (Decrypted)" --senderId=3 --senderName="Master Navigator Seneschal Darius Mountain" --content="<div><b>DECRYPTED IMPERIAL DISPATCH</b></div><br><p>The coordinates of the hidden Voss cache have been verified north of Griefwater Cay.</p>" --date="0.458.015.M42" --recipientIds="1,2,3" --targetNames='["Wendy","House Voss Claimants"]' --readBy='[1]' --isDeleted=false
 ```
+

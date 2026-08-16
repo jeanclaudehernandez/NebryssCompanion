@@ -31,6 +31,7 @@ This skill governs the creation, balance formulas, weapon restrictions, and stat
 5. **Calculate Exact Points Rating (PR)**:
    - Run `calculate-pr` tool or use the mathematical formula to compute exact points.
 6. **Format & Persist**: Output valid JSON matching the `BestiaryEntry` schema and stage in MongoDB via `campaign-session-tool.js`.
+7. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-bestiary`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity bestiary <id>`), merge changes into the full document, recalculate PR if attributes/weapons/abilities changed, and pass the **entire object with all fields** (`id`, `name`, `factionId`, `subgroup`, `pr`, `attributes`, `weapons`, `abilities`, `deployables`, `isDiscovered`, `discoveredCampaignIds`), NOT only the modified fields.
 
 ---
 
@@ -111,37 +112,21 @@ Where:
 
 ## 6. Companion Tool CLI Commands
 
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval):
+Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
 
 ```bash
 # Search valid weapons
 node scripts/campaign-session-tool.js list-weapons "Chainsword"
 
 # Calculate exact PR before creating
-node scripts/campaign-session-tool.js calculate-pr \
-  --weapons="2,23" \
-  --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' \
-  --abilities='[{"name":"Vigilance","effect":"Overwatch attacks hit on 4+ instead of 5+","prModifier":8}]'
+node scripts/campaign-session-tool.js calculate-pr --weapons="2,23" --attributes='{"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}' --abilities='[{"name":"Vigilance","effect":"Overwatch attacks hit on 4+ instead of 5+","prModifier":8}]'
 
 # Create Bestiary Entry
-node scripts/campaign-session-tool.js create-bestiary \
-  --name="Zephyrian Guard Automaton" \
-  --factionId=2 \
-  --subgroup="Construct" \
-  --weapons="2,23" \
-  --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":2,"body":["construct","human"]}' \
-  --abilities='[{"name":"Reinforced Frame","effect":"Ignore the first mortal wound taken per turning point","prModifier":10}]' \
-  --isDiscovered=true
+node scripts/campaign-session-tool.js create-bestiary --name="Zephyrian Guard Automaton" --factionId=2 --subgroup="Construct" --weapons="2,23" --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":2,"body":["construct","human"]}' --abilities='[{"name":"Reinforced Frame","effect":"Ignore the first mortal wound taken per turning point","prModifier":10}]' --isDiscovered=true
 
 # Create Combined Combat NPC
-node scripts/campaign-session-tool.js create-combat-npc \
-  --campaignId=1 \
-  --name="Captain Vane" \
-  --factionId=5 \
-  --subgroup="Crimson Corsairs" \
-  --role="Pirate Captain" \
-  --location="Brinewake Isle" \
-  --weapons="8,52" \
-  --attributes='{"Movement":6,"Wounds":16,"Save":3,"APL":3,"body":["human"]}' \
-  --abilities='[{"name":"Lead from the Front","effect":"Friendly operatives within 6″ gain +1 to hit","prModifier":15}]'
+node scripts/campaign-session-tool.js create-combat-npc --campaignId=1 --name="Captain Vane" --factionId=5 --subgroup="Crimson Corsairs" --role="Pirate Captain" --location="Brinewake Isle" --weapons="8,52" --attributes='{"Movement":6,"Wounds":16,"Save":3,"APL":3,"body":["human"]}' --abilities='[{"name":"Lead from the Front","effect":"Friendly operatives within 6″ gain +1 to hit","prModifier":15}]'
+
+# Update existing Bestiary Entry (Send the COMPLETE object with all fields)
+node scripts/campaign-session-tool.js update-bestiary --id=14 --name="Zephyrian Guard Automaton (Refurbished)" --factionId=2 --subgroup="Construct" --weapons="2,23" --attributes='{"Movement":6,"Wounds":16,"Save":3,"APL":2,"body":["construct","human"]}' --abilities='[{"name":"Reinforced Frame","effect":"Ignore the first mortal wound taken per turning point","prModifier":10}]' --isDiscovered=true --pr=92
 ```
