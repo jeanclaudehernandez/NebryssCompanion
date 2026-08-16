@@ -51,48 +51,103 @@ function notifyChange(entity, action, data, campaign) {
   }
 }
 
-function getCampaignCollectionName(campaign, defaultCollection) {
+// --- Campaign resolution by ID (server-side prefix lookup with cache) ---
+const campaignCache = new Map(); // campaignId -> { campaign, prefix, ts }
+const CAMPAIGN_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+async function resolveCampaignPrefix(campaignId) {
+  if (campaignId === undefined || campaignId === null) {
+    throw new Error('campaignId is required for campaign-scoped collections.');
+  }
+  const key = String(campaignId);
+  const cached = campaignCache.get(key);
+  if (cached && (Date.now() - cached.ts < CAMPAIGN_CACHE_TTL)) {
+    return { campaign: cached.campaign, prefix: cached.prefix };
+  }
+
+  const dbs = await getDatabases();
+  let campaign = null;
+  const numId = !isNaN(Number(campaignId)) ? Number(campaignId) : null;
+
+  if (dbs) {
+    const collection = dbs.mainDb.collection('campaign');
+    const orConditions = [{ id: key }];
+    if (numId !== null) orConditions.push({ id: numId });
+    campaign = await collection.findOne({ $or: orConditions, isDeleted: { $ne: true } });
+  } else {
+    // Local JSON fallback
+    const docs = await fetchCollection(null, 'campaign');
+    campaign = docs.find(c =>
+      String(c.id) === key || (numId !== null && c.id === numId)
+    );
+  }
+
   if (!campaign) {
-    throw new Error(`Campaign context is required for collection '${defaultCollection}'. No active campaign provided.`);
+    throw new Error(`Campaign with ID '${campaignId}' not found in database.`);
   }
-  const prefix = campaign.prefix || (campaign.playersCollectionName ? campaign.playersCollectionName.replace(/-player$/, '') : '');
-  if (prefix && String(prefix).trim()) {
-    return `${String(prefix).trim()}-${defaultCollection}`;
+  const prefix = String(campaign.prefix || '').trim();
+  if (!prefix) {
+    throw new Error(`Campaign '${campaign.name || campaignId}' has no prefix configured.`);
   }
-  if (campaign.playersCollectionName && defaultCollection === 'player') {
-    return String(campaign.playersCollectionName).trim();
-  }
-  throw new Error(`Campaign prefix is missing for collection '${defaultCollection}'.`);
+
+  campaignCache.set(key, { campaign, prefix, ts: Date.now() });
+  return { campaign, prefix };
 }
 
-function extractCampaign(req) {
-  if (req.body && req.body.campaign) {
-    return req.body.campaign;
+function invalidateCampaignCache(campaignId) {
+  if (campaignId !== undefined && campaignId !== null) {
+    campaignCache.delete(String(campaignId));
+  } else {
+    campaignCache.clear();
   }
+}
+
+async function getCampaignCollectionName(campaignId, defaultCollection) {
+  const { prefix } = await resolveCampaignPrefix(campaignId);
+  return `${prefix}-${defaultCollection}`;
+}
+
+function extractCampaignId(req) {
+  // 1. Body: campaignId field (POST/PUT wrapped payload)
+  if (req.body && req.body.campaignId !== undefined) {
+    return req.body.campaignId;
+  }
+  // 2. Body: legacy campaign object fallback
+  if (req.body && req.body.campaign && req.body.campaign.id !== undefined) {
+    return req.body.campaign.id;
+  }
+  // 3. Query param: campaignId
+  if (req.query && req.query.campaignId !== undefined) {
+    return req.query.campaignId;
+  }
+  // 4. Query param: legacy campaign JSON fallback
   if (req.query && req.query.campaign) {
     try {
-      return typeof req.query.campaign === 'string' ? JSON.parse(req.query.campaign) : req.query.campaign;
-    } catch (e) {
-      return null;
-    }
+      const parsed = typeof req.query.campaign === 'string' ? JSON.parse(req.query.campaign) : req.query.campaign;
+      if (parsed && parsed.id !== undefined) return parsed.id;
+    } catch (e) {}
   }
+  // 5. Header: X-Campaign-Id
+  if (req.headers && req.headers['x-campaign-id']) {
+    return req.headers['x-campaign-id'];
+  }
+  // 6. Header: legacy X-Campaign JSON fallback
   if (req.headers && req.headers['x-campaign']) {
     try {
-      return JSON.parse(req.headers['x-campaign']);
-    } catch (e) {
-      return null;
-    }
+      const parsed = JSON.parse(req.headers['x-campaign']);
+      if (parsed && parsed.id !== undefined) return parsed.id;
+    } catch (e) {}
   }
   return null;
 }
 
-function extractPayloadAndCampaign(req) {
-  const campaign = extractCampaign(req);
+function extractPayloadAndCampaignId(req) {
+  const campaignId = extractCampaignId(req);
   let payload = req.body;
   if (req.body && typeof req.body === 'object' && 'payload' in req.body) {
     payload = req.body.payload;
   }
-  return { payload, campaign };
+  return { payload, campaignId };
 }
 
 // Load environment variables (.env or .env.duckdns)
@@ -262,21 +317,22 @@ function createUpdateRoute(routePath, options) {
   const { usePlayersDb, collectionName } = options;
 
   app.put(routePath, async (req, res) => {
-    const { payload: item, campaign } = extractPayloadAndCampaign(req);
+    const { payload: item, campaignId } = extractPayloadAndCampaignId(req);
 
     if (!item || typeof item.id === 'undefined') {
       return res.status(400).json({ error: 'id is required in request body' });
     }
 
-    if (usePlayersDb && !campaign) {
-      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    if (usePlayersDb && !campaignId) {
+      return res.status(400).json({ error: `campaignId is required for collection '${collectionName}'.` });
     }
 
     if (item._id) { delete item._id; }
 
     try {
       const dbs = await getDatabases();
-      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? await getCampaignCollectionName(campaignId, collectionName) : collectionName;
+      const campaign = usePlayersDb ? (await resolveCampaignPrefix(campaignId)).campaign : null;
 
       if (!dbs) {
         // Local JSON fallback: read, update, write
@@ -298,11 +354,14 @@ function createUpdateRoute(routePath, options) {
       } else {
         await collection.insertOne(item);
       }
+      if (collectionName === 'campaign') {
+        invalidateCampaignCache(item.id);
+      }
       notifyChange(collectionName, 'update', item, campaign);
       res.json(item);
     } catch (error) {
       console.error(`[API] Error updating ${collectionName}:`, error);
-      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+      res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -311,19 +370,20 @@ function createInsertRoute(routePath, options) {
   const { usePlayersDb, collectionName } = options;
 
   app.post(routePath, async (req, res) => {
-    const { payload: item, campaign } = extractPayloadAndCampaign(req);
+    const { payload: item, campaignId } = extractPayloadAndCampaignId(req);
 
     if (!item) {
       return res.status(400).json({ error: 'Request body is required' });
     }
-    if (usePlayersDb && !campaign) {
-      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    if (usePlayersDb && !campaignId) {
+      return res.status(400).json({ error: `campaignId is required for collection '${collectionName}'.` });
     }
     if (item._id) { delete item._id; }
 
     try {
       const dbs = await getDatabases();
-      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? await getCampaignCollectionName(campaignId, collectionName) : collectionName;
+      const campaign = usePlayersDb ? (await resolveCampaignPrefix(campaignId)).campaign : null;
 
       if (!dbs) {
         // Local JSON fallback
@@ -367,7 +427,7 @@ function createInsertRoute(routePath, options) {
       res.status(201).json(item);
     } catch (error) {
       console.error(`[API] Error inserting ${collectionName}:`, error);
-      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+      res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -377,19 +437,20 @@ function createDeleteRoute(routePath, options) {
 
   app.delete(`${routePath}/:id`, async (req, res) => {
     const idParam = req.params.id;
-    const campaign = extractCampaign(req);
+    const campaignId = extractCampaignId(req);
 
     if (!idParam) {
       return res.status(400).json({ error: 'id is required' });
     }
 
-    if (usePlayersDb && !campaign) {
-      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    if (usePlayersDb && !campaignId) {
+      return res.status(400).json({ error: `campaignId is required for collection '${collectionName}'.` });
     }
 
     try {
       const dbs = await getDatabases();
-      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? await getCampaignCollectionName(campaignId, collectionName) : collectionName;
+      const campaign = usePlayersDb ? (await resolveCampaignPrefix(campaignId)).campaign : null;
       const trashCollectionName = `${targetCollection}-trash`;
 
       if (!dbs) {
@@ -453,11 +514,15 @@ function createDeleteRoute(routePath, options) {
       // Remove from the active collection
       await collection.deleteOne({ _id: existing._id });
 
+      if (collectionName === 'campaign') {
+        invalidateCampaignCache(idParam);
+      }
+
       notifyChange(collectionName, 'delete', { id: idParam, deletedItem: existing }, campaign);
       res.json({ success: true, id: idParam, movedTo: trashCollectionName, deletedItem: existing });
     } catch (error) {
       console.error(`[API] Error deleting ${collectionName}:`, error);
-      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+      res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -467,18 +532,18 @@ function createCollectionRoute(routePath, options) {
 
   app.get(routePath, async (req, res) => {
     try {
-      const campaign = extractCampaign(req);
-      if (usePlayersDb && !campaign) {
-        return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+      const campaignId = extractCampaignId(req);
+      if (usePlayersDb && !campaignId) {
+        return res.status(400).json({ error: `campaignId is required for collection '${collectionName}'.` });
       }
       const dbs = await getDatabases();
       const db = dbs ? (usePlayersDb ? dbs.playersDb : dbs.mainDb) : null;
-      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? await getCampaignCollectionName(campaignId, collectionName) : collectionName;
       const documents = await fetchCollection(db, targetCollection);
       res.json(documents);
     } catch (error) {
       console.error(`[API] Error fetching ${collectionName}:`, error);
-      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+      res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -494,12 +559,12 @@ function createGetByIdRoute(routePath, options) {
     }
 
     try {
-      const campaign = extractCampaign(req);
-      if (usePlayersDb && !campaign) {
-        return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+      const campaignId = extractCampaignId(req);
+      if (usePlayersDb && !campaignId) {
+        return res.status(400).json({ error: `campaignId is required for collection '${collectionName}'.` });
       }
       const dbs = await getDatabases();
-      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? await getCampaignCollectionName(campaignId, collectionName) : collectionName;
 
       if (!dbs) {
         // Local JSON fallback
@@ -568,7 +633,7 @@ function createGetByIdRoute(routePath, options) {
       res.json(doc);
     } catch (error) {
       console.error(`[API] Error fetching ${collectionName} by id ${idParam}:`, error);
-      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+      res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -589,7 +654,7 @@ createUpdateRoute('/api/campaign', {
 });
 
 app.post('/api/campaign', async (req, res) => {
-  const { payload: item, campaign } = extractPayloadAndCampaign(req);
+  const { payload: item, campaignId } = extractPayloadAndCampaignId(req);
 
   if (!item || !item.name) {
     return res.status(400).json({ error: 'Campaign name is required' });
@@ -614,7 +679,8 @@ app.post('/api/campaign', async (req, res) => {
       }
       docs.push(item);
       await saveToLocalJson('campaign', docs);
-      notifyChange('campaign', 'create', item, campaign);
+      invalidateCampaignCache(item.id);
+      notifyChange('campaign', 'create', item, item);
       return res.status(201).json(item);
     }
 
@@ -656,7 +722,8 @@ app.post('/api/campaign', async (req, res) => {
     }
 
     await collection.insertOne(item);
-    notifyChange('campaign', 'create', item, campaign);
+    invalidateCampaignCache(item.id);
+    notifyChange('campaign', 'create', item, item);
     res.status(201).json(item);
   } catch (error) {
     console.error('Error creating campaign:', error);
@@ -680,20 +747,21 @@ createGetByIdRoute('/api/player', {
 });
 
 app.put('/api/player', async (req, res) => {
-  const { payload: player, campaign } = extractPayloadAndCampaign(req);
+  const { payload: player, campaignId } = extractPayloadAndCampaignId(req);
 
   if (!player || typeof player.id === 'undefined') {
     return res.status(400).json({ error: 'Player id is required in request body' });
   }
 
-  if (!campaign) {
-    return res.status(400).json({ error: "Campaign context is required for collection 'player'. No active campaign provided." });
+  if (!campaignId) {
+    return res.status(400).json({ error: "campaignId is required for collection 'player'." });
   }
 
   if (player._id) { delete player._id; }
 
   try {
-    const targetCollection = getCampaignCollectionName(campaign, 'player');
+    const targetCollection = await getCampaignCollectionName(campaignId, 'player');
+    const campaign = (await resolveCampaignPrefix(campaignId)).campaign;
     const dbs = await getDatabases();
 
     if (!dbs) {
@@ -718,7 +786,7 @@ app.put('/api/player', async (req, res) => {
     res.json(player);
   } catch (error) {
     console.error(`[API] Error updating player:`, error);
-    res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || error });
+    res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || error });
   }
 });
 
@@ -1109,7 +1177,7 @@ createDeleteRoute('/api/letter', {
 
 app.post('/api/letter/:id/read', async (req, res) => {
   const idParam = req.params.id;
-  const { payload, campaign } = extractPayloadAndCampaign(req);
+  const { payload, campaignId } = extractPayloadAndCampaignId(req);
   const playerId = payload?.playerId ?? req.body?.playerId;
 
   if (!idParam) {
@@ -1120,12 +1188,13 @@ app.post('/api/letter/:id/read', async (req, res) => {
     return res.status(400).json({ error: 'playerId must be a number' });
   }
 
-  if (!campaign) {
-    return res.status(400).json({ error: "Campaign context is required for collection 'letter'. No active campaign provided." });
+  if (!campaignId) {
+    return res.status(400).json({ error: "campaignId is required for collection 'letter'." });
   }
 
   try {
-    const targetCollection = getCampaignCollectionName(campaign, 'letter');
+    const targetCollection = await getCampaignCollectionName(campaignId, 'letter');
+    const campaign = (await resolveCampaignPrefix(campaignId)).campaign;
     const dbs = await getDatabases();
 
     if (!dbs) {
@@ -1154,7 +1223,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
     res.json(updatedLetter);
   } catch (error) {
     console.error(error);
-    res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+    res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
   }
 });
 

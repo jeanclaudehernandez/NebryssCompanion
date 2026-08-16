@@ -19,12 +19,14 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
     return next(req.clone({ headers, withCredentials: true }));
   }
 
+  const campaignId = String(activeCampaign.id);
+
   // Intercept outgoing API requests
   if (req.url.includes('/api/')) {
     if (req.method === 'POST' || req.method === 'PUT') {
       const wrappedBody = {
         payload: req.body,
-        campaign: activeCampaign
+        campaignId
       };
       return next(req.clone({
         body: wrappedBody,
@@ -32,10 +34,10 @@ export const campaignInterceptor: HttpInterceptorFn = (req, next) => {
       }));
     } else {
       // GET, DELETE, etc.
-      headers = headers.set('X-Campaign', JSON.stringify(activeCampaign));
+      headers = headers.set('X-Campaign-Id', campaignId);
       return next(req.clone({
         setParams: {
-          campaign: JSON.stringify(activeCampaign)
+          campaignId
         },
         headers
       }));

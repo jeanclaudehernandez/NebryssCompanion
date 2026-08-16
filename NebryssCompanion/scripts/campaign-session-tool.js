@@ -73,9 +73,9 @@ function generateToolAuthToken() {
   return `${encoded}.${sig}`;
 }
 
-async function apiRequest(endpoint, method = 'GET', body = null, campaign = null) {
+async function apiRequest(endpoint, method = 'GET', body = null, campaignId = null) {
   const base = (process.env.API_URL || process.env.API_BASE_URL || `http://127.0.0.1:${process.env.PORT || 8080}/api`).replace(/\/$/, '');
-  const url = `${base}/${endpoint.replace(/^\//, '')}`;
+  let url = `${base}/${endpoint.replace(/^\//, '')}`;
   const token = generateToolAuthToken();
 
   const headers = {
@@ -85,8 +85,14 @@ async function apiRequest(endpoint, method = 'GET', body = null, campaign = null
   if (process.env.ADMIN_PIN) {
     headers['x-admin-pin'] = process.env.ADMIN_PIN;
   }
-  if (campaign) {
-    headers['x-campaign'] = typeof campaign === 'string' ? campaign : JSON.stringify(campaign);
+  if (campaignId !== null && campaignId !== undefined) {
+    headers['x-campaign-id'] = String(campaignId);
+  }
+
+  // For GET/DELETE, append campaignId as query param
+  if (campaignId !== null && campaignId !== undefined && (method === 'GET' || method === 'DELETE')) {
+    const separator = url.includes('?') ? '&' : '?';
+    url = `${url}${separator}campaignId=${encodeURIComponent(String(campaignId))}`;
   }
 
   const options = {
@@ -96,7 +102,7 @@ async function apiRequest(endpoint, method = 'GET', body = null, campaign = null
   if (body && (method === 'POST' || method === 'PUT')) {
     options.body = JSON.stringify({
       payload: body,
-      campaign: campaign || undefined
+      campaignId: campaignId !== null && campaignId !== undefined ? String(campaignId) : undefined
     });
   }
 
@@ -571,11 +577,11 @@ async function getCampaignContext(campaignId) {
   ] = await Promise.all([
     apiRequest('/campaign', 'GET'),
     apiRequest('/campaignSession', 'GET'),
-    apiRequest('/player', 'GET', null, campaign),
-    apiRequest('/npc', 'GET', null, campaign),
-    apiRequest('/location', 'GET', null, campaign),
-    apiRequest('/shop', 'GET', null, campaign),
-    apiRequest('/letter', 'GET', null, campaign),
+    apiRequest('/player', 'GET', null, resolvedCampaignId),
+    apiRequest('/npc', 'GET', null, resolvedCampaignId),
+    apiRequest('/location', 'GET', null, resolvedCampaignId),
+    apiRequest('/shop', 'GET', null, resolvedCampaignId),
+    apiRequest('/letter', 'GET', null, resolvedCampaignId),
     apiRequest('/bestiary', 'GET'),
     apiRequest('/weapon', 'GET'),
     apiRequest('/weaponRule', 'GET'),
@@ -718,7 +724,7 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
 
 async function createNPC(npcData) {
   const { campaignId, ...fields } = npcData;
-  const { campaign } = await resolveCampaign(campaignId);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.name || (fields.factionId === undefined && !fields.faction)) {
     throw new Error('NPC requires at least "name" and "factionId" (or "faction").');
   }
@@ -736,7 +742,7 @@ async function createNPC(npcData) {
     fields.factionId = Number(fields.factionId);
   }
   delete fields.faction;
-  const created = await apiRequest('/npc', 'POST', fields, campaign);
+  const created = await apiRequest('/npc', 'POST', fields, resolvedCampId);
   return {
     ...created,
     entityTag: `@npc[${created.id}]`,
@@ -749,8 +755,8 @@ async function updateNPC(npcUpdateData) {
   if (id === undefined || id === null) {
     throw new Error('updateNPC requires an "id" property to identify the NPC.');
   }
-  const { campaign } = await resolveCampaign(campaignId);
-  const existing = await apiRequest(`/npc/${id}`, 'GET', null, campaign);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
+  const existing = await apiRequest(`/npc/${id}`, 'GET', null, resolvedCampId);
   if (updates.factionId !== undefined) {
     updates.factionId = Number(updates.factionId);
     delete updates.faction;
@@ -773,7 +779,7 @@ async function updateNPC(npcUpdateData) {
   };
   delete updatedDoc._id;
   delete updatedDoc.faction;
-  const updated = await apiRequest('/npc', 'PUT', updatedDoc, campaign);
+  const updated = await apiRequest('/npc', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
     ...updated,
@@ -784,7 +790,7 @@ async function updateNPC(npcUpdateData) {
 
 async function createPlayer(playerData) {
   const { campaignId, ...fields } = playerData;
-  const { campaign } = await resolveCampaign(campaignId);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.name) {
     throw new Error('Player requires at least a "name".');
   }
@@ -828,7 +834,7 @@ async function createPlayer(playerData) {
   if (fields.notes) doc.notes = fields.notes;
 
   delete doc._id;
-  const created = await apiRequest('/player', 'POST', doc, campaign);
+  const created = await apiRequest('/player', 'POST', doc, resolvedCampId);
   return {
     ...created,
     entityTag: `@player[${created.id}]`,
@@ -841,15 +847,15 @@ async function updatePlayer(playerUpdateData) {
   if (id === undefined || id === null) {
     throw new Error('updatePlayer requires an "id" property to identify the player.');
   }
-  const { campaign } = await resolveCampaign(campaignId);
-  const existing = await apiRequest(`/player/${id}`, 'GET', null, campaign);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
+  const existing = await apiRequest(`/player/${id}`, 'GET', null, resolvedCampId);
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
   delete updatedDoc._id;
-  const updated = await apiRequest('/player', 'PUT', updatedDoc, campaign);
+  const updated = await apiRequest('/player', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
     ...updated,
@@ -1101,11 +1107,11 @@ async function createCombatNPC(combatData) {
 
 async function createLocation(locationData) {
   const { campaignId, ...fields } = locationData;
-  const { campaign } = await resolveCampaign(campaignId);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.name || !fields.faction) {
     throw new Error('Location requires at least "name" and "faction".');
   }
-  const created = await apiRequest('/location', 'POST', fields, campaign);
+  const created = await apiRequest('/location', 'POST', fields, resolvedCampId);
   return {
     ...created,
     entityTag: `@location[${created.id}]`,
@@ -1118,15 +1124,15 @@ async function updateLocation(locationUpdateData) {
   if (id === undefined || id === null) {
     throw new Error('updateLocation requires an "id" property to identify the location.');
   }
-  const { campaign } = await resolveCampaign(campaignId);
-  const existing = await apiRequest(`/location/${id}`, 'GET', null, campaign);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
+  const existing = await apiRequest(`/location/${id}`, 'GET', null, resolvedCampId);
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
   delete updatedDoc._id;
-  const updated = await apiRequest('/location', 'PUT', updatedDoc, campaign);
+  const updated = await apiRequest('/location', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
     ...updated,
@@ -1137,11 +1143,11 @@ async function updateLocation(locationUpdateData) {
 
 async function createShop(shopData) {
   const { campaignId, ...fields } = shopData;
-  const { campaign } = await resolveCampaign(campaignId);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.name) {
     throw new Error('Shop requires at least a "name".');
   }
-  const created = await apiRequest('/shop', 'POST', fields, campaign);
+  const created = await apiRequest('/shop', 'POST', fields, resolvedCampId);
   return {
     ...created,
     entityTag: `@shop[${created.id}]`,
@@ -1154,15 +1160,15 @@ async function updateShop(shopUpdateData) {
   if (id === undefined || id === null) {
     throw new Error('updateShop requires an "id" property to identify the shop.');
   }
-  const { campaign } = await resolveCampaign(campaignId);
-  const existing = await apiRequest(`/shop/${id}`, 'GET', null, campaign);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
+  const existing = await apiRequest(`/shop/${id}`, 'GET', null, resolvedCampId);
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
   delete updatedDoc._id;
-  const updated = await apiRequest('/shop', 'PUT', updatedDoc, campaign);
+  const updated = await apiRequest('/shop', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
     ...updated,
@@ -1173,14 +1179,14 @@ async function updateShop(shopUpdateData) {
 
 async function createLetter(letterData) {
   const { campaignId, ...fields } = letterData;
-  const { campaign } = await resolveCampaign(campaignId);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.subject && !fields.title) {
     throw new Error('Letter requires at least "subject" or "title".');
   }
   const created = await apiRequest('/letter', 'POST', {
     ...fields,
     subject: fields.subject || fields.title
-  }, campaign);
+  }, resolvedCampId);
   return {
     ...created,
     entityTag: `@letter[${created.id}]`,
@@ -1193,15 +1199,15 @@ async function updateLetter(letterUpdateData) {
   if (id === undefined || id === null) {
     throw new Error('updateLetter requires an "id" property to identify the letter.');
   }
-  const { campaign } = await resolveCampaign(campaignId);
-  const existing = await apiRequest(`/letter/${id}`, 'GET', null, campaign);
+  const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
+  const existing = await apiRequest(`/letter/${id}`, 'GET', null, resolvedCampId);
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
   delete updatedDoc._id;
-  const updated = await apiRequest('/letter', 'PUT', updatedDoc, campaign);
+  const updated = await apiRequest('/letter', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
     ...updated,
@@ -1361,21 +1367,20 @@ async function getEntity({ type, id, name, campaignId }) {
   const endpoint = getApiEndpointForType(normalizedType);
   const isScoped = CAMPAIGN_SCOPED_TYPES.has(normalizedType);
 
-  let campaign = null;
+  let resolvedCampId = null;
   if (isScoped) {
-    const res = await resolveCampaign(campaignId);
-    campaign = res.campaign;
+    resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   }
 
   if (id !== undefined && id !== null) {
     try {
-      const doc = await apiRequest(`/${endpoint}/${id}`, 'GET', null, campaign);
+      const doc = await apiRequest(`/${endpoint}/${id}`, 'GET', null, resolvedCampId);
       if (doc) return doc;
     } catch (e) {}
   }
 
   // Fetch full list and search by id/name
-  const list = await apiRequest(`/${endpoint}`, 'GET', null, campaign);
+  const list = await apiRequest(`/${endpoint}`, 'GET', null, resolvedCampId);
   if (!Array.isArray(list)) return list || null;
 
   if (id !== undefined && id !== null) {
@@ -1404,13 +1409,12 @@ async function readEntities({ type, campaignId, filter = null, search = '', limi
   const endpoint = getApiEndpointForType(normalizedType);
   const isScoped = CAMPAIGN_SCOPED_TYPES.has(normalizedType);
 
-  let campaign = null;
+  let resolvedCampId = null;
   if (isScoped) {
-    const res = await resolveCampaign(campaignId);
-    campaign = res.campaign;
+    resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   }
 
-  let list = await apiRequest(`/${endpoint}`, 'GET', null, campaign);
+  let list = await apiRequest(`/${endpoint}`, 'GET', null, resolvedCampId);
   if (!Array.isArray(list)) return [];
 
   if (normalizedType === 'session') {
@@ -1454,13 +1458,12 @@ async function deleteEntity({ type, id, campaignId }) {
   const endpoint = getApiEndpointForType(normalizedType);
   const isScoped = CAMPAIGN_SCOPED_TYPES.has(normalizedType);
 
-  let campaign = null;
+  let resolvedCampId = null;
   if (isScoped) {
-    const res = await resolveCampaign(campaignId);
-    campaign = res.campaign;
+    resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   }
 
-  const res = await apiRequest(`/${endpoint}/${id}`, 'DELETE', null, campaign);
+  const res = await apiRequest(`/${endpoint}/${id}`, 'DELETE', null, resolvedCampId);
   return {
     success: true,
     type: normalizedType,
@@ -2429,3 +2432,4 @@ module.exports = {
   deleteEntity,
   main
 };
+
