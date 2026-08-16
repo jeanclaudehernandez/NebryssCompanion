@@ -63,6 +63,7 @@
   },
   "factions": [
     {
+      "id": 1,
       "name": "The Imperium of Man",
       "control": "30%",
       "role": "Imperium's effort to hold control over imperium nihilus",
@@ -76,6 +77,7 @@
       "thumbnail": "https://iili.io/3YDx5t2.th.jpg"
     },
     {
+      "id": 2,
       "name": "The Gilded Accord",
       "control": "12% but holds the best trade routes",
       "role": "A federation of independent city-states, thriving on commerce and technology.",
@@ -96,6 +98,7 @@
       "thumbnail": "https://iili.io/3YDxYnS.th.jpg"
     },
     {
+      "id": 3,
       "name": "The Abyssal Cabal",
       "control": "30%",
       "role": "A Chaos-worshipping faction seeking to harness the true power of the mist.",
@@ -110,6 +113,7 @@
       "thumbnail": "https://iili.io/3YDxaM7.th.jpg"
     },
     {
+      "id": 4,
       "name": "The Nebryssian Liberation Republic",
       "control": "20%",
       "role": "A resistance force fighting for the planet's independence.",
@@ -131,6 +135,7 @@
       ]
     },
     {
+      "id": 5,
       "name": "The Crimson Corsairs",
       "control": "8% mainly mobile",
       "role": "A pirate faction raiding mist trade routes indiscriminately.",

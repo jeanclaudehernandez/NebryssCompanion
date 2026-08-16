@@ -237,6 +237,7 @@ export interface Lore {
     transportation: string;
   };
   factions: Array<{
+    id: number;
     name: string;
     control: string;
     role: string;
@@ -299,7 +300,7 @@ export interface MistEffect {
 export interface NPC {
   id: number;
   name: string;
-  faction: string;
+  factionId: number;
   subgroup: string;
   mission?: string;
   methods?: string;

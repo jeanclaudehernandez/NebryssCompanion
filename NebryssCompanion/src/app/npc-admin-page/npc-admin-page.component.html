@@ -95,17 +95,16 @@
 
           <!-- Faction -->
           <div class="form-group">
-            <label for="npc-faction">Faction</label>
-            <input
+            <label for="npc-faction">Faction <span class="required">*</span></label>
+            <select
               id="npc-faction"
-              type="text"
-              [(ngModel)]="faction"
-              list="faction-list"
-              placeholder="e.g. Gilded Accord"
-            />
-            <datalist id="faction-list">
-              <option *ngFor="let opt of factionOptions" [value]="opt"></option>
-            </datalist>
+              [(ngModel)]="factionId"
+              required
+            >
+              <option *ngFor="let opt of factions" [ngValue]="opt.id">
+                {{ opt.name }}
+              </option>
+            </select>
           </div>
 
           <!-- Subgroup -->

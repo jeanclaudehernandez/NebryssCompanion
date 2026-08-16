@@ -44,6 +44,7 @@ export type EntityType = 'player' | 'npc' | 'location' | 'shop' | 'bestiary' | '
 interface EntityLookup {
   players: Player[];
   npcs: NPC[];
+  factions?: Array<{ id: number; name: string }>;
   locations: Location[];
   shops: Shop[];
   bestiary: BestiaryEntry[];
@@ -257,6 +258,7 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
       campaigns: this.dataService.getCampaigns(),
       players: this.dataService.getPlayers(),
       npcs: this.dataService.getNpcs(),
+      lore: this.dataService.getLore(),
       locations: this.dataService.getLocations(),
       shops: this.dataService.getShops(),
       bestiary: this.dataService.getBestiary(),
@@ -269,12 +271,13 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ sessions, campaigns, players, npcs, locations, shops, bestiary, letters, items, weapons, weaponRules, alteredStates, afflictions }) => {
+        next: ({ sessions, campaigns, players, npcs, lore, locations, shops, bestiary, letters, items, weapons, weaponRules, alteredStates, afflictions }) => {
           this.sessions = sessions || [];
           this.campaigns = campaigns || [];
           this.lookup = {
             players: players || [],
             npcs: npcs || [],
+            factions: lore?.factions?.map(f => ({ id: f.id, name: f.name })) || [],
             locations: (locations as any)?.locations ?? locations ?? [],
             shops: shops || [],
             bestiary: bestiary || [],
@@ -439,8 +442,12 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
           .map(p => ({ id: p.id, name: p.name, subtitle: `${p.race || ''}${p.origin ? ' • ' + p.origin : ''}`.trim() || 'Player Character' }));
       case 'npc':
         return this.lookup.npcs
-          .filter(n => !term || n.name.toLowerCase().includes(term) || (n.faction && n.faction.toLowerCase().includes(term)) || (n.role && n.role.toLowerCase().includes(term)))
-          .map(n => ({ id: n.id, name: n.name, subtitle: `${n.faction || 'Independent'} ${n.role ? '• ' + n.role : ''}` }));
+          .map(n => {
+            const faction = this.lookup.factions?.find(f => f.id === n.factionId)?.name || 'Independent';
+            return { n, faction };
+          })
+          .filter(({ n, faction }) => !term || n.name.toLowerCase().includes(term) || faction.toLowerCase().includes(term) || (n.role && n.role.toLowerCase().includes(term)))
+          .map(({ n, faction }) => ({ id: n.id, name: n.name, subtitle: `${faction} ${n.role ? '• ' + n.role : ''}` }));
       case 'location':
         return this.lookup.locations
           .filter(l => !term || l.name.toLowerCase().includes(term) || (l.faction && l.faction.toLowerCase().includes(term)))

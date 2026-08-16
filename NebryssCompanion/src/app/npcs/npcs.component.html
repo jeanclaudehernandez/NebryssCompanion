@@ -107,9 +107,9 @@
             </div>
 
             <div class="npc-sub-row">
-              <span class="faction-link" *ngIf="selectedNpc.faction" (click)="goToLore(selectedNpc.faction)"
+              <span class="faction-link" *ngIf="getFactionName(selectedNpc.factionId)" (click)="goToLore(getFactionName(selectedNpc.factionId))"
                 title="View Faction in Lore">
-                <span class="material-icons">flag</span> {{ selectedNpc.faction }}
+                <span class="material-icons">flag</span> {{ getFactionName(selectedNpc.factionId) }}
               </span>
               <span class="subgroup-badge" *ngIf="selectedNpc.subgroup">
                 • {{ selectedNpc.subgroup }}

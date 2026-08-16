@@ -51,6 +51,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
 
   shops: Shop[] = [];
   npcs: NPC[] = [];
+  factions: Array<{ id: number; name: string }> = [];
   locations: Location[] = [];
   itemsList: Item[] = [];
   weaponsList: Weapon[] = [];
@@ -303,6 +304,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     forkJoin({
       shops: this.dataService.getShops(),
       npcs: this.dataService.getNpcs(),
+      lore: this.dataService.getLore(),
       locations: this.dataService.getLocations(),
       items: this.dataService.getItems(),
       weapons: this.dataService.getWeapons(),
@@ -313,6 +315,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
       next: res => {
         this.shops = res.shops || [];
         this.npcs = res.npcs || [];
+        this.factions = res.lore?.factions || [];
         this.locations = res.locations?.locations || [];
         this.itemsList = res.items?.items || [];
         this.weaponsList = res.weapons || [];
@@ -335,7 +338,9 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   }
 
   getNpcOwnerDescription(npc: NPC): string {
-    const desc = npc.role || npc.description || npc.personality || npc.mission || `${npc.faction} - ${npc.subgroup}`;
+    const factionObj = this.factions.find(f => f.id === npc.factionId);
+    const factionName = factionObj ? factionObj.name : '';
+    const desc = npc.role || npc.description || npc.personality || npc.mission || (factionName ? `${factionName} - ${npc.subgroup}` : npc.subgroup);
     if (!desc) return 'NPC';
     return desc.length > 60 ? desc.substring(0, 60) + '...' : desc;
   }

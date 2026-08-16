@@ -126,7 +126,7 @@
             </div>
             <div class="assoc-info">
               <h4>{{ npc.name }}</h4>
-              <p *ngIf="npc.role || npc.faction">{{ npc.role || npc.faction }}</p>
+              <p *ngIf="npc.role || getNpcFactionName(npc.factionId)">{{ npc.role || getNpcFactionName(npc.factionId) }}</p>
             </div>
             <button type="button" class="assoc-btn npc-btn">
               <span class="material-icons">badge</span>

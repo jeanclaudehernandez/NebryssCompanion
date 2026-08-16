@@ -709,9 +709,23 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
 async function createNPC(npcData) {
   const { campaignId = 1, ...fields } = npcData;
   const { campaign } = await resolveCampaign(campaignId);
-  if (!fields.name || !fields.faction) {
-    throw new Error('NPC requires at least "name" and "faction".');
+  if (!fields.name || (fields.factionId === undefined && !fields.faction)) {
+    throw new Error('NPC requires at least "name" and "factionId" (or "faction").');
   }
+  if (fields.factionId === undefined && fields.faction) {
+    const factionMap = {
+      'imperium of man': 1,
+      'gilded accord': 2,
+      'abyssal cabal': 3,
+      'nebryssian liberation republic': 4,
+      'crimson corsairs': 5
+    };
+    const fLower = String(fields.faction).toLowerCase();
+    fields.factionId = factionMap[fLower] || (!isNaN(Number(fields.faction)) ? Number(fields.faction) : 2);
+  } else if (fields.factionId !== undefined) {
+    fields.factionId = Number(fields.factionId);
+  }
+  delete fields.faction;
   const created = await apiRequest('/npc', 'POST', fields, campaign);
   return {
     ...created,
@@ -727,12 +741,28 @@ async function updateNPC(npcUpdateData) {
   }
   const { campaign } = await resolveCampaign(campaignId);
   const existing = await apiRequest(`/npc/${id}`, 'GET', null, campaign);
+  if (updates.factionId !== undefined) {
+    updates.factionId = Number(updates.factionId);
+    delete updates.faction;
+  } else if (updates.faction) {
+    const factionMap = {
+      'imperium of man': 1,
+      'gilded accord': 2,
+      'abyssal cabal': 3,
+      'nebryssian liberation republic': 4,
+      'crimson corsairs': 5
+    };
+    const fLower = String(updates.faction).toLowerCase();
+    updates.factionId = factionMap[fLower] || (!isNaN(Number(updates.faction)) ? Number(updates.faction) : 2);
+    delete updates.faction;
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
   delete updatedDoc._id;
+  delete updatedDoc.faction;
   const updated = await apiRequest('/npc', 'PUT', updatedDoc, campaign);
   return {
     ...updatedDoc,
@@ -887,6 +917,7 @@ async function createCombatNPC(combatData) {
     campaignId = 1,
     name,
     faction,
+    factionId,
     subgroup = '',
     role = 'Combatant',
     mission = '',
@@ -904,13 +935,30 @@ async function createCombatNPC(combatData) {
     isDiscovered = true
   } = combatData;
 
-  if (!name || !faction) {
-    throw new Error('Combat NPC requires at least "name" and "faction".');
+  const factionMap = {
+    'imperium of man': 1,
+    'gilded accord': 2,
+    'abyssal cabal': 3,
+    'nebryssian liberation republic': 4,
+    'crimson corsairs': 5
+  };
+  const resolvedFactionId = factionId !== undefined ? Number(factionId) : (factionMap[String(faction).toLowerCase()] || (!isNaN(Number(faction)) ? Number(faction) : 2));
+  const factionNameMap = {
+    1: 'Imperium of Man',
+    2: 'Gilded Accord',
+    3: 'Abyssal Cabal',
+    4: 'Nebryssian Liberation Republic',
+    5: 'Crimson Corsairs'
+  };
+  const resolvedFactionName = faction || factionNameMap[resolvedFactionId] || 'Gilded Accord';
+
+  if (!name || (!faction && factionId === undefined)) {
+    throw new Error('Combat NPC requires at least "name" and "factionId" (or "faction").');
   }
 
   const bestiaryRes = await createBestiaryEntry({
     name,
-    faction,
+    faction: resolvedFactionName,
     subgroup,
     attributes,
     weapons,
@@ -923,7 +971,7 @@ async function createCombatNPC(combatData) {
   const npcRes = await createNPC({
     campaignId,
     name,
-    faction,
+    factionId: resolvedFactionId,
     subgroup,
     role,
     mission,
@@ -1635,7 +1683,8 @@ Entity Management (via API):
     const npcParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       name: p.name || '',
-      faction: p.faction || '',
+      factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
+      faction: p.faction || undefined,
       subgroup: p.subgroup || '',
       role: p.role || '',
       mission: p.mission || '',
@@ -1660,6 +1709,7 @@ Entity Management (via API):
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
+      factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
       faction: p.faction || undefined,
       subgroup: p.subgroup || undefined,
       role: p.role || undefined,
@@ -1776,7 +1826,8 @@ Entity Management (via API):
     const cParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       name: p.name || '',
-      faction: p.faction || '',
+      factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
+      faction: p.faction || undefined,
       subgroup: p.subgroup || '',
       role: p.role || '',
       mission: p.mission || '',

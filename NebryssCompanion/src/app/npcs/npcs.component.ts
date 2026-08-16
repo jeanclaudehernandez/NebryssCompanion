@@ -214,20 +214,29 @@ export class NpcsComponent implements OnInit, OnChanges {
     }
   }
 
+  getFactionName(factionId: number | undefined): string {
+    if (!factionId || !this.loreData?.factions) return '';
+    const factionObj = this.loreData.factions.find(f => f.id === factionId);
+    return factionObj ? factionObj.name : '';
+  }
+
   get filteredNpcs(): NPC[] {
     const visibleList = this.npcs.filter(npc => this.isAdmin || npc.discovered !== false);
     const query = this.searchTerm.trim().toLowerCase();
     if (!query) {
       return visibleList;
     }
-    return visibleList.filter(npc =>
-      npc.name.toLowerCase().includes(query) ||
-      (npc.faction && npc.faction.toLowerCase().includes(query)) ||
-      (npc.subgroup && npc.subgroup.toLowerCase().includes(query)) ||
-      (npc.location && npc.location.toLowerCase().includes(query)) ||
-      (npc.role && npc.role.toLowerCase().includes(query)) ||
-      (npc.description && npc.description.toLowerCase().includes(query))
-    );
+    return visibleList.filter(npc => {
+      const factionName = this.getFactionName(npc.factionId);
+      return (
+        npc.name.toLowerCase().includes(query) ||
+        (factionName && factionName.toLowerCase().includes(query)) ||
+        (npc.subgroup && npc.subgroup.toLowerCase().includes(query)) ||
+        (npc.location && npc.location.toLowerCase().includes(query)) ||
+        (npc.role && npc.role.toLowerCase().includes(query)) ||
+        (npc.description && npc.description.toLowerCase().includes(query))
+      );
+    });
   }
 
   get npcGroups(): NpcGroup[] {
@@ -236,7 +245,8 @@ export class NpcsComponent implements OnInit, OnChanges {
 
     if (this.groupBy === 'faction') {
       list.forEach(npc => {
-        const groupKey = npc.faction?.trim() || 'Other / Independent';
+        const factionName = this.getFactionName(npc.factionId);
+        const groupKey = factionName?.trim() || 'Other / Independent';
         const group = map.get(groupKey) || [];
         group.push(npc);
         map.set(groupKey, group);

@@ -457,6 +457,12 @@ export class LocationsComponent implements OnInit, OnChanges {
     return faction?.thumbnail || '';
   }
 
+  getNpcFactionName(factionId: number | undefined): string {
+    if (!factionId || !this.loreData?.factions) return '';
+    const faction = this.loreData.factions.find(f => f.id === factionId);
+    return faction ? faction.name : '';
+  }
+
   onFactionClick(factionName: string) {
     this.navigateToLore.emit(factionName);
   }

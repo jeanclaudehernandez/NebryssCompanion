@@ -13,7 +13,7 @@ This skill documents how Non-Player Characters (NPCs) and Shops are defined, lin
 NPCs are stored with the following properties:
 - `id`: `number` (unique numeric ID)
 - `name`: `string` (full name and title of the NPC)
-- `faction`: `string` (e.g., `"Gilded Accord"`, `"Imperium of Man"`, `"Nebryssian Liberation Republic"`, `"Crimson Corsairs"`)
+- `factionId`: `number` (numeric reference to the faction in `lore.json` / Lore collection, e.g. `1` for Imperium of Man, `2` for Gilded Accord, `3` for Abyssal Cabal, `4` for Nebryssian Liberation Republic, `5` for Crimson Corsairs)
 - `subgroup`: `string` (e.g., `"Apothecary"`, `"Armorsmith"`, `"Shipwright"`, `"Ordo Malleus"`)
 - `role`: `string` (short description / title of the NPC's role e.g., `"Owner of Herbwhisper's Apothecary..."`)
 - `personality`: `string` (optional personality traits)

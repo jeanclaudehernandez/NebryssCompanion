@@ -31,6 +31,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   showDeleteConfirm = false;
 
   npcs: NPC[] = [];
+  factions: Array<{ id: number; name: string }> = [];
   searchTerm = '';
   selectedNpcId: number | null = null;
   expandedFactions: Set<string> = new Set<string>();
@@ -38,7 +39,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   // Form Fields
   id: number | null = null;
   name = '';
-  faction = '';
+  factionId: number = 2;
   subgroup = '';
   role = '';
   description = '';
@@ -50,25 +51,26 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
   bestiaryId: number | null = null;
   discovered = true;
 
-  readonly defaultFactions: string[] = [
-    'Gilded Accord',
-    'Imperium of Man',
-    'Nebryssian Liberation Republic',
-    'Crimson Corsairs',
-    'Independent'
-  ];
+  getFactionName(factionId: number | undefined): string {
+    if (!factionId) return '';
+    const found = this.factions.find(f => f.id === factionId);
+    return found ? found.name : `Faction #${factionId}`;
+  }
 
   get filteredNpcs(): NPC[] {
     if (!this.searchTerm.trim()) {
       return this.npcs;
     }
     const term = this.searchTerm.toLowerCase();
-    return this.npcs.filter(npc =>
-      npc.name.toLowerCase().includes(term) ||
-      (npc.faction && npc.faction.toLowerCase().includes(term)) ||
-      (npc.subgroup && npc.subgroup.toLowerCase().includes(term)) ||
-      (npc.role && npc.role.toLowerCase().includes(term))
-    );
+    return this.npcs.filter(npc => {
+      const factionName = this.getFactionName(npc.factionId);
+      return (
+        npc.name.toLowerCase().includes(term) ||
+        (factionName && factionName.toLowerCase().includes(term)) ||
+        (npc.subgroup && npc.subgroup.toLowerCase().includes(term)) ||
+        (npc.role && npc.role.toLowerCase().includes(term))
+      );
+    });
   }
 
   get groupedNpcs(): { faction: string; npcs: NPC[] }[] {
@@ -76,7 +78,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     const map = new Map<string, NPC[]>();
 
     for (const npc of filtered) {
-      const factionName = npc.faction?.trim() || 'Independent';
+      const factionName = this.getFactionName(npc.factionId) || 'Independent';
       if (!map.has(factionName)) {
         map.set(factionName, []);
       }
@@ -89,14 +91,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
       result.push({ faction, npcs });
     });
 
-    result.sort((a, b) => {
-      const indexA = this.defaultFactions.indexOf(a.faction);
-      const indexB = this.defaultFactions.indexOf(b.faction);
-      if (indexA !== -1 && indexB !== -1) return indexA - indexB;
-      if (indexA !== -1) return -1;
-      if (indexB !== -1) return 1;
-      return a.faction.localeCompare(b.faction);
-    });
+    result.sort((a, b) => a.faction.localeCompare(b.faction));
 
     return result;
   }
@@ -133,16 +128,11 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     if (!this.isAdmin || this.isSaving || this.isDeleting) {
       return false;
     }
-    return !!this.name.trim();
+    return !!this.name.trim() && !!this.factionId;
   }
 
   get canDelete(): boolean {
     return this.isAdmin && this.isEditing && !this.isSaving && !this.isDeleting && this.id !== null;
-  }
-
-  get factionOptions(): string[] {
-    const set = new Set([...this.defaultFactions, ...this.npcs.map(n => n.faction).filter(Boolean)]);
-    return Array.from(set);
   }
 
   ngOnInit(): void {
@@ -158,6 +148,14 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(isAdmin => {
         this.isAdmin = isAdmin;
+      });
+
+    this.dataService.getLore()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(lore => {
+        if (lore && lore.factions) {
+          this.factions = lore.factions.map(f => ({ id: f.id, name: f.name }));
+        }
       });
 
     this.loadNpcs();
@@ -210,7 +208,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.id = null;
     this.selectedNpcId = null;
     this.name = '';
-    this.faction = 'Gilded Accord';
+    this.factionId = this.factions.length > 0 ? this.factions[0].id : 1;
     this.subgroup = '';
     this.role = '';
     this.description = '';
@@ -228,7 +226,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.id = npc.id;
     this.selectedNpcId = npc.id;
     this.name = npc.name || '';
-    this.faction = npc.faction || 'Gilded Accord';
+    this.factionId = npc.factionId ?? (this.factions.length > 0 ? this.factions[0].id : 1);
     this.subgroup = npc.subgroup || '';
     this.role = npc.role || '';
     this.description = npc.description || '';
@@ -239,8 +237,9 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     this.backstory = npc.backstory || '';
     this.bestiaryId = typeof npc.bestiaryId === 'number' ? npc.bestiaryId : null;
     this.discovered = npc.discovered !== false;
-    if (this.faction) {
-      this.expandedFactions.add(this.faction.trim());
+    const factionName = this.getFactionName(this.factionId);
+    if (factionName) {
+      this.expandedFactions.add(factionName.trim());
     }
     this.showDeleteConfirm = false;
   }
@@ -271,7 +270,7 @@ export class NpcAdminPageComponent implements OnInit, OnChanges {
     const npcData: NPC = {
       id: targetId,
       name: this.name.trim(),
-      faction: this.faction.trim() || 'Independent',
+      factionId: Number(this.factionId) || 1,
       subgroup: this.subgroup.trim(),
       role: this.role.trim() || undefined,
       description: this.description.trim() || undefined,
