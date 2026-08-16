@@ -68,7 +68,8 @@ describe('PlayerDetailComponent', () => {
     mockDataService = jasmine.createSpyObj('DataService', [
       'getBestiaryById',
       'getTalentById',
-      'getPlayers'
+      'getPlayers',
+      'getLore'
     ]);
     mockActivePlayerService = jasmine.createSpyObj('ActivePlayerService', ['updateActivePlayer']);
     mockToastService = jasmine.createSpyObj('ToastService', ['show']);
@@ -77,6 +78,7 @@ describe('PlayerDetailComponent', () => {
     mockDataService.getBestiaryById.and.returnValue(null);
     mockDataService.getTalentById.and.returnValue(null);
     mockDataService.getPlayers.and.returnValue(of([]));
+    mockDataService.getLore.and.returnValue(of({ factions: [] } as any));
     // Set activePlayer property on the spy object
     Object.defineProperty(mockActivePlayerService, 'activePlayer', { get: () => component.character as Player, configurable: true });
     (mockActivePlayerService as any).activePlayer$ = of(null);

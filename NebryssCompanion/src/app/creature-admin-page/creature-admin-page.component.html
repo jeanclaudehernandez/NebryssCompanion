@@ -15,10 +15,10 @@
         <div class="bestiary-select-container">
           <div class="filter-group">
             <label>Faction:</label>
-            <select [(ngModel)]="selectedFaction" name="selectedFaction" (change)="onFactionSelected()">
+            <select [(ngModel)]="selectedFactionId" name="selectedFactionId" (change)="onFactionSelected()">
               <option [ngValue]="null">All Factions</option>
-              <option *ngFor="let faction of factions" [value]="faction">
-                {{ faction }}
+              <option *ngFor="let faction of factions" [ngValue]="faction.id">
+                {{ faction.name }}
               </option>
             </select>
           </div>
@@ -59,8 +59,12 @@
               <input [(ngModel)]="creature.name" name="creatureName" type="text" placeholder="Creature name" required />
             </label>
             <label class="field">
-              <span>Faction</span>
-              <input [(ngModel)]="creature.faction" name="creatureFaction" type="text" placeholder="Faction" />
+              <span>Faction *</span>
+              <select [(ngModel)]="creature.factionId" name="creatureFactionId" required>
+                <option *ngFor="let f of factions" [ngValue]="f.id">
+                  {{ f.name }}
+                </option>
+              </select>
             </label>
             <label class="field">
               <span>Subgroup</span>
@@ -178,6 +182,33 @@
               </td>
             </tr>
           </table>
+
+          <div class="body-editor" #bodyEditor>
+            <div class="body-editor-label">Body Types</div>
+            <button
+              type="button"
+              class="body-editor-trigger"
+              (click)="toggleBodySelector($event)">
+              <app-body-type-icons [value]="creature.attributes.body"></app-body-type-icons>
+              <span class="body-editor-trigger-caret">{{ isBodySelectorOpen ? '▲' : '▼' }}</span>
+            </button>
+
+            <div
+              class="body-selector-panel"
+              *ngIf="isBodySelectorOpen"
+              (click)="$event.stopPropagation()">
+              <label class="body-option" *ngFor="let option of bodyTypeOptions">
+                <input
+                  type="checkbox"
+                  [checked]="creature.attributes.body?.includes(option)"
+                  (change)="onBodyTypeToggle(option, $any($event.target).checked)" />
+                <span class="body-option-content">
+                  <app-body-type-icons [value]="option" [size]="14"></app-body-type-icons>
+                  <span class="body-option-label">{{ option }}</span>
+                </span>
+              </label>
+            </div>
+          </div>
         </section>
 
         <!-- 4. Weapons Section -->
@@ -342,7 +373,7 @@
         <div class="summary-list">
           <div><strong>ID:</strong> {{ lastSavedCreature.id }}</div>
           <div><strong>Name:</strong> {{ lastSavedCreature.name }}</div>
-          <div><strong>Faction:</strong> {{ lastSavedCreature.faction }}</div>
+          <div><strong>Faction:</strong> {{ getFactionName(lastSavedCreature.factionId) || ('Faction #' + lastSavedCreature.factionId) }}</div>
           <div><strong>PR:</strong> {{ lastSavedCreature.pr }}</div>
           <div><strong>Weapons:</strong> {{ lastSavedCreature.weapons?.length || 0 }}</div>
           <div><strong>Abilities:</strong> {{ lastSavedCreature.abilities?.length || 0 }}</div>

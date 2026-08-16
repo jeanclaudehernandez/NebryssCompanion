@@ -589,7 +589,7 @@ async function getCampaignContext(campaignId = 1) {
     npcs: (npcs || []).map(n => ({ id: n.id, name: n.name, faction: n.faction, role: n.role, location: n.location, bestiaryId: n.bestiaryId })),
     locations: (locations || []).map(l => ({ id: l.id, name: l.name, faction: l.faction, isCapital: l.isCapital })),
     shops: (shops || []).map(s => ({ id: s.id, name: s.name, locationName: s.locationName || s.location, owner: s.owner })),
-    bestiary: (bestiary || []).map(b => ({ id: b.id, name: b.name, faction: b.faction, pr: b.pr, weapons: b.weapons })),
+    bestiary: (bestiary || []).map(b => ({ id: b.id, name: b.name, factionId: b.factionId, pr: b.pr, weapons: b.weapons })),
     weapons: (weapons || []).map(w => ({ id: w.id, name: w.name, price: w.price, profiles: w.profiles })),
     weaponRules: (weaponRules || []).map(r => ({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier })),
     letters: (letters || []).filter(l => !l.isDeleted).map(l => ({ id: l.id, subject: l.subject, title: l.subject, senderName: l.senderName, date: l.date })),
@@ -797,6 +797,7 @@ async function updatePlayer(playerUpdateData) {
 async function createBestiaryEntry(bestiaryData) {
   const {
     name,
+    factionId,
     faction,
     subgroup = '',
     attributes = {},
@@ -809,8 +810,24 @@ async function createBestiaryEntry(bestiaryData) {
     pr = null
   } = bestiaryData;
 
-  if (!name || !faction) {
-    throw new Error('Bestiary entry requires at least "name" and "faction".');
+  if (!name || (!factionId && !faction)) {
+    throw new Error('Bestiary entry requires at least "name" and "factionId" (or "faction").');
+  }
+
+  let resolvedFactionId = factionId !== undefined ? Number(factionId) : undefined;
+  if (!resolvedFactionId && faction) {
+    if (typeof faction === 'number') {
+      resolvedFactionId = faction;
+    } else {
+      try {
+        const lore = await apiRequest('/lore', 'GET');
+        const found = (lore?.factions || []).find(f => f.name.toLowerCase() === faction.trim().toLowerCase());
+        if (found) resolvedFactionId = found.id;
+      } catch {}
+    }
+  }
+  if (!resolvedFactionId) {
+    resolvedFactionId = 1;
   }
 
   const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
@@ -840,8 +857,8 @@ async function createBestiaryEntry(bestiaryData) {
 
   const bestiaryDoc = {
     name: name.trim(),
-    faction: faction.trim(),
-    subgroup: subgroup ? subgroup.trim() : faction.trim(),
+    factionId: resolvedFactionId,
+    subgroup: subgroup ? subgroup.trim() : 'General',
     pr: finalPR,
     attributes: finalAttributes,
     weapons: validatedWeaponIds,
@@ -862,7 +879,7 @@ async function createBestiaryEntry(bestiaryData) {
 }
 
 async function updateBestiaryEntry(bestiaryUpdateData) {
-  const { id, ...updates } = bestiaryUpdateData;
+  const { id, factionId, faction, ...updates } = bestiaryUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updateBestiaryEntry requires an "id" property to identify the creature.');
   }
@@ -870,6 +887,22 @@ async function updateBestiaryEntry(bestiaryUpdateData) {
   const numericId = Number(id) || id;
   const targetBestiary = await apiRequest(`/bestiary/${id}`, 'GET');
   const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
+
+  let resolvedFactionId = factionId !== undefined ? Number(factionId) : undefined;
+  if (resolvedFactionId === undefined && faction) {
+    if (typeof faction === 'number') {
+      resolvedFactionId = faction;
+    } else {
+      try {
+        const lore = await apiRequest('/lore', 'GET');
+        const found = (lore?.factions || []).find(f => f.name.toLowerCase() === faction.trim().toLowerCase());
+        if (found) resolvedFactionId = found.id;
+      } catch {}
+    }
+  }
+  if (resolvedFactionId === undefined) {
+    resolvedFactionId = targetBestiary.factionId ?? 1;
+  }
 
   let finalWeapons = targetBestiary.weapons || [];
   if (Array.isArray(updates.weapons)) {
@@ -895,12 +928,14 @@ async function updateBestiaryEntry(bestiaryUpdateData) {
     ...targetBestiary,
     ...updates,
     id: numericId,
+    factionId: resolvedFactionId,
     pr: finalPR,
     attributes: finalAttributes,
     weapons: finalWeapons,
     abilities: finalAbilities,
   };
   delete updatedDoc._id;
+  delete updatedDoc.faction;
 
   const updated = await apiRequest('/bestiary', 'PUT', updatedDoc);
   return {
@@ -1796,7 +1831,8 @@ Entity Management (via API):
     const bParams = {
       campaignId: p.campaignId ? Number(p.campaignId) : 1,
       name: p.name || '',
-      faction: p.faction || '',
+      factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
+      faction: p.faction || undefined,
       subgroup: p.subgroup || '',
       attributes: p.attributes ? parseArgJson(p.attributes) : { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['human'] },
       weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
@@ -1811,6 +1847,7 @@ Entity Management (via API):
     const bParams = {
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
+      factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
       faction: p.faction || undefined,
       subgroup: p.subgroup || undefined,
       attributes: p.attributes ? parseArgJson(p.attributes) : undefined,

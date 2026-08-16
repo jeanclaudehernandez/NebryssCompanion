@@ -112,7 +112,7 @@ export interface Character {
 
 // bestiary.ts
 export interface BestiaryEntry extends Character {
-  faction: string;
+  factionId: number;
   subgroup: string;
   pr: number;
   isDiscovered?: boolean;

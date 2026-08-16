@@ -10,7 +10,8 @@ describe('BestiaryComponent', () => {
   let mockDataService: jasmine.SpyObj<DataService>;
 
   beforeEach(async () => {
-    mockDataService = jasmine.createSpyObj('DataService', ['getAllData', 'validateBestiaryPR']);
+    mockDataService = jasmine.createSpyObj('DataService', ['getAllData', 'validateBestiaryPR', 'getLore']);
+    mockDataService.getLore.and.returnValue(of({ factions: [] } as any));
     mockDataService.getAllData.and.returnValue(of({
       bestiary: [],
       items: { items: [] },

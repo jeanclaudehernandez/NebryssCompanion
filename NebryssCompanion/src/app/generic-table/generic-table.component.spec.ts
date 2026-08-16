@@ -14,6 +14,18 @@ describe('GenericTableComponent', () => {
   const mockPlayer: Player = {
     id: 1,
     name: 'Test Operative',
+    race: 'Human',
+    origin: 'Zephyria',
+    progression: {
+      talentPoints: 0,
+      mistrals: {
+        digital: 0,
+        physical: 0
+      },
+      talents: [],
+      afflictions: [],
+      equipment: []
+    },
     attributes: {
       Movement: 6,
       Wounds: 10,

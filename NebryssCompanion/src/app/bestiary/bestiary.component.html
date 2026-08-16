@@ -2,10 +2,10 @@
 <div class="bestiary-select-container">
     <div class="filter-group">
         <label>Faction:</label>
-        <select [(ngModel)]="selectedFaction" (change)="onFactionSelected()">
+        <select [(ngModel)]="selectedFactionId" (change)="onFactionSelected()">
             <option [ngValue]="null">All Factions</option>
-            <option *ngFor="let faction of factions" [value]="faction">
-                {{ faction }}
+            <option *ngFor="let faction of factions" [ngValue]="faction.id">
+                {{ faction.name }}
             </option>
         </select>
     </div>

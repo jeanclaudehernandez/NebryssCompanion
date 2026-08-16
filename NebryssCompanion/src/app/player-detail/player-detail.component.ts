@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { DataService } from '../data.service';
-import { AlteredState, BestiaryEntry, Character, Inventory, Items, Player, Talent, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Character, Inventory, Items, Lore, Player, Talent, Weapon, WeaponRule } from '../model';
 import { SanitizeHtmlPipe } from '../sanitizeHtml.pipe';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { ActivePlayerService } from '../active-player.service';
@@ -103,6 +103,7 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
   selectedBlueprint: any = null;
   mistralModalType: 'digital' | 'physical' | null = null;
   mistralModalInput = '';
+  loreData: Lore | null = null;
 
   private destroy$ = new Subject<void>();
 
@@ -114,6 +115,15 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.dataService.getLore()?.pipe(takeUntil(this.destroy$)).subscribe(lore => {
+      this.loreData = lore;
+    });
+
+    this.dataService.lore$?.pipe(takeUntil(this.destroy$)).subscribe(lore => {
+      if (lore) {
+        this.loreData = lore;
+      }
+    });
     this.dataService.weapons$?.pipe(takeUntil(this.destroy$)).subscribe(weapons => {
       if (weapons && weapons.length > 0) {
         this.weaponsData = [...weapons];
@@ -424,11 +434,17 @@ export class PlayerDetailComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   isBestiary(character: Character): boolean {
-    return !!(character as BestiaryEntry).faction && !!(character as BestiaryEntry).subgroup;
+    const b = character as BestiaryEntry;
+    return (b.factionId !== undefined || (b as any).faction !== undefined) && !!b.subgroup;
   }
 
   getFaction(character: Character): string {
-    return (character as BestiaryEntry).faction || '';
+    const b = character as BestiaryEntry;
+    if (b.factionId && this.loreData?.factions) {
+      const found = this.loreData.factions.find(f => f.id === b.factionId);
+      if (found) return found.name;
+    }
+    return (b as any).faction || (b.factionId ? `Faction #${b.factionId}` : '');
   }
 
   getSubgroup(character: Character): string {

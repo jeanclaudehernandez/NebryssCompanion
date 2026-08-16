@@ -13,7 +13,7 @@ This skill governs the creation, balance formulas, weapon restrictions, and stat
 
 1. **Establish Concept & Faction**:
    - `name`: Creature / enemy title (e.g. `"Mist Stalker"`, `"Gilded Enforcer"`, `"Abyssal Leviathan"`).
-   - `faction`: The parent faction or alignment (`"The Imperium of Man"`, `"The Gilded Accord"`, `"The Abyssal Cabal"`, `"Nebryssian Liberation Republic"`, `"The Crimson Corsairs"`, `"Forces of Nature"`, `"Neutral"`).
+   - `factionId`: The parent faction ID (`1`: `"The Imperium of Man"`, `2`: `"The Gilded Accord"`, `3`: `"The Abyssal Cabal"`, `4`: `"The Nebryssian Liberation Republic"`, `5`: `"The Crimson Corsairs"`).
    - `subgroup`: Sub-classification (e.g., `"Construct"`, `"Daemon"`, `"Behemoth"`, `"Apothecary"`, `"Inquisition"`, `"Swarm"`).
 2. **Balance Attributes**:
    - `Movement`: `4` (Slow/Construct), `6` (Standard Operative), `8+` (Fast Scout/Beast).
@@ -54,7 +54,7 @@ Where:
 {
   "id": 9999,
   "name": "string",
-  "faction": "The Gilded Accord",
+  "factionId": 2,
   "subgroup": "Automaton",
   "pr": 85,
   "attributes": {
@@ -126,7 +126,7 @@ node scripts/campaign-session-tool.js calculate-pr \
 # Create Bestiary Entry
 node scripts/campaign-session-tool.js create-bestiary \
   --name="Zephyrian Guard Automaton" \
-  --faction="The Gilded Accord" \
+  --factionId=2 \
   --subgroup="Construct" \
   --weapons="2,23" \
   --attributes='{"Movement":6,"Wounds":14,"Save":4,"APL":2,"body":["construct","human"]}' \

@@ -7,7 +7,7 @@ import { AdminService } from '../admin.service';
 import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.component';
 import { DataService } from '../data.service';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
-import { AlteredState, BestiaryEntry, Campaign, ItemCategory, Items, Weapon, WeaponRule } from '../model';
+import { AlteredState, BestiaryEntry, Campaign, ItemCategory, Items, Lore, Weapon, WeaponRule } from '../model';
 import { ToastService } from '../toast.service';
 import { WeaponTableComponent } from '../weapon-table/weapon-table.component';
 import { NavigationHistoryService } from '../navigation-history.service';
@@ -49,6 +49,7 @@ export class CreatureAdminPageComponent implements OnInit {
   isDeleting = false;
   showDeleteConfirm = false;
 
+  loreData: Lore | null = null;
   bestiary: BestiaryEntry[] = [];
   campaigns: Campaign[] = [];
   weapons: Weapon[] = [];
@@ -58,9 +59,9 @@ export class CreatureAdminPageComponent implements OnInit {
   alteredStates: AlteredState[] = [];
 
   // Bestiary Cascading Filters (Matching BestiaryComponent)
-  factions: string[] = [];
+  factions: { id: number; name: string }[] = [];
   subgroups: string[] = [];
-  selectedFaction: string | null = null;
+  selectedFactionId: number | null = null;
   selectedSubGroup: string | null = null;
   filteredCreatures: BestiaryEntry[] = [];
   selectedCreatureId: number | null = null;
@@ -126,7 +127,22 @@ export class CreatureAdminPageComponent implements OnInit {
         this.isAdmin = isAdmin;
       });
 
+    this.dataService.lore$
+      ?.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(lore => {
+        if (lore && lore.factions) {
+          this.loreData = lore;
+          this.factions = lore.factions.map(f => ({ id: f.id, name: f.name }));
+        }
+      });
+
     this.loadAllData();
+  }
+
+  getFactionName(factionId: number | null | undefined): string {
+    if (!factionId || !this.loreData?.factions) return '';
+    const found = this.loreData.factions.find(f => f.id === factionId);
+    return found ? found.name : '';
   }
 
   private loadAllData(): void {
@@ -138,11 +154,12 @@ export class CreatureAdminPageComponent implements OnInit {
       items: this.dataService.getItems(),
       categories: this.dataService.getitemCategories(),
       weaponRules: this.dataService.getWeaponRules(),
-      alteredStates: this.dataService.getAlteredStates()
+      alteredStates: this.dataService.getAlteredStates(),
+      lore: this.dataService.getLore()
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: ({ bestiary, campaigns, weapons, items, categories, weaponRules, alteredStates }) => {
+        next: ({ bestiary, campaigns, weapons, items, categories, weaponRules, alteredStates, lore }) => {
           this.bestiary = [...bestiary].sort((a, b) => a.name.localeCompare(b.name));
           this.campaigns = [...(campaigns || [])];
           this.weapons = [...weapons].sort((a, b) => a.name.localeCompare(b.name));
@@ -150,10 +167,12 @@ export class CreatureAdminPageComponent implements OnInit {
           this.itemCategories = categories;
           this.weaponRules = weaponRules;
           this.alteredStates = alteredStates;
+          this.loreData = lore || null;
+          if (lore && lore.factions) {
+            this.factions = lore.factions.map(f => ({ id: f.id, name: f.name }));
+          }
           this.isLoading = false;
 
-          // Initialize Factions and Subgroups matching BestiaryComponent
-          this.factions = this.getUniqueValues(this.bestiary, 'faction');
           this.applyFilters();
           this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
 
@@ -189,7 +208,7 @@ export class CreatureAdminPageComponent implements OnInit {
 
   private applyFilters(): void {
     this.filteredCreatures = this.bestiary.filter(c => {
-      const factionMatch = !this.selectedFaction || c.faction === this.selectedFaction;
+      const factionMatch = this.selectedFactionId === null || c.factionId === this.selectedFactionId;
       const subgroupMatch = !this.selectedSubGroup || c.subgroup === this.selectedSubGroup;
       return factionMatch && subgroupMatch;
     });
@@ -215,6 +234,7 @@ export class CreatureAdminPageComponent implements OnInit {
     this.selectedCreatureId = creature.id;
     this.isEditing = true;
     this.editableCreature = this.cloneCreature(creature);
+    this.editableCreature.factionId = creature.factionId ?? (this.factions.length > 0 ? this.factions[0].id : 1);
     this.editableCreature.discoveredCampaignIds = Array.isArray(creature.discoveredCampaignIds)
       ? [...creature.discoveredCampaignIds]
       : (creature.isDiscovered !== false ? (this.campaigns.length > 0 ? this.campaigns.map(c => c.id) : [1]) : []);
@@ -224,12 +244,16 @@ export class CreatureAdminPageComponent implements OnInit {
       .filter((id): id is number => typeof id === 'number' && !isNaN(id));
     this.editableCreature.abilities = (this.editableCreature.abilities ?? []).map(a => ({ ...a }));
     this.editableCreature.items = (this.editableCreature.items ?? []).map(i => ({ ...i }));
+    const rawBody = creature.attributes?.body;
+    const bodyArray = Array.isArray(rawBody)
+      ? [...rawBody]
+      : (typeof rawBody === 'string' && rawBody ? [rawBody] : ['human']);
     this.editableCreature.attributes = {
       Movement: creature.attributes?.Movement ?? 6,
       Wounds: creature.attributes?.Wounds ?? 10,
       Save: creature.attributes?.Save ?? 4,
       APL: creature.attributes?.APL ?? 2,
-      body: [...(creature.attributes?.body ?? [])]
+      body: bodyArray
     };
     this.rebuildAssignedItemsTable();
     this.cancelStatEdit();
@@ -242,7 +266,7 @@ export class CreatureAdminPageComponent implements OnInit {
     this.editableCreature = {
       id: maxId + 1,
       name: '',
-      faction: this.selectedFaction || '',
+      factionId: this.selectedFactionId ?? (this.factions.length > 0 ? this.factions[0].id : 1),
       subgroup: this.selectedSubGroup || '',
       pr: 10,
       isDiscovered: true,
@@ -300,7 +324,7 @@ export class CreatureAdminPageComponent implements OnInit {
     return JSON.stringify({
       id: this.editableCreature.id,
       name: this.editableCreature.name,
-      faction: this.editableCreature.faction,
+      factionId: this.editableCreature.factionId,
       subgroup: this.editableCreature.subgroup,
       pr: this.editableCreature.pr,
       discoveredCampaignIds: this.editableCreature.discoveredCampaignIds ?? [],
@@ -622,7 +646,7 @@ export class CreatureAdminPageComponent implements OnInit {
     const payload: BestiaryEntry = {
       ...this.cloneCreature(this.editableCreature),
       name: this.editableCreature.name.trim(),
-      faction: this.editableCreature.faction.trim() || 'Neutral',
+      factionId: Number(this.editableCreature.factionId) || (this.factions.length > 0 ? this.factions[0].id : 1),
       subgroup: this.editableCreature.subgroup.trim() || 'General',
       pr: Number(this.editableCreature.pr) || 10,
       discoveredCampaignIds: this.editableCreature.discoveredCampaignIds ?? [],
@@ -648,7 +672,6 @@ export class CreatureAdminPageComponent implements OnInit {
           this.bestiary.push(saved);
         }
         this.bestiary.sort((a, b) => a.name.localeCompare(b.name));
-        this.factions = this.getUniqueValues(this.bestiary, 'faction');
         this.applyFilters();
         this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
         this.selectCreature(saved);
@@ -688,7 +711,6 @@ export class CreatureAdminPageComponent implements OnInit {
         this.showDeleteConfirm = false;
         this.toastService.show(`Deleted creature "${nameToDelete}"`, 'success');
         this.bestiary = this.bestiary.filter(b => b.id !== idToDelete);
-        this.factions = this.getUniqueValues(this.bestiary, 'faction');
         this.applyFilters();
         this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
         if (this.bestiary.length > 0) {

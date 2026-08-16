@@ -6,7 +6,7 @@ import { AdminService } from '../admin.service';
 import { CampaignService } from '../campaign.service';
 import { PlayerDetailComponent } from '../player-detail/player-detail.component';
 import { FormsModule } from '@angular/forms';
-import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection, NPC, Campaign } from '../model';
+import { AlteredState, BestiaryEntry, Items, Weapon, WeaponRule, ScrollSection, NPC, Campaign, Lore } from '../model';
 import { ThemeService } from '../theme.service';
 import { Subscription } from 'rxjs';
 import { ScrollNavComponent } from '../scroll-nav/scroll-nav.component';
@@ -35,14 +35,15 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
 
   bestiary: BestiaryEntry[] = [];
   npcs: NPC[] = [];
+  loreData: Lore | null = null;
   isAdmin: boolean = false;
   activeCampaign: Campaign | null = null;
   selectedCreatureId: number | null = null;
   selectedCreature: BestiaryEntry | null = null;
   selectedCreatures: BestiaryEntry[] = [];
-  factions: string[] = [];
+  factions: { id: number; name: string }[] = [];
   subgroups: string[] = [];
-  selectedFaction: string | null = null;
+  selectedFactionId: number | null = null;
   selectedSubGroup: string | null = null;
   filteredCreatures: BestiaryEntry[] = [];
   itemsData!: Items;
@@ -94,6 +95,26 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
         this.showMaterialsSidebar = isOpen;
       })
     );
+
+    this.dataService.getLore().subscribe(lore => {
+      this.loreData = lore || null;
+      if (this.bestiary.length > 0) {
+        this.refreshVisibleCreatures();
+      }
+    });
+
+    if (this.dataService.lore$) {
+      this.themeSubscription.add(
+        this.dataService.lore$.subscribe(lore => {
+          if (lore) {
+            this.loreData = lore;
+            if (this.bestiary.length > 0) {
+              this.refreshVisibleCreatures();
+            }
+          }
+        })
+      );
+    }
     
     this.dataService.getAllData().subscribe(response => {
       this.bestiary = response.bestiary;
@@ -101,12 +122,18 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
       this.itemsData = response.items;
       this.weaponsData = response.weapons;
       this.weaponRulesData = response.weaponRules;
-      this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
       this.alteredStates = response.alteredStates;
 
+      this.updateFactionsList();
+
       // Load saved filters
-      const savedFaction = localStorage.getItem('bestiaryFaction');
-      if (savedFaction !== null) this.selectedFaction = JSON.parse(savedFaction);
+      const savedFactionId = localStorage.getItem('bestiaryFactionId') ?? localStorage.getItem('bestiaryFaction');
+      if (savedFactionId !== null) {
+        const parsed = JSON.parse(savedFactionId);
+        if (parsed !== null && !isNaN(Number(parsed))) {
+          this.selectedFactionId = Number(parsed);
+        }
+      }
       
       this.applyFilters(); // Initial filter setup
       this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
@@ -170,8 +197,22 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
     this.bestiaryMaterialsService.reset();
   }
 
+  getFactionName(factionId: number | null | undefined): string {
+    if (!factionId || !this.loreData?.factions) return '';
+    const factionObj = this.loreData.factions.find(f => f.id === factionId);
+    return factionObj ? factionObj.name : '';
+  }
+
+  private updateFactionsList(): void {
+    const visible = this.getVisibleCreatures();
+    const uniqueFactionIds = [...new Set(visible.map(c => c.factionId).filter((id): id is number => typeof id === 'number' && !isNaN(id)))];
+    this.factions = uniqueFactionIds
+      .map(id => ({ id, name: this.getFactionName(id) || `Faction #${id}` }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   private refreshVisibleCreatures(): void {
-    this.factions = this.getUniqueValues(this.getVisibleCreatures(), 'faction');
+    this.updateFactionsList();
     this.applyFilters();
     this.subgroups = this.getUniqueValues(this.filteredCreatures, 'subgroup');
     this.selectedCreatures = this.selectedCreatures
@@ -214,7 +255,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   private getUniqueValues(array: any[], property: string): string[] {
-    return [...new Set(array.map(item => item[property]))].sort();
+    return [...new Set(array.map(item => item[property]))].filter(Boolean).sort();
   }
 
   onFactionSelected() {
@@ -227,7 +268,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
       localStorage.removeItem('bestiarySubGroup');
     }
     
-    localStorage.setItem('bestiaryFaction', JSON.stringify(this.selectedFaction));
+    localStorage.setItem('bestiaryFactionId', JSON.stringify(this.selectedFactionId));
   }
 
   onSubGroupSelected() {
@@ -241,7 +282,7 @@ export class BestiaryComponent implements OnInit, OnDestroy, OnChanges {
 
   private applyFilters() {
     this.filteredCreatures = this.getVisibleCreatures().filter(c => {
-      const factionMatch = !this.selectedFaction || c.faction === this.selectedFaction;
+      const factionMatch = this.selectedFactionId === null || c.factionId === this.selectedFactionId;
       const subgroupMatch = !this.selectedSubGroup || c.subgroup === this.selectedSubGroup;
       return factionMatch && subgroupMatch;
     });

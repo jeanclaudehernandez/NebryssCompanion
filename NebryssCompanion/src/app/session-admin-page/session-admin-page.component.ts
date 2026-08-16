@@ -458,8 +458,12 @@ export class SessionAdminPageComponent implements OnInit, OnChanges {
           .map(s => ({ id: s.id, name: s.name, subtitle: s.location || 'Merchant' }));
       case 'bestiary':
         return this.lookup.bestiary
-          .filter(b => !term || b.name.toLowerCase().includes(term) || (b.faction && b.faction.toLowerCase().includes(term)) || (b.subgroup && b.subgroup.toLowerCase().includes(term)))
-          .map(b => ({ id: b.id, name: b.name, subtitle: `${b.faction || 'Creature'}${b.subgroup ? ' • ' + b.subgroup : ''} (PR ${b.pr})` }));
+          .map(b => {
+            const faction = this.lookup.factions?.find(f => f.id === b.factionId)?.name || '';
+            return { b, faction };
+          })
+          .filter(({ b, faction }) => !term || b.name.toLowerCase().includes(term) || (faction && faction.toLowerCase().includes(term)) || (b.subgroup && b.subgroup.toLowerCase().includes(term)))
+          .map(({ b, faction }) => ({ id: b.id, name: b.name, subtitle: `${faction || 'Creature'}${b.subgroup ? ' • ' + b.subgroup : ''} (PR ${b.pr})` }));
       case 'letter':
         return this.lookup.letters
           .filter(l => !term || ((l.subject || '').toLowerCase().includes(term)) || ((l.senderName || '').toLowerCase().includes(term)))
