@@ -240,12 +240,12 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
 
 ### 9.2 Mandatory Rules of Engagement for Agents
 1. **Two-Tier Command Execution & Approval Protocol**:
-   - **Read-Only Context Commands** (`get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag`): Execute automatically in the background to supply the AI with current campaign and world state.
+   - **Read-Only Context Commands** (`help`, `get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag`): Execute automatically in the background to supply the AI with current campaign and world state.
    - **Mutation & Write Commands** (`save`, `finalize`, `create-*`, `update-*`, `delete-*`): Are staged with an **Interactive Command Approval Card** in the UI. The user can view the full raw command line, inspect formatted parameters, and click **Approve & Execute** or **Decline**.
    - Always present session outlines, newly proposed NPCs, Bestiary statblocks, and narrative drafts directly in chat for user review.
-2. **Full Object Replacement on Entity Updates (API Overwrite Rule)**:
+2. **Full Object Replacement on Entity Updates (Mandatory Fetch-Before-Update Rule)**:
    - The backend API processes updates via complete document overwrite (`replaceOne` matching the `id` field).
-   - All update operations (`update-*`) must ALWAYS supply the **complete entity object with all existing and modified fields**, and NEVER send only the modified fields. If any attributes are missing from context, use `get-entity` first to retrieve the complete document before staging the update command.
+   - All update operations (`update-player`, `update-npc`, `update-location`, `update-shop`, `update-bestiary`, `update-letter`, `update-item`, `update-weapon`, `update-weapon-rule`, `update-altered-state`, `update-affliction`) must ALWAYS supply the **complete entity object with all existing and modified fields** (e.g. for players: `--campaignId`, `--id`, `--name`, `--race`, `--origin`, `--attributes`, `--weapons`, `--abilities`, `--items`, `--gold`, `--digitalGold`, `--talentPoints`, `--talents`, `--afflictions`, `--notes`), and NEVER send partial parameters. If any attributes or abilities are missing from context, use `get-entity` first in the background to retrieve the complete document before staging the update command.
 3. **Branch Visibility Protocol**:
    - When concluding a session with multiple branches (e.g., Branch A vs. Branch B), **ONLY** the branch chosen and completed by the players must be added to `playerVisibleBranches` (e.g., `["Branch A"]`).
    - Unchosen or alternative branches **MUST NOT** be visible to players (remaining GM-only).

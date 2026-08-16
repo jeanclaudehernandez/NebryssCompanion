@@ -757,6 +757,9 @@ async function updateNPC(npcUpdateData) {
   }
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   const existing = await apiRequest(`/npc/${id}`, 'GET', null, resolvedCampId);
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
   if (updates.factionId !== undefined) {
     updates.factionId = Number(updates.factionId);
     delete updates.faction;
@@ -771,6 +774,9 @@ async function updateNPC(npcUpdateData) {
     const fLower = String(updates.faction).toLowerCase();
     updates.factionId = factionMap[fLower] || (!isNaN(Number(updates.faction)) ? Number(updates.faction) : 2);
     delete updates.faction;
+  }
+  if (updates.wargear !== undefined && typeof updates.wargear === 'string') {
+    updates.wargear = parseArgJson(updates.wargear) || [];
   }
   const updatedDoc = {
     ...existing,
@@ -795,41 +801,49 @@ async function createPlayer(playerData) {
     throw new Error('Player requires at least a "name".');
   }
 
+  const parsedAttributes = typeof fields.attributes === 'string'
+    ? (parseArgJson(fields.attributes) || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] })
+    : (fields.attributes || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] });
+
+  const parsedWeapons = parseIdArray(fields.weapons);
+
+  const parsedAbilities = typeof fields.abilities === 'string'
+    ? (parseArgJson(fields.abilities) || [])
+    : (fields.abilities || []);
+
+  const parsedItems = typeof fields.items === 'string'
+    ? (parseArgJson(fields.items) || [])
+    : (fields.items || (typeof fields.inventory === 'string' ? parseArgJson(fields.inventory) : (fields.inventory || [])));
+
+  let parsedProgression = typeof fields.progression === 'string'
+    ? (parseArgJson(fields.progression) || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] })
+    : (fields.progression || {
+        talentPoints: fields.talentPoints !== undefined ? Number(fields.talentPoints) : 0,
+        mistrals: {
+          digital: fields.digitalGold !== undefined ? Number(fields.digitalGold) : 0,
+          physical: fields.gold !== undefined ? Number(fields.gold) : 0
+        },
+        talents: typeof fields.talents === 'string' ? (parseArgJson(fields.talents) || []) : (fields.talents || []),
+        afflictions: typeof fields.afflictions === 'string' ? (parseArgJson(fields.afflictions) || []) : (fields.afflictions || []),
+        equipment: typeof fields.equipment === 'string' ? (parseArgJson(fields.equipment) || []) : (fields.equipment || [])
+      });
+
+  if (fields.gold !== undefined && (!parsedProgression || !parsedProgression.mistrals)) {
+    if (!parsedProgression) parsedProgression = { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] };
+    if (!parsedProgression.mistrals) parsedProgression.mistrals = { digital: 0, physical: 0 };
+    parsedProgression.mistrals.physical = Number(fields.gold);
+  }
+
   const doc = {
     name: fields.name,
     race: fields.race || 'Human',
     origin: fields.origin || '',
-    attributes: typeof fields.attributes === 'string'
-      ? (parseArgJson(fields.attributes) || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] })
-      : (fields.attributes || { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['universal', 'human'] }),
-    weapons: typeof fields.weapons === 'string'
-      ? (fields.weapons.includes(',') ? fields.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(fields.weapons) || []))
-      : (fields.weapons || []),
-    abilities: typeof fields.abilities === 'string'
-      ? (parseArgJson(fields.abilities) || [])
-      : (fields.abilities || []),
-    items: typeof fields.items === 'string'
-      ? (parseArgJson(fields.items) || [])
-      : (fields.items || (typeof fields.inventory === 'string' ? parseArgJson(fields.inventory) : (fields.inventory || []))),
-    progression: typeof fields.progression === 'string'
-      ? (parseArgJson(fields.progression) || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] })
-      : (fields.progression || {
-          talentPoints: fields.talentPoints !== undefined ? Number(fields.talentPoints) : 0,
-          mistrals: {
-            digital: fields.digitalGold !== undefined ? Number(fields.digitalGold) : 0,
-            physical: fields.gold !== undefined ? Number(fields.gold) : 0
-          },
-          talents: typeof fields.talents === 'string' ? (parseArgJson(fields.talents) || []) : (fields.talents || []),
-          afflictions: typeof fields.afflictions === 'string' ? (parseArgJson(fields.afflictions) || []) : (fields.afflictions || []),
-          equipment: typeof fields.equipment === 'string' ? (parseArgJson(fields.equipment) || []) : (fields.equipment || [])
-        })
+    attributes: parsedAttributes,
+    weapons: parsedWeapons,
+    abilities: parsedAbilities,
+    items: parsedItems,
+    progression: parsedProgression
   };
-
-  if (fields.gold !== undefined && (!fields.progression || !fields.progression.mistrals)) {
-    if (!doc.progression) doc.progression = { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] };
-    if (!doc.progression.mistrals) doc.progression.mistrals = { digital: 0, physical: 0 };
-    doc.progression.mistrals.physical = Number(fields.gold);
-  }
 
   if (fields.notes) doc.notes = fields.notes;
 
@@ -849,11 +863,63 @@ async function updatePlayer(playerUpdateData) {
   }
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   const existing = await apiRequest(`/player/${id}`, 'GET', null, resolvedCampId);
+
+  // Clean undefined properties from updates so they don't overwrite existing document properties
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) {
+      delete updates[key];
+    }
+  });
+
   const updatedDoc = {
     ...existing,
     ...updates,
     id: Number(id) || id
   };
+
+  if (updates.weapons !== undefined) {
+    updatedDoc.weapons = parseIdArray(updates.weapons);
+  }
+  if (updates.attributes !== undefined) {
+    updatedDoc.attributes = typeof updates.attributes === 'string'
+      ? (parseArgJson(updates.attributes) || updatedDoc.attributes)
+      : updates.attributes;
+  }
+  if (updates.abilities !== undefined) {
+    updatedDoc.abilities = typeof updates.abilities === 'string'
+      ? (parseArgJson(updates.abilities) || updatedDoc.abilities)
+      : updates.abilities;
+  }
+  if (updates.items !== undefined || updates.inventory !== undefined) {
+    const rawItems = updates.items !== undefined ? updates.items : updates.inventory;
+    updatedDoc.items = typeof rawItems === 'string'
+      ? (parseArgJson(rawItems) || updatedDoc.items)
+      : rawItems;
+  }
+  if (updates.progression !== undefined) {
+    updatedDoc.progression = typeof updates.progression === 'string'
+      ? (parseArgJson(updates.progression) || updatedDoc.progression)
+      : updates.progression;
+  }
+
+  if (updates.gold !== undefined || updates.digitalGold !== undefined || updates.talentPoints !== undefined || updates.talents !== undefined || updates.afflictions !== undefined) {
+    if (!updatedDoc.progression) {
+      updatedDoc.progression = { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] };
+    }
+    if (!updatedDoc.progression.mistrals) {
+      updatedDoc.progression.mistrals = { digital: 0, physical: 0 };
+    }
+    if (updates.gold !== undefined) updatedDoc.progression.mistrals.physical = Number(updates.gold);
+    if (updates.digitalGold !== undefined) updatedDoc.progression.mistrals.digital = Number(updates.digitalGold);
+    if (updates.talentPoints !== undefined) updatedDoc.progression.talentPoints = Number(updates.talentPoints);
+    if (updates.talents !== undefined) {
+      updatedDoc.progression.talents = typeof updates.talents === 'string' ? (parseArgJson(updates.talents) || []) : updates.talents;
+    }
+    if (updates.afflictions !== undefined) {
+      updatedDoc.progression.afflictions = typeof updates.afflictions === 'string' ? (parseArgJson(updates.afflictions) || []) : updates.afflictions;
+    }
+  }
+
   delete updatedDoc._id;
   const updated = await apiRequest('/player', 'PUT', updatedDoc, resolvedCampId);
   return {
@@ -901,7 +967,7 @@ async function createBestiaryEntry(bestiaryData) {
   }
 
   const { weapons: allWeapons, weaponRules: allRules } = await getAllWeaponsAndRules();
-  const validatedWeaponIds = validateWeaponsExist(weapons || [], allWeapons);
+  const validatedWeaponIds = validateWeaponsExist(parseIdArray(weapons), allWeapons);
 
   const finalAttributes = {
     Movement: typeof attributes.Movement === 'number' ? attributes.Movement : 6,
@@ -975,8 +1041,8 @@ async function updateBestiaryEntry(bestiaryUpdateData) {
   }
 
   let finalWeapons = targetBestiary.weapons || [];
-  if (Array.isArray(updates.weapons)) {
-    finalWeapons = validateWeaponsExist(updates.weapons, allWeapons);
+  if (updates.weapons !== undefined) {
+    finalWeapons = validateWeaponsExist(parseIdArray(updates.weapons), allWeapons);
   }
 
   const finalAttributes = {
@@ -1126,6 +1192,18 @@ async function updateLocation(locationUpdateData) {
   }
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   const existing = await apiRequest(`/location/${id}`, 'GET', null, resolvedCampId);
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
+  if (updates.features !== undefined && typeof updates.features === 'string') {
+    updates.features = parseArgJson(updates.features) || [];
+  }
+  if (updates.secrets !== undefined && typeof updates.secrets === 'string') {
+    updates.secrets = parseArgJson(updates.secrets) || [];
+  }
+  if (updates.shops !== undefined) {
+    updates.shops = parseIdArray(updates.shops);
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1162,6 +1240,12 @@ async function updateShop(shopUpdateData) {
   }
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   const existing = await apiRequest(`/shop/${id}`, 'GET', null, resolvedCampId);
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
+  if (updates.items !== undefined && typeof updates.items === 'string') {
+    updates.items = parseArgJson(updates.items) || [];
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1201,6 +1285,18 @@ async function updateLetter(letterUpdateData) {
   }
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   const existing = await apiRequest(`/letter/${id}`, 'GET', null, resolvedCampId);
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
+  if (updates.recipientIds !== undefined) {
+    updates.recipientIds = parseIdArray(updates.recipientIds);
+  }
+  if (updates.targetNames !== undefined && typeof updates.targetNames === 'string') {
+    updates.targetNames = parseArgJson(updates.targetNames) || [];
+  }
+  if (updates.readBy !== undefined && typeof updates.readBy === 'string') {
+    updates.readBy = parseArgJson(updates.readBy) || [];
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1230,6 +1326,12 @@ async function updateItem(itemUpdateData) {
   const { id, ...updates } = itemUpdateData;
   if (id === undefined || id === null) throw new Error('updateItem requires an "id" property.');
   const existing = await apiRequest(`/item/${id}`, 'GET');
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
+  if (updates.statModifications !== undefined && typeof updates.statModifications === 'string') {
+    updates.statModifications = parseArgJson(updates.statModifications) || updates.statModifications;
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1259,6 +1361,12 @@ async function updateWeapon(weaponUpdateData) {
   const { id, ...updates } = weaponUpdateData;
   if (id === undefined || id === null) throw new Error('updateWeapon requires an "id" property.');
   const existing = await apiRequest(`/weapon/${id}`, 'GET');
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
+  if (updates.profiles !== undefined && typeof updates.profiles === 'string') {
+    updates.profiles = parseArgJson(updates.profiles) || updates.profiles;
+  }
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1288,6 +1396,9 @@ async function updateWeaponRule(ruleUpdateData) {
   const { id, ...updates } = ruleUpdateData;
   if (id === undefined || id === null) throw new Error('updateWeaponRule requires an "id" property.');
   const existing = await apiRequest(`/weaponRule/${id}`, 'GET');
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1317,6 +1428,9 @@ async function updateAlteredState(stateUpdateData) {
   const { id, ...updates } = stateUpdateData;
   if (id === undefined || id === null) throw new Error('updateAlteredState requires an "id" property.');
   const existing = await apiRequest(`/status/${id}`, 'GET');
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1346,6 +1460,9 @@ async function updateAffliction(afflictionUpdateData) {
   const { id, ...updates } = afflictionUpdateData;
   if (id === undefined || id === null) throw new Error('updateAffliction requires an "id" property.');
   const existing = await apiRequest(`/affliction/${id}`, 'GET');
+  Object.keys(updates).forEach(key => {
+    if (updates[key] === undefined) delete updates[key];
+  });
   const updatedDoc = {
     ...existing,
     ...updates,
@@ -1472,6 +1589,31 @@ async function deleteEntity({ type, id, campaignId }) {
     apiResponse: res,
     message: `Successfully moved ${normalizedType} with ID ${id} to ${res?.movedTo || normalizedType + '-trash'}`
   };
+}
+
+function parseIdArray(val) {
+  if (val === undefined || val === null || val === '') return [];
+  if (Array.isArray(val)) {
+    return val.map(Number).filter(n => !isNaN(n));
+  }
+  if (typeof val === 'number') {
+    return isNaN(val) ? [] : [val];
+  }
+  if (typeof val === 'string') {
+    let s = val.trim();
+    if (!s) return [];
+    if ((s.startsWith('"') && s.endsWith('"')) || (s.startsWith("'") && s.endsWith("'"))) {
+      s = s.slice(1, -1).trim();
+    }
+    if (!s) return [];
+    if (s.startsWith('[') && s.endsWith(']')) {
+      const inner = s.slice(1, -1).trim();
+      if (!inner) return [];
+      return inner.split(',').map(part => Number(part.trim().replace(/^['"]|['"]$/g, ''))).filter(n => !isNaN(n));
+    }
+    return s.split(',').map(part => Number(part.trim().replace(/^['"]|['"]$/g, ''))).filter(n => !isNaN(n));
+  }
+  return [];
 }
 
 function parseArgJson(raw) {
@@ -1797,15 +1939,357 @@ function parseCliArgs(rawArgs) {
   return params;
 }
 
-// CLI handler
-async function main() {
-  const args = process.argv.slice(2);
-  const command = args[0];
+const COMMAND_HELP_MAP = {
+  'help': `
+Command: help
+Usage:
+  node scripts/campaign-session-tool.js help [command]
+  node scripts/campaign-session-tool.js <command> --help
 
-  if (!command || command === 'help' || command === '--help') {
-    console.log(`
+Description:
+  Displays general usage or detailed command-specific documentation, parameters, and examples.
+`,
+  'get-context': `
+Command: get-context
+Usage:
+  node scripts/campaign-session-tool.js get-context [campaignId]
+
+Description:
+  Fetches full active campaign context including previous sessions, active player roster, NPCs, visited locations, and active factions.
+`,
+  'list': `
+Command: list
+Usage:
+  node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
+
+Description:
+  Lists all play sessions in the active campaign. Use --clean for human-readable entity names or --expand for full entity objects.
+`,
+  'get-latest': `
+Command: get-latest
+Usage:
+  node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
+
+Description:
+  Retrieves the most recent campaign session.
+`,
+  'get-entity': `
+Command: get-entity
+Usage:
+  node scripts/campaign-session-tool.js get-entity <type> [id or name] [--campaignId=N]
+
+Parameters:
+  <type>                  Entity type (player, npc, location, shop, bestiary, letter, item, weapon, weaponrule, status, affliction, session)
+  <id or name>            Numeric ID or exact/partial name
+  --campaignId=<id>       Active campaign ID (required for player, npc, location, shop, letter, session)
+
+Example:
+  node scripts/campaign-session-tool.js get-entity player 1 --campaignId=1
+  node scripts/campaign-session-tool.js get-entity weapon "Balefire Blade"
+`,
+  'list-entities': `
+Command: list-entities
+Usage:
+  node scripts/campaign-session-tool.js list-entities <type> [--campaignId=N] [--filter='...'] [--search="..."] [--limit=N]
+
+Parameters:
+  <type>                  Entity type (player, npc, location, shop, bestiary, letter, item, weapon, weaponrule, status, affliction, session)
+  --campaignId=<id>       Active campaign ID (for campaign-scoped entities)
+  --filter='{...}'        JSON filter criteria
+  --search="<string>"     Text search query
+  --limit=<number>        Max records to return
+
+Example:
+  node scripts/campaign-session-tool.js list-entities npc --campaignId=1 --search="Inquisitor"
+`,
+  'delete-entity': `
+Command: delete-entity
+Usage:
+  node scripts/campaign-session-tool.js delete-entity <type> <id> [--campaignId=N]
+
+Parameters:
+  <type>                  Entity type
+  <id>                    Numeric ID of the entity to delete
+  --campaignId=<id>       Active campaign ID (for campaign-scoped entities)
+`,
+  'auto-tag': `
+Command: auto-tag
+Usage:
+  node scripts/campaign-session-tool.js auto-tag [campaignId] --input="<text>"
+
+Description:
+  Converts plain-text entity names in the input string into unique database reference tags (@player[id], @npc[id], etc.).
+`,
+  'clean-text': `
+Command: clean-text
+Usage:
+  node scripts/campaign-session-tool.js clean-text [campaignId] --input="<text>"
+
+Description:
+  Replaces database reference tags (@player[id], @location[id], etc.) with natural, clean entity names for presentation.
+`,
+  'list-weapons': `
+Command: list-weapons
+Usage:
+  node scripts/campaign-session-tool.js list-weapons [searchQuery]
+
+Description:
+  Lists all weapons from the official compendium. Used for PR validation and Bestiary weapon selection.
+`,
+  'calculate-pr': `
+Command: calculate-pr
+Usage:
+  node scripts/campaign-session-tool.js calculate-pr --weapons="<ids>" --attributes='{...}' --abilities='[...]'
+
+Parameters:
+  --weapons="<ids>"       Comma-separated weapon IDs e.g. "1,8"
+  --attributes='{...}'    JSON attributes e.g. {"Movement":6,"Wounds":12,"Save":4,"APL":2,"body":["human"]}
+  --abilities='[...]'     JSON abilities array e.g. [{"name":"Shield","effect":"...","prModifier":10}]
+`,
+  'save': `
+Command: save
+Usage:
+  node scripts/campaign-session-tool.js save --campaignId=N --sessionId=N --content="<tagged text>" [--branches="..."]
+
+Description:
+  Saves/stages a campaign session narrative plan with entity reference tags (@player[id], @npc[id], etc.).
+`,
+  'finalize': `
+Command: finalize
+Usage:
+  node scripts/campaign-session-tool.js finalize --campaignId=N --sessionId=N --conclussion="<tagged text>" [--branches="..."]
+
+Description:
+  Concludes/finalizes a campaign session with the debrief narrative and player-visible completed branches.
+`,
+  'create-player': `
+Command: create-player
+Usage:
+  node scripts/campaign-session-tool.js create-player --campaignId=N --name="<name>" [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --name="<string>"       Player character name (required)
+  --race="<string>"       Race/species (default: "Human")
+  --origin="<string>"     Character origin or background
+  --gold=<number>         Physical mistrals/gold
+  --digitalGold=<number>  Digital mistrals/gold
+  --talentPoints=<number> Unspent talent points
+  --attributes='{...}'    JSON object e.g. {"Movement":6,"Wounds":10,"Save":5,"APL":2,"body":["universal","human"]}
+  --weapons="<ids>"       Comma-separated weapon IDs e.g. "1,8"
+  --abilities='[...]'     JSON array of abilities
+  --items='[...]'         JSON array of inventory items
+  --talents='[...]'       JSON array of talent IDs or talent objects
+  --afflictions='[...]'   JSON array of afflictions
+  --notes="<string>"      Character notes / backstory
+
+Example:
+  node scripts/campaign-session-tool.js create-player --campaignId=1 --name="Wendy" --race="Human" --origin="Zephyria" --gold=100 --weapons="1,8"
+`,
+  'update-player': `
+Command: update-player
+Usage:
+  node scripts/campaign-session-tool.js update-player --campaignId=N --id=<id> [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --id=<id>               Player ID to update (required)
+  --name="<string>"       Player character name
+  --race="<string>"       Race/species
+  --origin="<string>"     Character origin or background
+  --attributes='{...}'    JSON object of attributes: {"Movement":6,"Wounds":10,"Save":5,"APL":2,"body":["human"]}
+  --weapons="<ids>"       Comma-separated weapon IDs (e.g. "58,75")
+  --abilities='[...]'     JSON array of abilities: [{"name":"...","effect":"..."}]
+  --items='[...]'         JSON array of inventory items
+  --gold=<number>         Physical mistrals/gold
+  --digitalGold=<number>  Digital mistrals/gold
+  --talentPoints=<number> Unspent talent points
+  --talents='[...]'       JSON array of talent IDs
+  --afflictions='[...]'   JSON array of afflictions
+  --notes="<string>"      Character notes / backstory
+
+Note:
+  Always pass all entity parameters (--attributes, --weapons, --abilities, --items, --progression/gold) to preserve the full character sheet.
+  If full parameters are not in context, run 'get-entity player <id>' first.
+`,
+  'create-npc': `
+Command: create-npc
+Usage:
+  node scripts/campaign-session-tool.js create-npc --campaignId=N --name="<name>" --factionId=N [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --name="<string>"       NPC Name (required)
+  --factionId=<id>        Faction ID (1: Imperium, 2: Gilded Accord, 3: Abyssal Cabal, 4: NLR, 5: Crimson Corsairs)
+  --subgroup="<string>"   Sub-faction / fleet / order
+  --role="<string>"       Title or archetype
+  --personality="<str>"   Personality traits
+  --mission="<string>"    Current objective
+  --methods="<string>"    Operational tactics
+  --location="<string>"   Known location
+  --wargear='[...]'       JSON array of wargear objects [{"name":"...","description":"..."}]
+  --discovered=<boolean>  Whether discovered by players (default: true)
+`,
+  'update-npc': `
+Command: update-npc
+Usage:
+  node scripts/campaign-session-tool.js update-npc --campaignId=N --id=<id> [options]
+`,
+  'create-location': `
+Command: create-location
+Usage:
+  node scripts/campaign-session-tool.js create-location --campaignId=N --name="<name>" --faction="<faction>" [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --name="<string>"       Location Name (required)
+  --faction="<string>"    Controlling Faction (required)
+  --category="<string>"   Category (e.g. "fortress", "island", "reef", "city")
+  --categorySize=<number> Size rating (1 to 5)
+  --mapX=<number>         World Map X coordinate percentage (0-100)
+  --mapY=<number>         World Map Y coordinate percentage (0-100)
+  --isCapital=<boolean>   Capital status
+  --discovered=<boolean>  Whether discovered (default: true)
+`,
+  'update-location': `
+Command: update-location
+Usage:
+  node scripts/campaign-session-tool.js update-location --campaignId=N --id=<id> [options]
+`,
+  'create-shop': `
+Command: create-shop
+Usage:
+  node scripts/campaign-session-tool.js create-shop --campaignId=N --name="<name>" [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --name="<string>"       Shop Name (required)
+  --owner=<id>            Owner NPC ID
+  --locationId=<id>       Location ID
+  --locationName="<str>"  Location name
+  --categories='[...]'    JSON array of category IDs (e.g. [1, 2, 3])
+  --items='[...]'         JSON array of item objects [{"id":1,"price":50,"type":"item"}]
+  --discovered=<boolean>  Whether discovered (default: true)
+`,
+  'update-shop': `
+Command: update-shop
+Usage:
+  node scripts/campaign-session-tool.js update-shop --campaignId=N --id=<id> [options]
+`,
+  'create-bestiary': `
+Command: create-bestiary
+Usage:
+  node scripts/campaign-session-tool.js create-bestiary --name="<name>" --faction="<faction>" [options]
+
+Parameters:
+  --name="<string>"       Creature / operative name (required)
+  --faction="<string>"    Faction name or factionId (required)
+  --subgroup="<string>"   Subgroup / type
+  --attributes='{...}'    JSON attributes: {"Movement":6,"Wounds":10,"Save":5,"APL":2,"body":["human"]}
+  --weapons="<ids>"       Comma-separated weapon IDs (must exist in compendium)
+  --abilities='[...]'     JSON array of abilities [{"name":"...","effect":"...","prModifier":5}]
+  --deployables='[...]'   JSON array of deployables
+  --pr=<number>           Explicit PR override (otherwise calculated automatically)
+  --isDiscovered=<bool>   Discovery state (default: true)
+`,
+  'update-bestiary': `
+Command: update-bestiary
+Usage:
+  node scripts/campaign-session-tool.js update-bestiary --id=<id> [options]
+`,
+  'create-combat-npc': `
+Command: create-combat-npc
+Usage:
+  node scripts/campaign-session-tool.js create-combat-npc --campaignId=N --name="<name>" --factionId=N [options]
+
+Description:
+  Creates both a Bestiary statblock and an NPC profile linked together via bestiaryId.
+`,
+  'create-letter': `
+Command: create-letter
+Usage:
+  node scripts/campaign-session-tool.js create-letter --campaignId=N --subject="<subject>" [options]
+
+Parameters:
+  --campaignId=<id>       Active campaign ID (required)
+  --subject="<string>"    Letter title / subject (required)
+  --senderId=<id>         Sender NPC ID
+  --senderName="<string>" Sender name
+  --content="<string>"    HTML / text letter content
+  --date="<string>"       In-game imperial date
+  --recipientIds="<ids>"  Comma-separated recipient player IDs
+`,
+  'update-letter': `
+Command: update-letter
+Usage:
+  node scripts/campaign-session-tool.js update-letter --campaignId=N --id=<id> [options]
+`,
+  'create-item': `
+Command: create-item
+Usage:
+  node scripts/campaign-session-tool.js create-item --name="<name>" --type="<type>" --price=<price> [options]
+`,
+  'update-item': `
+Command: update-item
+Usage:
+  node scripts/campaign-session-tool.js update-item --id=<id> [options]
+`,
+  'create-weapon': `
+Command: create-weapon
+Usage:
+  node scripts/campaign-session-tool.js create-weapon --name="<name>" --price=<price> --profiles='[...]'
+`,
+  'update-weapon': `
+Command: update-weapon
+Usage:
+  node scripts/campaign-session-tool.js update-weapon --id=<id> [options]
+`,
+  'create-weapon-rule': `
+Command: create-weapon-rule
+Usage:
+  node scripts/campaign-session-tool.js create-weapon-rule --name="<name>" --effect="<effect>" [--prModifier=N]
+`,
+  'update-weapon-rule': `
+Command: update-weapon-rule
+Usage:
+  node scripts/campaign-session-tool.js update-weapon-rule --id=<id> [options]
+`,
+  'create-altered-state': `
+Command: create-altered-state
+Usage:
+  node scripts/campaign-session-tool.js create-altered-state --name="<name>" --effect="<effect>"
+`,
+  'update-altered-state': `
+Command: update-altered-state
+Usage:
+  node scripts/campaign-session-tool.js update-altered-state --id=<id> [options]
+`,
+  'create-affliction': `
+Command: create-affliction
+Usage:
+  node scripts/campaign-session-tool.js create-affliction --name="<name>" --effect="<effect>"
+`,
+  'update-affliction': `
+Command: update-affliction
+Usage:
+  node scripts/campaign-session-tool.js update-affliction --id=<id> [options]
+`
+};
+
+function printHelp(targetCmd) {
+  if (targetCmd) {
+    const norm = String(targetCmd).toLowerCase().trim().replace(/^node\s+/, '').replace(/^scripts\/campaign-session-tool\.js\s+/, '');
+    if (COMMAND_HELP_MAP[norm]) {
+      console.log(COMMAND_HELP_MAP[norm].trim());
+      return;
+    }
+  }
+
+  console.log(`
 Nebryss Campaign Session Tool v4.0 (API Operations)
 Usage:
+  node scripts/campaign-session-tool.js help [command]
+  node scripts/campaign-session-tool.js <command> --help
   node scripts/campaign-session-tool.js get-context [campaignId]
   node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
   node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
@@ -1829,7 +2313,26 @@ Entity Management (via API):
   - Weapon Rule:    create-weapon-rule, update-weapon-rule
   - Altered State:  create-altered-state, update-altered-state
   - Affliction:     create-affliction, update-affliction
-    `);
+
+Tip: Run 'node scripts/campaign-session-tool.js <command> --help' to see specific parameters and examples for any command.
+  `);
+}
+
+// CLI handler
+async function main() {
+  const args = process.argv.slice(2);
+  const command = args[0];
+
+  const isHelpRequested = !command || command === 'help' || command === '--help' || command === '-h' || args.includes('--help') || args.includes('-h');
+
+  if (isHelpRequested) {
+    let targetCmd = null;
+    if (command === 'help' || command === '--help' || command === '-h') {
+      targetCmd = args[1] && !args[1].startsWith('-') ? args[1] : null;
+    } else {
+      targetCmd = command;
+    }
+    printHelp(targetCmd);
     process.exit(0);
   }
 
@@ -1866,7 +2369,7 @@ Entity Management (via API):
       status: 'PENDING_USER_APPROVAL',
       requiresApproval: true,
       command,
-      rawCommandLine: `node scripts/campaign-session-tool.js ${quotedArgs.join(' ')} --approved`,
+      rawCommandLine: `node scripts/campaign-session-tool.js ${quotedArgs.join(' ')}`,
       summary,
       payload: parsedParams,
       message: `Mutation command '${command}' is staged pending interactive user review and approval in the companion UI.`
@@ -2110,7 +2613,7 @@ Entity Management (via API):
       faction: p.faction || undefined,
       subgroup: p.subgroup || '',
       attributes: p.attributes ? parseArgJson(p.attributes) : { Movement: 6, Wounds: 10, Save: 5, APL: 2, body: ['human'] },
-      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
+      weapons: p.weapons !== undefined ? parseIdArray(p.weapons) : [],
       abilities: p.abilities ? parseArgJson(p.abilities) : [],
       deployables: p.deployables ? parseArgJson(p.deployables) : [],
       pr: p.pr ? Number(p.pr) : undefined,
@@ -2126,7 +2629,7 @@ Entity Management (via API):
       faction: p.faction || undefined,
       subgroup: p.subgroup || undefined,
       attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
-      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : undefined,
+      weapons: p.weapons !== undefined ? parseIdArray(p.weapons) : undefined,
       abilities: p.abilities ? parseArgJson(p.abilities) : undefined,
       deployables: p.deployables ? parseArgJson(p.deployables) : undefined,
       pr: p.pr ? Number(p.pr) : undefined,
@@ -2150,7 +2653,7 @@ Entity Management (via API):
       backstory: p.backstory || '',
       description: p.description || '',
       attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
-      weapons: p.weapons ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : [],
+      weapons: p.weapons !== undefined ? parseIdArray(p.weapons) : [],
       abilities: p.abilities ? parseArgJson(p.abilities) : [],
       wargear: p.wargear ? parseArgJson(p.wargear) : [],
       isDiscovered: p.isDiscovered === 'true' || p.isDiscovered === true
@@ -2164,7 +2667,7 @@ Entity Management (via API):
       race: p.race || undefined,
       origin: p.origin || undefined,
       attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
-      weapons: p.weapons ? (typeof p.weapons === 'string' && p.weapons.includes(',') ? p.weapons.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.weapons) || [])) : undefined,
+      weapons: p.weapons !== undefined ? parseIdArray(p.weapons) : undefined,
       abilities: p.abilities ? parseArgJson(p.abilities) : undefined,
       items: p.items ? parseArgJson(p.items) : (p.inventory ? parseArgJson(p.inventory) : undefined),
       progression: p.progression ? parseArgJson(p.progression) : undefined,
@@ -2184,11 +2687,17 @@ Entity Management (via API):
       name: p.name || undefined,
       race: p.race || undefined,
       origin: p.origin || undefined,
+      attributes: p.attributes ? parseArgJson(p.attributes) : undefined,
+      weapons: p.weapons !== undefined ? parseIdArray(p.weapons) : undefined,
+      abilities: p.abilities ? parseArgJson(p.abilities) : undefined,
       gold: p.gold !== undefined ? Number(p.gold) : undefined,
+      digitalGold: p.digitalGold !== undefined ? Number(p.digitalGold) : undefined,
+      talentPoints: p.talentPoints !== undefined ? Number(p.talentPoints) : undefined,
       notes: p.notes || undefined,
       talents: p.talents ? parseArgJson(p.talents) : undefined,
       afflictions: p.afflictions ? parseArgJson(p.afflictions) : undefined,
-      inventory: p.inventory ? parseArgJson(p.inventory) : undefined
+      inventory: p.inventory ? parseArgJson(p.inventory) : (p.items ? parseArgJson(p.items) : undefined),
+      progression: p.progression ? parseArgJson(p.progression) : undefined
     };
     const res = await updatePlayer(pParams);
     console.log(JSON.stringify(res, null, 2));
@@ -2202,7 +2711,7 @@ Entity Management (via API):
       senderAvatarUrl: p.senderAvatarUrl || '',
       content: p.content || p.message || '',
       date: p.date || '',
-      recipientIds: p.recipientIds ? (typeof p.recipientIds === 'string' && p.recipientIds.includes(',') ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.recipientIds) || [])) : [],
+      recipientIds: p.recipientIds !== undefined ? parseIdArray(p.recipientIds) : [],
       targetNames: p.targetNames ? parseArgJson(p.targetNames) : undefined,
       readBy: p.readBy ? parseArgJson(p.readBy) : [],
       isDeleted: p.isDeleted === 'true' || p.isDeleted === true
@@ -2220,7 +2729,7 @@ Entity Management (via API):
       senderAvatarUrl: p.senderAvatarUrl || undefined,
       content: p.content || p.message || undefined,
       date: p.date || undefined,
-      recipientIds: p.recipientIds ? (typeof p.recipientIds === 'string' && p.recipientIds.includes(',') ? p.recipientIds.split(',').map(s => Number(s.trim())).filter(n => !isNaN(n)) : (parseArgJson(p.recipientIds) || undefined)) : undefined,
+      recipientIds: p.recipientIds !== undefined ? parseIdArray(p.recipientIds) : undefined,
       targetNames: p.targetNames ? parseArgJson(p.targetNames) : undefined,
       readBy: p.readBy ? parseArgJson(p.readBy) : undefined,
       isDeleted: p.isDeleted !== undefined ? (p.isDeleted === 'true' || p.isDeleted === true) : undefined

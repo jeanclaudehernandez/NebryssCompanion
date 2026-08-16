@@ -31,7 +31,7 @@ This skill governs the conversational lifecycle for planning, drafting, running,
 - **Parameter Quoting**: Properly quote and escape all arguments passed to `campaign-session-tool.js`.
 
 ### 5. Two-Tier Command Protocol & Anti-Privilege Escalation
-- **Read-Only Commands Execute Automatically**: `get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `clean-text`, `auto-tag` execute in the background.
+- **Read-Only Commands Execute Automatically**: `help`, `get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag` execute in the background.
 - **Mutation Commands Require Human GM UI Approval**: `save`, `finalize`, `create-*`, `update-*`, `delete-*` are staged as **Interactive Command Approval Cards** in the UI.
 - **Strict No Self-Approval**: Under no circumstances may the model attempt to pass approval flags (`--approved`, `--force`) or set environment variables to bypass user review.
 
@@ -64,10 +64,10 @@ To ensure optimal readability during planning while maintaining relational integ
   - `@alteredstate[<id>]` (e.g. `@alteredstate[3]`)
   - `@affliction[<id>]` (e.g. `@affliction[aff-1]`)
 
-### C. Full Object Replacement on Entity Updates (API Overwrite Rule)
+### C. Full Object Replacement on Entity Updates (Mandatory Fetch-Before-Update Rule)
 - **API Overwrite Behavior**: The backend API processes updates via full document replacement (`replaceOne` matching the `id` field).
-- **Mandatory Complete Object Payloads**: Whenever creating or updating an existing entity (NPC, Shop, Location, Bestiary entry, Letter, Item, Weapon, Weapon Rule, Altered State, Affliction, Player), update commands (`update-*`) MUST ALWAYS provide the **complete entity object with all existing and modified fields**, NOT only the modified fields.
-- **Fetch Before Update Protocol**: If an entity's current attributes are not completely loaded in context, use `node scripts/campaign-session-tool.js get-entity <type> <id> [--campaignId=<campaignId>]` to retrieve the full document first, merge the desired changes into the complete object, and stage the full update command.
+- **Mandatory Complete Object Payloads**: Whenever updating an existing entity (`update-player`, `update-npc`, `update-location`, `update-shop`, `update-bestiary`, `update-letter`, `update-item`, `update-weapon`, `update-weapon-rule`, `update-altered-state`, `update-affliction`), update commands MUST ALWAYS provide the **complete entity object with ALL existing and modified fields** (e.g. for players: `--campaignId`, `--id`, `--name`, `--race`, `--origin`, `--attributes`, `--weapons`, `--abilities`, `--items`, `--gold`, `--digitalGold`, `--talentPoints`, `--talents`, `--afflictions`, `--notes`), NEVER omitting abilities, weapons, items, progression, or notes.
+- **Fetch Before Update Protocol**: If an entity's current attributes, abilities, or items are not completely loaded in context, you **MUST FIRST run `node scripts/campaign-session-tool.js get-entity <type> <id> --campaignId=<campaignId>`** (which executes automatically as a read-only command) to retrieve the full document, merge the desired changes into the complete object, and stage the full update command.
 
 ### D. Concise Entity Confirmations (No Unprompted Extra Steps)
 - When the user requests creating, updating, or deleting any entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, etc.) and the operation completes or is approved, concisely confirm the action and summarize key attributes using clean names.
@@ -192,6 +192,9 @@ graph TD
 Use these non-mutating commands freely in the background to retrieve session context and entity data (always execute as single-line commands):
 
 ```bash
+# Print tool usage and available commands
+node scripts/campaign-session-tool.js help
+
 # Get full campaign context
 node scripts/campaign-session-tool.js get-context [campaignId]
 
