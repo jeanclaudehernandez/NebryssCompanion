@@ -169,12 +169,22 @@ function getApiEndpointForType(type) {
   }
 }
 
-async function resolveCampaign(campaignId = 1) {
+function getDefaultCampaignId() {
+  if (process.env.NEBRYSS_ACTIVE_CAMPAIGN_ID) {
+    const parsed = Number(process.env.NEBRYSS_ACTIVE_CAMPAIGN_ID);
+    if (!isNaN(parsed) && parsed > 0) return parsed;
+    return process.env.NEBRYSS_ACTIVE_CAMPAIGN_ID;
+  }
+  return 1;
+}
+
+async function resolveCampaign(campaignId) {
+  const targetId = campaignId !== undefined && campaignId !== null ? campaignId : getDefaultCampaignId();
   const campaigns = await apiRequest('/campaign', 'GET');
   if (!campaigns || !campaigns.length) {
     throw new Error('No campaigns found in API. Please configure campaigns first.');
   }
-  const search = String(campaignId !== undefined && campaignId !== null ? campaignId : 1).trim().toLowerCase();
+  const search = String(targetId).trim().toLowerCase();
   const campaign = campaigns.find(c =>
     String(c.id) === search ||
     String(c.name || '').toLowerCase() === search ||
@@ -182,11 +192,11 @@ async function resolveCampaign(campaignId = 1) {
   );
   if (!campaign) {
     const list = campaigns.map(c => `ID ${c.id}: "${c.name}" (prefix: "${c.prefix}")`).join(', ');
-    throw new Error(`Campaign '${campaignId}' not found in API. Existing campaigns: [${list}]. Please indicate the correct campaign.`);
+    throw new Error(`Campaign '${targetId}' not found in API. Existing campaigns: [${list}]. Please indicate the correct campaign.`);
   }
   const prefix = String(campaign.prefix || campaign.name || '').trim();
   if (!prefix) {
-    throw new Error(`Campaign '${campaign.name || campaignId}' has no prefix configured in API.`);
+    throw new Error(`Campaign '${campaign.name || targetId}' has no prefix configured in API.`);
   }
   return { campaign, prefix };
 }
@@ -540,7 +550,7 @@ async function listWeapons(query = '') {
   }));
 }
 
-async function getCampaignContext(campaignId = 1) {
+async function getCampaignContext(campaignId) {
   const { campaign, prefix } = await resolveCampaign(campaignId);
   const resolvedCampaignId = campaign.id;
 
@@ -707,7 +717,7 @@ async function finalizeSession({ campaignId, sessionId, conclussion, playerVisib
 }
 
 async function createNPC(npcData) {
-  const { campaignId = 1, ...fields } = npcData;
+  const { campaignId, ...fields } = npcData;
   const { campaign } = await resolveCampaign(campaignId);
   if (!fields.name || (fields.factionId === undefined && !fields.faction)) {
     throw new Error('NPC requires at least "name" and "factionId" (or "faction").');
@@ -735,7 +745,7 @@ async function createNPC(npcData) {
 }
 
 async function updateNPC(npcUpdateData) {
-  const { id, campaignId = 1, ...updates } = npcUpdateData;
+  const { id, campaignId, ...updates } = npcUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updateNPC requires an "id" property to identify the NPC.');
   }
@@ -773,7 +783,7 @@ async function updateNPC(npcUpdateData) {
 }
 
 async function createPlayer(playerData) {
-  const { campaignId = 1, ...fields } = playerData;
+  const { campaignId, ...fields } = playerData;
   const { campaign } = await resolveCampaign(campaignId);
   if (!fields.name) {
     throw new Error('Player requires at least a "name".');
@@ -827,7 +837,7 @@ async function createPlayer(playerData) {
 }
 
 async function updatePlayer(playerUpdateData) {
-  const { id, campaignId = 1, ...updates } = playerUpdateData;
+  const { id, campaignId, ...updates } = playerUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updatePlayer requires an "id" property to identify the player.');
   }
@@ -1003,7 +1013,7 @@ async function updateBestiaryEntry(bestiaryUpdateData) {
 
 async function createCombatNPC(combatData) {
   const {
-    campaignId = 1,
+    campaignId,
     name,
     faction,
     factionId,
@@ -1090,7 +1100,7 @@ async function createCombatNPC(combatData) {
 }
 
 async function createLocation(locationData) {
-  const { campaignId = 1, ...fields } = locationData;
+  const { campaignId, ...fields } = locationData;
   const { campaign } = await resolveCampaign(campaignId);
   if (!fields.name || !fields.faction) {
     throw new Error('Location requires at least "name" and "faction".');
@@ -1104,7 +1114,7 @@ async function createLocation(locationData) {
 }
 
 async function updateLocation(locationUpdateData) {
-  const { id, campaignId = 1, ...updates } = locationUpdateData;
+  const { id, campaignId, ...updates } = locationUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updateLocation requires an "id" property to identify the location.');
   }
@@ -1126,7 +1136,7 @@ async function updateLocation(locationUpdateData) {
 }
 
 async function createShop(shopData) {
-  const { campaignId = 1, ...fields } = shopData;
+  const { campaignId, ...fields } = shopData;
   const { campaign } = await resolveCampaign(campaignId);
   if (!fields.name) {
     throw new Error('Shop requires at least a "name".');
@@ -1140,7 +1150,7 @@ async function createShop(shopData) {
 }
 
 async function updateShop(shopUpdateData) {
-  const { id, campaignId = 1, ...updates } = shopUpdateData;
+  const { id, campaignId, ...updates } = shopUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updateShop requires an "id" property to identify the shop.');
   }
@@ -1162,7 +1172,7 @@ async function updateShop(shopUpdateData) {
 }
 
 async function createLetter(letterData) {
-  const { campaignId = 1, ...fields } = letterData;
+  const { campaignId, ...fields } = letterData;
   const { campaign } = await resolveCampaign(campaignId);
   if (!fields.subject && !fields.title) {
     throw new Error('Letter requires at least "subject" or "title".');
@@ -1179,7 +1189,7 @@ async function createLetter(letterData) {
 }
 
 async function updateLetter(letterUpdateData) {
-  const { id, campaignId = 1, ...updates } = letterUpdateData;
+  const { id, campaignId, ...updates } = letterUpdateData;
   if (id === undefined || id === null) {
     throw new Error('updateLetter requires an "id" property to identify the letter.');
   }
@@ -1345,7 +1355,7 @@ async function updateAffliction(afflictionUpdateData) {
   };
 }
 
-async function getEntity({ type, id, name, campaignId = 1 }) {
+async function getEntity({ type, id, name, campaignId }) {
   if (!type) throw new Error('getEntity requires a "type" property.');
   const normalizedType = normalizeEntityType(type);
   const endpoint = getApiEndpointForType(normalizedType);
@@ -1388,7 +1398,7 @@ async function getEntity({ type, id, name, campaignId = 1 }) {
   throw new Error(`Entity of type '${type}' with ID '${id}' or name '${name}' not found.`);
 }
 
-async function readEntities({ type, campaignId = 1, filter = null, search = '', limit = 0 }) {
+async function readEntities({ type, campaignId, filter = null, search = '', limit = 0 }) {
   if (!type) throw new Error('readEntities requires a "type" property.');
   const normalizedType = normalizeEntityType(type);
   const endpoint = getApiEndpointForType(normalizedType);
@@ -1404,9 +1414,10 @@ async function readEntities({ type, campaignId = 1, filter = null, search = '', 
   if (!Array.isArray(list)) return [];
 
   if (normalizedType === 'session') {
+    const targetCamp = campaignId ? (isNaN(Number(campaignId)) ? campaignId : Number(campaignId)) : getDefaultCampaignId();
     list = list.filter(s =>
-      String(s.campaignId) === String(campaignId) ||
-      Number(s.campaignId) === Number(campaignId)
+      String(s.campaignId) === String(targetCamp) ||
+      Number(s.campaignId) === Number(targetCamp)
     );
   }
 
@@ -1435,7 +1446,7 @@ async function readEntities({ type, campaignId = 1, filter = null, search = '', 
   return list;
 }
 
-async function deleteEntity({ type, id, campaignId = 1 }) {
+async function deleteEntity({ type, id, campaignId }) {
   if (!type) throw new Error('deleteEntity requires a "type" property.');
   if (id === undefined || id === null) throw new Error('deleteEntity requires an "id" property.');
 
@@ -1656,7 +1667,8 @@ function isMutationCommand(cmd) {
 function generateMutationSummary(command, params) {
   const c = (command || '').toLowerCase();
   const name = params.name ? ` "${params.name}"` : (params.id ? ` #${params.id}` : '');
-  const campaign = params.campaignId ? ` [Campaign ${params.campaignId}]` : '';
+  const targetCamp = params.campaignId || getDefaultCampaignId();
+  const campaign = targetCamp ? ` [Campaign ${targetCamp}]` : '';
 
   if (c === 'save') {
     return `Save Session #${params.sessionId || '?'}${campaign}`;
@@ -1826,6 +1838,13 @@ Entity Management (via API):
   if (isMutationCommand(command) && !isApproved) {
     const cleanArgs = args.filter(a => a !== '--approved' && a !== '--force');
     const parsedParams = parseCliArgs(cleanArgs.slice(1));
+
+    // Ensure campaign-scoped commands attach default campaignId if omitted
+    const normType = normalizeEntityType(command.replace(/^(create|update|delete)-/, ''));
+    if (!parsedParams.campaignId && (CAMPAIGN_SCOPED_TYPES.has(normType) || command === 'save' || command === 'finalize' || (command === 'delete-entity' && CAMPAIGN_SCOPED_TYPES.has(normalizeEntityType(parsedParams.type))))) {
+      parsedParams.campaignId = String(getDefaultCampaignId());
+    }
+
     const summary = generateMutationSummary(command, parsedParams);
 
     // Build accurately escaped and quoted raw command line
@@ -1854,20 +1873,21 @@ Entity Management (via API):
   }
 
   const p = parseCliArgs(args.slice(1));
+  const cliCampaignId = p.campaignId ? (isNaN(Number(p.campaignId)) ? p.campaignId : Number(p.campaignId)) : getDefaultCampaignId();
 
   if (command === 'get-context') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     const ctx = await getCampaignContext(campaignId);
     console.log(JSON.stringify(ctx, null, 2));
   } else if (command === 'list') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || null);
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     let format = 'raw';
     if (args.includes('--clean') || p.clean) format = 'clean';
     else if (args.includes('--expand') || p.expand) format = 'expand';
     const sessions = await listSessions(campaignId, format);
     console.log(JSON.stringify(sessions, null, 2));
   } else if (command === 'get-latest') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     let format = 'raw';
     if (args.includes('--clean') || p.clean) format = 'clean';
     else if (args.includes('--expand') || p.expand) format = 'expand';
@@ -1876,7 +1896,7 @@ Entity Management (via API):
     console.log(JSON.stringify(latest, null, 2));
   } else if (command === 'get-entity') {
     const entityParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       type: p.type || args[1],
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined
@@ -1890,7 +1910,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'list-entities' || command === 'read-entities') {
     const queryParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       type: p.type || args[1],
       filter: p.filter ? parseArgJson(p.filter) : undefined,
       search: p.search || undefined,
@@ -1903,21 +1923,21 @@ Entity Management (via API):
     const type = isPrefix ? command.substring('delete-'.length) : (p.type || args[1]);
     const rawId = isPrefix ? (args[1] && !args[1].startsWith('--') ? args[1] : p.id) : (args[2] && !args[2].startsWith('--') ? args[2] : p.id);
     const deleteParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       type,
       id: rawId !== undefined ? (isNaN(Number(rawId)) ? rawId : Number(rawId)) : undefined
     };
     const res = await deleteEntity(deleteParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'auto-tag') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     const context = await getCampaignContext(campaignId);
     let text = p.input || '';
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
     const tagged = autoTagEntities(text, context);
     console.log(tagged);
   } else if (command === 'clean-text') {
-    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : (p.campaignId || 1);
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     const context = await getCampaignContext(campaignId);
     let text = p.input || '';
     if (!text && args[1] && !args[1].startsWith('--') && args[2]) text = args[2];
@@ -1938,7 +1958,7 @@ Entity Management (via API):
     console.log(JSON.stringify(prRes, null, 2));
   } else if (command === 'create-npc') {
     const npcParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name || '',
       factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
       faction: p.faction || undefined,
@@ -1963,7 +1983,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-npc') {
     const npcParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
       factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
@@ -1989,7 +2009,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-location') {
     const locParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name || '',
       faction: p.faction || '',
       description: p.description || '',
@@ -2014,7 +2034,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-location') {
     const locParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
       faction: p.faction || undefined,
@@ -2040,7 +2060,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-shop') {
     const shopParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name || '',
       owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
       locationId: p.locationId ? Number(p.locationId) : undefined,
@@ -2060,7 +2080,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-shop') {
     const shopParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
       owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
@@ -2081,7 +2101,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-bestiary') {
     const bParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name || '',
       factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
       faction: p.faction || undefined,
@@ -2113,7 +2133,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-combat-npc') {
     const cParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name || '',
       factionId: p.factionId !== undefined ? Number(p.factionId) : undefined,
       faction: p.faction || undefined,
@@ -2136,7 +2156,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-player') {
     const pParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       name: p.name,
       race: p.race || undefined,
       origin: p.origin || undefined,
@@ -2156,7 +2176,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-player') {
     const pParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       id: p.id ? Number(p.id) : undefined,
       name: p.name || undefined,
       race: p.race || undefined,
@@ -2171,7 +2191,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'create-letter') {
     const lParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       subject: p.subject || p.title || '',
       senderId: p.senderId ? Number(p.senderId) : null,
       senderName: p.senderName || '',
@@ -2188,7 +2208,7 @@ Entity Management (via API):
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'update-letter') {
     const lParams = {
-      campaignId: p.campaignId ? Number(p.campaignId) : 1,
+      campaignId: cliCampaignId,
       id: p.id ? Number(p.id) : undefined,
       subject: p.subject || p.title || undefined,
       senderId: p.senderId !== undefined ? (p.senderId === 'null' ? null : Number(p.senderId)) : undefined,
@@ -2336,7 +2356,7 @@ Entity Management (via API):
     const res = await updateAffliction(affParams);
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'save') {
-    const campaignId = p.campaignId ? Number(p.campaignId) : 1;
+    const campaignId = cliCampaignId;
     const sessionId = p.sessionId ? Number(p.sessionId) : 1;
     const content = p.content || '';
     const conclussion = p.conclussion || '';
@@ -2346,7 +2366,7 @@ Entity Management (via API):
     const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'finalize') {
-    const campaignId = p.campaignId ? Number(p.campaignId) : 1;
+    const campaignId = cliCampaignId;
     const sessionId = p.sessionId ? Number(p.sessionId) : 1;
     const conclussion = p.conclussion || '';
     const playerVisibleBranches = p.playerVisibleBranches ? p.playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean) : (p.branches ? p.branches.split(',').map(s => s.trim()).filter(Boolean) : undefined);

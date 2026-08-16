@@ -274,7 +274,7 @@ export class AiSessionManagerService implements OnDestroy {
     }
   }
 
-  approveCommand(cmd: PendingCommand): void {
+  approveCommand(cmd: PendingCommand, campaignId?: number): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.error('[AI Session] Cannot approve command — WebSocket disconnected');
       return;
@@ -289,11 +289,14 @@ export class AiSessionManagerService implements OnDestroy {
       commandId: cmd.id,
       command: cmd.command,
       rawCommandLine: cmd.rawCommandLine,
-      payload: cmd.payload,
+      payload: {
+        ...(cmd.payload || {}),
+        campaignId: campaignId || cmd.payload?.['campaignId'],
+      },
     }));
   }
 
-  declineCommand(cmd: PendingCommand): void {
+  declineCommand(cmd: PendingCommand, campaignId?: number): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       console.error('[AI Session] Cannot decline command — WebSocket disconnected');
       return;
@@ -308,7 +311,10 @@ export class AiSessionManagerService implements OnDestroy {
       commandId: cmd.id,
       command: cmd.command,
       summary: cmd.summary,
-      payload: cmd.payload,
+      payload: {
+        ...(cmd.payload || {}),
+        campaignId: campaignId || cmd.payload?.['campaignId'],
+      },
     }));
   }
 

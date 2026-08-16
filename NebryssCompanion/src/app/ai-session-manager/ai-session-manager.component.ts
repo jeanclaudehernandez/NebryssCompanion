@@ -340,13 +340,13 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   approveCommand(cmd: PendingCommand): void {
     if (cmd.status === 'approving' || cmd.status === 'approved') return;
-    this.aiService.approveCommand(cmd);
+    this.aiService.approveCommand(cmd, this.activeCampaign?.id);
     this.toastService.show(`Executing: ${cmd.summary}`, 'info');
   }
 
   declineCommand(cmd: PendingCommand): void {
     if (cmd.status === 'declined' || cmd.status === 'approving') return;
-    this.aiService.declineCommand(cmd);
+    this.aiService.declineCommand(cmd, this.activeCampaign?.id);
     this.toastService.show(`Declined: ${cmd.summary}`, 'info');
   }
 

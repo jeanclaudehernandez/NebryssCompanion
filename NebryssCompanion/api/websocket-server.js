@@ -92,15 +92,29 @@ function setupWebSocketServer(server) {
               ws.send(JSON.stringify({ type: 'command_result', commandId, status: 'error', error: 'Missing rawCommandLine' }));
               return;
             }
+
+            const targetCampaignId = payload?.campaignId || (session.getActiveCampaignId ? session.getActiveCampaignId() : 1);
+
             if (!cmdToRun.includes('--approved')) {
               cmdToRun += ' --approved';
+            }
+
+            if (targetCampaignId && !cmdToRun.includes('--campaignId')) {
+              cmdToRun += ` --campaignId=${targetCampaignId}`;
             }
 
             const { exec } = require('child_process');
             const path = require('path');
             const cwd = path.resolve(__dirname, '../..');
 
-            exec(cmdToRun, { cwd, env: { ...process.env, NEBRYSS_UI_APPROVED: 'true' } }, (error, stdout, stderr) => {
+            exec(cmdToRun, {
+              cwd,
+              env: {
+                ...process.env,
+                NEBRYSS_UI_APPROVED: 'true',
+                NEBRYSS_ACTIVE_CAMPAIGN_ID: String(targetCampaignId)
+              }
+            }, (error, stdout, stderr) => {
               if (error) {
                 console.error(`[AGY WS] Error executing approved command:`, error, stderr);
                 const errorMsg = stderr?.trim() || error.message || 'Execution failed';
@@ -115,7 +129,7 @@ function setupWebSocketServer(server) {
 
                 // Notify agent of failure
                 const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${cmdToRun}\nError: ${errorMsg}\nPlease inform the user and suggest how to resolve the issue.`;
-                session.sendMessage(agentPrompt, payload?.campaignId || null);
+                session.sendMessage(agentPrompt, targetCampaignId);
                 return;
               }
 
@@ -129,7 +143,7 @@ function setupWebSocketServer(server) {
               // Broadcast update to all clients to refresh lists/rosters in real time
               if (parsedResult && typeof parsedResult === 'object') {
                 const entityType = parsedResult.type || (command ? command.replace(/^(create|update|delete)-/, '') : 'entity');
-                broadcastDataUpdate(entityType, 'UPDATE', parsedResult, payload?.campaignId);
+                broadcastDataUpdate(entityType, 'UPDATE', parsedResult, targetCampaignId);
               }
 
               if (ws.readyState === WebSocket.OPEN) {
@@ -145,7 +159,7 @@ function setupWebSocketServer(server) {
               const resultStr = typeof parsedResult === 'object' ? JSON.stringify(parsedResult, null, 2) : String(parsedResult || 'Success');
               const isSessionCommand = command === 'save' || command === 'finalize' || (command && command.includes('session'));
               const agentPrompt = `[USER APPROVED COMMAND]\nThe user clicked 'Approve & Execute' in the UI for command: ${command || cmdToRun}\nExecution output from database:\n\`\`\`json\n${resultStr}\n\`\`\`\n${isSessionCommand ? 'Please confirm the session operation to the user.' : 'Please concisely confirm the successful execution of this entity operation to the user with the entity details. Strictly DO NOT suggest any unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions.'}`;
-              session.sendMessage(agentPrompt, payload?.campaignId || null);
+              session.sendMessage(agentPrompt, targetCampaignId);
             });
             break;
           }
@@ -153,6 +167,7 @@ function setupWebSocketServer(server) {
           case 'decline_command': {
             const { commandId, command, summary, payload } = msg;
             console.log(`[AGY WS] Declining command ${commandId}`);
+            const targetCampaignId = payload?.campaignId || (session.getActiveCampaignId ? session.getActiveCampaignId() : 1);
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({
                 type: 'command_result',
@@ -164,7 +179,7 @@ function setupWebSocketServer(server) {
 
             // Notify the agent session that the command was declined
             const agentPrompt = `[USER DECLINED COMMAND]\nThe user clicked 'Decline' in the UI for command: ${summary || command || commandId}.\nNo changes were made to the database. Please concisely acknowledge this to the user without proposing unprompted extra steps or new campaign sessions.`;
-            session.sendMessage(agentPrompt, payload?.campaignId || null);
+            session.sendMessage(agentPrompt, targetCampaignId);
             break;
           }
 

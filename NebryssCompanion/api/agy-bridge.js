@@ -54,11 +54,13 @@ function createAgentSession({ onEvent, onError, onClose }) {
   let messageQueue = [];
   let isDestroyed = false;
   let streamedTokenCount = 0;
+  let activeCampaignId = 1;
 
   /**
    * Build the system preamble that primes the agent for session management.
    */
   function buildSystemPreamble(campaignId) {
+    const targetCamp = campaignId || activeCampaignId || 1;
     return [
       'CRITICAL SYSTEM DIRECTIVES & SCOPE CONSTRAINTS:',
       '1. EXCLUSIVE SCOPE (NEBRYSS & SESSION PLANNING ONLY): You are the dedicated AI Session Planner for the Nebryss tabletop RPG / Kill Team campaign. ALL communications and interactions must be strictly and exclusively related to Nebryss world lore, campaign management, session planning, narrative drafting, encounter design, NPCs, locations, shops, combat debriefs, and session conclusions.',
@@ -85,13 +87,13 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '   - Altered State: create-altered-state, update-altered-state',
       '   - Affliction: create-affliction, update-affliction',
       '   - Entity Deletion: delete-entity',
-      campaignId ? `The active campaign ID is: ${campaignId}.` : '',
+      `The active campaign ID is: ${targetCamp}.`,
       '10. PRESENTATION RULE: When presenting session plans, narrative drafts, entity proposals, or conclusion drafts in chat for user review, DO NOT display raw reference tag syntax (@player[id], @npc[id], @letter[id], @item[id], @weapon[id], etc.); display natural, clean entity names so the text is natural and easy to read.',
       '11. PERSISTENCE RULE: When saving or updating entities and sessions using campaign-session-tool.js, ensure all entity references are converted to exact numeric tags (@player[id], @npc[id], @location[id], @shop[id], @bestiary[id], @letter[id], @item[id], @weapon[id], @weaponrule[id], @alteredstate[id], @affliction[id]).',
       '12. STRICT COLLECTION HANDLING & NO DUAL WRITES: All campaign entities must be stored directly in their specific campaign collection in NebryssCampaignAssets (e.g. `<campaign-prefix>-player`, `<campaign-prefix>-npc`, `<campaign-prefix>-location`, `<campaign-prefix>-shop`, `<campaign-prefix>-letter`). There are no fallback generic collections or dual writes. If the campaign collection is not present or an error is returned indicating that the collection does not exist in database, DO NOT guess or attempt to create fallback collections; immediately inform and prompt the user to indicate the collection/campaign name again.',
       '13. TWO-TIER COMMAND APPROVAL: All read-only context commands (get-context, list, get-latest, get-entity, list-entities, list-weapons, calculate-pr, clean-text, auto-tag) execute immediately and automatically. Mutation/write commands (save, finalize, create-*, update-*, delete-*) will be staged pending user review. When you execute a mutation command and receive a PENDING_USER_APPROVAL response, inform the user that the command has been staged and prompt them to review and approve it via the interactive card in the UI.',
       '14. STRICT NO SELF-APPROVAL DIRECTIVE: You must NEVER attempt to pass approval flags (--approved, --force, etc.) when calling campaign-session-tool.js. All mutation/write commands MUST be staged without approval so the user can review and approve them via the UI approval card. The system strictly rejects self-approval from the agent.',
-      '15. STRICT CAMPAIGN ISOLATION: All session planning, history analysis, debriefing, narrative drafting, and entity manipulation workflows must strictly and exclusively target the active campaign. You must completely ignore all other campaigns in the database; never query, reference, mix, or allow characters, plot lines, sessions, or lore from other campaigns to bleed into the active campaign.',
+      `15. STRICT CAMPAIGN ISOLATION & MANDATORY --campaignId INVOCATION: The active campaign ID is ${targetCamp}. All session planning, history analysis, debriefing, narrative drafting, and entity manipulation workflows must strictly and exclusively target this active campaign. You MUST ALWAYS include --campaignId=${targetCamp} in EVERY CLI command you generate for campaign-scoped entities (players, npcs, locations, shops, letters, sessions). You must completely ignore all other campaigns in the database; never query, reference, mix, or allow characters, plot lines, sessions, or lore from other campaigns to bleed into the active campaign.`,
       '16. CONCISE CONFIRMATIONS (NO UNPROMPTED EXTRA STEPS OR SESSION PROPOSALS): When the user requests creating, updating, or deleting an entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, etc.) and the command completes or is approved, concisely confirm the operation and summarize key details using clean names. Strictly DO NOT suggest unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions unless the user explicitly requested session planning.',
     ].filter(Boolean).join('\n');
   }
@@ -111,11 +113,14 @@ function createAgentSession({ onEvent, onError, onClose }) {
       args.push('--conversation', conversationId);
     }
 
-    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'}`);
+    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'} (active campaign: ${activeCampaignId})`);
 
     return spawn(AGY_CMD, args, {
       cwd: WORKSPACE_DIR,
-      env: { ...process.env },
+      env: {
+        ...process.env,
+        NEBRYSS_ACTIVE_CAMPAIGN_ID: String(activeCampaignId)
+      },
       stdio: ['ignore', 'pipe', 'pipe'],
       shell: false,
     });
@@ -314,18 +319,25 @@ function createAgentSession({ onEvent, onError, onClose }) {
   function sendMessage(text, campaignId) {
     if (isDestroyed) return;
 
+    if (campaignId !== undefined && campaignId !== null) {
+      activeCampaignId = Number(campaignId) || campaignId;
+    }
+
     if (isProcessing) {
-      messageQueue.push({ text, campaignId });
+      messageQueue.push({ text, campaignId: activeCampaignId });
       return;
     }
 
     isProcessing = true;
     streamedTokenCount = 0;
 
-    // Prepend system preamble to the first message of a new conversation
+    const campHeader = `[ACTIVE CAMPAIGN CONTEXT: Active Campaign ID is ${activeCampaignId}. Strictly plan, query, create, update, and manage entities for Campaign ${activeCampaignId}. When executing commands via campaign-session-tool.js, you MUST ALWAYS include --campaignId=${activeCampaignId}. Do not target or reference other campaigns.]\n\n`;
+
     let prompt = text;
     if (!conversationId) {
-      prompt = buildSystemPreamble(campaignId) + '\n\n---\n\n' + text;
+      prompt = buildSystemPreamble(activeCampaignId) + '\n\n---\n\n' + campHeader + text;
+    } else {
+      prompt = campHeader + text;
     }
 
     const proc = spawnAgy(prompt);
@@ -401,6 +413,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
     cancel,
     destroy,
     getConversationId: () => conversationId,
+    getActiveCampaignId: () => activeCampaignId,
     isProcessing: () => isProcessing,
   };
 }
