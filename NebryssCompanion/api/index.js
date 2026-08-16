@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 const { setupWebSocketServer } = require('./websocket-server');
 
 const { corsOptions, originValidationMiddleware } = require('./cors-config');
@@ -52,7 +52,9 @@ function notifyChange(entity, action, data, campaign) {
 }
 
 function getCampaignCollectionName(campaign, defaultCollection) {
-  if (!campaign) return defaultCollection;
+  if (!campaign) {
+    throw new Error(`Campaign context is required for collection '${defaultCollection}'. No active campaign provided.`);
+  }
   const prefix = campaign.prefix || (campaign.playersCollectionName ? campaign.playersCollectionName.replace(/-player$/, '') : '');
   if (prefix && String(prefix).trim()) {
     return `${String(prefix).trim()}-${defaultCollection}`;
@@ -60,7 +62,7 @@ function getCampaignCollectionName(campaign, defaultCollection) {
   if (campaign.playersCollectionName && defaultCollection === 'player') {
     return String(campaign.playersCollectionName).trim();
   }
-  return defaultCollection;
+  throw new Error(`Campaign prefix is missing for collection '${defaultCollection}'.`);
 }
 
 function extractCampaign(req) {
@@ -264,11 +266,15 @@ function createUpdateRoute(routePath, options) {
       return res.status(400).json({ error: 'id is required in request body' });
     }
 
+    if (usePlayersDb && !campaign) {
+      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    }
+
     if (item._id) { delete item._id; }
 
     try {
       const dbs = await getDatabases();
-      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
 
       if (!dbs) {
         // Local JSON fallback: read, update, write
@@ -294,7 +300,7 @@ function createUpdateRoute(routePath, options) {
       res.json(item);
     } catch (error) {
       console.error(`[API] Error updating ${collectionName}:`, error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -308,11 +314,14 @@ function createInsertRoute(routePath, options) {
     if (!item) {
       return res.status(400).json({ error: 'Request body is required' });
     }
+    if (usePlayersDb && !campaign) {
+      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    }
     if (item._id) { delete item._id; }
 
     try {
       const dbs = await getDatabases();
-      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
 
       if (!dbs) {
         // Local JSON fallback
@@ -356,7 +365,7 @@ function createInsertRoute(routePath, options) {
       res.status(201).json(item);
     } catch (error) {
       console.error(`[API] Error inserting ${collectionName}:`, error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -372,9 +381,13 @@ function createDeleteRoute(routePath, options) {
       return res.status(400).json({ error: 'id is required' });
     }
 
+    if (usePlayersDb && !campaign) {
+      return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+    }
+
     try {
       const dbs = await getDatabases();
-      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
 
       if (!dbs) {
         // Local JSON fallback: soft-delete
@@ -401,7 +414,7 @@ function createDeleteRoute(routePath, options) {
       res.json({ success: true, id: idParam });
     } catch (error) {
       console.error(`[API] Error deleting ${collectionName}:`, error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
@@ -412,25 +425,117 @@ function createCollectionRoute(routePath, options) {
   app.get(routePath, async (req, res) => {
     try {
       const campaign = extractCampaign(req);
+      if (usePlayersDb && !campaign) {
+        return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+      }
       const dbs = await getDatabases();
       const db = dbs ? (usePlayersDb ? dbs.playersDb : dbs.mainDb) : null;
-      const targetCollection = (usePlayersDb && campaign) ? getCampaignCollectionName(campaign, collectionName) : collectionName;
-      let documents = await fetchCollection(db, targetCollection);
-      if (usePlayersDb && (!documents || documents.length === 0) && !campaign && db) {
-        const fallbackDocs = await fetchCollection(db, `nebryss-voss-sucession-${collectionName}`);
-        if (fallbackDocs && fallbackDocs.length > 0) {
-          documents = fallbackDocs;
-        }
-      }
+      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+      const documents = await fetchCollection(db, targetCollection);
       res.json(documents);
     } catch (error) {
       console.error(`[API] Error fetching ${collectionName}:`, error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+    }
+  });
+}
+
+function createGetByIdRoute(routePath, options) {
+  const { usePlayersDb, collectionName } = options;
+
+  app.get(`${routePath}/:id`, async (req, res) => {
+    const idParam = req.params.id;
+
+    if (!idParam) {
+      return res.status(400).json({ error: 'id is required' });
+    }
+
+    try {
+      const campaign = extractCampaign(req);
+      if (usePlayersDb && !campaign) {
+        return res.status(400).json({ error: `Campaign context is required for collection '${collectionName}'. No active campaign provided.` });
+      }
+      const dbs = await getDatabases();
+      const targetCollection = usePlayersDb ? getCampaignCollectionName(campaign, collectionName) : collectionName;
+
+      if (!dbs) {
+        // Local JSON fallback
+        const docs = await fetchCollection(null, targetCollection);
+        const strId = String(idParam);
+        const numId = !isNaN(Number(idParam)) ? Number(idParam) : null;
+
+        const doc = docs.find(d => {
+          if (d.isDeleted) return false;
+          if (typeof d.id !== 'undefined') {
+            if (String(d.id) === strId) return true;
+            if (numId !== null && typeof d.id === 'number' && d.id === numId) return true;
+          }
+          if (typeof d.sessionId !== 'undefined') {
+            if (String(d.sessionId) === strId) return true;
+            if (numId !== null && typeof d.sessionId === 'number' && d.sessionId === numId) return true;
+          }
+          if (d._id) {
+            if (typeof d._id === 'string' && d._id === strId) return true;
+            if (typeof d._id === 'object' && d._id.$oid && String(d._id.$oid) === strId) return true;
+            if (typeof d._id.toString === 'function' && d._id.toString() === strId) return true;
+          }
+          return false;
+        });
+
+        if (!doc) {
+          return res.status(404).json({ error: 'Item not found' });
+        }
+        return res.json(doc);
+      }
+
+      const db = usePlayersDb ? dbs.playersDb : dbs.mainDb;
+      const collection = db.collection(targetCollection);
+
+      const strId = String(idParam);
+      const numId = !isNaN(Number(idParam)) ? Number(idParam) : null;
+
+      const orConditions = [
+        { id: idParam },
+        { id: strId },
+        { sessionId: idParam },
+        { sessionId: strId }
+      ];
+
+      if (numId !== null) {
+        orConditions.push({ id: numId });
+        orConditions.push({ sessionId: numId });
+      }
+
+      if (typeof idParam === 'string' && /^[0-9a-fA-F]{24}$/.test(idParam) && ObjectId.isValid(idParam)) {
+        try {
+          orConditions.push({ _id: new ObjectId(idParam) });
+        } catch (e) {}
+      }
+      orConditions.push({ _id: idParam });
+
+      const doc = await collection.findOne({
+        isDeleted: { $ne: true },
+        $or: orConditions
+      });
+
+      if (!doc) {
+        return res.status(404).json({ error: 'Item not found' });
+      }
+
+      res.json(doc);
+    } catch (error) {
+      console.error(`[API] Error fetching ${collectionName} by id ${idParam}:`, error);
+      res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
     }
   });
 }
 
 createCollectionRoute('/api/campaign', {
+  usePlayersDb: false,
+  collectionName: 'campaign',
+});
+
+createGetByIdRoute('/api/campaign', {
   usePlayersDb: false,
   collectionName: 'campaign',
 });
@@ -526,6 +631,11 @@ createCollectionRoute('/api/player', {
   collectionName: 'player',
 });
 
+createGetByIdRoute('/api/player', {
+  usePlayersDb: true,
+  collectionName: 'player',
+});
+
 app.put('/api/player', async (req, res) => {
   const { payload: player, campaign } = extractPayloadAndCampaign(req);
 
@@ -533,11 +643,14 @@ app.put('/api/player', async (req, res) => {
     return res.status(400).json({ error: 'Player id is required in request body' });
   }
 
+  if (!campaign) {
+    return res.status(400).json({ error: "Campaign context is required for collection 'player'. No active campaign provided." });
+  }
+
   if (player._id) { delete player._id; }
 
-  const targetCollection = getCampaignCollectionName(campaign, 'player');
-
   try {
+    const targetCollection = getCampaignCollectionName(campaign, 'player');
     const dbs = await getDatabases();
 
     if (!dbs) {
@@ -561,8 +674,8 @@ app.put('/api/player', async (req, res) => {
     notifyChange('player', 'update', player, campaign);
     res.json(player);
   } catch (error) {
-    console.error(`[API] Error updating player in collection '${targetCollection}':`, error);
-    res.status(500).json({ error: error.message || error });
+    console.error(`[API] Error updating player:`, error);
+    res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || error });
   }
 });
 
@@ -577,6 +690,11 @@ createDeleteRoute('/api/player', {
 });
 
 createCollectionRoute('/api/weapon', {
+  usePlayersDb: false,
+  collectionName: 'weapon',
+});
+
+createGetByIdRoute('/api/weapon', {
   usePlayersDb: false,
   collectionName: 'weapon',
 });
@@ -601,6 +719,11 @@ createCollectionRoute('/api/item', {
   collectionName: 'item',
 });
 
+createGetByIdRoute('/api/item', {
+  usePlayersDb: false,
+  collectionName: 'item',
+});
+
 createUpdateRoute('/api/item', {
   usePlayersDb: false,
   collectionName: 'item',
@@ -617,6 +740,11 @@ createDeleteRoute('/api/item', {
 });
 
 createCollectionRoute('/api/weaponRule', {
+  usePlayersDb: false,
+  collectionName: 'weaponRule',
+});
+
+createGetByIdRoute('/api/weaponRule', {
   usePlayersDb: false,
   collectionName: 'weaponRule',
 });
@@ -641,6 +769,11 @@ createCollectionRoute('/api/bestiary', {
   collectionName: 'bestiary',
 });
 
+createGetByIdRoute('/api/bestiary', {
+  usePlayersDb: false,
+  collectionName: 'bestiary',
+});
+
 createUpdateRoute('/api/bestiary', {
   usePlayersDb: false,
   collectionName: 'bestiary',
@@ -657,6 +790,11 @@ createDeleteRoute('/api/bestiary', {
 });
 
 createCollectionRoute('/api/shop', {
+  usePlayersDb: true,
+  collectionName: 'shop',
+});
+
+createGetByIdRoute('/api/shop', {
   usePlayersDb: true,
   collectionName: 'shop',
 });
@@ -681,6 +819,11 @@ createCollectionRoute('/api/itemCategory', {
   collectionName: 'itemCategory',
 });
 
+createGetByIdRoute('/api/itemCategory', {
+  usePlayersDb: false,
+  collectionName: 'itemCategory',
+});
+
 createUpdateRoute('/api/itemCategory', {
   usePlayersDb: false,
   collectionName: 'itemCategory',
@@ -697,6 +840,11 @@ createDeleteRoute('/api/itemCategory', {
 });
 
 createCollectionRoute('/api/npc', {
+  usePlayersDb: true,
+  collectionName: 'npc',
+});
+
+createGetByIdRoute('/api/npc', {
   usePlayersDb: true,
   collectionName: 'npc',
 });
@@ -721,6 +869,11 @@ createCollectionRoute('/api/lore', {
   collectionName: 'lore',
 });
 
+createGetByIdRoute('/api/lore', {
+  usePlayersDb: false,
+  collectionName: 'lore',
+});
+
 createUpdateRoute('/api/lore', {
   usePlayersDb: false,
   collectionName: 'lore',
@@ -736,9 +889,12 @@ createDeleteRoute('/api/lore', {
   collectionName: 'lore',
 });
 
-
-
 createCollectionRoute('/api/locations', {
+  usePlayersDb: true,
+  collectionName: 'location',
+});
+
+createGetByIdRoute('/api/locations', {
   usePlayersDb: true,
   collectionName: 'location',
 });
@@ -763,6 +919,11 @@ createCollectionRoute('/api/talent', {
   collectionName: 'talent',
 });
 
+createGetByIdRoute('/api/talent', {
+  usePlayersDb: false,
+  collectionName: 'talent',
+});
+
 createUpdateRoute('/api/talent', {
   usePlayersDb: false,
   collectionName: 'talent',
@@ -779,6 +940,11 @@ createDeleteRoute('/api/talent', {
 });
 
 createCollectionRoute('/api/status', {
+  usePlayersDb: false,
+  collectionName: 'status',
+});
+
+createGetByIdRoute('/api/status', {
   usePlayersDb: false,
   collectionName: 'status',
 });
@@ -803,6 +969,11 @@ createCollectionRoute('/api/mistEffect', {
   collectionName: 'mistEffect',
 });
 
+createGetByIdRoute('/api/mistEffect', {
+  usePlayersDb: false,
+  collectionName: 'mistEffect',
+});
+
 createUpdateRoute('/api/mistEffect', {
   usePlayersDb: false,
   collectionName: 'mistEffect',
@@ -819,6 +990,11 @@ createDeleteRoute('/api/mistEffect', {
 });
 
 createCollectionRoute('/api/terrainRule', {
+  usePlayersDb: false,
+  collectionName: 'terrainRule',
+});
+
+createGetByIdRoute('/api/terrainRule', {
   usePlayersDb: false,
   collectionName: 'terrainRule',
 });
@@ -843,6 +1019,11 @@ createCollectionRoute('/api/afflictions', {
   collectionName: 'affliction',
 });
 
+createGetByIdRoute('/api/afflictions', {
+  usePlayersDb: false,
+  collectionName: 'affliction',
+});
+
 createUpdateRoute('/api/afflictions', {
   usePlayersDb: false,
   collectionName: 'affliction',
@@ -859,6 +1040,11 @@ createDeleteRoute('/api/afflictions', {
 });
 
 createCollectionRoute('/api/letter', {
+  usePlayersDb: true,
+  collectionName: 'letter',
+});
+
+createGetByIdRoute('/api/letter', {
   usePlayersDb: true,
   collectionName: 'letter',
 });
@@ -891,9 +1077,13 @@ app.post('/api/letter/:id/read', async (req, res) => {
     return res.status(400).json({ error: 'playerId must be a number' });
   }
 
+  if (!campaign) {
+    return res.status(400).json({ error: "Campaign context is required for collection 'letter'. No active campaign provided." });
+  }
+
   try {
+    const targetCollection = getCampaignCollectionName(campaign, 'letter');
     const dbs = await getDatabases();
-    const targetCollection = campaign ? getCampaignCollectionName(campaign, 'letter') : 'letter';
 
     if (!dbs) {
       // Local JSON fallback
@@ -921,7 +1111,7 @@ app.post('/api/letter/:id/read', async (req, res) => {
     res.json(updatedLetter);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(error.message && error.message.includes('Campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
   }
 });
 
@@ -938,16 +1128,22 @@ const collectionAliases = [
   { singular: '/api/talent', plural: '/api/talents', usePlayersDb: false, collectionName: 'talent' },
   { singular: '/api/mistEffect', plural: '/api/mistEffects', usePlayersDb: false, collectionName: 'mistEffect' },
   { singular: '/api/terrainRule', plural: '/api/terrains', usePlayersDb: false, collectionName: 'terrainRule' },
+  { singular: '/api/terrainRule', plural: '/api/terrainRules', usePlayersDb: false, collectionName: 'terrainRule' },
   { singular: '/api/weaponRule', plural: '/api/weaponRules', usePlayersDb: false, collectionName: 'weaponRule' },
   { singular: '/api/itemCategory', plural: '/api/itemCategories', usePlayersDb: false, collectionName: 'itemCategory' },
   { singular: '/api/campaign', plural: '/api/campaigns', usePlayersDb: false, collectionName: 'campaign' },
   { singular: '/api/campaignSession', plural: '/api/campaignSessions', usePlayersDb: false, collectionName: 'campaignSession' },
-  { singular: '/api/status', plural: '/api/alteredStates', usePlayersDb: false, collectionName: 'status' }
+  { singular: '/api/status', plural: '/api/alteredStates', usePlayersDb: false, collectionName: 'status' },
+  { singular: '/api/alteredState', plural: '/api/alteredStates', usePlayersDb: false, collectionName: 'status' },
+  { singular: '/api/bestiary', plural: '/api/bestiaries', usePlayersDb: false, collectionName: 'bestiary' },
+  { singular: '/api/lore', plural: '/api/lores', usePlayersDb: false, collectionName: 'lore' }
 ];
 
 for (const alias of collectionAliases) {
   createCollectionRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createCollectionRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createGetByIdRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
+  createGetByIdRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createUpdateRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createUpdateRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
   createInsertRoute(alias.singular, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
