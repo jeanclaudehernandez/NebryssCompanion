@@ -213,23 +213,41 @@ function tryFallbackAutoStage(fullText, campaignId, onEvent, currentTurnUserProm
   );
   const isConclusion = (hasExplicitConclusionIntent && !hasPlanStructure) || isConclusionHeaderOnly;
 
-  const isPlanningOrRevising = (
-    lowerPrompt.includes('plan') ||
-    lowerPrompt.includes('draft') ||
-    lowerPrompt.includes('session') ||
-    lowerPrompt.includes('correct') ||
-    lowerPrompt.includes('change') ||
-    lowerPrompt.includes('update') ||
-    lowerPrompt.includes('revise') ||
+  // Check if user explicitly asked to save, approve, persist, or finalize
+  const hasExplicitSaveOrApproveIntent = (
     lowerPrompt.includes('save') ||
-    lowerPrompt.includes('create') ||
-    hasPlanStructure ||
-    hasSessionHeader ||
-    hasStagingKeywords
+    lowerPrompt.includes('approve') ||
+    lowerPrompt.includes('approved') ||
+    lowerPrompt.includes('proceed') ||
+    lowerPrompt.includes('confirm') ||
+    lowerPrompt.includes('finalize') ||
+    lowerPrompt.includes('conclude') ||
+    lowerPrompt.includes('persist') ||
+    lowerPrompt.includes('commit') ||
+    lowerPrompt.includes('record this') ||
+    lowerPrompt.includes('lock in')
   );
 
-  if (!isPlanningOrRevising && !isConclusion) {
-    console.log('[AGY Bridge] Fallback auto-stager skipped: turn is not a planning/revision or conclusion turn.');
+  // Check if the agent's text is asking the user for review / confirmation
+  const isAskingForReview = (
+    lower.includes('let me know if') ||
+    lower.includes('would you like me to save') ||
+    lower.includes('please review') ||
+    lower.includes('what do you think') ||
+    lower.includes('do you approve') ||
+    lower.includes('if this looks good') ||
+    lower.includes('ready to save') ||
+    lower.includes('shall i save') ||
+    lower.includes('should i save') ||
+    lower.includes('let me know when you are ready')
+  );
+
+  // Auto-staging should ONLY fire if user explicitly requested save/approve OR agent explicitly claimed staging,
+  // and MUST NOT fire if the agent is just presenting a draft and asking for review.
+  const shouldStage = (hasExplicitSaveOrApproveIntent || hasStagingKeywords) && (!isAskingForReview || hasExplicitSaveOrApproveIntent);
+
+  if (!shouldStage && !isConclusion) {
+    console.log('[AGY Bridge] Fallback auto-stager skipped: user has not approved/requested save and text is not an explicit staging claim.');
     return;
   }
 
@@ -386,7 +404,8 @@ function createAgentSession({ onEvent, onError, onClose }) {
       `15. MANDATORY FULL ENTITY PARAMETERS ON ALL UPDATES (FETCH BEFORE UPDATE RULE): When updating ANY entity (update-player, update-npc, update-location, update-shop, update-bestiary, update-letter, update-item, update-weapon, update-weapon-rule, update-altered-state, update-affliction), you MUST ALWAYS supply the complete entity parameters in the CLI command. When updating an existing session (save or update-session), pass the target --sessionId=<id> and the updated --content="...". If the entity's complete attributes, abilities, or items are not fully known in your current context, you MUST FIRST run \`node scripts/campaign-session-tool.js get-entity <type> <id> --campaignId=${targetCamp}\` (which runs automatically in the background) to fetch the complete entity document, merge your modifications into the complete document, and then stage the update command with all fields fully populated.`,
       `16. MANDATORY DATABASE FETCH BEFORE PLANNING OR CONCLUDING SESSIONS (ANTI-HALLUCINATION PROTOCOL): Before pitching, drafting, planning, or concluding any campaign session, you MUST FIRST execute \`node scripts/campaign-session-tool.js get-context ${targetCamp}\` and \`node scripts/campaign-session-tool.js get-latest ${targetCamp} --clean\` using run_command to inspect current active player stats, current location, previous session outcome, known NPCs, and open narrative threads. You MUST NEVER draft session ideas or conclusions out of thin air without querying the live database state first.`,
       `17. STRICT PROHIBITION OF AD-HOC SCRIPTS, DIRECT DB QUERIES, AND FILE READING: You are STRICTLY FORBIDDEN from reading, viewing, inspecting, searching, or querying ANY files on the filesystem (e.g. JSON files, source files, data files, assets) directly or via CLI commands/scripts (such as \`cat\`, \`type\`, \`Get-Content\`, \`fs.readFile\`, \`Get-ChildItem\`, \`dir\`, \`grep\`). You are STRICTLY FORBIDDEN from running ad-hoc scripts, terminal commands, or one-liners (such as \`node -e\`, inline \`MongoClient\` scripts, raw database connection strings, or filesystem traversal commands). When using \`run_command\`, the CommandLine MUST strictly begin with \`node scripts/campaign-session-tool.js <command>\`. For example, to list bestiary entries or enemies, you MUST execute \`node scripts/campaign-session-tool.js list-entities bestiary --campaignId=${targetCamp}\`. ALL campaign data and entities MUST be accessed strictly via the database companion tool.`,
-      `18. FULL SESSION CONTENT PRESERVATION & NO CONCLUSION MISROUTING: When saving or updating a session plan, ALWAYS use \`node scripts/campaign-session-tool.js save --campaignId=${targetCamp} --sessionId=<id> --content="..."\`. You MUST pass the complete, full detailed markdown text of the session plan in \`--content\`. NEVER shorten, summarize, or truncate the session plan into a brief paragraph when executing the save command. The \`finalize\` command and \`conclussion\` field are STRICTLY RESERVED for debriefing what happened AFTER a session is played; NEVER save a session plan into \`conclussion\`.`
+      `18. FULL SESSION CONTENT PRESERVATION & NO CONCLUSION MISROUTING: When saving or updating a session plan, ALWAYS use \`node scripts/campaign-session-tool.js save --campaignId=${targetCamp} --sessionId=<id> --content="..."\`. You MUST pass the complete, full detailed markdown text of the session plan in \`--content\`. NEVER shorten, summarize, or truncate the session plan into a brief paragraph when executing the save command. The \`finalize\` command and \`conclussion\` field are STRICTLY RESERVED for debriefing what happened AFTER a session is played; NEVER save a session plan into \`conclussion\`.`,
+      `19. CONVERSATIONAL REVIEW & STAGING PROTOCOL (DRAFT FIRST, CONFIRM, THEN STAGE): When planning a session, drafting an entity, revising a plan, or preparing a conclusion: First query context using read-only commands (\`get-context\`, \`get-latest\`, \`get-entity\`, \`list-entities\`). Pitch ideas or draft the narrative plan / entity in chat using natural, clean entity names. Ask the user for their review and feedback. STRICTLY DO NOT execute \`run_command\` with mutation commands (\`save\`, \`finalize\`, \`create-*\`, \`update-*\`, \`delete-*\`) while brainstorming or presenting an initial draft. ONLY execute \`run_command\` to stage changes when the user has reviewed and explicitly approved the draft or asked to save/finalize/persist the changes.`
     ].filter(Boolean).join('\n');
   }
 
@@ -637,7 +656,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
     currentTurnUserPrompt = text || '';
     executedToolsInTurn = [];
 
-    const campHeader = `[ACTIVE CAMPAIGN CONTEXT: Active Campaign ID is ${activeCampaignId}. Strictly plan, query, create, update, and manage entities for Campaign ${activeCampaignId}. You are STRICTLY FORBIDDEN from reading files (JSON/data/source) directly or running ad-hoc scripts, node -e, or inline MongoClient queries. All queries and entity operations must strictly use 'node scripts/campaign-session-tool.js <command> --campaignId=${activeCampaignId}' (e.g. 'node scripts/campaign-session-tool.js list-entities bestiary --campaignId=${activeCampaignId}'). MANDATORY: When saving, updating, or planning a session or entity, you MUST EXECUTE run_command with 'node scripts/campaign-session-tool.js save --campaignId=${activeCampaignId} --sessionId=<id> --content="..."' to stage the update in the UI. Do not output text claiming a plan is staged unless you actually execute run_command.]\n\n`;
+    const campHeader = `[ACTIVE CAMPAIGN CONTEXT: Active Campaign ID is ${activeCampaignId}. Strictly plan, query, create, update, and manage entities for Campaign ${activeCampaignId}. You are STRICTLY FORBIDDEN from reading files (JSON/data/source) directly or running ad-hoc scripts, node -e, or inline MongoClient queries. All queries and entity operations must strictly use 'node scripts/campaign-session-tool.js <command> --campaignId=${activeCampaignId}' (e.g. 'node scripts/campaign-session-tool.js list-entities bestiary --campaignId=${activeCampaignId}'). CONVERSATIONAL REVIEW PROTOCOL: When planning or drafting a session or entity, first query read-only context, draft the narrative/entity in chat with clean entity names, and ask for user review. STRICTLY DO NOT execute run_command with mutation commands (save, finalize, create-*, update-*, delete-*) during initial draft or brainstorm. ONLY execute run_command to stage changes when the user has reviewed and explicitly approved the draft or requested to save/stage the changes. When executing save, pass the full markdown in --content with @type[id] tags.]\n\n`;
 
     let prompt = text;
     if (!conversationId) {
