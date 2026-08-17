@@ -1,4 +1,4 @@
-import { Component, DestroyRef, HostListener, TemplateRef, ViewChild, inject } from '@angular/core';
+import { Component, DestroyRef, HostListener, TemplateRef, ViewChild, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { combineLatest } from 'rxjs';
@@ -116,6 +116,9 @@ import { AuthService } from './auth.service';
         [selectedItemName]="selectedItemName"
         [selectedLetterId]="selectedLetterId"
         [selectedLetterSubject]="selectedLetterSubject"
+        [selectedSessionId]="selectedSessionId"
+        [expandedSessionIds]="expandedSessionIds"
+        [selectedSessionScrollY]="selectedSessionScrollY"
         [adminEditSession]="adminEditSession"
         [adminLocationDraft]="adminLocationDraft"
         (viewChange)="onViewChange($event)"
@@ -129,11 +132,13 @@ import { AuthService } from './auth.service';
         (navigateToItem)="onNavigateToItem($event)"
         (navigateToLetter)="onNavigateToLetter($event)"
         (navigateToAdminLocationCreator)="onNavigateToAdminLocationCreator($event)"
+        (sessionStateChange)="onSessionStateChange($event)"
         (pinSelected)="onPinSelected($event)"
         (locationSelected)="onLocationSelected($event)"
         (npcSelected)="onNpcSelected($event)"
         (creatureSelected)="onCreatureSelected($event)"
         (shopSelected)="onShopSelected($event)"
+        (letterSelected)="onLetterSelected($event)"
       ></app-view-host>
     </div>
 
@@ -250,6 +255,9 @@ export class AppComponent {
   selectedItemName: string | null = null;
   selectedLetterId: number | null = null;
   selectedLetterSubject: string | null = null;
+  selectedSessionId: number | null = null;
+  expandedSessionIds: number[] = [];
+  selectedSessionScrollY: number | null = null;
   adminEditSession: AdminEditorSession | null = null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
   letterUnreadCount = 0;
@@ -278,7 +286,8 @@ export class AppComponent {
     private modalService: ModalService,
     public campaignService: CampaignService,
     private navigationHistory: NavigationHistoryService,
-    public authService: AuthService
+    public authService: AuthService,
+    private cdr: ChangeDetectorRef
   ) {
     const savedView = localStorage.getItem('lastView');
     this.currentView = this.isValidView(savedView) ? savedView : 'players';
@@ -673,6 +682,9 @@ export class AppComponent {
       selectedItemName: this.selectedItemName,
       selectedLetterId: this.selectedLetterId,
       selectedLetterSubject: this.selectedLetterSubject,
+      selectedSessionId: this.selectedSessionId,
+      expandedSessionIds: this.expandedSessionIds,
+      sessionScrollY: this.selectedSessionScrollY,
       adminEditSession: this.adminEditSession,
       adminLocationDraft: this.adminLocationDraft
     };
@@ -692,10 +704,28 @@ export class AppComponent {
     this.selectedItemName = state.selectedItemName;
     this.selectedLetterId = state.selectedLetterId;
     this.selectedLetterSubject = state.selectedLetterSubject;
+    this.selectedSessionId = state.selectedSessionId ?? null;
+    this.expandedSessionIds = state.expandedSessionIds ?? [];
+    this.selectedSessionScrollY = state.sessionScrollY ?? null;
     this.adminEditSession = state.adminEditSession;
     this.adminLocationDraft = state.adminLocationDraft;
     localStorage.setItem('lastView', state.view);
-    window.scrollTo({ top: 0 });
+
+    this.cdr.markForCheck();
+    this.cdr.detectChanges();
+
+    if (state.view !== 'campaignSessions' || state.sessionScrollY == null) {
+      window.scrollTo({ top: 0 });
+    }
+  }
+
+  onSessionStateChange(state: { selectedSessionId: number | null; expandedSessionIds: number[]; scrollY: number }): void {
+    this.selectedSessionId = state.selectedSessionId;
+    this.expandedSessionIds = state.expandedSessionIds || [];
+    this.selectedSessionScrollY = state.scrollY;
+    if (this.currentView === 'campaignSessions') {
+      this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+    }
   }
 
   onPinSelected(pinName: string | null): void {
@@ -743,6 +773,18 @@ export class AppComponent {
     }
   }
 
+  onLetterSelected(target: { letterId: number | null; letterSubject: string | null } | null): void {
+    this.selectedLetterId = target?.letterId ?? null;
+    this.selectedLetterSubject = target?.letterSubject ?? null;
+    if (this.currentView === 'letters') {
+      if (this.selectedLetterId) {
+        this.navigationHistory.pushState(this.getCurrentNavigationState());
+      } else {
+        this.navigationHistory.replaceCurrentState(this.getCurrentNavigationState());
+      }
+    }
+  }
+
   onViewChange(view: AppView) {
     this.currentView = view;
     if (view === 'adminItemCreator') {
@@ -770,7 +812,9 @@ export class AppComponent {
     // Save current view
     localStorage.setItem('lastView', view);
     this.navigationHistory.pushState(this.getCurrentNavigationState());
-    window.scrollTo({ top: 0 });
+    if (view !== 'campaignSessions' || this.selectedSessionScrollY == null) {
+      window.scrollTo({ top: 0 });
+    }
   }
 
   onOpenAdminEditor(session: AdminEditorSession) {

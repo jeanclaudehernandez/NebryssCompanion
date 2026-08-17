@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, TemplateRef, ViewChild, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 import { ActivePlayerService } from '../active-player.service';
@@ -14,14 +14,16 @@ import { Letter, NPC, Player } from '../model';
   imports: [CommonModule],
   templateUrl: './letters-page.component.html'
 })
-export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges {
+export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   @Input() initialLetterId: number | null = null;
   @Input() initialLetterSubject: string | null = null;
+  @Output() letterSelected = new EventEmitter<{ letterId: number | null; letterSubject: string | null }>();
   @ViewChild('letterModal') letterModal!: TemplateRef<any>;
 
   private readonly destroyRef = inject(DestroyRef);
   private isViewInitialized = false;
   private openedLetterId: number | null = null;
+  private initialLetterConsumed = false;
 
   activePlayer: Player | null = null;
   isAdmin = false;
@@ -86,6 +88,7 @@ export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialLetterId'] || changes['initialLetterSubject']) {
       if (this.initialLetterId !== this.openedLetterId) {
+        this.initialLetterConsumed = false;
         this.openedLetterId = null;
         this.checkAndOpenInitialLetter();
       }
@@ -93,7 +96,7 @@ export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private checkAndOpenInitialLetter(): void {
-    if (!this.isViewInitialized || !this.letterModal || !this.allLetters.length) {
+    if (!this.isViewInitialized || !this.letterModal || !this.allLetters.length || this.initialLetterConsumed) {
       return;
     }
 
@@ -109,15 +112,31 @@ export class LettersPageComponent implements OnInit, AfterViewInit, OnChanges {
 
     if (targetLetter && this.openedLetterId !== targetLetter.id) {
       this.openedLetterId = targetLetter.id;
+      this.initialLetterConsumed = true;
       setTimeout(() => {
         this.openLetter(targetLetter);
       }, 50);
     }
   }
 
+  ngOnDestroy(): void {
+    if (this.modalService.isOpen()) {
+      this.modalService.close();
+    }
+  }
+
   openLetter(letter: Letter): void {
     this.selectedLetter = letter;
-    this.modalService.openFromTemplate(this.letterModal, undefined, { width: '720px' });
+    this.openedLetterId = letter.id;
+    this.letterSelected.emit({ letterId: letter.id, letterSubject: letter.subject ?? null });
+    this.modalService.openFromTemplate(this.letterModal, undefined, {
+      width: '720px',
+      onClose: () => {
+        this.selectedLetter = null;
+        this.openedLetterId = null;
+        this.letterSelected.emit({ letterId: null, letterSubject: null });
+      }
+    });
 
     if (this.activePlayer && this.isUnread(letter)) {
       this.dataService.markLetterAsRead(letter.id, this.activePlayer.id).subscribe(updatedLetter => {

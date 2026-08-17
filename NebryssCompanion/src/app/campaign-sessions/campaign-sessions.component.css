@@ -276,12 +276,15 @@
   align-items: center;
   gap: 6px;
   line-height: 1.4;
+  display: inline
 }
 
+.session-roman,
 .session-label {
   color: #c9a84c;
   font-weight: 800;
   white-space: nowrap;
+  letter-spacing: 0.04em;
 }
 
 .session-title-parsed {
@@ -333,6 +336,7 @@
     transform: scale(0.9);
     opacity: 0.8;
   }
+
   100% {
     transform: scale(1.18);
     opacity: 1;
@@ -585,6 +589,11 @@
 
 :host-context(body:not(.dark-theme)) .session-header-title {
   color: #2c3e50;
+}
+
+:host-context(body:not(.dark-theme)) .session-roman,
+:host-context(body:not(.dark-theme)) .session-label {
+  color: #8b6914;
 }
 
 :host-context(body:not(.dark-theme)) .session-narrative {

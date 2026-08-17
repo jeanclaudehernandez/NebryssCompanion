@@ -1,4 +1,4 @@
-import { Injectable, inject, DestroyRef } from '@angular/core';
+import { Injectable, inject, DestroyRef, NgZone } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AppView } from './app-view.types';
 import { AdminEditorSession } from './admin-editor.models';
@@ -18,6 +18,9 @@ export interface AppNavigationSelectionState {
   selectedItemName: string | null;
   selectedLetterId: number | null;
   selectedLetterSubject: string | null;
+  selectedSessionId?: number | null;
+  expandedSessionIds?: number[] | null;
+  sessionScrollY?: number | null;
   adminEditSession: AdminEditorSession | null;
   adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null;
 }
@@ -29,6 +32,7 @@ export type ModalCloseHandler = () => boolean;
 })
 export class NavigationHistoryService {
   private matDialog = inject(MatDialog);
+  private ngZone = inject(NgZone);
 
   private historyStack: AppNavigationSelectionState[] = [];
   private readonly maxHistoryLength = 30;
@@ -152,34 +156,29 @@ export class NavigationHistoryService {
   }
 
   private handlePopState(event: PopStateEvent): void {
-    // 1. Check if any modal / drawer / popup is open and close it
-    const modalDismissed = this.closeTopModal();
-    if (modalDismissed) {
-      // Re-push a history state to maintain the browser history depth
-      if (typeof window !== 'undefined' && window.history) {
-        window.history.pushState({ nebryssNav: true, depth: this.historyStack.length }, '');
-      }
-      return;
-    }
+    this.ngZone.run(() => {
+      // 1. Close any topmost open modal, drawer, or dialog
+      this.closeTopModal();
 
-    // 2. Backtrack navigation history
-    if (this.historyStack.length > 1) {
-      this.historyStack.pop(); // Remove the active state
-      const targetState = this.historyStack[this.historyStack.length - 1];
-      if (targetState) {
-        this.isRestoringState = true;
-        try {
-          this.onRestoreCallback?.(targetState);
-        } finally {
-          this.isRestoringState = false;
+      // 2. Backtrack navigation history
+      if (this.historyStack.length > 1) {
+        this.historyStack.pop(); // Remove the active state
+        const targetState = this.historyStack[this.historyStack.length - 1];
+        if (targetState) {
+          this.isRestoringState = true;
+          try {
+            this.onRestoreCallback?.(targetState);
+          } finally {
+            this.isRestoringState = false;
+          }
+        }
+      } else {
+        // At the root state: keep baseline history entry so user doesn't exit by accident
+        if (typeof window !== 'undefined' && window.history) {
+          window.history.pushState({ nebryssNav: true, depth: 1 }, '');
         }
       }
-    } else {
-      // At the root state: keep baseline history entry so user doesn't exit by accident
-      if (typeof window !== 'undefined' && window.history) {
-        window.history.pushState({ nebryssNav: true, depth: 1 }, '');
-      }
-    }
+    });
   }
 
   private areStatesEqual(a: AppNavigationSelectionState, b: AppNavigationSelectionState): boolean {
@@ -197,11 +196,21 @@ export class NavigationHistoryService {
       a.selectedItemName === b.selectedItemName &&
       a.selectedLetterId === b.selectedLetterId &&
       a.selectedLetterSubject === b.selectedLetterSubject &&
+      a.selectedSessionId === b.selectedSessionId &&
+      this.areNumberArraysEqual(a.expandedSessionIds, b.expandedSessionIds) &&
+      a.sessionScrollY === b.sessionScrollY &&
       this.areAdminSessionsEqual(a.adminEditSession, b.adminEditSession) &&
       a.adminLocationDraft?.mapX === b.adminLocationDraft?.mapX &&
       a.adminLocationDraft?.mapY === b.adminLocationDraft?.mapY &&
       a.adminLocationDraft?.location?.id === b.adminLocationDraft?.location?.id
     );
+  }
+
+  private areNumberArraysEqual(a?: number[] | null, b?: number[] | null): boolean {
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+    if (a.length !== b.length) return false;
+    return a.every((val, idx) => val === b[idx]);
   }
 
   private areAdminSessionsEqual(a: AdminEditorSession | null | undefined, b: AdminEditorSession | null | undefined): boolean {

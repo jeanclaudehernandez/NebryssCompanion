@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ComponentRef,
   EventEmitter,
@@ -38,6 +39,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Input() selectedItemName: string | null = null;
   @Input() selectedLetterId: number | null = null;
   @Input() selectedLetterSubject: string | null = null;
+  @Input() selectedSessionId: number | null = null;
+  @Input() expandedSessionIds: number[] = [];
+  @Input() selectedSessionScrollY: number | null = null;
   @Input() adminEditSession: AdminEditorSession | null = null;
   @Input() adminLocationDraft: { mapX: number | null; mapY: number | null; location: Location | null } | null = null;
 
@@ -52,11 +56,13 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   @Output() navigateToItem = new EventEmitter<{ itemId?: number; itemName?: string }>();
   @Output() navigateToLetter = new EventEmitter<{ letterId?: number; letterSubject?: string }>();
   @Output() navigateToAdminLocationCreator = new EventEmitter<{ mapX: number | null; mapY: number | null; location: Location | null }>();
+  @Output() sessionStateChange = new EventEmitter<{ selectedSessionId: number | null; expandedSessionIds: number[]; scrollY: number }>();
   @Output() pinSelected = new EventEmitter<string | null>();
   @Output() locationSelected = new EventEmitter<string | null>();
   @Output() npcSelected = new EventEmitter<string | null>();
   @Output() creatureSelected = new EventEmitter<number | null>();
   @Output() shopSelected = new EventEmitter<string | null>();
+  @Output() letterSelected = new EventEmitter<{ letterId: number | null; letterSubject: string | null }>();
 
   @ViewChild('viewHost', { read: ViewContainerRef, static: true })
   private viewHost!: ViewContainerRef;
@@ -64,6 +70,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
   private componentRef: ComponentRef<unknown> | null = null;
   private outputSubscriptions: Subscription[] = [];
   private loadSequence = 0;
+
+  constructor(private cdr: ChangeDetectorRef) {}
 
   private readonly componentLoaders: Record<AppView, () => Promise<Type<unknown>>> = {
     players: () => import('./player-list/player-list.component').then(m => m.PlayerListComponent),
@@ -103,6 +111,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     }
 
     this.applyInputs();
+    this.componentRef?.changeDetectorRef.detectChanges();
+    this.cdr.markForCheck();
   }
 
   ngOnDestroy(): void {
@@ -123,6 +133,8 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     this.componentRef = this.viewHost.createComponent(componentType);
     this.bindOutputs();
     this.applyInputs();
+    this.componentRef.changeDetectorRef.detectChanges();
+    this.cdr.markForCheck();
   }
 
   private destroyCurrentComponent(): void {
@@ -149,6 +161,9 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     switch (this.view) {
       case 'players':
         subscribeToOutput('navigateToTalents', () => this.viewChange.emit('talents'));
+        break;
+      case 'letters':
+        subscribeToOutput('letterSelected', target => this.letterSelected.emit(target));
         break;
       case 'bestiary':
         subscribeToOutput('navigateToNpc', target => this.navigateToNpc.emit(target));
@@ -196,6 +211,7 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
         subscribeToOutput('navigateToBestiary', bestiaryId => this.navigateToBestiary.emit(bestiaryId));
         subscribeToOutput('navigateToItem', target => this.navigateToItem.emit(target));
         subscribeToOutput('navigateToLetter', target => this.navigateToLetter.emit(target));
+        subscribeToOutput('sessionStateChange', state => this.sessionStateChange.emit(state));
         break;
       case 'aiSessionManager':
         subscribeToOutput('viewChange', view => this.viewChange.emit(view));
@@ -225,6 +241,11 @@ export class AppViewHostComponent implements OnChanges, OnDestroy {
     }
 
     switch (this.view) {
+      case 'campaignSessions':
+        this.componentRef.setInput('initialSessionId', this.selectedSessionId);
+        this.componentRef.setInput('initialExpandedSessionIds', this.expandedSessionIds);
+        this.componentRef.setInput('initialScrollY', this.selectedSessionScrollY);
+        break;
       case 'bestiary':
         this.componentRef.setInput('initialBestiaryId', this.selectedBestiaryId);
         break;

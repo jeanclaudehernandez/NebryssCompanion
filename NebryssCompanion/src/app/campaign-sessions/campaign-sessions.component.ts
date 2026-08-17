@@ -3,8 +3,11 @@ import {
   DestroyRef,
   EventEmitter,
   HostListener,
+  Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   inject
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -33,8 +36,39 @@ import {
 import { AppView } from '../app-view.types';
 import { AdminEditorSession } from '../admin-editor.models';
 
+export function toRomanNumeral(num: number): string {
+  if (!num || num <= 0 || isNaN(num)) {
+    return String(num || 0);
+  }
+  const romanMap: [number, string][] = [
+    [1000, 'M'],
+    [900, 'CM'],
+    [500, 'D'],
+    [400, 'CD'],
+    [100, 'C'],
+    [90, 'XC'],
+    [50, 'L'],
+    [40, 'XL'],
+    [10, 'X'],
+    [9, 'IX'],
+    [5, 'V'],
+    [4, 'IV'],
+    [1, 'I']
+  ];
+  let result = '';
+  let n = Math.floor(num);
+  for (const [val, roman] of romanMap) {
+    while (n >= val) {
+      result += roman;
+      n -= val;
+    }
+  }
+  return result || String(num);
+}
+
 interface ParsedSession {
   session: CampaignSession;
+  sessionRoman: string;
   titleHtml: SafeHtml;
   conclusionTitleHtml: SafeHtml;
   rawTitle: string;
@@ -88,7 +122,11 @@ const ENTITY_CONFIG: Record<string, { icon: string; cssClass: string; label: str
   templateUrl: './campaign-sessions.component.html',
   styleUrls: ['./campaign-sessions.component.css']
 })
-export class CampaignSessionsComponent implements OnInit {
+export class CampaignSessionsComponent implements OnInit, OnChanges {
+  @Input() initialSessionId: number | null = null;
+  @Input() initialExpandedSessionIds: number[] | null = null;
+  @Input() initialScrollY: number | null = null;
+
   @Output() viewChange = new EventEmitter<AppView>();
   @Output() openAdminEditor = new EventEmitter<AdminEditorSession>();
   @Output() navigateToNpc = new EventEmitter<{ npcName?: string }>();
@@ -97,6 +135,7 @@ export class CampaignSessionsComponent implements OnInit {
   @Output() navigateToBestiary = new EventEmitter<number>();
   @Output() navigateToItem = new EventEmitter<{ itemName?: string; itemId?: number }>();
   @Output() navigateToLetter = new EventEmitter<{ letterId?: number; letterSubject?: string }>();
+  @Output() sessionStateChange = new EventEmitter<{ selectedSessionId: number | null; expandedSessionIds: number[]; scrollY: number }>();
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -106,6 +145,10 @@ export class CampaignSessionsComponent implements OnInit {
   hasSessions = false;
   sortDirection: 'asc' | 'desc' = 'asc';
 
+  selectedSessionId: number | null = null;
+  expandedSessionIds: number[] = [];
+  currentScrollY = 0;
+  private scrollDebounceTimer: any = null;
   private hasAutoScrolledOnEntry = false;
 
   private lookup: EntityLookup = {
@@ -158,11 +201,62 @@ export class CampaignSessionsComponent implements OnInit {
         this.sortSessions();
         this.rebuildVisibleSessions();
 
-        if (!this.hasAutoScrolledOnEntry && this.hasSessions && !this.isLoading) {
-          this.hasAutoScrolledOnEntry = true;
-          this.scrollToBottomIfOverflowing();
+        if (!this.isLoading) {
+          this.handleInitialScrollRestoration(campaignId);
         }
       });
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialSessionId'] || changes['initialExpandedSessionIds']) {
+      if (this.initialExpandedSessionIds && this.initialExpandedSessionIds.length > 0) {
+        this.expandedSessionIds = [...this.initialExpandedSessionIds];
+      } else if (this.initialSessionId) {
+        this.selectedSessionId = this.initialSessionId;
+        if (!this.expandedSessionIds.includes(this.initialSessionId)) {
+          this.expandedSessionIds = [this.initialSessionId];
+        }
+      }
+      if (this.parsedSessions.length > 0) {
+        this.syncExpandedStateToParsedSessions();
+      }
+    }
+
+    if (changes['initialScrollY'] && this.initialScrollY != null && this.initialScrollY > 0) {
+      this.currentScrollY = this.initialScrollY;
+      if (!this.isLoading && this.hasSessions) {
+        this.restoreScrollPosition(this.initialScrollY);
+      }
+    }
+  }
+
+  private getStorageKey(campaignId?: number): string {
+    const id = campaignId ?? this.campaignService.getSelectedCampaign()?.id ?? 0;
+    return `nebryss_campaign_session_state_${id}`;
+  }
+
+  private saveStateToStorage(): void {
+    const campaignId = this.campaignService.getSelectedCampaign()?.id;
+    const state = {
+      selectedSessionId: this.selectedSessionId,
+      expandedSessionIds: this.expandedSessionIds,
+      scrollY: this.currentScrollY
+    };
+    try {
+      sessionStorage.setItem(this.getStorageKey(campaignId), JSON.stringify(state));
+      localStorage.setItem(this.getStorageKey(campaignId), JSON.stringify(state));
+    } catch {}
+  }
+
+  private loadSavedState(campaignId?: number): { selectedSessionId: number | null; expandedSessionIds: number[]; scrollY: number } | null {
+    try {
+      const key = this.getStorageKey(campaignId);
+      const raw = sessionStorage.getItem(key) || localStorage.getItem(key);
+      if (raw) {
+        return JSON.parse(raw);
+      }
+    } catch {}
+    return null;
   }
 
   private loadSessionsForCampaign(campaignId?: number): void {
@@ -205,10 +299,7 @@ export class CampaignSessionsComponent implements OnInit {
           this.rebuildVisibleSessions();
           this.isLoading = false;
 
-          if (!this.hasAutoScrolledOnEntry && this.hasSessions) {
-            this.hasAutoScrolledOnEntry = true;
-            this.scrollToBottomIfOverflowing();
-          }
+          this.handleInitialScrollRestoration(campaignId);
         },
         error: () => {
           this.isLoading = false;
@@ -232,6 +323,60 @@ export class CampaignSessionsComponent implements OnInit {
     this.rebuildVisibleSessions();
   }
 
+  private handleInitialScrollRestoration(campaignId?: number): void {
+    if (this.hasAutoScrolledOnEntry || !this.hasSessions) {
+      return;
+    }
+
+    const savedState = this.loadSavedState(campaignId);
+    const targetScrollY = this.initialScrollY ?? (savedState?.scrollY != null && savedState.scrollY > 0 ? savedState.scrollY : null);
+
+    if (targetScrollY !== null && targetScrollY > 0) {
+      this.restoreScrollPosition(targetScrollY);
+    } else if (this.selectedSessionId) {
+      this.scrollToSession(this.selectedSessionId);
+    } else {
+      this.hasAutoScrolledOnEntry = true;
+      this.scrollToBottomIfOverflowing();
+    }
+  }
+
+  private restoreScrollPosition(targetScrollY: number): void {
+    if (targetScrollY == null || targetScrollY <= 0) {
+      return;
+    }
+    this.hasAutoScrolledOnEntry = true;
+
+    // Run after angular change detection and browser layout
+    setTimeout(() => {
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'instant' as ScrollBehavior
+      });
+
+      // Secondary check in case content or images caused layout shift
+      setTimeout(() => {
+        const current = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+        if (Math.abs(current - targetScrollY) > 30) {
+          window.scrollTo({
+            top: targetScrollY,
+            behavior: 'instant' as ScrollBehavior
+          });
+        }
+      }, 100);
+    }, 60);
+  }
+
+  private scrollToSession(sessionId: number): void {
+    this.hasAutoScrolledOnEntry = true;
+    setTimeout(() => {
+      const el = document.getElementById(`session-card-${sessionId}`);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 80);
+  }
+
   private scrollToBottomIfOverflowing(): void {
     setTimeout(() => {
       const scrollHeight = Math.max(
@@ -249,12 +394,35 @@ export class CampaignSessionsComponent implements OnInit {
     }, 120);
   }
 
+  private syncExpandedStateToParsedSessions(): void {
+    const targetExpandedIds = new Set(this.expandedSessionIds);
+    this.parsedSessions.forEach(p => {
+      p.expanded = targetExpandedIds.has(p.session.sessionId);
+    });
+  }
+
   private rebuildVisibleSessions(): void {
     const visible = this.isAdmin
       ? this.allSessions
       : this.allSessions.filter(s => this.isConcluded(s));
 
     const latestSessionId = visible.reduce((max, s) => s.sessionId > max ? s.sessionId : max, 0);
+
+    const campaignId = this.campaignService.getSelectedCampaign()?.id;
+    const savedState = this.loadSavedState(campaignId);
+
+    const targetExpandedIds = new Set<number>();
+    if (this.initialExpandedSessionIds && this.initialExpandedSessionIds.length > 0) {
+      this.initialExpandedSessionIds.forEach(id => targetExpandedIds.add(id));
+    } else if (this.initialSessionId) {
+      targetExpandedIds.add(this.initialSessionId);
+    } else if (this.expandedSessionIds.length > 0) {
+      this.expandedSessionIds.forEach(id => targetExpandedIds.add(id));
+    } else if (savedState?.expandedSessionIds && savedState.expandedSessionIds.length > 0) {
+      savedState.expandedSessionIds.forEach(id => targetExpandedIds.add(id));
+    } else if (savedState?.selectedSessionId) {
+      targetExpandedIds.add(savedState.selectedSessionId);
+    }
 
     this.parsedSessions = visible.map(session => {
       const rawTitle = this.extractTitle(session.content || '', session.sessionId);
@@ -273,8 +441,11 @@ export class CampaignSessionsComponent implements OnInit {
         ? `Path: ${playerVisibleBranches.join(', ')}`
         : '';
 
+      const expanded = targetExpandedIds.has(session.sessionId);
+
       return {
         session,
+        sessionRoman: toRomanNumeral(session.sessionId),
         rawTitle,
         titleHtml,
         conclusionTitleHtml,
@@ -282,13 +453,22 @@ export class CampaignSessionsComponent implements OnInit {
         parsedConclusion: this.renderMarkdown(session.conclussion || '', true, playerVisibleBranches, this.isAdmin),
         isConcluded: this.isConcluded(session),
         isLatest: session.sessionId === latestSessionId && latestSessionId > 0,
-        expanded: false,
+        expanded,
         branches,
         playerVisibleBranches,
         visibleBranchesCount,
         playerBranchesLabel
       };
     });
+
+    this.expandedSessionIds = this.parsedSessions.filter(s => s.expanded).map(s => s.session.sessionId);
+    if (this.initialSessionId) {
+      this.selectedSessionId = this.initialSessionId;
+    } else if (savedState?.selectedSessionId) {
+      this.selectedSessionId = savedState.selectedSessionId;
+    } else if (this.expandedSessionIds.length > 0) {
+      this.selectedSessionId = this.expandedSessionIds[this.expandedSessionIds.length - 1];
+    }
 
     this.hasSessions = this.parsedSessions.length > 0;
   }
@@ -299,6 +479,45 @@ export class CampaignSessionsComponent implements OnInit {
 
   toggleSession(index: number): void {
     this.parsedSessions[index].expanded = !this.parsedSessions[index].expanded;
+    const session = this.parsedSessions[index];
+    const sessionId = session.session.sessionId;
+
+    this.expandedSessionIds = this.parsedSessions.filter(s => s.expanded).map(s => s.session.sessionId);
+    if (session.expanded) {
+      this.selectedSessionId = sessionId;
+    } else {
+      this.selectedSessionId = this.expandedSessionIds[this.expandedSessionIds.length - 1] ?? null;
+    }
+
+    this.currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    this.saveStateToStorage();
+    this.emitSessionState();
+  }
+
+  @HostListener('window:scroll')
+  onWindowScroll(): void {
+    if (!this.isLoading && this.hasSessions) {
+      this.currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+      if (this.scrollDebounceTimer) {
+        clearTimeout(this.scrollDebounceTimer);
+      }
+      this.scrollDebounceTimer = setTimeout(() => {
+        this.saveStateToStorage();
+        this.emitSessionState();
+      }, 250);
+    }
+  }
+
+  private emitSessionState(overrideScrollY?: number): void {
+    const scrollY = overrideScrollY !== undefined
+      ? overrideScrollY
+      : (window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0);
+    this.currentScrollY = scrollY;
+    this.sessionStateChange.emit({
+      selectedSessionId: this.selectedSessionId,
+      expandedSessionIds: this.expandedSessionIds,
+      scrollY
+    });
   }
 
   editSession(session: CampaignSession, event?: MouseEvent): void {
@@ -306,6 +525,11 @@ export class CampaignSessionsComponent implements OnInit {
       event.preventDefault();
       event.stopPropagation();
     }
+    const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    this.currentScrollY = currentScrollY;
+    this.selectedSessionId = session.sessionId;
+    this.saveStateToStorage();
+    this.emitSessionState(currentScrollY);
     this.openAdminEditor.emit({ mode: 'session', session });
   }
 
@@ -375,15 +599,19 @@ export class CampaignSessionsComponent implements OnInit {
 
   private extractTitle(content: string, sessionId: number): string {
     if (!content) {
-      return `Session ${sessionId}`;
+      return '';
     }
     const text = this.normalizeNewlines(content);
-    // Match line like "### Session 1: Title" or "### Title"
-    const match = text.match(/^#{1,3}\s*(?:Session\s*\d+\s*:\s*)?(.*)$/m);
+    // Match line like "### Session 1: Title" or "### Session I: Title" or "### Title"
+    const match = text.match(/^#{1,3}\s*(?:Session\s*(?:\d+|[IVXLCDM]+)\s*:\s*)?(.*)$/mi);
     if (match && match[1]?.trim()) {
-      return match[1].trim();
+      const candidate = match[1].trim();
+      if (/^Session\s*(?:\d+|[IVXLCDM]+)$/i.test(candidate)) {
+        return '';
+      }
+      return candidate;
     }
-    return `Session ${sessionId}`;
+    return '';
   }
 
   private extractConclusionSubtitle(conclussion: string): string {
@@ -413,7 +641,7 @@ export class CampaignSessionsComponent implements OnInit {
 
     // Strip redundant leading Session/Conclusion header if present
     if (stripMainHeader) {
-      text = text.replace(/^#{1,3}\s*Session\s*\d+\s*:[^\n]*\n*/i, '');
+      text = text.replace(/^#{1,3}\s*Session\s*(?:\d+|[IVXLCDM]+)\s*:[^\n]*\n*/i, '');
       text = text.replace(/^#{1,3}\s*Conclusion\s*:[^\n]*\n*/i, '');
     }
 
@@ -993,6 +1221,19 @@ export class CampaignSessionsComponent implements OnInit {
       return;
     }
 
+    const sessionCard = chip.closest('.session-card') as HTMLElement | null;
+    if (sessionCard && sessionCard.id) {
+      const match = sessionCard.id.match(/session-card-(\d+)/);
+      if (match) {
+        this.selectedSessionId = parseInt(match[1], 10);
+      }
+    }
+
+    const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    this.currentScrollY = currentScrollY;
+    this.saveStateToStorage();
+    this.emitSessionState(currentScrollY);
+
     event.preventDefault();
     event.stopPropagation();
     this.navigateToEntity(entityType, entityId, entityName);
@@ -1016,6 +1257,19 @@ export class CampaignSessionsComponent implements OnInit {
     if (!this.isEntityDiscovered(entityType, entityId, entityName)) {
       return;
     }
+
+    const sessionCard = target.closest('.session-card') as HTMLElement | null;
+    if (sessionCard && sessionCard.id) {
+      const match = sessionCard.id.match(/session-card-(\d+)/);
+      if (match) {
+        this.selectedSessionId = parseInt(match[1], 10);
+      }
+    }
+
+    const currentScrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+    this.currentScrollY = currentScrollY;
+    this.saveStateToStorage();
+    this.emitSessionState(currentScrollY);
 
     event.preventDefault();
     this.navigateToEntity(entityType, entityId, entityName);

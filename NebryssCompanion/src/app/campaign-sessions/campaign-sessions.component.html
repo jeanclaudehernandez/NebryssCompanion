@@ -38,8 +38,11 @@
 
   <!-- Session Cards -->
   <div class="sessions-list" *ngIf="!isLoading && hasSessions">
-    <div *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId" class="session-card"
-      [class.session-card--expanded]="entry.expanded" [class.session-card--draft]="!entry.isConcluded"
+    <div *ngFor="let entry of parsedSessions; let i = index; trackBy: trackBySessionId"
+      class="session-card"
+      [id]="'session-card-' + entry.session.sessionId"
+      [class.session-card--expanded]="entry.expanded"
+      [class.session-card--draft]="!entry.isConcluded"
       [class.session-card--latest]="entry.isLatest">
       <!-- Session Header -->
       <button type="button" class="session-card-header" (click)="toggleSession(i)" [attr.aria-expanded]="entry.expanded"
@@ -47,7 +50,7 @@
         <div class="session-card-header-left">
           <div class="session-header-text">
             <h3 class="session-header-title">
-              <span class="session-label">Session {{ entry.session.sessionId }}:</span>
+              <span class="session-roman">{{ entry.sessionRoman }}:&nbsp;</span>
               <span class="session-title-parsed" [innerHTML]="entry.titleHtml"></span>
             </h3>
             <div class="session-header-badges">
@@ -61,14 +64,6 @@
                 [title]="'Branches: ' + entry.branches.join(', ')">
                 <span class="material-icons">alt_route</span> Branches ({{ entry.visibleBranchesCount }}/{{
                 entry.branches.length }} Visible)
-              </span>
-              <span class="session-badge session-badge--branches-player"
-                *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount > 0">
-                <span class="material-icons">alt_route</span> {{ entry.playerBranchesLabel }}
-              </span>
-              <span class="session-badge session-badge--branches-pending"
-                *ngIf="entry.branches.length > 0 && !isAdmin && entry.visibleBranchesCount === 0">
-                <span class="material-icons">alt_route</span> Path Undecided
               </span>
             </div>
           </div>
@@ -88,10 +83,6 @@
 
           <!-- Content Section -->
           <div class="session-section" *ngIf="entry.session.content">
-            <div class="session-section-header">
-              <span class="material-icons session-section-icon">description</span>
-              <h4>Session Plan</h4>
-            </div>
             <div class="session-narrative" [innerHTML]="entry.parsedContent"></div>
           </div>
 
