@@ -1,59 +1,6 @@
 [
   {
     "_id": {
-      "$oid": "6a714e7065f75981ef3d4725"
-    },
-    "id": 1,
-    "name": "Wendy",
-    "race": "Human",
-    "origin": "Imperium of Man (deserter)",
-    "attributes": {
-      "Movement": 7,
-      "Wounds": 6,
-      "Save": 5,
-      "APL": 2,
-      "body": [
-        "universal",
-        "human"
-      ]
-    },
-    "weapons": [
-      23,
-      1
-    ],
-    "abilities": [
-      {
-        "name": "Battlefield first aid",
-        "effect": "1AP, Once per battle: <strong>Heal 1D3 +1 wounds</strong> to a friendly operative within Control Range. Can only be used if there are <strong>no enemy operatives within 3 inches</strong> of this operative or the target."
-      },
-      {
-        "name": "Extended Mags",
-        "effect": "Place an ammunition box marker within Control Range. Whenever a friendly operative performs a Shoot action within Control Range of the ammunition box marker, they <strong>add one attack dice but cannot retain critical successes from it</strong>."
-      },
-      {
-        "name": "Steady Guard",
-        "effect": "Reaction, Once per battle: When an enemy operative ends an action in which it moved, you can make a shoot action against that operative if it's a valid target."
-      }
-    ],
-    "progression": {
-      "talentPoints": 0,
-      "mistrals": {
-        "digital": 0,
-        "physical": 0
-      },
-      "talents": [],
-      "afflictions": [],
-      "equipment": []
-    },
-    "items": [
-      {
-        "id": 24,
-        "quant": 2
-      }
-    ]
-  },
-  {
-    "_id": {
       "$oid": "6a714e7065f75981ef3d4726"
     },
     "id": 2,

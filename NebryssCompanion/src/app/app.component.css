@@ -63,7 +63,6 @@
   background: rgba(13, 148, 136, 0.2);
   color: #2dd4bf;
   border-color: rgba(45, 212, 191, 0.6);
-  transform: translateY(-1px);
 }
 
 .top-gm-toggle-btn.active {

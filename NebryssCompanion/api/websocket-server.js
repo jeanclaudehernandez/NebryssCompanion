@@ -87,37 +87,99 @@ function setupWebSocketServer(server) {
             const { commandId, rawCommandLine, command, payload } = msg;
             console.log(`[AGY WS] Approving command ${commandId}: ${command || rawCommandLine}`);
 
-            let cmdToRun = (rawCommandLine || '').trim();
-            if (!cmdToRun) {
-              ws.send(JSON.stringify({ type: 'command_result', commandId, status: 'error', error: 'Missing rawCommandLine' }));
-              return;
-            }
-
             const targetCampaignId = payload?.campaignId || (session.getActiveCampaignId ? session.getActiveCampaignId() : 1);
-
-            if (!cmdToRun.includes('--approved')) {
-              cmdToRun += ' --approved';
-            }
-
-            if (targetCampaignId && !cmdToRun.includes('--campaignId')) {
-              cmdToRun += ` --campaignId=${targetCampaignId}`;
-            }
-
-            const { exec } = require('child_process');
+            const { spawn } = require('child_process');
             const path = require('path');
+            const fs = require('fs');
             const cwd = path.resolve(__dirname, '../..');
 
-            exec(cmdToRun, {
+            let scriptPath = path.resolve(cwd, 'scripts/campaign-session-tool.js');
+            if (!fs.existsSync(scriptPath)) {
+              scriptPath = path.resolve(cwd, 'NebryssCompanion/scripts/campaign-session-tool.js');
+            }
+
+            const targetCmd = command || (rawCommandLine ? (rawCommandLine.match(/campaign-session-tool\.js\s+([a-zA-Z0-9_-]+)/) || [])[1] : null) || 'save';
+
+            // Write payload safely to a temporary JSON file to avoid Windows command line length limits (ENAMETOOLONG)
+            const os = require('os');
+            let payloadToPass = { ...(payload || {}), campaignId: targetCampaignId };
+
+            // If the staged payload contains a _payloadFile reference (large content offloaded to temp file),
+            // read it and merge into the full payload for execution
+            if (payloadToPass._payloadFile) {
+              try {
+                const payloadFilePath = payloadToPass._payloadFile;
+                if (fs.existsSync(payloadFilePath)) {
+                  const filePayload = JSON.parse(fs.readFileSync(payloadFilePath, 'utf8'));
+                  payloadToPass = { ...filePayload, ...payloadToPass, campaignId: targetCampaignId };
+                  delete payloadToPass._payloadFile;
+                  // Clean up the staged content temp file
+                  try { fs.unlinkSync(payloadFilePath); } catch (_) {}
+                }
+              } catch (e) {
+                console.warn('[AGY WS] Failed to read _payloadFile:', e.message);
+              }
+            }
+
+            const tmpFile = path.join(os.tmpdir(), `nebryss-cmd-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.json`);
+            fs.writeFileSync(tmpFile, JSON.stringify(payloadToPass), 'utf8');
+
+            const args = [
+              scriptPath,
+              targetCmd,
+              `--payload-file=${tmpFile}`,
+              '--approved',
+              `--campaignId=${targetCampaignId}`
+            ];
+
+            const addressInfo = server?.address?.();
+            const actualPort = (addressInfo && typeof addressInfo === 'object' && addressInfo.port) ? addressInfo.port : (process.env.PORT || 8080);
+            const apiUrl = process.env.API_URL || process.env.API_BASE_URL || `http://127.0.0.1:${actualPort}/api`;
+
+            const child = spawn(process.execPath, args, {
               cwd,
               env: {
                 ...process.env,
+                PORT: String(actualPort),
+                API_URL: apiUrl,
+                API_BASE_URL: apiUrl,
+                ADMIN_PIN: process.env.ADMIN_PIN || '849201',
                 NEBRYSS_UI_APPROVED: 'true',
                 NEBRYSS_ACTIVE_CAMPAIGN_ID: String(targetCampaignId)
               }
-            }, (error, stdout, stderr) => {
-              if (error) {
-                console.error(`[AGY WS] Error executing approved command:`, error, stderr);
-                const errorMsg = stderr?.trim() || error.message || 'Execution failed';
+            });
+
+            let stdout = '';
+            let stderr = '';
+            child.stdout.on('data', d => stdout += d.toString('utf8'));
+            child.stderr.on('data', d => stderr += d.toString('utf8'));
+
+            const cleanupTempFile = () => {
+              try {
+                if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
+              } catch (_) {}
+            };
+
+            child.on('error', (err) => {
+              cleanupTempFile();
+              console.error(`[AGY WS] Error spawning approved command:`, err);
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                  type: 'command_result',
+                  commandId,
+                  status: 'error',
+                  error: err.message
+                }));
+              }
+              const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${command || targetCmd}\nError: ${err.message}\nPlease inform the user and suggest how to resolve the issue.`;
+              session.sendMessage(agentPrompt, targetCampaignId);
+            });
+
+            child.on('close', (exitCode) => {
+              cleanupTempFile();
+              if (exitCode !== 0) {
+                const errorMsg = stderr.trim() || stdout.trim() || `Process exited with code ${exitCode}`;
+                console.error(`[AGY WS] Error executing approved command: ${errorMsg}`);
                 if (ws.readyState === WebSocket.OPEN) {
                   ws.send(JSON.stringify({
                     type: 'command_result',
@@ -128,7 +190,7 @@ function setupWebSocketServer(server) {
                 }
 
                 // Notify agent of failure
-                const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${cmdToRun}\nError: ${errorMsg}\nPlease inform the user and suggest how to resolve the issue.`;
+                const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${command || targetCmd}\nError: ${errorMsg}\nPlease inform the user and suggest how to resolve the issue.`;
                 session.sendMessage(agentPrompt, targetCampaignId);
                 return;
               }
@@ -142,7 +204,7 @@ function setupWebSocketServer(server) {
 
               // Broadcast update to all clients to refresh lists/rosters in real time
               if (parsedResult && typeof parsedResult === 'object') {
-                const entityType = parsedResult.type || (command ? command.replace(/^(create|update|delete)-/, '') : 'entity');
+                const entityType = parsedResult.type || (targetCmd ? targetCmd.replace(/^(create|update|delete)-/, '') : 'entity');
                 broadcastDataUpdate(entityType, 'UPDATE', parsedResult, targetCampaignId);
               }
 
@@ -156,9 +218,29 @@ function setupWebSocketServer(server) {
               }
 
               // Notify the agent session with the database execution response so it generates and streams a response back to the UI
-              const resultStr = typeof parsedResult === 'object' ? JSON.stringify(parsedResult, null, 2) : String(parsedResult || 'Success');
-              const isSessionCommand = command === 'save' || command === 'finalize' || (command && command.includes('session'));
-              const agentPrompt = `[USER APPROVED COMMAND]\nThe user clicked 'Approve & Execute' in the UI for command: ${command || cmdToRun}\nExecution output from database:\n\`\`\`json\n${resultStr}\n\`\`\`\n${isSessionCommand ? 'Please confirm the session operation to the user.' : 'Please concisely confirm the successful execution of this entity operation to the user with the entity details. Strictly DO NOT suggest any unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions.'}`;
+              const MAX_RESULT_CHARS = 800;
+              let resultStr = typeof parsedResult === 'object' ? JSON.stringify(parsedResult, null, 2) : String(parsedResult || 'Success');
+              if (resultStr.length > MAX_RESULT_CHARS) {
+                // For session commands, just pass key fields instead of the full content
+                if (typeof parsedResult === 'object' && parsedResult !== null) {
+                  const summary = {
+                    status: parsedResult.status,
+                    sessionId: parsedResult.sessionId,
+                    campaignId: parsedResult.campaignId,
+                    id: parsedResult.id,
+                    type: parsedResult.type,
+                    name: parsedResult.name,
+                    message: parsedResult.message,
+                  };
+                  // Remove undefined keys
+                  Object.keys(summary).forEach(k => summary[k] === undefined && delete summary[k]);
+                  resultStr = JSON.stringify(summary, null, 2);
+                } else {
+                  resultStr = resultStr.substring(0, MAX_RESULT_CHARS) + '... [truncated]';
+                }
+              }
+              const isSessionCommand = targetCmd === 'save' || targetCmd === 'finalize' || (targetCmd && targetCmd.includes('session'));
+              const agentPrompt = `[USER APPROVED COMMAND]\nThe user clicked 'Approve & Execute' in the UI for command: ${command || targetCmd}\nExecution output from database:\n\`\`\`json\n${resultStr}\n\`\`\`\n${isSessionCommand ? 'Please confirm the session operation to the user.' : 'Please concisely confirm the successful execution of this entity operation to the user with the entity details. Strictly DO NOT suggest any unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions.'}`;
               session.sendMessage(agentPrompt, targetCampaignId);
             });
             break;
@@ -186,6 +268,23 @@ function setupWebSocketServer(server) {
           case 'cancel':
             session.cancel();
             break;
+
+          case 'set_campaign': {
+            // Frontend notifies us of a campaign change — update the session's
+            // active campaign so the next turn is scoped to the correct campaign.
+            const newCampaignId = Number(msg.campaignId);
+            if (!isNaN(newCampaignId) && newCampaignId > 0) {
+              session.setActiveCampaign(newCampaignId);
+              console.log(`[AGY WS] Campaign switched to ID: ${newCampaignId}`);
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                  type: 'campaign_changed',
+                  campaignId: newCampaignId,
+                }));
+              }
+            }
+            break;
+          }
 
           default:
             ws.send(JSON.stringify({

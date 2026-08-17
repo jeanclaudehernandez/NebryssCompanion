@@ -319,7 +319,7 @@ function createUpdateRoute(routePath, options) {
   app.put(routePath, async (req, res) => {
     const { payload: item, campaignId } = extractPayloadAndCampaignId(req);
 
-    if (!item || typeof item.id === 'undefined') {
+    if (!item || (typeof item.id === 'undefined' && (collectionName !== 'campaignSession' || typeof item.sessionId === 'undefined'))) {
       return res.status(400).json({ error: 'id is required in request body' });
     }
 
@@ -337,8 +337,31 @@ function createUpdateRoute(routePath, options) {
       if (!dbs) {
         // Local JSON fallback: read, update, write
         const docs = await fetchCollection(null, targetCollection);
-        const idx = docs.findIndex(d => String(d.id) === String(item.id));
-        if (idx !== -1) { docs[idx] = item; } else { docs.push(item); }
+        const idx = docs.findIndex(d => {
+          if (typeof item.id !== 'undefined' && (String(d.id) === String(item.id) || (typeof d.id === 'number' && d.id === Number(item.id)))) {
+            return true;
+          }
+          if (collectionName === 'campaignSession' && item.campaignId !== undefined && item.sessionId !== undefined) {
+            return (Number(d.campaignId) === Number(item.campaignId) || String(d.campaignId) === String(item.campaignId)) &&
+                   (Number(d.sessionId) === Number(item.sessionId) || String(d.sessionId) === String(item.sessionId));
+          }
+          return false;
+        });
+        if (idx !== -1) {
+          if (typeof item.id === 'undefined' && typeof docs[idx].id !== 'undefined') {
+            item.id = docs[idx].id;
+          }
+          docs[idx] = item;
+        } else {
+          if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
+            const maxId = docs.reduce((m, d) => {
+              const num = Number(d.id !== undefined && d.id !== null ? d.id : 0);
+              return !isNaN(num) && num > m ? num : m;
+            }, 0);
+            item.id = maxId + 1;
+          }
+          docs.push(item);
+        }
         await saveToLocalJson(targetCollection, docs);
         notifyChange(collectionName, 'update', item, campaign);
         return res.json(item);
@@ -346,12 +369,34 @@ function createUpdateRoute(routePath, options) {
 
       const db = usePlayersDb ? dbs.playersDb : dbs.mainDb;
       const collection = db.collection(targetCollection);
-      const numId = Number(item.id);
-      const strId = String(item.id);
-      const existing = await collection.findOne({ $or: [{ id: item.id }, { id: numId }, { id: strId }] });
+      const orConditions = [];
+      if (typeof item.id !== 'undefined') {
+        const numId = Number(item.id);
+        const strId = String(item.id);
+        orConditions.push({ id: item.id }, { id: strId });
+        if (!isNaN(numId)) orConditions.push({ id: numId });
+      }
+      if (collectionName === 'campaignSession' && item.campaignId !== undefined && item.sessionId !== undefined) {
+        orConditions.push({
+          campaignId: { $in: [item.campaignId, Number(item.campaignId), String(item.campaignId)] },
+          sessionId: { $in: [item.sessionId, Number(item.sessionId), String(item.sessionId)] }
+        });
+      }
+      const existing = orConditions.length > 0 ? await collection.findOne({ $or: orConditions }) : null;
       if (existing) {
+        if (typeof item.id === 'undefined' && existing.id !== undefined) {
+          item.id = existing.id;
+        }
         await collection.replaceOne({ _id: existing._id }, item);
       } else {
+        if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
+          const allDocs = await collection.find({}).toArray();
+          const maxId = allDocs.reduce((m, d) => {
+            const num = Number(d.id !== undefined && d.id !== null ? d.id : 0);
+            return !isNaN(num) && num > m ? num : m;
+          }, 0);
+          item.id = maxId + 1;
+        }
         await collection.insertOne(item);
       }
       if (collectionName === 'campaign') {
@@ -388,11 +433,29 @@ function createInsertRoute(routePath, options) {
       if (!dbs) {
         // Local JSON fallback
         const docs = await fetchCollection(null, targetCollection);
-        if (typeof item.id === 'undefined' || item.id === 0) {
-          const maxId = docs.reduce((m, d) => (typeof d.id === 'number' && d.id > m ? d.id : m), 0);
+        const maxId = docs.reduce((m, d) => {
+          const num = Number(d.id !== undefined && d.id !== null ? d.id : 0);
+          return !isNaN(num) && num > m ? num : m;
+        }, 0);
+
+        if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
           item.id = maxId + 1;
-        } else if (docs.find(d => String(d.id) === String(item.id))) {
-          return res.status(409).json({ error: 'Item with this id already exists' });
+        } else {
+          const numId = Number(item.id);
+          const strId = String(item.id);
+          const existing = docs.find(d => {
+            if (String(d.id) === strId || (!isNaN(numId) && d.id === numId)) {
+              return true;
+            }
+            if (collectionName === 'campaignSession' && item.campaignId !== undefined && item.sessionId !== undefined) {
+              return (Number(d.campaignId) === Number(item.campaignId) || String(d.campaignId) === String(item.campaignId)) &&
+                     (Number(d.sessionId) === Number(item.sessionId) || String(d.sessionId) === String(item.sessionId));
+            }
+            return false;
+          });
+          if (existing) {
+            return res.status(409).json({ error: 'Item with this id already exists' });
+          }
         }
         docs.push(item);
         await saveToLocalJson(targetCollection, docs);
@@ -402,21 +465,31 @@ function createInsertRoute(routePath, options) {
 
       const db = usePlayersDb ? dbs.playersDb : dbs.mainDb;
       const collection = db.collection(targetCollection);
+      const allDocs = await collection.find({}).toArray();
+      const maxId = allDocs.reduce((m, d) => {
+        const num = Number(d.id !== undefined && d.id !== null ? d.id : 0);
+        return !isNaN(num) && num > m ? num : m;
+      }, 0);
 
-      if (typeof item.id === 'undefined' || item.id === 0) {
-        const lastItem = await collection.find().sort({ id: -1 }).limit(1).toArray();
-        if (lastItem.length === 0) {
-          item.id = 1;
-        } else {
-          const lastId = lastItem[0].id;
-          if (typeof lastId === 'number') {
-            item.id = lastId + 1;
-          } else {
-            return res.status(400).json({ error: 'id is required for this collection' });
-          }
-        }
+      if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
+        item.id = maxId + 1;
       } else {
-        const existing = await collection.findOne({ id: item.id });
+        const numId = Number(item.id);
+        const strId = String(item.id);
+        const orConditions = [
+          { id: item.id },
+          { id: strId }
+        ];
+        if (!isNaN(numId)) {
+          orConditions.push({ id: numId });
+        }
+        if (collectionName === 'campaignSession' && item.campaignId !== undefined && item.sessionId !== undefined) {
+          orConditions.push({
+            campaignId: { $in: [item.campaignId, Number(item.campaignId), String(item.campaignId)] },
+            sessionId: { $in: [item.sessionId, Number(item.sessionId), String(item.sessionId)] }
+          });
+        }
+        const existing = await collection.findOne({ $or: orConditions });
         if (existing) {
           return res.status(409).json({ error: 'Item with this id already exists' });
         }
@@ -671,10 +744,13 @@ app.post('/api/campaign', async (req, res) => {
     if (!dbs) {
       // Local JSON fallback
       const docs = await fetchCollection(null, 'campaign');
-      if (typeof item.id === 'undefined' || item.id === 0) {
-        const maxId = docs.reduce((m, d) => (typeof d.id === 'number' && d.id > m ? d.id : m), 0);
+      const maxId = docs.reduce((m, d) => {
+        const num = Number(d.id);
+        return !isNaN(num) && num > m ? num : m;
+      }, 0);
+      if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
         item.id = maxId + 1;
-      } else if (docs.find(d => String(d.id) === String(item.id))) {
+      } else if (docs.find(d => String(d.id) === String(item.id) || (typeof d.id === 'number' && d.id === Number(item.id)))) {
         return res.status(409).json({ error: 'Campaign with this id already exists' });
       }
       docs.push(item);
@@ -685,21 +761,20 @@ app.post('/api/campaign', async (req, res) => {
     }
 
     const collection = dbs.mainDb.collection('campaign');
+    const allCampaigns = await collection.find({}).toArray();
+    const maxId = allCampaigns.reduce((m, d) => {
+      const num = Number(d.id);
+      return !isNaN(num) && num > m ? num : m;
+    }, 0);
 
-    if (typeof item.id === 'undefined' || item.id === 0) {
-      const lastItem = await collection.find().sort({ id: -1 }).limit(1).toArray();
-      if (lastItem.length === 0) {
-        item.id = 1;
-      } else {
-        const lastId = lastItem[0].id;
-        if (typeof lastId === 'number') {
-          item.id = lastId + 1;
-        } else {
-          return res.status(400).json({ error: 'id is required for this collection' });
-        }
-      }
+    if (typeof item.id === 'undefined' || item.id === 0 || item.id === null) {
+      item.id = maxId + 1;
     } else {
-      const existing = await collection.findOne({ id: item.id });
+      const numId = Number(item.id);
+      const strId = String(item.id);
+      const orConditions = [{ id: item.id }, { id: strId }];
+      if (!isNaN(numId)) orConditions.push({ id: numId });
+      const existing = await collection.findOne({ $or: orConditions });
       if (existing) {
         return res.status(409).json({ error: 'Campaign with this id already exists' });
       }

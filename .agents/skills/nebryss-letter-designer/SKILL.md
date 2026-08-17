@@ -21,7 +21,7 @@ This skill governs the creation, narrative tone, recipient tracking, and formatt
 3. **Set Imperial Date & Target Recipients**:
    - `date`: Standard Imperial date format (e.g., `"0.217.087.M42"`).
    - `recipientIds`: Array of player character numeric IDs eligible to receive or view the letter (e.g., `[1, 2, 3]`).
-   - `targetNames`: Array of intended recipient names or descriptions (e.g., `["Wendy", "Claimants of House Voss"]`).
+   - `targetNames`: Array of intended recipient names or descriptions (e.g., `["Mark", "Claimants of House Voss"]`).
    - `readBy`: Array of player IDs who have opened and read the letter (typically initialized to empty `[]` or `[1]`).
    - `isDeleted`: Soft deletion flag (`false` by default).
 4. **Format & Persist**: Output valid JSON matching the `Letter` schema and stage the entity in MongoDB via `campaign-session-tool.js`.
@@ -48,7 +48,7 @@ This skill governs the creation, narrative tone, recipient tracking, and formatt
     3
   ],
   "targetNames": [
-    "Wendy",
+    "mark",
     "House Voss Claimants"
   ],
   "isDeleted": false
@@ -74,6 +74,6 @@ Execute mutations via `campaign-session-tool.js` (staged for interactive user ap
 node scripts/campaign-session-tool.js create-letter --campaignId=1 --subject="Warning from the Docks" --senderName="Old Salt Brand" --content="<div>Keep your crews away from the eastern reef. The Corsairs have mined the narrows.</div>" --date="0.112.088.M42" --recipientIds="1,2"
 
 # Update existing Letter (Send the COMPLETE object with all fields)
-node scripts/campaign-session-tool.js update-letter --campaignId=1 --id=5 --subject="Voss Flagship Charter (Decrypted)" --senderId=3 --senderName="Master Navigator Seneschal Darius Mountain" --content="<div><b>DECRYPTED IMPERIAL DISPATCH</b></div><br><p>The coordinates of the hidden Voss cache have been verified north of Griefwater Cay.</p>" --date="0.458.015.M42" --recipientIds="1,2,3" --targetNames='["Wendy","House Voss Claimants"]' --readBy='[1]' --isDeleted=false
+node scripts/campaign-session-tool.js update-letter --campaignId=1 --id=5 --subject="Voss Flagship Charter (Decrypted)" --senderId=3 --senderName="Master Navigator Seneschal Darius Mountain" --content="<div><b>DECRYPTED IMPERIAL DISPATCH</b></div><br><p>The coordinates of the hidden Voss cache have been verified north of Griefwater Cay.</p>" --date="0.458.015.M42" --recipientIds="1,2,3" --targetNames='["Mark","House Voss Claimants"]' --readBy='[1]' --isDeleted=false
 ```
 

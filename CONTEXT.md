@@ -1,6 +1,6 @@
 # Nebryss Master Context & Architecture Compendium
 
-> **AI Agent Quick Reference**: Review this document to understand world lore, active narrative arcs, tabletop mechanics, software architecture, data schemas, and agent operational protocols.
+> **AI Agent Quick Reference**: Review this document to understand general world lore, tabletop mechanics, software architecture, data schemas, and agent operational protocols. Dynamic campaign context (active sessions, narrative chronicles, player rosters, campaign-specific NPCs, shops, and locations) is **never static** and MUST be retrieved dynamically via the companion tool (`campaign-session-tool.js`).
 
 ---
 
@@ -18,6 +18,12 @@ In all session logs, narrative descriptions, and database entries, entities **MU
 - Map Locations & Islands: `@location[<id>]` (e.g. `@location[1]`)
 - Shops & Merchants: `@shop[<id>]` (e.g. `@shop[5]`)
 - Bestiary Statcards / Creatures: `@bestiary[<id>]` (e.g. `@bestiary[3]`)
+- Equipment & Items: `@item[<id>]` (e.g. `@item[1]`)
+- Weapons: `@weapon[<id>]` (e.g. `@weapon[2]`)
+- Weapon Rules: `@weaponrule[<id>]` (e.g. `@weaponrule[3]`)
+- Altered States: `@alteredstate[<id>]` (e.g. `@alteredstate[1]`)
+- Afflictions: `@affliction[<id>]` (e.g. `@affliction[1]`)
+- In-game Letters: `@letter[<id>]` (e.g. `@letter[1]`)
 
 ### Core File & Directory Index
 - **Root Context File**: [CONTEXT.md](file:///c:/Users/jeanh/Desktop/Nebryss%20Killteam%20Campaign/CONTEXT.md)
@@ -74,7 +80,7 @@ In all session logs, narrative descriptions, and database entries, entities **MU
 
 ## 3. The Five Major Factions
 
-| Faction | Planetary Control | Capital / Stronghold | Primary Goal & Philosophy | Key Figures |
+| Faction | Planetary Control | Capital / Stronghold | Primary Goal & Philosophy | Key Lore Figures |
 | :--- | :--- | :--- | :--- | :--- |
 | **The Imperium of Man** | 30% | **Fortress Sanctus** | Conquer and bring Nebryss into full Imperial compliance ("Nebris Alpha"). Plagued by strained supply lines and heavy internal censorship of the Mist's warp nature. | Inquisitor Alaric Dresdan (Ordo Malleus)<br>Inquisitor Veyra Mortis (Ordo Hereticus)<br>Capt. Marcus Valen (White Consuls) |
 | **The Gilded Accord** | 12% (Controls best routes) | **Zephyria** (Massive floating island-city) | Federation of independent merchant city-states profiting from the ongoing war. Sells engines and armaments to all sides while maintaining nominal neutrality. | Thalos Grenn (Nebryssian Reserve)<br>Kael Vance (Fogbound Cartographers)<br>Drakos Anchorforge |
@@ -84,81 +90,58 @@ In all session logs, narrative descriptions, and database entries, entities **MU
 
 ---
 
-## 4. Key Locations & Points of Interest
+## 4. Key World Locations & Planetary Geography
 
-- **Zephyria** (`@location[1]`): The floating crown jewel of the Gilded Accord. Home to the multi-tiered **Sky Bazaar**, *The Stoutbarrel Tavern* (`@shop[5]`, hosted by Nessa Stoutbarrel `@npc[10]`), *Blackhammer's Arsenal* (`@shop[3]`), *Ironveil's Ward* (`@shop[2]`), *Herbwhisper's Apothecary* (`@shop[1]`), and *Anchorforge's Drydock* (`@shop[4]`).
-- **Fortress Sanctus** (`@location[3]`): Heavily fortified Imperial bastion with macro-batteries, adamantium sea-gates, the Cathedral of the Emperor's Light, and subterranean Inquisitorial interrogation vaults.
-- **Stormwatch** (`@location[4]`): Storm-battered cliffs where Inquisitor Dresdan conducts clandestine warp-interaction experiments on mist phenomena.
-- **Aurelia Nexus** (`@location[2]`): Artificial trade station built from welded voidcraft hulls, housing the Celestial Exchange and engine test bays.
-- **Misthaven** (`@location[6]`): Hidden NLR sanctuary shrouded in permanent mist concealing the Veiled Citadel and Mistweaver's Grove.
-- **Brinewake Island** (`@location[10]`): Tropical atoll riddled with flooded caverns, previously infested by murlocs and home to Seraphine's scuttled vessel.
-- **Griefwater Cay** (`@location[11]`): Reef-locked graveyard of ships where the players salvaged a Jeweled Mist Engine Compressor.
-- **Widow's Lantern** (`@location[12]`): Shadowed mountain isle topped with an ancient iron beacon keep, Cabal shrines, and a fortified White Consuls redoubt.
-- **Saint Veil's Hollow** (`@location[13]`): Sunken Ecclesiarchal chapel and flooded catacombs housing the research sanctuary of Archmagus Kor.
+- **Zephyria**: The floating crown jewel of the Gilded Accord. A massive aerostat metropolis housing the multi-tiered Sky Bazaar, the Nebryssian Reserve, shipwright drydocks, merchant arsenals, and alchemical apothecaries.
+- **Fortress Sanctus**: Heavily fortified Imperial bastion with macro-batteries, adamantium sea-gates, the Cathedral of the Emperor's Light, and subterranean Inquisitorial vaults.
+- **Stormwatch**: Storm-battered oceanic cliffs utilized for observation and warp-interaction research on mist phenomena.
+- **Aurelia Nexus**: Artificial trade station built from welded voidcraft hulls, housing the Celestial Exchange and engine test bays.
+- **Misthaven**: Hidden NLR sanctuary shrouded in permanent dense mist concealing the Veiled Citadel and Mistweaver groves.
+- **Widow's Lantern**: Shadowed mountain isle topped with an ancient iron beacon keep and coastal redoubts.
+- **Saint Veil's Hollow**: Sunken Ecclesiarchal chapel and flooded catacombs among the outer reefs.
 
----
-
-## 5. Active Campaign Chronicle: *The Voss Succession* (Campaign ID: 1)
-
-```
-[Session 1: Brinewake Expedition]
-  - Decree of Treason against Seraphine Voss (@npc[14])
-  - Seneschal Family (@npc[19]) contacts players at Stoutbarrel Tavern (@shop[5])
-  - Clear murloc swarm (@bestiary[1], @bestiary[2], @bestiary[3]) on Brinewake (@location[10]) with Kael Vance (@npc[5])
-  - Recover Charter, ancestral Seneschal Ring, and Verdant Hex-Torque
-       │
-       ▼
-[Session 2: Stranding on Griefwater Cay]
-  - Warp tempest destroys engine core over Misthaven (@location[6])
-  - Crash-landing on Griefwater Cay (@location[11]); combat vs apex beast (@bestiary[3])
-  - Salvage Jeweled Mist Engine Compressor & transaction receipt revealing the "Pale Crown"
-  - Decrypt coordinates at Zephyria University archives
-       │
-       ▼
-[Session 3: Ascent of Widow's Lantern]
-  - Infiltrate Cabal-corrupted mountain forest on Widow's Lantern (@location[12])
-  - Storm summit keep; defeat corrupted sorcerer mistaking Akrina (@player[3]) for Seraphine
-  - Deduce Pale Crown is a bio-regenerative / life-extending warp relic
-  - Free imprisoned Inquisitor Veyra Mortis (@npc[1]) from dungeon vaults
-       │
-       ▼
-[Session 4: The White Consuls Standoff]
-  - Parley with 7th Company White Consuls (@bestiary[8]) at their redoubt
-  - Uncover that Veyra Mortis murdered battle-brothers when they learned the truth
-  - Players side with Inquisitor Mortis; destroy redoubt and accidentally lose mist vessel
-  - Return to Zephyria; Dr. Thaddeus Vance (@npc[17]) reconstructs Xarion (@player[4]), mutating a pig ear
-       │
-       ▼
-[Session 5: The Crossroads of Faith & Reliquary]
-  - Seneschal Vale (@npc[19]) reveals Seraphine searched for the Pale Crown to cure a fatal degenerative illness
-  - Branch A: Sail to Saint Veil's Hollow (@location[13]) -> Archmagus Kor (@npc[29]) reveals Pale Crown is a forbidden Ghoul Stars HALO DEVICE!
-  - Branch B: Infiltrate Subterranean Vaults of Fortress Sanctus (@location[3]) -> Expose Inquisitor Dresdan's entrapment plot
-```
+> **Note on Campaign Locations**: Specific tactical maps, connected shops, NPC inhabitants, and discovered secrets are dynamic campaign data stored in the database. Use `campaign-session-tool.js get-context --campaignId=<campaignId>` or `get-entity location <id> --campaignId=<campaignId>` to inspect live campaign locations.
 
 ---
 
-## 6. Player Character Roster
+## 5. Dynamic Campaign Context & Companion Tool Integration
 
-| ID | Name | Race / Origin | Attributes (M / W / Sv / APL) | Body Types | Archetype & Combat Style |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `@player[1]` | **Wendy** | Human / Imperial Deserter | 8" / 6W / 5+ / 2 APL | `universal`, `human` | Combat Medic: *Battlefield First Aid*, *Extended Mags*, *Steady Guard* |
-| `@player[2]` | **Thennur** | Fellgor / NLR Traveler | 6" / 9W / 5+ / 2 APL | `universal`, `human`, `spell`, `fellgor` | Mist Shaman / Support: *Mist Veil*, *The Wind's Gift*, *Wind's Gift Salvation* |
-| `@player[3]` | **Akrina V.** | Human / Exiled Voss Scion | 7" / 7W / 5+ / 2 APL | `universal`, `human` | Agile Gunslinger: *Unrelenting Barrage* (2x Shoot), *Demonstrably Agile* |
-| `@player[4]` | **Xarion Vex** | Mutated Astartes / Cabal Deserter | 5" / 10W / 5+ / 2 APL | `universal`, `astartes`, `spell` | Shattered Oracle: *Fractal Visions*, *Mist Veilwalk*, *Screaming Vortex* summons (Pig ear mutation) |
-| `@player[5]` | **Tellurius** | Mist Golem / Warp Anomaly | 4" / 11W / 4+ / 2 APL | `universal`, `golem`, `spell` | Heavy Brawler: *Mist Regeneration*, *Boulder Roll*, *Primal Retaliation* |
-| `@player[6]` | **Varek Bastion** | Astartes / Techmarine | 5" / 10W / 4+ / 2 APL | `universal`, `astartes` | Field Engineer: *Fortify* (Barricades/Turrets), *Rites of Repair*, *Genius Placement* |
-| `@player[7]` | **Cassios Edilecto** | Astartes / White Consuls Survivor | 5" / 12W / 4+ / 2 APL | `universal`, `astartes` | Guardian Duelist: *Noble Sacrifice* (Intercept hits), *Shield Stance*, *Two-Handed Stance* |
-| `@player[8]` | **Karumnekiá** | Eldar / Mandrake Shadow-walker | 6" / 8W / 5+ / 2 APL | `universal`, `human`, `spell` | Shadow Assassin: *Within Shadow*, *Shadow Passage* (Portals), *Balefire Smite/Skin* |
+Campaign-specific information—including **active session chronicles, player character rosters, campaign narrative history, NPC statuses, shops, and inventories**—is dynamic and campaign-dependent. It must **never** be hardcoded into static documentation.
+
+All dynamic campaign context MUST be retrieved directly from the database using the companion automation tool (`campaign-session-tool.js`):
+
+### Core Context & Query Commands (Execute Automatically in Background)
+- **Full Campaign Context**:
+  ```powershell
+  node ./scripts/campaign-session-tool.js get-context --campaignId=<campaignId>
+  ```
+  *Retrieves active player operatives, current location, recent session narrative history, available shops, and key campaign NPCs.*
+- **Latest Session & State**:
+  ```powershell
+  node ./scripts/campaign-session-tool.js get-latest --campaignId=<campaignId>
+  ```
+  *Retrieves the most recent completed play session, narrative outcome, conclusion, and player-visible branches.*
+- **List Campaign Sessions**:
+  ```powershell
+  node ./scripts/campaign-session-tool.js list --campaignId=<campaignId>
+  ```
+  *Lists all recorded play sessions, titles, and IDs for the campaign.*
+- **Inspect Specific Campaign Entities**:
+  ```powershell
+  node ./scripts/campaign-session-tool.js get-entity <type> <id> --campaignId=<campaignId>
+  node ./scripts/campaign-session-tool.js list-entities <type> --campaignId=<campaignId>
+  ```
+  *Where `<type>` is `player`, `npc`, `location`, `shop`, `bestiary`, `letter`, `item`, `weapon`, `weaponrule`, `alteredstate`, or `affliction`.*
 
 ---
 
-## 7. Tabletop Combat Engine (Kill Team 3E Rules Adaptation)
+## 6. Tabletop Combat Engine (Kill Team 3E Rules Adaptation)
 
-### 7.1 Measurements & Notations
+### 6.1 Measurements & Notations
 - **Strict Inches**: Never use geometric shape icons (circles, triangles, squares). All distances are written as integers or decimals followed by inches (e.g. `6"`, `3"`).
 - **Infinite Range**: Weapons with a range of `15"` or greater are marked as `inf` (representing battlefield infinite range).
 
-### 7.2 Point Rating (PR) Formula
+### 6.2 Point Rating (PR) Formula
 Creatures and enemies in the Bestiary have a calculated **Point Rating (PR)** derived from their defensive resilience, offensive threat, and special abilities:
 
 $$\text{Base PR} = (\text{Wounds} \times 2.2) + ((6 - \text{Save}) \times 7) + (\text{Movement} \times 4) + (\text{APL} \times 6)$$
@@ -169,8 +152,8 @@ $$\text{Total PR} = \text{round}\left( \text{Base PR} + \max(\text{Profile Threa
 
 *Reference implementation*: [NebryssCompanion/scripts/validate_pr.js](file:///c:/Users/jeanh/Desktop/Nebryss%20Killteam%20Campaign/NebryssCompanion/scripts/validate_pr.js).
 
-### 7.3 Core Weapon Rules Compendium
-Weapons utilize standardized Kill Team and Nebryss special rules (stored in `weaponRules.json`):
+### 6.3 Core Weapon Rules Compendium
+Weapons utilize standardized Kill Team and Nebryss special rules (stored in `weaponRules.json` / database):
 - `Rending`: If you retain any critical hits, you can retain one normal hit as a critical hit.
 - `Ceaseless`: Reroll attack dice results of 1.
 - `Balanced`: Reroll one attack die.
@@ -183,7 +166,7 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
 
 ---
 
-## 8. Software Architecture & Technical Stack
+## 7. Software Architecture & Technical Stack
 
 ```
                                ┌─────────────────────────────┐
@@ -206,7 +189,7 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
         └─────────────────────────────┘               └─────────────────────────────┘
 ```
 
-### 8.1 Frontend Architecture (`NebryssCompanion/src/app/`)
+### 7.1 Frontend Architecture (`NebryssCompanion/src/app/`)
 - **Framework**: Angular 18 (Standalone & module-based hybrid), Angular Material, Angular CDK.
 - **Reactive Data Layer**:
   - `DataService` ([data.service.ts](file:///c:/Users/jeanh/Desktop/Nebryss%20Killteam%20Campaign/NebryssCompanion/src/app/data.service.ts)): Central store managing HTTP requests, local caching, and JSON state across all entities.
@@ -216,21 +199,21 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
 - **Key Views** (`currentView` in `AppComponent`):
   `players`, `bestiary`, `items`, `shops`, `lore`, `locations`, `talents`, `mistEffects`, `terrains`, `mistEngineBattles`, `weaponRules`, `alteredStates`, `afflictions`, `shipNavigation`, `letters`.
 
-### 8.2 Backend & Data Persistence (`NebryssCompanion/api/` & `local-db/`)
+### 7.2 Backend & Data Persistence (`NebryssCompanion/api/` & `local-db/`)
 - **REST Endpoints**: Express endpoints mounted at `/api/<collection>` supporting full CRUD operations.
 - **WebSocket Server**: Real-time push updates for active sessions, shopping carts, and live character sheet changes.
 - **Dual Persistence Strategy**: API communicates with MongoDB when running, with automatic sync to `local-db/*.json` files to guarantee offline / standalone resilience.
 
 ---
 
-## 9. AI Agent Skills & Operational Protocols
+## 8. AI Agent Skills & Operational Protocols
 
-### 9.1 Specialized Workspace Skills (`.agents/skills/`)
+### 8.1 Specialized Workspace Skills (`.agents/skills/`)
 1. **`nebryss-session-manager`**: Plans, drafts, and concludes campaign play sessions; coordinates entity tagging and branch visibility.
 2. **`nebryss-creature-designer`**: Creates Bestiary enemies/NPC stat cards adhering to exact PR formulas and existing weapons.
 3. **`nebryss-weapon-designer`**: Balances and formats weapons and attack profiles.
 4. **`nebryss-weapon-rule-designer`**: Adds special weapon rule keywords and PR modifiers.
-5. **`npc-shop-editor`**: Manages NPCs, shops, inventories, and merchant pricing.
+5. **`nebryss-shop-designer` / `nebryss-npc-designer`**: Manages NPCs, shops, inventories, and merchant pricing.
 6. **`nebryss-item-designer`**: Designs equipment, consumables, armor, blueprints, and modifications.
 7. **`nebryss-talent-designer`**: Creates talents, perks, requirements, and stat modifiers.
 8. **`nebryss-affliction-designer`**: Generates injuries, diseases, treatments, and healing counters.
@@ -238,30 +221,30 @@ Weapons utilize standardized Kill Team and Nebryss special rules (stored in `wea
 10. **`nebryss-campaign-designer`**: Initializes and configures high-level campaigns.
 11. **`nebryss-iphone-click-fixer`**: Diagnoses and fixes iOS Safari / WebKit touch and click events.
 
-### 9.2 Mandatory Rules of Engagement for Agents
+### 8.2 Mandatory Rules of Engagement for Agents
 1. **Two-Tier Command Execution & Approval Protocol**:
    - **Read-Only Context Commands** (`help`, `get-context`, `list`, `get-latest`, `get-entity`, `list-entities`, `list-weapons`, `calculate-pr`, `clean-text`, `auto-tag`): Execute automatically in the background to supply the AI with current campaign and world state.
    - **Mutation & Write Commands** (`save`, `finalize`, `create-*`, `update-*`, `delete-*`): Are staged with an **Interactive Command Approval Card** in the UI. The user can view the full raw command line, inspect formatted parameters, and click **Approve & Execute** or **Decline**.
    - Always present session outlines, newly proposed NPCs, Bestiary statblocks, and narrative drafts directly in chat for user review.
 2. **Full Object Replacement on Entity Updates (Mandatory Fetch-Before-Update Rule)**:
    - The backend API processes updates via complete document overwrite (`replaceOne` matching the `id` field).
-   - All update operations (`update-player`, `update-npc`, `update-location`, `update-shop`, `update-bestiary`, `update-letter`, `update-item`, `update-weapon`, `update-weapon-rule`, `update-altered-state`, `update-affliction`) must ALWAYS supply the **complete entity object with all existing and modified fields** (e.g. for players: `--campaignId`, `--id`, `--name`, `--race`, `--origin`, `--attributes`, `--weapons`, `--abilities`, `--items`, `--gold`, `--digitalGold`, `--talentPoints`, `--talents`, `--afflictions`, `--notes`), and NEVER send partial parameters. If any attributes or abilities are missing from context, use `get-entity` first in the background to retrieve the complete document before staging the update command.
+   - All update operations (`update-player`, `update-npc`, `update-location`, `update-shop`, `update-bestiary`, `update-letter`, `update-item`, `update-weapon`, `update-weapon-rule`, `update-altered-state`, `update-affliction`) must ALWAYS supply the **complete entity object with all existing and modified fields**, and NEVER send partial parameters. If any attributes or abilities are missing from context, use `get-entity` first in the background to retrieve the complete document before staging the update command.
 3. **Branch Visibility Protocol**:
    - When concluding a session with multiple branches (e.g., Branch A vs. Branch B), **ONLY** the branch chosen and completed by the players must be added to `playerVisibleBranches` (e.g., `["Branch A"]`).
    - Unchosen or alternative branches **MUST NOT** be visible to players (remaining GM-only).
-3. **UI & Styling Standards**:
+4. **UI & Styling Standards**:
    - All user-facing UI text, headers, tooltips, and dialogs **MUST** be in English.
    - Ensure mobile-first responsive design supporting viewport widths down to **360px**, respecting iOS/Android safe area insets (`env(safe-area-inset-top/bottom)`) and minimum **44px × 44px** touch targets.
    - All components must support dark mode (`body.dark-theme`).
-4. **Session Planner Tool & File Integrity Rules**:
+5. **Session Planner Tool & File Integrity Rules**:
    - The Session Planner AI must **NEVER** view, read, inspect, modify, create, overwrite, or delete any files on the filesystem directly.
-   - All entity interactions (reading single/multiple, filtering, creating, updating, deleting entities, saving sessions) across all entity types (Player, NPC, Location, Shop, Bestiary, Letter, Item, Weapon, Weapon Rule, Altered State, Affliction, Campaign Session) must be executed strictly via `campaign-session-tool.js`.
+   - All entity interactions across all entity types (Player, NPC, Location, Shop, Bestiary, Letter, Item, Weapon, Weapon Rule, Altered State, Affliction, Campaign Session) must be executed strictly via `campaign-session-tool.js`.
    - **NEVER** run ad-hoc scripts or one-liners that connect directly to MongoDB via MongoClient; all CRUD and query capabilities are provided by `campaign-session-tool.js`.
    - All create and update operations strictly read from and persist to MongoDB. The companion tool does not support or perform local JSON file writes.
    - If asked to modify anything that is NOT an entity (source code, templates, styling, scripts, configs, documentation), the agent must instruct that it is not allowed.
-5. **Build & Git Hygiene**:
+6. **Build & Git Hygiene**:
    - Do **NOT** run automatic build commands (`ng build`, `npm run build`) or git tracking commands (`git status`, `git diff`) unless explicitly instructed.
-6. **Strict Campaign Isolation (Ignore All Other Campaigns)**:
+7. **Strict Campaign Isolation (Ignore All Other Campaigns)**:
    - All workflows (session planning, context fetching, previous session analysis, debriefing, narrative drafting, and entity manipulation) must strictly and exclusively target the active campaign. Never query, inspect, mix, reference, or allow narrative elements, plot hooks, sessions, or entities from other campaigns to bleed into the active campaign workflow. All other campaigns in the database must be completely ignored.
-7. **Concise Entity Operation Responses (No Unprompted Extra Steps or Session Proposals)**:
+8. **Concise Entity Operation Responses (No Unprompted Extra Steps or Session Proposals)**:
    - When creating, updating, or deleting an entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, Weapon Rule, Altered State, Affliction), upon execution or approval, provide a concise confirmation highlighting the entity details. Strictly do NOT suggest unprompted extra steps, pitch unsolicited follow-up tasks, or propose creating new campaign sessions unless the user explicitly requested session planning.

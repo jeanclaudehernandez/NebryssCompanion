@@ -191,6 +191,17 @@ export class AiSessionManagerService implements OnDestroy {
     this.ws.send(JSON.stringify({ type: 'cancel' }));
   }
 
+  /**
+   * Notify the backend bridge that the active campaign has changed.
+   * This does NOT trigger a new AI response — it only updates the
+   * server-side activeCampaignId so subsequent commands use the correct campaign.
+   */
+  setActiveCampaign(campaignId: number): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: 'set_campaign', campaignId }));
+    console.log(`[AI Session] Campaign switched to ID: ${campaignId}`);
+  }
+
   clearHistory(): void {
     this.messagesSubject.next([]);
     this.conversationId = null;
@@ -336,8 +347,19 @@ export class AiSessionManagerService implements OnDestroy {
   }
 
   private addPendingCommand(cmd: PendingCommand): void {
-    const targetMsg = this.currentStreamingMessage || this.getLastAgentMessage();
-    if (!targetMsg) return;
+    let targetMsg = this.currentStreamingMessage || this.getLastAgentMessage();
+    if (!targetMsg) {
+      targetMsg = {
+        id: this.generateId(),
+        role: 'agent',
+        content: '',
+        timestamp: new Date(),
+        isStreaming: false,
+        toolCalls: [],
+        pendingCommands: [],
+      };
+      this.addMessage(targetMsg);
+    }
     if (!targetMsg.pendingCommands) {
       targetMsg.pendingCommands = [];
     }

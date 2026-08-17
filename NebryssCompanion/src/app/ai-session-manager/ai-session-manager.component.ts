@@ -155,18 +155,25 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         }
       });
 
-    // Get active campaign
+    // Get active campaign — notify the AI bridge when it changes
     this.campaignService.selectedCampaign$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(campaign => {
+        const previousId = this.activeCampaign?.id;
         this.activeCampaign = campaign as Campaign | null;
-      });
+        const newId = campaign?.id;
 
-    // Get players
-    this.dataService.getPlayers()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(players => {
-        this.activePlayers = (players || []) as Player[];
+        // Notify the backend bridge of the new active campaign whenever it changes
+        if (newId !== undefined && newId !== previousId) {
+          this.aiService.setActiveCampaign(newId);
+        }
+
+        // Re-fetch players for the newly selected campaign
+        this.dataService.getPlayers()
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(players => {
+            this.activePlayers = (players || []) as Player[];
+          });
       });
 
     // Collapse sidebar on mobile by default
@@ -201,6 +208,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
     const prompts: Record<string, string> = {
       'get-context': `Get the full campaign context${campaignRef}. Show me the current sessions, active players, NPCs, and locations.`,
+      'context-usage': `Calculate and report the context window usage${campaignRef}. Run the context-usage command via campaign-session-tool.js (node scripts/campaign-session-tool.js context-usage ${campaignId || 1}) and provide a clear breakdown of estimated tokens, entity counts, percentage used, and remaining capacity.`,
       'plan-session': `Let's plan a new campaign session${campaignRef}. Follow the Session Manager skill workflow — read the previous sessions, identify unresolved plot hooks, and present 2-3 structured session ideas for my review.`,
       'conclude-session': `Let's conclude the latest session${campaignRef}. Follow the Session Manager skill conclusion workflow — fetch the latest session, then ask me debrief questions about what happened.`,
       'list-sessions': `List all sessions${campaignRef} with their titles and status (planned vs concluded).`,
@@ -375,7 +383,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   getCommandIcon(command: string): string {
     const c = (command || '').toLowerCase();
-    if (c === 'save') return 'save';
+    if (c === 'save' || c === 'update-session') return 'save';
     if (c === 'finalize') return 'task_alt';
     if (c.startsWith('create-npc') || c.startsWith('update-npc')) return 'person';
     if (c.startsWith('create-location') || c.startsWith('update-location')) return 'place';

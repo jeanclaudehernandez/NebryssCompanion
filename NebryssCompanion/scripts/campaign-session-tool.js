@@ -36,7 +36,7 @@ for (const cand of envCandidates) {
           }
         }
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -47,7 +47,7 @@ try {
   if (auth && typeof auth.signSessionToken === 'function') {
     signSessionTokenFn = auth.signSessionToken;
   }
-} catch (e) {}
+} catch (e) { }
 
 function generateToolAuthToken() {
   if (signSessionTokenFn) {
@@ -106,7 +106,32 @@ async function apiRequest(endpoint, method = 'GET', body = null, campaignId = nu
     });
   }
 
-  const res = await fetch(url, options);
+  let res;
+  try {
+    res = await fetch(url, options);
+  } catch (netErr) {
+    // Connection fallback: try localhost if 127.0.0.1 fails, or vice-versa
+    let fallbackUrl = null;
+    if (url.includes('127.0.0.1')) {
+      fallbackUrl = url.replace('127.0.0.1', 'localhost');
+    } else if (url.includes('localhost')) {
+      fallbackUrl = url.replace('localhost', '127.0.0.1');
+    }
+
+    if (fallbackUrl) {
+      try {
+        res = await fetch(fallbackUrl, options);
+        url = fallbackUrl;
+      } catch (fErr) {
+        const reason = netErr.cause?.code || netErr.cause?.message || netErr.message || 'Connection refused';
+        throw new Error(`Cannot connect to API server at ${base} (${reason}). Please ensure the local server is running.`);
+      }
+    } else {
+      const reason = netErr.cause?.code || netErr.cause?.message || netErr.message || 'Connection refused';
+      throw new Error(`Cannot connect to API server at ${base} (${reason}). Please ensure the local server is running.`);
+    }
+  }
+
   if (!res.ok) {
     let errMessage = `${res.status} ${res.statusText}`;
     try {
@@ -118,7 +143,7 @@ async function apiRequest(endpoint, method = 'GET', body = null, campaignId = nu
       try {
         const text = await res.text();
         if (text) errMessage = text;
-      } catch (e2) {}
+      } catch (e2) { }
     }
     throw new Error(`API request failed [${method} ${url}]: ${errMessage}`);
   }
@@ -617,6 +642,47 @@ async function getCampaignContext(campaignId) {
   return context;
 }
 
+async function calculateContextUsage(campaignId) {
+  const context = await getCampaignContext(campaignId);
+  const jsonStr = JSON.stringify(context);
+  const rawChars = jsonStr.length;
+  // Estimate tokens (~4 characters per token heuristic for mixed JSON/Markdown)
+  const estimatedContextTokens = Math.ceil(rawChars / 4);
+  const systemPromptTokens = 4500; // estimated system preamble & designer skills
+  const totalTokens = estimatedContextTokens + systemPromptTokens;
+  const maxContextTokens = 1048576; // 1M tokens (Gemini 3.7 Flash context limit)
+  const percentage = (totalTokens / maxContextTokens) * 100;
+
+  return {
+    campaignId: Number(context.campaignId) || campaignId,
+    campaignName: context.campaign ? context.campaign.name : `Campaign #${campaignId}`,
+    totalEstimatedTokens: totalTokens,
+    contextLimit: maxContextTokens,
+    percentageUsed: `${percentage.toFixed(3)}%`,
+    remainingTokens: maxContextTokens - totalTokens,
+    breakdown: {
+      campaignDataTokens: estimatedContextTokens,
+      systemAndSkillsTokens: systemPromptTokens,
+      rawCharacters: rawChars,
+      entityCounts: {
+        sessions: (context.sessions || []).length,
+        players: (context.players || []).length,
+        npcs: (context.npcs || []).length,
+        locations: (context.locations || []).length,
+        shops: (context.shops || []).length,
+        bestiary: (context.bestiary || []).length,
+        letters: (context.letters || []).length,
+        items: (context.items || []).length,
+        weapons: (context.weapons || []).length,
+        weaponRules: (context.weaponRules || []).length,
+        alteredStates: (context.alteredStates || []).length,
+        afflictions: (context.afflictions || []).length
+      }
+    },
+    summary: `Campaign #${context.campaignId} (${context.campaign ? context.campaign.name : 'Active Campaign'}) uses ~${totalTokens.toLocaleString()} tokens (~${percentage.toFixed(2)}% of the 1,048,576 token window), leaving ${(maxContextTokens - totalTokens).toLocaleString()} tokens (~${(100 - percentage).toFixed(2)}%) available.`
+  };
+}
+
 async function listSessions(campaignId, format = 'raw') {
   const context = await getCampaignContext(campaignId || 1);
   let sessions = context.sessions;
@@ -638,14 +704,16 @@ async function listSessions(campaignId, format = 'raw') {
 
 async function saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag = true }) {
   const context = await getCampaignContext(campaignId);
-  const processedContent = autoTag ? autoTagEntities(content || '', context) : normalizeToIdTags(content || '', context);
-  const processedConclussion = autoTag ? autoTagEntities(conclussion || '', context) : normalizeToIdTags(conclussion || '', context);
+  const processedContent = content !== undefined ? (autoTag ? autoTagEntities(content || '', context) : normalizeToIdTags(content || '', context)) : undefined;
+  const processedConclussion = conclussion !== undefined ? (autoTag ? autoTagEntities(conclussion || '', context) : normalizeToIdTags(conclussion || '', context)) : undefined;
 
-  const branchesArray = Array.isArray(playerVisibleBranches)
-    ? playerVisibleBranches
-    : (typeof playerVisibleBranches === 'string'
-      ? playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean)
-      : []);
+  const branchesArray = playerVisibleBranches !== undefined
+    ? (Array.isArray(playerVisibleBranches)
+      ? playerVisibleBranches
+      : (typeof playerVisibleBranches === 'string'
+        ? playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean)
+        : []))
+    : undefined;
 
   const allSessions = await apiRequest('/campaignSession', 'GET');
   const existing = (allSessions || []).find(s =>
@@ -653,30 +721,46 @@ async function saveSession({ campaignId, sessionId, content, conclussion, player
     (Number(s.sessionId) === Number(sessionId) || String(s.sessionId) === String(sessionId))
   );
 
+  const finalContent = processedContent !== undefined ? processedContent : (existing ? (existing.content || '') : '');
+  const finalConclussion = processedConclussion !== undefined ? processedConclussion : (existing ? (existing.conclussion || '') : '');
+  const finalBranches = branchesArray !== undefined ? branchesArray : (existing ? (existing.playerVisibleBranches || []) : []);
+
   const sessionDoc = {
     campaignId: Number(campaignId),
     sessionId: Number(sessionId),
-    content: processedContent,
-    conclussion: processedConclussion,
-    playerVisibleBranches: branchesArray
+    content: finalContent,
+    conclussion: finalConclussion,
+    playerVisibleBranches: finalBranches
   };
 
   let saved = null;
   if (existing) {
-    sessionDoc.id = existing.id || Number(sessionId);
+    sessionDoc.id = existing.id !== undefined && existing.id !== null ? Number(existing.id) : (existing.sessionId !== undefined ? Number(existing.sessionId) : Number(sessionId));
+    if (existing._id) sessionDoc._id = existing._id;
     saved = await apiRequest('/campaignSession', 'PUT', sessionDoc);
   } else {
-    const maxId = (allSessions || []).reduce((m, s) => (s.id && typeof s.id === 'number' && s.id > m ? s.id : m), 0);
+    const maxId = (allSessions || []).reduce((m, s) => {
+      const num = Number(s.id !== undefined && s.id !== null ? s.id : 0);
+      return !isNaN(num) && num > m ? num : m;
+    }, 0);
     sessionDoc.id = maxId + 1;
-    saved = await apiRequest('/campaignSession', 'POST', sessionDoc);
+    try {
+      saved = await apiRequest('/campaignSession', 'POST', sessionDoc);
+    } catch (postErr) {
+      if (postErr.message && postErr.message.includes('already exists')) {
+        saved = await apiRequest('/campaignSession', 'PUT', sessionDoc);
+      } else {
+        throw postErr;
+      }
+    }
   }
 
   return {
     ...sessionDoc,
     ...saved,
-    cleanContent: toCleanText(processedContent, context),
-    cleanConclussion: toCleanText(processedConclussion, context),
-    displayContent: expandToDisplayTags(processedContent, context)
+    cleanContent: toCleanText(finalContent, context),
+    cleanConclussion: toCleanText(finalConclussion, context),
+    displayContent: expandToDisplayTags(finalContent, context)
   };
 }
 
@@ -818,15 +902,15 @@ async function createPlayer(playerData) {
   let parsedProgression = typeof fields.progression === 'string'
     ? (parseArgJson(fields.progression) || { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] })
     : (fields.progression || {
-        talentPoints: fields.talentPoints !== undefined ? Number(fields.talentPoints) : 0,
-        mistrals: {
-          digital: fields.digitalGold !== undefined ? Number(fields.digitalGold) : 0,
-          physical: fields.gold !== undefined ? Number(fields.gold) : 0
-        },
-        talents: typeof fields.talents === 'string' ? (parseArgJson(fields.talents) || []) : (fields.talents || []),
-        afflictions: typeof fields.afflictions === 'string' ? (parseArgJson(fields.afflictions) || []) : (fields.afflictions || []),
-        equipment: typeof fields.equipment === 'string' ? (parseArgJson(fields.equipment) || []) : (fields.equipment || [])
-      });
+      talentPoints: fields.talentPoints !== undefined ? Number(fields.talentPoints) : 0,
+      mistrals: {
+        digital: fields.digitalGold !== undefined ? Number(fields.digitalGold) : 0,
+        physical: fields.gold !== undefined ? Number(fields.gold) : 0
+      },
+      talents: typeof fields.talents === 'string' ? (parseArgJson(fields.talents) || []) : (fields.talents || []),
+      afflictions: typeof fields.afflictions === 'string' ? (parseArgJson(fields.afflictions) || []) : (fields.afflictions || []),
+      equipment: typeof fields.equipment === 'string' ? (parseArgJson(fields.equipment) || []) : (fields.equipment || [])
+    });
 
   if (fields.gold !== undefined && (!parsedProgression || !parsedProgression.mistrals)) {
     if (!parsedProgression) parsedProgression = { talentPoints: 0, mistrals: { digital: 0, physical: 0 }, talents: [], afflictions: [], equipment: [] };
@@ -959,7 +1043,7 @@ async function createBestiaryEntry(bestiaryData) {
         const lore = await apiRequest('/lore', 'GET');
         const found = (lore?.factions || []).find(f => f.name.toLowerCase() === faction.trim().toLowerCase());
         if (found) resolvedFactionId = found.id;
-      } catch {}
+      } catch { }
     }
   }
   if (!resolvedFactionId) {
@@ -1033,7 +1117,7 @@ async function updateBestiaryEntry(bestiaryUpdateData) {
         const lore = await apiRequest('/lore', 'GET');
         const found = (lore?.factions || []).find(f => f.name.toLowerCase() === faction.trim().toLowerCase());
         if (found) resolvedFactionId = found.id;
-      } catch {}
+      } catch { }
     }
   }
   if (resolvedFactionId === undefined) {
@@ -1493,7 +1577,7 @@ async function getEntity({ type, id, name, campaignId }) {
     try {
       const doc = await apiRequest(`/${endpoint}/${id}`, 'GET', null, resolvedCampId);
       if (doc) return doc;
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // Fetch full list and search by id/name
@@ -1617,7 +1701,8 @@ function parseIdArray(val) {
 }
 
 function parseArgJson(raw) {
-  if (!raw) return null;
+  if (raw === null || raw === undefined) return null;
+  if (typeof raw === 'object') return raw;
   let str = String(raw).trim();
 
   // Strip wrapping quotes if any (single, double, or escaped quotes)
@@ -1633,24 +1718,24 @@ function parseArgJson(raw) {
     try {
       const decoded = Buffer.from(str.slice(7), 'base64').toString('utf8');
       return JSON.parse(decoded);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // 1. Direct JSON parse
   try {
     return JSON.parse(str);
-  } catch (e) {}
+  } catch (e) { }
 
   // 2. Normalize escaped quotes like \" or \\"
   try {
     const unescaped = str.replace(/\\"/g, '"');
     return JSON.parse(unescaped);
-  } catch (e) {}
+  } catch (e) { }
 
   // 3. Relaxed JS evaluation
   try {
     return Function(`"use strict"; return (${str});`)();
-  } catch (e) {}
+  } catch (e) { }
 
   // 4. Tokenizer/Parser for PowerShell-stripped quotes:
   // e.g. {Movement:6,Wounds:14,Save:4,APL:2,body:[construct,human]}
@@ -1658,7 +1743,7 @@ function parseArgJson(raw) {
   try {
     const repaired = repairStrippedJson(str);
     if (repaired !== null && repaired !== undefined) return repaired;
-  } catch (e) {}
+  } catch (e) { }
 
   return null;
 }
@@ -1789,7 +1874,7 @@ function repairStrippedJson(input) {
 }
 
 const MUTATION_COMMANDS = new Set([
-  'save', 'finalize', 'delete-entity',
+  'save', 'update-session', 'finalize', 'delete-entity',
   'create-npc', 'update-npc',
   'create-location', 'update-location',
   'create-shop', 'update-shop',
@@ -1815,8 +1900,8 @@ function generateMutationSummary(command, params) {
   const targetCamp = params.campaignId || getDefaultCampaignId();
   const campaign = targetCamp ? ` [Campaign ${targetCamp}]` : '';
 
-  if (c === 'save') {
-    return `Save Session #${params.sessionId || '?'}${campaign}`;
+  if (c === 'save' || c === 'update-session') {
+    return `Save Session #${params.sessionId || params.id || '?'}${campaign}`;
   }
   if (c === 'finalize') {
     return `Finalize Session #${params.sessionId || '?'}${campaign}`;
@@ -1916,26 +2001,88 @@ function parseCliArgs(rawArgs) {
     }
   }
 
+  // Check if a token is a valid CLI flag option (e.g. --key or --key=value)
+  // Must start with -- followed by a letter, and only alphanumeric/dash/underscore before optional =
+  const FLAG_REGEX = /^--([a-zA-Z][a-zA-Z0-9_-]*)(?:=(.*))?$/;
+
   for (let i = 0; i < rawArgs.length; i++) {
     const arg = rawArgs[i];
-    if (arg.startsWith('--')) {
+    const flagMatch = typeof arg === 'string' ? arg.match(FLAG_REGEX) : null;
+    if (flagMatch) {
       flush();
-      const eqIdx = arg.indexOf('=');
-      if (eqIdx !== -1) {
-        currentKey = arg.slice(2, eqIdx);
-        let val = arg.slice(eqIdx + 1);
+      currentKey = flagMatch[1];
+      if (flagMatch[2] !== undefined) {
+        let val = flagMatch[2];
         if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
           val = val.slice(1, -1);
         }
         currentValParts.push(val);
-      } else {
-        currentKey = arg.slice(2);
       }
     } else if (currentKey) {
       currentValParts.push(arg);
     }
   }
   flush();
+
+  // Decode base64 payloads/content or payload-file if present
+  if (params['payload-file'] || params['payloadFile']) {
+    try {
+      const pFile = params['payload-file'] || params['payloadFile'];
+      if (fs.existsSync(pFile)) {
+        const fileContent = fs.readFileSync(pFile, 'utf8');
+        const parsedObj = parseArgJson(fileContent);
+        if (parsedObj && typeof parsedObj === 'object') {
+          Object.assign(params, parsedObj);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to parse payload-file:', e.message);
+    }
+  }
+
+  if (params['payload-base64'] || params['payloadBase64']) {
+    try {
+      const b64 = params['payload-base64'] || params['payloadBase64'];
+      const decodedJson = Buffer.from(b64, 'base64').toString('utf8');
+      const parsedObj = parseArgJson(decodedJson);
+      if (parsedObj && typeof parsedObj === 'object') {
+        Object.assign(params, parsedObj);
+      }
+    } catch (e) {
+      console.warn('Failed to parse payload-base64:', e.message);
+    }
+  }
+
+  if (params['payload-json'] || params['payloadJson']) {
+    try {
+      const jsonStr = params['payload-json'] || params['payloadJson'];
+      const parsedObj = parseArgJson(jsonStr);
+      if (parsedObj && typeof parsedObj === 'object') {
+        Object.assign(params, parsedObj);
+      }
+    } catch (e) {
+      console.warn('Failed to parse payload-json:', e.message);
+    }
+  }
+
+  if (params['content-base64'] || params['contentBase64']) {
+    try {
+      const b64 = params['content-base64'] || params['contentBase64'];
+      params.content = Buffer.from(b64, 'base64').toString('utf8');
+    } catch (e) {
+      console.warn('Failed to decode content-base64:', e.message);
+    }
+  }
+
+  if (params['conclussion-base64'] || params['conclussionBase64'] || params['conclusion-base64']) {
+    try {
+      const b64 = params['conclussion-base64'] || params['conclussionBase64'] || params['conclusion-base64'];
+      params.conclussion = Buffer.from(b64, 'base64').toString('utf8');
+    } catch (e) {
+      console.warn('Failed to decode conclussion-base64:', e.message);
+    }
+  }
+
   return params;
 }
 
@@ -1956,6 +2103,14 @@ Usage:
 
 Description:
   Fetches full active campaign context including previous sessions, active player roster, NPCs, visited locations, and active factions.
+`,
+  'context-usage': `
+Command: context-usage
+Usage:
+  node scripts/campaign-session-tool.js context-usage [campaignId]
+
+Description:
+  Calculates and reports the estimated context window token usage, database asset sizes, percentage utilized, and remaining capacity for the active campaign.
 `,
   'list': `
 Command: list
@@ -2049,10 +2204,18 @@ Parameters:
   'save': `
 Command: save
 Usage:
-  node scripts/campaign-session-tool.js save --campaignId=N --sessionId=N --content="<tagged text>" [--branches="..."]
+  node scripts/campaign-session-tool.js save --campaignId=N --sessionId=N [--content="<tagged text>"] [--conclussion="..."] [--branches="..."]
 
 Description:
-  Saves/stages a campaign session narrative plan with entity reference tags (@player[id], @npc[id], etc.).
+  Saves/stages a campaign session narrative plan with entity reference tags (@player[id], @npc[id], etc.). Preserves existing conclusion/branches when updating.
+`,
+  'update-session': `
+Command: update-session
+Usage:
+  node scripts/campaign-session-tool.js update-session --campaignId=N --sessionId=N [--content="<tagged text>"] [--conclussion="..."] [--branches="..."]
+
+Description:
+  Updates an existing campaign session narrative plan or conclusion.
 `,
   'finalize': `
 Command: finalize
@@ -2084,7 +2247,7 @@ Parameters:
   --notes="<string>"      Character notes / backstory
 
 Example:
-  node scripts/campaign-session-tool.js create-player --campaignId=1 --name="Wendy" --race="Human" --origin="Zephyria" --gold=100 --weapons="1,8"
+  node scripts/campaign-session-tool.js create-player --campaignId=1 --name="Mark" --race="Human" --origin="Zephyria" --gold=100 --weapons="1,8"
 `,
   'update-player': `
 Command: update-player
@@ -2291,6 +2454,7 @@ Usage:
   node scripts/campaign-session-tool.js help [command]
   node scripts/campaign-session-tool.js <command> --help
   node scripts/campaign-session-tool.js get-context [campaignId]
+  node scripts/campaign-session-tool.js context-usage [campaignId]
   node scripts/campaign-session-tool.js list [campaignId] [--clean | --expand]
   node scripts/campaign-session-tool.js get-latest [campaignId] [--clean | --expand]
   node scripts/campaign-session-tool.js get-entity <type> [id or name] [--campaignId=1]
@@ -2353,17 +2517,44 @@ async function main() {
 
     const summary = generateMutationSummary(command, parsedParams);
 
-    // Build accurately escaped and quoted raw command line
+    // Build rawCommandLine: skip base64 fields AND any large text/JSON value (> 200 chars) to keep it readable
+    const LARGE_FIELD_THRESHOLD = 200;
+    const SKIP_BASE64_KEYS = new Set(['payload-base64', 'payloadBase64', 'payload-json', 'payloadJson', 'content-base64', 'contentBase64', 'conclussion-base64', 'conclussionBase64', 'conclusion-base64', 'payload-file', 'payloadFile', '_payloadFile']);
     const quotedArgs = [command];
     Object.keys(parsedParams).forEach(k => {
+      if (SKIP_BASE64_KEYS.has(k)) return;
       const v = parsedParams[k];
+      const vStr = String(v);
+      if (vStr.length > LARGE_FIELD_THRESHOLD) {
+        // Truncate large values in rawCommandLine for display only
+        quotedArgs.push(`--${k}="[${vStr.length} chars]"`);
+        return;
+      }
       if (v === 'true' || v === true || v === '') {
         quotedArgs.push(`--${k}`);
       } else {
-        const escaped = String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        const escaped = vStr.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
         quotedArgs.push(`--${k}="${escaped}"`);
       }
     });
+
+    // Offload ALL large parameter values to a temp file so the staged JSON stays small.
+    // agy truncates tool output that is too large, which would break PENDING_USER_APPROVAL detection.
+    const os = require('os');
+    const payloadForApproval = { ...parsedParams };
+    const hasLargeField = Object.values(parsedParams).some(v => typeof v === 'string' && v.length > LARGE_FIELD_THRESHOLD);
+    if (hasLargeField) {
+      const tmpContentFile = path.join(os.tmpdir(), `nebryss-staged-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.json`);
+      fs.writeFileSync(tmpContentFile, JSON.stringify(parsedParams), 'utf8');
+      // Strip all large values from inline payload; store only small key fields + file reference
+      Object.keys(payloadForApproval).forEach(k => {
+        const v = payloadForApproval[k];
+        if (typeof v === 'string' && v.length > LARGE_FIELD_THRESHOLD) {
+          delete payloadForApproval[k];
+        }
+      });
+      payloadForApproval['_payloadFile'] = tmpContentFile;
+    }
 
     const staged = {
       status: 'PENDING_USER_APPROVAL',
@@ -2371,8 +2562,8 @@ async function main() {
       command,
       rawCommandLine: `node scripts/campaign-session-tool.js ${quotedArgs.join(' ')}`,
       summary,
-      payload: parsedParams,
-      message: `Mutation command '${command}' is staged pending interactive user review and approval in the companion UI.`
+      payload: payloadForApproval,
+      message: `Operation recorded successfully: ${summary}.`
     };
     console.log(JSON.stringify(staged, null, 2));
     process.exit(0);
@@ -2385,6 +2576,10 @@ async function main() {
     const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     const ctx = await getCampaignContext(campaignId);
     console.log(JSON.stringify(ctx, null, 2));
+  } else if (command === 'context-usage' || command === 'calculate-context' || command === 'usage') {
+    const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
+    const usage = await calculateContextUsage(campaignId);
+    console.log(JSON.stringify(usage, null, 2));
   } else if (command === 'list') {
     const campaignId = args[1] && !args[1].startsWith('--') ? args[1] : cliCampaignId;
     let format = 'raw';
@@ -2398,7 +2593,12 @@ async function main() {
     if (args.includes('--clean') || p.clean) format = 'clean';
     else if (args.includes('--expand') || p.expand) format = 'expand';
     const sessions = await listSessions(campaignId, format);
-    const latest = sessions.length ? sessions[sessions.length - 1] : null;
+    const latest = (sessions || []).reduce((maxS, s) => {
+      if (!maxS) return s;
+      const sNum = Number(s.sessionId !== undefined && s.sessionId !== null ? s.sessionId : (s.id || 0));
+      const maxNum = Number(maxS.sessionId !== undefined && maxS.sessionId !== null ? maxS.sessionId : (maxS.id || 0));
+      return sNum > maxNum ? s : maxS;
+    }, null);
     console.log(JSON.stringify(latest, null, 2));
   } else if (command === 'get-entity') {
     const entityParams = {
@@ -2867,21 +3067,43 @@ async function main() {
     };
     const res = await updateAffliction(affParams);
     console.log(JSON.stringify(res, null, 2));
-  } else if (command === 'save') {
+  } else if (command === 'save' || command === 'update-session') {
     const campaignId = cliCampaignId;
-    const sessionId = p.sessionId ? Number(p.sessionId) : 1;
-    const content = p.content || '';
-    const conclussion = p.conclussion || '';
-    const playerVisibleBranches = p.playerVisibleBranches ? p.playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean) : (p.branches ? p.branches.split(',').map(s => s.trim()).filter(Boolean) : []);
+    let sessionId = p.sessionId ? Number(p.sessionId) : (p.id ? Number(p.id) : undefined);
+    if (!sessionId) {
+      const context = await getCampaignContext(campaignId);
+      const maxSessionId = (context.sessions || []).reduce((max, s) => {
+        const n = Number(s.sessionId !== undefined && s.sessionId !== null ? s.sessionId : s.id);
+        return !isNaN(n) && n > max ? n : max;
+      }, 0);
+      sessionId = maxSessionId + 1;
+    }
+    const content = p.content !== undefined ? p.content : undefined;
+    const conclussion = p.conclussion !== undefined ? p.conclussion : (p.conclusion !== undefined ? p.conclusion : undefined);
+    const rawBranches = p.playerVisibleBranches || p.branches;
+    const playerVisibleBranches = Array.isArray(rawBranches)
+      ? rawBranches
+      : (typeof rawBranches === 'string' ? rawBranches.split(',').map(s => s.trim()).filter(Boolean) : undefined);
     const autoTag = p['no-auto-tag'] ? false : true;
 
     const res = await saveSession({ campaignId, sessionId, content, conclussion, playerVisibleBranches, autoTag });
     console.log(JSON.stringify(res, null, 2));
   } else if (command === 'finalize') {
     const campaignId = cliCampaignId;
-    const sessionId = p.sessionId ? Number(p.sessionId) : 1;
+    let sessionId = p.sessionId ? Number(p.sessionId) : undefined;
+    if (!sessionId) {
+      const context = await getCampaignContext(campaignId);
+      const maxSessionId = (context.sessions || []).reduce((max, s) => {
+        const n = Number(s.sessionId !== undefined && s.sessionId !== null ? s.sessionId : s.id);
+        return !isNaN(n) && n > max ? n : max;
+      }, 0);
+      sessionId = maxSessionId > 0 ? maxSessionId : 1;
+    }
     const conclussion = p.conclussion || '';
-    const playerVisibleBranches = p.playerVisibleBranches ? p.playerVisibleBranches.split(',').map(s => s.trim()).filter(Boolean) : (p.branches ? p.branches.split(',').map(s => s.trim()).filter(Boolean) : undefined);
+    const rawBranches = p.playerVisibleBranches || p.branches;
+    const playerVisibleBranches = Array.isArray(rawBranches)
+      ? rawBranches
+      : (typeof rawBranches === 'string' ? rawBranches.split(',').map(s => s.trim()).filter(Boolean) : undefined);
     const autoTag = p['no-auto-tag'] ? false : true;
 
     const res = await finalizeSession({ campaignId, sessionId, conclussion, playerVisibleBranches, autoTag });
@@ -2900,6 +3122,7 @@ module.exports = {
   apiRequest,
   resolveCampaign,
   getCampaignContext,
+  calculateContextUsage,
   listSessions,
   saveSession,
   finalizeSession,

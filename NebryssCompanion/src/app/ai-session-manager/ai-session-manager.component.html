@@ -52,6 +52,11 @@
             <span class="material-icons">inventory</span>
             <span>Get Context</span>
           </button>
+          <button class="quick-action-btn" (click)="sendQuickAction('context-usage')"
+                  [disabled]="isAgentTyping || connectionStatus !== 'connected'">
+            <span class="material-icons">analytics</span>
+            <span>Context Usage</span>
+          </button>
           <button class="quick-action-btn" (click)="sendQuickAction('plan-session')"
                   [disabled]="isAgentTyping || connectionStatus !== 'connected'">
             <span class="material-icons">add_circle_outline</span>
