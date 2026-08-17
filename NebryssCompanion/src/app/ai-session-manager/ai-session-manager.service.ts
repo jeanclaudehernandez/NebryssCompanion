@@ -370,6 +370,8 @@ export class AiSessionManagerService implements OnDestroy {
   }
 
   private handleCommandResult(commandId: string, status: string, result?: any, error?: string): void {
+    this.isAgentTypingSubject.next(false);
+    this.currentStatusSubject.next(null);
     const messages = this.messagesSubject.value;
     const finalStatus: 'approved' | 'declined' | 'error' = status === 'approved' ? 'approved' : (status === 'declined' ? 'declined' : 'error');
     for (const msg of messages) {

@@ -171,8 +171,6 @@ function setupWebSocketServer(server) {
                   error: err.message
                 }));
               }
-              const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${command || targetCmd}\nError: ${err.message}\nPlease inform the user and suggest how to resolve the issue.`;
-              session.sendMessage(agentPrompt, targetCampaignId);
             });
 
             child.on('close', (exitCode) => {
@@ -188,10 +186,6 @@ function setupWebSocketServer(server) {
                     error: errorMsg
                   }));
                 }
-
-                // Notify agent of failure
-                const agentPrompt = `[COMMAND EXECUTION ERROR]\nThe command failed to execute in the database:\nCommand: ${command || targetCmd}\nError: ${errorMsg}\nPlease inform the user and suggest how to resolve the issue.`;
-                session.sendMessage(agentPrompt, targetCampaignId);
                 return;
               }
 
@@ -216,40 +210,13 @@ function setupWebSocketServer(server) {
                   result: parsedResult
                 }));
               }
-
-              // Notify the agent session with the database execution response so it generates and streams a response back to the UI
-              const MAX_RESULT_CHARS = 800;
-              let resultStr = typeof parsedResult === 'object' ? JSON.stringify(parsedResult, null, 2) : String(parsedResult || 'Success');
-              if (resultStr.length > MAX_RESULT_CHARS) {
-                // For session commands, just pass key fields instead of the full content
-                if (typeof parsedResult === 'object' && parsedResult !== null) {
-                  const summary = {
-                    status: parsedResult.status,
-                    sessionId: parsedResult.sessionId,
-                    campaignId: parsedResult.campaignId,
-                    id: parsedResult.id,
-                    type: parsedResult.type,
-                    name: parsedResult.name,
-                    message: parsedResult.message,
-                  };
-                  // Remove undefined keys
-                  Object.keys(summary).forEach(k => summary[k] === undefined && delete summary[k]);
-                  resultStr = JSON.stringify(summary, null, 2);
-                } else {
-                  resultStr = resultStr.substring(0, MAX_RESULT_CHARS) + '... [truncated]';
-                }
-              }
-              const isSessionCommand = targetCmd === 'save' || targetCmd === 'finalize' || (targetCmd && targetCmd.includes('session'));
-              const agentPrompt = `[USER APPROVED COMMAND]\nThe user clicked 'Approve & Execute' in the UI for command: ${command || targetCmd}\nExecution output from database:\n\`\`\`json\n${resultStr}\n\`\`\`\n${isSessionCommand ? 'Please confirm the session operation to the user.' : 'Please concisely confirm the successful execution of this entity operation to the user with the entity details. Strictly DO NOT suggest any unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions.'}`;
-              session.sendMessage(agentPrompt, targetCampaignId);
             });
             break;
           }
 
           case 'decline_command': {
-            const { commandId, command, summary, payload } = msg;
+            const { commandId } = msg;
             console.log(`[AGY WS] Declining command ${commandId}`);
-            const targetCampaignId = payload?.campaignId || (session.getActiveCampaignId ? session.getActiveCampaignId() : 1);
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({
                 type: 'command_result',
@@ -258,10 +225,6 @@ function setupWebSocketServer(server) {
                 message: 'Command declined by user.'
               }));
             }
-
-            // Notify the agent session that the command was declined
-            const agentPrompt = `[USER DECLINED COMMAND]\nThe user clicked 'Decline' in the UI for command: ${summary || command || commandId}.\nNo changes were made to the database. Please concisely acknowledge this to the user without proposing unprompted extra steps or new campaign sessions.`;
-            session.sendMessage(agentPrompt, targetCampaignId);
             break;
           }
 
