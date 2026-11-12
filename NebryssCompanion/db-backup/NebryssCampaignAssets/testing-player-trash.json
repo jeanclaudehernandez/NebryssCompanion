@@ -1,0 +1,98 @@
+[
+  {
+    "_id": {
+      "$oid": "6a82246690ec64706fe0de49"
+    },
+    "name": "Cora Thorne",
+    "race": "Human",
+    "origin": "Zephyrian Ironclad",
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human"
+      ]
+    },
+    "weapons": 111,
+    "abilities": [
+      {
+        "name": "Shield Wall",
+        "effect": "While within 1 inch of an ally or barricade",
+        "retains": "one normal defense save as a critical save."
+      },
+      {
+        "name": "Unyielding Resolve",
+        "effect": "Once per battle",
+        "when": "reduced to 0 Wounds",
+        "can": "survive with 1 Wound remaining."
+      }
+    ],
+    "items": [],
+    "progression": {
+      "talentPoints": 0,
+      "mistrals": {
+        "digital": 0,
+        "physical": 50
+      },
+      "talents": [],
+      "afflictions": [],
+      "equipment": []
+    },
+    "notes": "A veteran line defender from the Zephyrian border garrisons, experienced in holding choke points against mist incursions.",
+    "id": 3,
+    "deletedAt": {
+      "$date": "2026-08-16T21:00:19.403Z"
+    }
+  },
+  {
+    "_id": {
+      "$oid": "6a8225a390ec64706fe0de4a"
+    },
+    "name": "Cora Thorne Test",
+    "race": "Human",
+    "origin": "Zephyrian Ironclad",
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 12,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human"
+      ]
+    },
+    "weapons": [
+      111
+    ],
+    "abilities": [
+      {
+        "name": "Shield Wall",
+        "effect": "While within 1 inch of an ally or barricade",
+        "retains": "one normal defense save as a critical save."
+      },
+      {
+        "name": "Unyielding Resolve",
+        "effect": "Once per battle",
+        "when": "reduced to 0 Wounds",
+        "can": "survive with 1 Wound remaining."
+      }
+    ],
+    "items": [],
+    "progression": {
+      "talentPoints": 0,
+      "mistrals": {
+        "digital": 0,
+        "physical": 50
+      },
+      "talents": [],
+      "afflictions": [],
+      "equipment": []
+    },
+    "notes": "A veteran line defender from the Zephyrian border garrisons, experienced in holding choke points against mist incursions.",
+    "id": 3,
+    "deletedAt": {
+      "$date": "2026-08-16T21:03:39.110Z"
+    }
+  }
+]

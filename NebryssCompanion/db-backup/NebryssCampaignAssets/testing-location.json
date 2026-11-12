@@ -1,0 +1,12 @@
+[
+  {
+    "_id": {
+      "$oid": "6a815f742e9b1500dfeb60c9"
+    },
+    "name": "Outpost Echo",
+    "faction": "Ironhead Guild",
+    "description": "A fortified forward listening post.",
+    "id": 1,
+    "isDeleted": true
+  }
+]

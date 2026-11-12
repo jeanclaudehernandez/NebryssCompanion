@@ -1,0 +1,133 @@
+{
+  "exportedAt": "2026-11-12T20:07:04.135Z",
+  "databases": {
+    "Nebryss-assets": [
+      {
+        "collection": "affliction",
+        "count": 7
+      },
+      {
+        "collection": "bestiary",
+        "count": 70
+      },
+      {
+        "collection": "campaign",
+        "count": 3
+      },
+      {
+        "collection": "campaignSession",
+        "count": 10
+      },
+      {
+        "collection": "item",
+        "count": 95
+      },
+      {
+        "collection": "itemCategory",
+        "count": 11
+      },
+      {
+        "collection": "lore",
+        "count": 1
+      },
+      {
+        "collection": "mistEffect",
+        "count": 13
+      },
+      {
+        "collection": "status",
+        "count": 14
+      },
+      {
+        "collection": "talent",
+        "count": 5
+      },
+      {
+        "collection": "terrainRule",
+        "count": 5
+      },
+      {
+        "collection": "weapon",
+        "count": 113
+      },
+      {
+        "collection": "weaponRule",
+        "count": 57
+      }
+    ],
+    "NebryssCampaignAssets": [
+      {
+        "collection": "maledictum-letter",
+        "count": 0
+      },
+      {
+        "collection": "maledictum-location",
+        "count": 0
+      },
+      {
+        "collection": "maledictum-npc",
+        "count": 0
+      },
+      {
+        "collection": "maledictum-player",
+        "count": 0
+      },
+      {
+        "collection": "maledictum-shop",
+        "count": 0
+      },
+      {
+        "collection": "nebryss-voss-sucession-letter",
+        "count": 4
+      },
+      {
+        "collection": "nebryss-voss-sucession-location",
+        "count": 14
+      },
+      {
+        "collection": "nebryss-voss-sucession-npc",
+        "count": 26
+      },
+      {
+        "collection": "nebryss-voss-sucession-player",
+        "count": 5
+      },
+      {
+        "collection": "nebryss-voss-sucession-shop",
+        "count": 12
+      },
+      {
+        "collection": "testing-letter",
+        "count": 1
+      },
+      {
+        "collection": "testing-location",
+        "count": 1
+      },
+      {
+        "collection": "testing-npc",
+        "count": 7
+      },
+      {
+        "collection": "testing-npc-trash",
+        "count": 1
+      },
+      {
+        "collection": "testing-player",
+        "count": 2
+      },
+      {
+        "collection": "testing-player-trash",
+        "count": 2
+      },
+      {
+        "collection": "testing-shop",
+        "count": 1
+      },
+      {
+        "collection": "users",
+        "count": 6
+      }
+    ]
+  }
+}

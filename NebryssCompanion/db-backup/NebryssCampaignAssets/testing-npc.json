@@ -1,0 +1,102 @@
+[
+  {
+    "_id": {
+      "$oid": "6a815e7249dd2158a62dece8"
+    },
+    "name": "Test Scout Karl",
+    "faction": "Ironhead Guild",
+    "role": "Lead Scout",
+    "id": 1,
+    "isDeleted": true
+  },
+  {
+    "_id": {
+      "$oid": "6a8165c12e9b1500dfeb60cd"
+    },
+    "name": "DevTest Gideon",
+    "faction": "Independent",
+    "role": "Cartographer",
+    "id": 2,
+    "isDeleted": true
+  },
+  {
+    "_id": {
+      "$oid": "6a8167dbb2f039f77f4e56e8"
+    },
+    "name": "TestGuard",
+    "faction": "Independent",
+    "role": "Guard",
+    "id": 3,
+    "isDeleted": true
+  },
+  {
+    "_id": {
+      "$oid": "6a8168e569aacfab94ebdf23"
+    },
+    "name": "Jaxen",
+    "faction": "Gilded",
+    "subgroup": "Void",
+    "id": 4
+  },
+  {
+    "_id": {
+      "$oid": "6a81691769aacfab94ebdf24"
+    },
+    "name": "Jaxen",
+    "faction": "Gilded",
+    "subgroup": "Void",
+    "role": "Salvage",
+    "personality": "Shrewd",
+    "location": "Zephyria",
+    "discovered": true,
+    "id": 5,
+    "isDeleted": true
+  },
+  {
+    "_id": {
+      "$oid": "6a816a4c69aacfab94ebdf25"
+    },
+    "name": "Jaxen Mist-Eye Vane",
+    "faction": "Gilded Accord",
+    "subgroup": "Void Salver and Relic Broker",
+    "role": "Salvage broker operating from the rim of the shroud, fencing rare relics and exotic mist gear.",
+    "mission": "",
+    "methods": "",
+    "personality": "Shrewd and calculating, speaks in whispered tones, always looks over his shoulder for rivals.",
+    "location": "Zephyria",
+    "reputation": "",
+    "backstory": "",
+    "description": "",
+    "fleetSize": "",
+    "flagship": "",
+    "tactics": "",
+    "motivations": "",
+    "wargear": [],
+    "discovered": true,
+    "id": 6,
+    "isDeleted": true
+  },
+  {
+    "_id": {
+      "$oid": "6a816bf0c3048c0d049852f0"
+    },
+    "name": "Morwen the Pale",
+    "faction": "Nebryssian Liberation Republic",
+    "subgroup": "Mistweaver",
+    "role": "Aether Alchemist & Relic Scavenger",
+    "mission": "",
+    "methods": "",
+    "personality": "Whispering, eccentric, and intimately attuned to the shifting density of the mist.",
+    "location": "",
+    "reputation": "",
+    "backstory": "",
+    "description": "An operative who survived an extended exposure to deep mist anomalies, offering strange alchemical tinctures, navigational markers, and esoteric warnings.",
+    "fleetSize": "",
+    "flagship": "",
+    "tactics": "",
+    "motivations": "",
+    "wargear": [],
+    "discovered": false,
+    "id": 7
+  }
+]

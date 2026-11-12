@@ -1,0 +1,25 @@
+[
+  {
+    "_id": {
+      "$oid": "6a8217d9424cdd50a27fd0f5"
+    },
+    "name": "Morwen's Mist Alchemical & Relics",
+    "location": "",
+    "description": "A dimly lit, mist-shrouded den filled with bubbling distillation tubes, preserved botanical specimens, and esoteric relics salvaged from deep mist anomalies.",
+    "discovered": false,
+    "categories": [],
+    "items": [
+      5,
+      23,
+      27,
+      63,
+      65,
+      66
+    ],
+    "paymentMethod": {
+      "digital": true,
+      "physical": true
+    },
+    "id": 1
+  }
+]

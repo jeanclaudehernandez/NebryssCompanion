@@ -16,6 +16,8 @@
     "start:duckdns": "node scripts/start-duckdns.js",
     "start:local": "node scripts/start-local.js",
     "dev:local": "node scripts/start-local.js",
+    "db:export": "node scripts/db-backup.js export",
+    "db:import": "node scripts/db-backup.js import",
     "update:duckdns": "node scripts/duckdns-updater.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

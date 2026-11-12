@@ -1,0 +1,26 @@
+[
+  {
+    "_id": {
+      "$oid": "6a7e7dc19cfb3e53b7f80ff4"
+    },
+    "id": 1,
+    "name": "nebryss-voss-succession",
+    "prefix": "nebryss-voss-sucession"
+  },
+  {
+    "_id": {
+      "$oid": "6a7e7dc19cfb3e53b7f80ff5"
+    },
+    "id": 2,
+    "name": "DevTesting",
+    "prefix": "testing"
+  },
+  {
+    "_id": {
+      "$oid": "6aaeeb1cca0c6881e820c8c2"
+    },
+    "id": 3,
+    "name": "Maldictum",
+    "prefix": "maledictum"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "_id": {
+      "$oid": "6a815f902e9b1500dfeb60cb"
+    },
+    "subject": "Scout Report: Mist Fluctuations",
+    "content": "Mist density is increasing rapidly around Outpost Echo.",
+    "senderName": "Test Scout Karl",
+    "id": 1,
+    "isDeleted": true
+  }
+]

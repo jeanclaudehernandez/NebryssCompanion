@@ -1,0 +1,90 @@
+[
+  {
+    "_id": {
+      "$oid": "6a8210c2079cea52a87f3bf4"
+    },
+    "id": 1,
+    "name": "Kalen Vayne",
+    "race": "Human",
+    "origin": "Mistweaver Vanguard",
+    "attributes": {
+      "Movement": 6,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "human"
+      ]
+    },
+    "weapons": [],
+    "abilities": [
+      {
+        "name": "Core Training",
+        "effect": "Standard operative conditioning."
+      }
+    ],
+    "items": [],
+    "progression": {
+      "talentPoints": 0,
+      "mistrals": {
+        "digital": 0,
+        "physical": 0
+      },
+      "talents": [],
+      "afflictions": [],
+      "equipment": []
+    },
+    "gold": 0,
+    "digitalGold": 0,
+    "talentPoints": 0,
+    "talents": [],
+    "afflictions": [],
+    "inventory": []
+  },
+  {
+    "_id": {
+      "$oid": "6a821774424cdd50a27fd0f4"
+    },
+    "name": "Ren the Shadowstrider",
+    "race": "Human",
+    "origin": "Mist Shinobi",
+    "attributes": {
+      "Movement": 7,
+      "Wounds": 10,
+      "Save": 4,
+      "APL": 3,
+      "body": [
+        "universal",
+        "human"
+      ]
+    },
+    "weapons": [
+      58,
+      75
+    ],
+    "items": [],
+    "id": 2,
+    "notes": "Mist Shinobi operative specializing in stealth movement and lethal strikes from concealment.",
+    "abilities": [
+      {
+        "name": "Shadow Veil",
+        "effect": "Can traverse dense mist and obscured terrain without movement penalties"
+      },
+      {
+        "name": "Silent Strike",
+        "effect": "Melee critical strikes made from concealment or while flanking inflict +2 damage."
+      }
+    ],
+    "progression": {
+      "talentPoints": 0,
+      "mistrals": {
+        "digital": 200,
+        "physical": 0
+      },
+      "talents": [],
+      "afflictions": [],
+      "equipment": []
+    },
+    "digitalGold": 200
+  }
+]

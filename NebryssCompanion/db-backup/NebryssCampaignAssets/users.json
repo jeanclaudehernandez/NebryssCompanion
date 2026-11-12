@@ -1,0 +1,98 @@
+[
+  {
+    "_id": {
+      "$oid": "6a7d44a1c7f4657bd0bc2a5e"
+    },
+    "email": "jeanhernandezmeze@gmail.com",
+    "username": "jeanhernandezmeze",
+    "passwordHash": "47827429ed94c8a3ec97814e7904686d90df346c9f1638b76d9a2e69887532cb912df6e7e22e60b413285f29c18fa445c11447baf3e21a79e1d06553a137d706",
+    "salt": "04e4a5b1e9548e51358b7ed930c63fbe",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "admin",
+    "createdAt": "2026-08-13T04:14:25.276Z",
+    "updatedAt": "2026-10-31T01:51:47.809Z",
+    "lastLoginAt": "2026-10-31T01:51:47.808Z"
+  },
+  {
+    "_id": {
+      "$oid": "6a7f62a6e25906d4a0cf7334"
+    },
+    "email": "lihuelsosa@gmail.com",
+    "username": "lihuelsosa",
+    "passwordHash": "ccd205d86dfb860555268f6e62892af77be2bf57e2b3115fe22a1799c62120bc475fed1544a0251ee97c359e1c155b034c18f5e263f1db7703d0b745d41ab995",
+    "salt": "123b5316d60134b090f81d446ce260d3",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "admin",
+    "createdAt": "2026-08-14T18:47:02.990Z",
+    "updatedAt": "2026-10-09T02:33:48.163Z",
+    "lastLoginAt": "2026-10-09T02:33:48.163Z"
+  },
+  {
+    "_id": {
+      "$oid": "6a7f67cfe25906d4a0cf7335"
+    },
+    "email": "tumamatew@gmail.com",
+    "username": "tumamatew",
+    "passwordHash": "5457f4a86ad528d0e0168e0f8fd32c26d4634e52651c6c0d6219c3796669bf639aa9a5d3d453339a0d8b10b7d61a064c4005806a9df398654cb0c6ec9829e0cf",
+    "salt": "40e4670ec29bfa0e2f68d18a11774279",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "user",
+    "createdAt": "2026-08-14T19:09:03.206Z",
+    "updatedAt": "2026-10-02T00:52:36.679Z",
+    "lastLoginAt": "2026-10-02T00:52:36.679Z"
+  },
+  {
+    "_id": {
+      "$oid": "6a80fd7e49dd2158a62dece4"
+    },
+    "email": "analia.ameglio@madtechnologies.com.ar",
+    "username": "analia.ameglio",
+    "passwordHash": "a06733d4bc22c6621514baa3c5a7edfb5eaf1c952c17948dc34279659a3e4558993d893a3fc286297368c586146c8d9683ac7d81176cf77e2cc92854419d2bbc",
+    "salt": "8e13f1fa5ce288c8445d116db2f4b96b",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "user",
+    "createdAt": "2026-08-15T23:59:58.509Z",
+    "updatedAt": "2026-10-02T00:45:55.756Z",
+    "lastLoginAt": "2026-10-02T00:45:55.756Z"
+  },
+  {
+    "_id": {
+      "$oid": "6a80fd9049dd2158a62dece5"
+    },
+    "email": "bertalucas39@gmail.com",
+    "username": "bertalucas39",
+    "passwordHash": "e31c1d19a3712e4c9aedacdf69b6551d7c539cce619881afbab11088caea7ffe643c42a7b32f3b2ee3504838ac5707c6eb27c79bed6e9928b767ec359295aba6",
+    "salt": "3fa550f49a57bff8822c66fef8555ce8",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "user",
+    "createdAt": "2026-08-16T00:00:16.021Z",
+    "updatedAt": "2026-10-02T01:02:17.136Z",
+    "lastLoginAt": "2026-10-02T01:02:17.136Z"
+  },
+  {
+    "_id": {
+      "$oid": "6a810c3a49dd2158a62dece7"
+    },
+    "email": "lorenozjr.argentina@gmail.com",
+    "username": "lorenozjr.argentina",
+    "passwordHash": "9feab1f687610ea690db4d0e36e44a004758f9276568a0b84354a82cfe6d17b72c9477626cb978b1487b2562d525d49624d98c1cbd5f104a1b6acb6e811dbbe4",
+    "salt": "6ee677e9cb9b89bb14b34e91fdee4915",
+    "isVerified": true,
+    "verificationCode": null,
+    "verificationCodeExpires": null,
+    "role": "user",
+    "createdAt": "2026-08-16T01:02:50.697Z",
+    "updatedAt": "2026-10-30T00:03:07.658Z",
+    "lastLoginAt": "2026-10-30T00:03:07.658Z"
+  }
+]
