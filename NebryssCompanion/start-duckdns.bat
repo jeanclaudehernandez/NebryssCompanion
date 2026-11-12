@@ -1,34 +1,81 @@
 @echo off
 setlocal EnableDelayedExpansion
 
-echo ====================================================
-echo   NebryssCompanion - DuckDNS Launcher & Builder
-echo ====================================================
-echo.
+:: ---------------------------------------------------------
+:: NebryssCompanion - DuckDNS Universal Launcher
+:: Resolves the target directory regardless of where this .bat is placed
+:: ---------------------------------------------------------
 
-if not exist ".env.duckdns" (
-    echo [.env.duckdns] file not found! Creating default .env.duckdns...
-    (
-      echo # DuckDNS ^& Ngrok Configuration
-      echo DUCKDNS_DOMAIN=nebryss
-      echo DUCKDNS_TOKEN=a9ceb518-2584-413d-a6b6-b2c9b4f9f764
-      echo NGROK_DOMAIN=chitchat-statistic-shuffle.ngrok-free.dev
-      echo NGROK_AUTHTOKEN=3HSVF5v6pBlOznOGXphintNjp3O_6SPMpBMFJGJw5yfKUxXxA
-      echo PORT=8080
-      echo ADMIN_PIN=849201
-      echo MONGODB_URI=mongodb://127.0.0.1:27017/NebryssCompanion
-      echo MONGODB_DB_MAIN=Nebryss-assets
-      echo MONGODB_DB_PLAYERS=NebryssCampaignAssets
-    ) > .env.duckdns
+set "TARGET_DIR="
+
+:: 1. Check if batch file is placed in the project folder itself
+if exist "%~dp0package.json" (
+    set "TARGET_DIR=%~dp0"
 )
 
-echo Building Angular frontend for local deployment...
-call npm run build
-if errorlevel 1 (
-    echo [ERROR] Angular build failed!
+:: 2. Check if batch file is placed in the parent workspace root folder
+if not defined TARGET_DIR (
+    if exist "%~dp0NebryssCompanion\package.json" (
+        set "TARGET_DIR=%~dp0NebryssCompanion"
+    )
+)
+
+:: 3. Check if batch file is placed in a sibling/sub folder
+if not defined TARGET_DIR (
+    if exist "%~dp0..\NebryssCompanion\package.json" (
+        set "TARGET_DIR=%~dp0..\NebryssCompanion"
+    )
+)
+
+:: 4. Check user profile Desktop path
+if not defined TARGET_DIR (
+    if exist "%USERPROFILE%\Desktop\Nebryss Killteam Campaign\NebryssCompanion\package.json" (
+        set "TARGET_DIR=%USERPROFILE%\Desktop\Nebryss Killteam Campaign\NebryssCompanion"
+    )
+)
+
+:: 5. Check absolute workspace path
+if not defined TARGET_DIR (
+    if exist "C:\Users\jeanh\Desktop\Nebryss Killteam Campaign\NebryssCompanion\package.json" (
+        set "TARGET_DIR=C:\Users\jeanh\Desktop\Nebryss Killteam Campaign\NebryssCompanion"
+    )
+)
+
+:: Fallback / Error handling if directory cannot be resolved
+if not defined TARGET_DIR (
+    echo ====================================================
+    echo [ERROR] Could not locate the NebryssCompanion directory!
+    echo ====================================================
+    echo Checked locations:
+    echo  - %~dp0
+    echo  - %~dp0NebryssCompanion
+    echo  - %USERPROFILE%\Desktop\Nebryss Killteam Campaign\NebryssCompanion
+    echo  - C:\Users\jeanh\Desktop\Nebryss Killteam Campaign\NebryssCompanion
+    echo.
+    echo Please make sure the folder 'Nebryss Killteam Campaign\NebryssCompanion' exists.
+    echo.
+    pause
     exit /b 1
 )
 
+:: Navigate to project directory (using /d to handle any drive letter)
+cd /d "%TARGET_DIR%"
+
+echo ====================================================
+echo   NebryssCompanion - DuckDNS Launcher
+echo ====================================================
+echo Target Directory : %CD%
+echo Running Command  : npm run start:duckdns
+echo ====================================================
 echo.
-echo Starting DuckDNS IP Updater and Backend Server...
-call node scripts/start-duckdns.js
+
+call npm run start:duckdns
+
+if %ERRORLEVEL% neq 0 (
+    echo.
+    echo ====================================================
+    echo [ERROR] Process ended with error code %ERRORLEVEL%.
+    echo ====================================================
+    pause
+)
+
