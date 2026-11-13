@@ -18,6 +18,7 @@
     "dev:local": "node scripts/start-local.js",
     "db:export": "node scripts/db-backup.js export",
     "db:import": "node scripts/db-backup.js import",
+    "db:docker": "node scripts/setup-docker-mongo.js",
     "update:duckdns": "node scripts/duckdns-updater.js",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"

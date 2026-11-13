@@ -1342,61 +1342,63 @@ for (const alias of collectionAliases) {
 const staticPath = path.join(__dirname, '../dist/nebryss-companion/browser');
 const indexHtmlPath = path.join(staticPath, 'index.html');
 
-if (fs.existsSync(staticPath)) {
-  // Serve static files — ONLY cache image files (png, jpg, jpeg, webp, gif, svg, ico, avif)
-  app.use(express.static(staticPath, {
-    etag: true,
-    index: false,
-    setHeaders: (res, filePath) => {
-      const isImage = /\.(png|jpe?g|webp|gif|svg|ico|avif)$/i.test(filePath);
-      if (isImage) {
-        res.setHeader('Cache-Control', 'public, max-age=604800, immutable'); // 7 days cache for images
-      } else {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // no cache for JS, CSS, JSON, HTML, etc.
-      }
+// Serve static files — ONLY cache image files (png, jpg, jpeg, webp, gif, svg, ico, avif)
+app.use(express.static(staticPath, {
+  etag: true,
+  index: false,
+  setHeaders: (res, filePath) => {
+    const isImage = /\.(png|jpe?g|webp|gif|svg|ico|avif)$/i.test(filePath);
+    if (isImage) {
+      res.setHeader('Cache-Control', 'public, max-age=604800, immutable'); // 7 days cache for images
+    } else {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // no cache for JS, CSS, JSON, HTML, etc.
     }
-  }));
+  }
+}));
 
-  // Serve index.html dynamically, injecting runtime config based on request host
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/ws')) {
-      return next();
-    }
+// Serve index.html dynamically, injecting runtime config based on request host
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/ws')) {
+    return next();
+  }
 
-    if (!fs.existsSync(indexHtmlPath)) {
-      return res.status(404).send('index.html not found. Run npm run build first.');
-    }
+  if (!fs.existsSync(indexHtmlPath)) {
+    return res.status(404).send('index.html not found. Run npm run build first.');
+  }
 
-    try {
-      const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
-      const host = req.headers['x-forwarded-host'] || req.headers.host || `localhost:${port}`;
-      const origin = `${protocol}://${host}`;
-      const wsProtocol = protocol === 'https' ? 'wss' : 'ws';
-      const wsUrl = `${wsProtocol}://${host}/ws`;
-      const apiUrl = `${origin}/api`;
+  try {
+    const protocol = req.headers['x-forwarded-proto'] || (req.secure ? 'https' : 'http');
+    const host = req.headers['x-forwarded-host'] || req.headers.host || `localhost:${port}`;
+    const origin = `${protocol}://${host}`;
+    const wsProtocol = protocol === 'https' ? 'wss' : 'ws';
+    const wsUrl = `${wsProtocol}://${host}/ws`;
+    const apiUrl = `${origin}/api`;
 
-      let html = fs.readFileSync(indexHtmlPath, 'utf8');
+    let html = fs.readFileSync(indexHtmlPath, 'utf8');
 
-      // Inject runtime config script right after <head>
-      const configScript = `<script>
+    // Inject runtime config script right after <head>
+    const configScript = `<script>
   window.API_URL = "${apiUrl}";
   window.WS_URL  = "${wsUrl}";
 </script>`;
 
-      html = html.replace('<head>', `<head>\n  ${configScript}`);
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.setHeader('Cache-Control', 'no-store'); // never cache index.html
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-Frame-Options', 'SAMEORIGIN');
-      res.send(html);
-    } catch (err) {
-      console.error('[API] Error serving index.html:', err);
-      res.sendFile(indexHtmlPath);
-    }
-  });
+    html = html.replace('<head>', `<head>\n  ${configScript}`);
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store'); // never cache index.html
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.send(html);
+  } catch (err) {
+    console.error('[API] Error serving index.html:', err);
+    res.sendFile(indexHtmlPath);
+  }
+});
 
+if (fs.existsSync(staticPath)) {
   console.log(`[API] Serving static Angular app from ${staticPath}`);
   console.log('[API] Runtime config (API_URL + WS_URL) injected dynamically per request host.');
+} else {
+  console.warn(`[API] Warning: Static build directory not found at ${staticPath}. Run 'npm run build' to compile the frontend.`);
 }
 
 const port = process.env.PORT || 8080;

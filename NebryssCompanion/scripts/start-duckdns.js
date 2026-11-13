@@ -3,38 +3,50 @@ const fs = require('fs');
 const net = require('net');
 const { spawn, spawnSync } = require('child_process');
 
-// Load .env.duckdns
-const envPath = path.join(__dirname, '../.env.duckdns');
-if (fs.existsSync(envPath)) {
-  const envConfig = fs.readFileSync(envPath, 'utf8');
-  envConfig.split('\n').forEach(line => {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
-      const [key, ...vals] = trimmed.split('=');
-      if (key) {
-        process.env[key.trim()] = vals.join('=').trim();
+// Load .env (primary) and fallback to .env.duckdns if present
+const envFiles = [
+  path.join(__dirname, '../.env'),
+  path.join(__dirname, '../.env.duckdns')
+];
+for (const envPath of envFiles) {
+  if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8');
+    envConfig.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [key, ...vals] = trimmed.split('=');
+        if (key && !process.env[key.trim()]) {
+          process.env[key.trim()] = vals.join('=').trim();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
-// Disallow localhost / local network origins in remote DuckDNS & Ngrok mode
-process.env.ALLOW_LOCALHOST = 'false';
-process.env.ALLOW_LOCAL_ORIGINS = 'false';
+// Respect ALLOW_LOCALHOST from .env (default to 'false' only if not specified)
+if (process.env.ALLOW_LOCALHOST === undefined) {
+  process.env.ALLOW_LOCALHOST = 'false';
+}
+if (process.env.ALLOW_LOCAL_ORIGINS === undefined) {
+  process.env.ALLOW_LOCAL_ORIGINS = process.env.ALLOW_LOCALHOST;
+}
 
 const port = process.env.PORT || 8080;
 const domain = process.env.DUCKDNS_DOMAIN || 'nebryss';
-const ngrokDomain = process.env.NGROK_DOMAIN;
+const rawNgrokDomain = process.env.NGROK_DOMAIN || '';
+const ngrokDomain = rawNgrokDomain.replace(/^https?:\/\//i, '').replace(/\/+$/, '').trim() || undefined;
 const ngrokAuthToken = process.env.NGROK_AUTHTOKEN;
 
 console.log('====================================================');
 console.log('  NebryssCompanion - Permanent Local Server Launcher');
 console.log('====================================================');
-console.log(`DuckDNS    : ${domain}.duckdns.org`);
+if (process.env.DUCKDNS_DOMAIN) {
+  console.log(`DuckDNS    : ${domain}.duckdns.org`);
+}
 console.log(`Local Port : ${port}`);
-console.log(`Localhost  : Blocked (Remote/Ngrok Only)`);
+console.log(`Localhost  : ${process.env.ALLOW_LOCALHOST === 'true' ? 'Allowed' : 'Blocked (Remote/Ngrok Only)'}`);
 if (ngrokDomain) {
-  console.log(`Fixed Domain: ${ngrokDomain}`);
+  console.log(`Fixed Domain: https://${ngrokDomain}`);
 }
 console.log('====================================================');
 
@@ -69,7 +81,7 @@ function findMongodExecutable() {
         return line;
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   if (isWin) {
     const basePath = 'C:\\Program Files\\MongoDB\\Server';
@@ -82,7 +94,7 @@ function findMongodExecutable() {
             return binPath;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   } else {
     const unixPaths = ['/usr/local/bin/mongod', '/usr/bin/mongod', '/opt/homebrew/bin/mongod'];
@@ -129,6 +141,23 @@ async function ensureDatabase() {
     }
     console.warn('[DB] MongoDB process spawned, proceeding with connection attempts...');
     return true;
+  }
+
+  const dockerCandidates = [
+    'C:\\Users\\Jean\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe',
+    'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe',
+    'docker'
+  ];
+  for (const dockerExe of dockerCandidates) {
+    if (dockerExe === 'docker' || fs.existsSync(dockerExe)) {
+      try {
+        const res = spawnSync(dockerExe, ['start', 'nebryss-mongodb'], { stdio: 'ignore' });
+        if (res.status === 0) {
+          console.log('[DB] Started Docker container nebryss-mongodb on port 27017!\n');
+          return true;
+        }
+      } catch (e) { }
+    }
   }
 
   console.log('[DB] MongoDB binary not found on local path. Using local JSON database (local-db/).\n');
@@ -182,7 +211,7 @@ function startTunnel() {
       ngrokModule = require('@ngrok/ngrok');
     } catch (e) { }
 
-    if (ngrokModule && ngrokAuthToken) {
+    if (ngrokModule && ngrokAuthToken && ngrokAuthToken !== 'your-ngrok-authtoken') {
       (async () => {
         try {
           const listener = await ngrokModule.forward({
@@ -211,13 +240,13 @@ function startTunnel() {
       return;
     }
 
+    // Use system ngrok CLI (or fallback to npx ngrok) with --domain and --log=stdout
+    const ngrokArgs = ['http', String(port), `--domain=${ngrokDomain}`, '--log=stdout'];
     if (ngrokAuthToken && ngrokAuthToken !== 'your-ngrok-authtoken') {
-      try {
-        spawn(npxCmd, ['-y', '-p', '@ngrok/ngrok', 'ngrok', 'config', 'add-authtoken', ngrokAuthToken], { shell: isWin, windowsHide: true });
-      } catch (e) { }
+      ngrokArgs.push(`--authtoken=${ngrokAuthToken}`);
     }
 
-    const tunnelProc = spawn(npxCmd, ['-y', '@ngrok/ngrok', 'http', String(port), `--url=${ngrokDomain}`, `--authtoken=${ngrokAuthToken}`], {
+    const tunnelProc = spawn('ngrok', ngrokArgs, {
       shell: isWin,
       windowsHide: true
     });
@@ -226,7 +255,7 @@ function startTunnel() {
 
     const parseLog = (data) => {
       const str = data.toString();
-      if (!urlPrinted && (str.includes(ngrokDomain) || str.includes('online') || str.includes('Forwarding') || str.includes('started tunnel'))) {
+      if (!urlPrinted && (str.includes(ngrokDomain) || str.includes('started tunnel') || str.includes('Forwarding'))) {
         urlPrinted = true;
         console.log('\n====================================================');
         console.log('  🚀 SERVIDOR CON URL FIJA Y PERMANENTE EN VIVO!');
@@ -234,7 +263,7 @@ function startTunnel() {
         console.log(`  🔗 Tu URL Fija para compartir (NUNCA cambia):`);
         console.log(`     https://${ngrokDomain}`);
         console.log('====================================================\n');
-      } else if (!urlPrinted && (str.includes('ERR_') || str.includes('error') || str.includes('failed'))) {
+      } else if (str.includes('ERR_') || str.includes('lvl=eror') || str.includes('lvl=crit')) {
         console.error('[Tunnel Error]:', str.trim());
       }
     };
@@ -285,17 +314,46 @@ function startCloudflareTunnel() {
   });
 }
 
+function buildFrontend() {
+  const args = process.argv.slice(2);
+  const skipBuild = args.includes('--skip-build') || args.includes('-s');
+  const indexHtmlPath = path.join(__dirname, '../dist/nebryss-companion/browser/index.html');
+
+  if (skipBuild && fs.existsSync(indexHtmlPath)) {
+    console.log('[Frontend] Skipping build (--skip-build flag detected).\n');
+    return;
+  }
+
+  const isWin = process.platform === 'win32';
+  const npmCmd = isWin ? 'npm.cmd' : 'npm';
+
+  console.log('[Frontend] Building Angular frontend for deployment...');
+  const result = spawnSync(npmCmd, ['run', 'build'], {
+    cwd: path.join(__dirname, '..'),
+    stdio: 'inherit',
+    shell: isWin
+  });
+  if (result.status !== 0) {
+    console.warn('[Frontend] Build warning or non-zero exit code, continuing server startup...');
+  } else {
+    console.log('[Frontend] Build complete!\n');
+  }
+}
+
 async function main() {
   // 1. Start / Verify Background DB (keeps running when this script is stopped)
   await ensureDatabase();
 
-  // 2. Start DuckDNS Updater
+  // 2. Build Frontend so dist/nebryss-companion/browser is ready
+  buildFrontend();
+
+  // 3. Start DuckDNS Updater
   require('./duckdns-updater');
 
-  // 3. Start API, WebSockets & Static Frontend Server
+  // 4. Start API, WebSockets & Static Frontend Server
   require('../api/index.js');
 
-  // 4. Establish HTTPS Tunnel
+  // 5. Establish HTTPS Tunnel
   setTimeout(startTunnel, 1000);
 }
 

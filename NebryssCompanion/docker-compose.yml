@@ -1,0 +1,13 @@
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: nebryss-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - nebryss_mongodb_data:/data/db
+
+volumes:
+  nebryss_mongodb_data:
+

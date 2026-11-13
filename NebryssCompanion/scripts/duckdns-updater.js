@@ -2,22 +2,25 @@ const https = require('https');
 const path = require('path');
 const fs = require('fs');
 
-// Load environment variables from .env.duckdns or .env if present
-const envPath = fs.existsSync(path.join(__dirname, '../.env.duckdns'))
-  ? path.join(__dirname, '../.env.duckdns')
-  : path.join(__dirname, '../.env');
+// Load environment variables from .env (primary) or .env.duckdns if present
+const envFiles = [
+  path.join(__dirname, '../.env'),
+  path.join(__dirname, '../.env.duckdns')
+];
 
-if (fs.existsSync(envPath)) {
-  const envConfig = fs.readFileSync(envPath, 'utf8');
-  envConfig.split('\n').forEach(line => {
-    const trimmed = line.trim();
-    if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
-      const [key, ...vals] = trimmed.split('=');
-      if (key && !process.env[key.trim()]) {
-        process.env[key.trim()] = vals.join('=').trim();
+for (const envPath of envFiles) {
+  if (fs.existsSync(envPath)) {
+    const envConfig = fs.readFileSync(envPath, 'utf8');
+    envConfig.split('\n').forEach(line => {
+      const trimmed = line.trim();
+      if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+        const [key, ...vals] = trimmed.split('=');
+        if (key && !process.env[key.trim()]) {
+          process.env[key.trim()] = vals.join('=').trim();
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 const domain = process.env.DUCKDNS_DOMAIN;
@@ -25,7 +28,6 @@ const token = process.env.DUCKDNS_TOKEN;
 
 function updateDuckDNS() {
   if (!domain || !token || domain === 'your-subdomain' || token === 'your-duckdns-token') {
-    console.warn('[DuckDNS] Warning: DUCKDNS_DOMAIN or DUCKDNS_TOKEN is not set in .env.duckdns. Skipping update.');
     return;
   }
 

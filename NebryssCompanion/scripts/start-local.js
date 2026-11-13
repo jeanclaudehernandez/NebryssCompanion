@@ -84,7 +84,7 @@ function findMongodExecutable() {
         return line;
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   if (isWin) {
     const basePath = 'C:\\Program Files\\MongoDB\\Server';
@@ -97,7 +97,7 @@ function findMongodExecutable() {
             return binPath;
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   } else {
     const unixPaths = ['/usr/local/bin/mongod', '/usr/bin/mongod', '/opt/homebrew/bin/mongod'];
@@ -142,6 +142,23 @@ async function ensureDatabase() {
     }
     console.warn('[DB] MongoDB process spawned, proceeding with connection attempts...');
     return true;
+  }
+
+  const dockerCandidates = [
+    'C:\\Users\\Jean\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe',
+    'C:\\Program Files\\Docker\\Docker\\resources\\bin\\docker.exe',
+    'docker'
+  ];
+  for (const dockerExe of dockerCandidates) {
+    if (dockerExe === 'docker' || fs.existsSync(dockerExe)) {
+      try {
+        const res = spawnSync(dockerExe, ['start', 'nebryss-mongodb'], { stdio: 'ignore' });
+        if (res.status === 0) {
+          console.log('[DB] Started Docker container nebryss-mongodb on port 27017!\n');
+          return true;
+        }
+      } catch (e) { }
+    }
   }
 
   console.log('[DB] MongoDB binary not found on local path. Using local JSON database (local-db/).\n');
@@ -221,12 +238,12 @@ function cleanup() {
   if (spawnedMongod) {
     try {
       spawnedMongod.kill();
-    } catch (e) {}
+    } catch (e) { }
   }
   if (spawnedWatch) {
     try {
       spawnedWatch.kill();
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
