@@ -241,7 +241,7 @@ function startTunnel() {
     }
 
     // Use system ngrok CLI (or fallback to npx ngrok) with --domain and --log=stdout
-    const ngrokArgs = ['http', String(port), `--domain=${ngrokDomain}`, '--log=stdout'];
+    const ngrokArgs = ['http', String(port), `--domain=${ngrokDomain}`, '--pooling-enabled', '--log=stdout'];
     if (ngrokAuthToken && ngrokAuthToken !== 'your-ngrok-authtoken') {
       ngrokArgs.push(`--authtoken=${ngrokAuthToken}`);
     }
@@ -252,10 +252,21 @@ function startTunnel() {
     });
 
     let urlPrinted = false;
+    let err334Seen = false;
 
     const parseLog = (data) => {
       const str = data.toString();
-      if (!urlPrinted && (str.includes(ngrokDomain) || str.includes('started tunnel') || str.includes('Forwarding'))) {
+      const isError = str.includes('ERR_') || str.includes('ERROR:') || str.includes('lvl=eror') || str.includes('lvl=crit');
+
+      if (isError) {
+        if (str.includes('ERR_NGROK_334') || str.includes('already online')) {
+          err334Seen = true;
+        }
+        console.error('[Tunnel Error]:', str.trim());
+        return;
+      }
+
+      if (!urlPrinted && (str.includes('started tunnel') || str.includes('Forwarding'))) {
         urlPrinted = true;
         console.log('\n====================================================');
         console.log('  🚀 SERVIDOR CON URL FIJA Y PERMANENTE EN VIVO!');
@@ -263,8 +274,6 @@ function startTunnel() {
         console.log(`  🔗 Tu URL Fija para compartir (NUNCA cambia):`);
         console.log(`     https://${ngrokDomain}`);
         console.log('====================================================\n');
-      } else if (str.includes('ERR_') || str.includes('lvl=eror') || str.includes('lvl=crit')) {
-        console.error('[Tunnel Error]:', str.trim());
       }
     };
 
@@ -272,6 +281,16 @@ function startTunnel() {
     tunnelProc.stderr.on('data', parseLog);
 
     tunnelProc.on('close', (code) => {
+      if (err334Seen) {
+        console.warn('[Tunnel] Ngrok static domain is already online (ERR_NGROK_334). Cleaning up any stale local ngrok process...');
+        try {
+          if (isWin) {
+            spawnSync('taskkill', ['/F', '/IM', 'ngrok.exe'], { stdio: 'ignore' });
+          } else {
+            spawnSync('pkill', ['-f', 'ngrok'], { stdio: 'ignore' });
+          }
+        } catch (_) {}
+      }
       console.log(`[Tunnel] Tunnel process exited (code ${code}). Reconnecting in 5s...`);
       setTimeout(startTunnel, 5000);
     });

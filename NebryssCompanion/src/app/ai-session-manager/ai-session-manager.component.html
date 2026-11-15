@@ -110,7 +110,7 @@
       <div class="empty-state" *ngIf="messages.length === 0">
         <span class="material-icons empty-icon">smart_toy</span>
         <h2>AI Session Manager</h2>
-        <p>Chat with the AGY agent to plan, create, and conclude campaign sessions.</p>
+        <p>Chat with the Colibri AI agent to plan, create, and conclude campaign sessions.</p>
         <p class="empty-hint">Use the quick actions on the right, or type a message below.</p>
       </div>
 
@@ -138,8 +138,9 @@
             <div *ngFor="let tc of msg.toolCalls" class="tool-chip"
                  [class.running]="tc.status === 'running'"
                  [class.done]="tc.status === 'done' || tc.status === 'success'"
-                 [class.staged]="tc.status === 'staged'">
-              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : (tc.status === 'staged' ? 'rate_review' : 'check_circle') }}</span>
+                 [class.staged]="tc.status === 'staged'"
+                 [class.error]="tc.status === 'error'">
+              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : (tc.status === 'staged' ? 'rate_review' : (tc.status === 'error' ? 'error' : 'check_circle')) }}</span>
               <span class="tool-name">{{ tc.summary || tc.name }}</span>
             </div>
           </div>

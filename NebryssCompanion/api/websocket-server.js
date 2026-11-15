@@ -1,6 +1,8 @@
 const http = require('http');
 const { WebSocketServer, WebSocket } = require('ws');
-const { createAgentSession } = require('./agy-bridge');
+const { createAgentSession } = process.env.AGENT_BACKEND === 'agy'
+  ? require('./agy-bridge')
+  : require('./colibri-bridge');
 
 function setupWebSocketServer(server) {
   // Main data-sync WebSocket server (existing)
@@ -276,7 +278,7 @@ function setupWebSocketServer(server) {
     // Send initial connection confirmation
     ws.send(JSON.stringify({
       type: 'connected',
-      message: 'AGY bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.',
+      message: `${process.env.AGENT_BACKEND === 'agy' ? 'AGY' : 'Colibri'} bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.`,
     }));
   });
 
