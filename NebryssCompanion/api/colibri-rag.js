@@ -164,7 +164,51 @@ function buildCampaignChunks(ctx, campaignId) {
   const chunks = [];
   const prefix = `camp_${campaignId}`;
 
-  const addSimpleEntities = (list, sourceType, label) => {
+  const weaponRuleMap = new Map();
+  if (Array.isArray(ctx.weaponRules)) {
+    for (const r of ctx.weaponRules) {
+      if (r && r.id !== undefined && r.id !== null) {
+        weaponRuleMap.set(Number(r.id), r);
+      }
+    }
+  }
+
+  const formatWeaponRulesDetails = (ent) => {
+    const entries = [];
+    const seen = new Set();
+    const collectRules = (rulesList, profileName) => {
+      if (!Array.isArray(rulesList)) return;
+      for (const sr of rulesList) {
+        if (!sr || sr.ruleId === undefined || sr.ruleId === null) continue;
+        const rid = Number(sr.ruleId);
+        if (isNaN(rid)) continue;
+        const modStr = sr.modValue !== undefined && sr.modValue !== null && sr.modValue !== '' ? String(sr.modValue) : '';
+        const dedupKey = `${rid}:${modStr}`;
+        if (seen.has(dedupKey)) continue;
+        seen.add(dedupKey);
+        const ruleDef = weaponRuleMap.get(rid);
+        const modLabel = modStr ? `, Mod Value: ${modStr}` : '';
+        const profileLabel = profileName ? ` [${profileName}]` : '';
+        if (ruleDef) {
+          entries.push(`- ${ruleDef.name} (Rule #${rid}${modLabel})${profileLabel}: ${ruleDef.effect || 'No description'}`);
+        } else {
+          entries.push(`- Rule #${rid}${modLabel}${profileLabel}`);
+        }
+      }
+    };
+
+    if (Array.isArray(ent.profiles)) {
+      for (const p of ent.profiles) {
+        if (p && typeof p === 'object') {
+          collectRules(p.specialRules, ent.profiles.length > 1 ? p.name : '');
+        }
+      }
+    }
+    collectRules(ent.specialRules, '');
+    return entries.length > 0 ? `\nSpecial Rules Details:\n${entries.join('\n')}` : '';
+  };
+
+  const addSimpleEntities = (list, sourceType, label, extraFormatter = null) => {
     if (!Array.isArray(list)) return;
     for (const ent of list) {
       if (!ent || typeof ent !== 'object') continue;
@@ -172,13 +216,14 @@ function buildCampaignChunks(ctx, campaignId) {
       const name = ent.name || ent.subject || ent.title || `#${entId}`;
       const body = compactObjectFields(ent, ['_id', '__v', 'image', 'imageUrl', 'portrait', 'mapImage']);
       if (!body) continue;
+      const extra = extraFormatter ? extraFormatter(ent) : '';
       chunks.push({
         id: `${prefix}_${sourceType}_${entId}`,
         sourceType,
         entityId: entId,
         entityName: String(name),
         title: `${label} #${entId}: ${name}`,
-        text: `${label} #${entId} (${name})\n${body}`
+        text: `${label} #${entId} (${name})\n${body}${extra}`
       });
     }
   };
@@ -190,7 +235,7 @@ function buildCampaignChunks(ctx, campaignId) {
   addSimpleEntities(ctx.bestiary, 'bestiary', 'Bestiary');
   addSimpleEntities(ctx.letters, 'letter', 'Letter');
   addSimpleEntities(ctx.items, 'item', 'Item');
-  addSimpleEntities(ctx.weapons, 'weapon', 'Weapon');
+  addSimpleEntities(ctx.weapons, 'weapon', 'Weapon', formatWeaponRulesDetails);
   addSimpleEntities(ctx.weaponRules, 'weaponrule', 'Weapon Rule');
   addSimpleEntities(ctx.alteredStates, 'alteredstate', 'Altered State');
   addSimpleEntities(ctx.afflictions, 'affliction', 'Affliction');

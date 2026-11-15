@@ -63,7 +63,7 @@ function extractStagedData(rawOutput) {
     if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
       return parsedOut;
     }
-  } catch (_) {}
+  } catch (_) { }
 
   // 3. Extract JSON substring between outermost braces { ... }
   const firstBrace = str.indexOf('{');
@@ -75,7 +75,7 @@ function extractStagedData(rawOutput) {
       if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
         return parsedOut;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // 4. Regex fallback extraction for large/truncated outputs
@@ -93,7 +93,7 @@ function extractStagedData(rawOutput) {
         payload: {}
       };
     }
-  } catch (_) {}
+  } catch (_) { }
 
   return null;
 }
@@ -181,7 +181,7 @@ function extractCommandsFromText(fullText, campaignId, onEvent) {
 
       try {
         if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-      } catch (_) {}
+      } catch (_) { }
 
       if (res.stdout) {
         const staged = handleToolOutputForStaging(res.stdout, onEvent);
@@ -376,7 +376,7 @@ function tryFallbackAutoStage(fullText, campaignId, onEvent, currentTurnUserProm
   }
 
   const isSessionPlan = (sessionId !== null && (hasPlanStructure || hasSessionHeader || hasStagingKeywords || isConclusion)) ||
-                        (hasSessionHeader && hasPlanStructure);
+    (hasSessionHeader && hasPlanStructure);
 
   if (!isSessionPlan) {
     console.log('[AGY Bridge] Fallback auto-stager skipped: text does not match session plan structure.');
@@ -436,7 +436,7 @@ function tryFallbackAutoStage(fullText, campaignId, onEvent, currentTurnUserProm
   } finally {
     try {
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-    } catch (_) {}
+    } catch (_) { }
   }
 }
 
@@ -514,7 +514,8 @@ function createAgentSession({ onEvent, onError, onClose, model }) {
       `16. MANDATORY DATABASE FETCH BEFORE PLANNING OR CONCLUDING SESSIONS (ANTI-HALLUCINATION PROTOCOL): Before pitching, drafting, planning, or concluding any campaign session, you MUST FIRST execute \`node scripts/campaign-session-tool.js get-context ${targetCamp}\` and \`node scripts/campaign-session-tool.js get-latest ${targetCamp} --clean\` using run_command to inspect current active player stats, current location, previous session outcome, known NPCs, and open narrative threads. You MUST NEVER draft session ideas or conclusions out of thin air without querying the live database state first.`,
       `17. STRICT PROHIBITION OF AD-HOC SCRIPTS, DIRECT DB QUERIES, AND FILE READING: You are STRICTLY FORBIDDEN from reading, viewing, inspecting, searching, or querying ANY files on the filesystem (e.g. JSON files, source files, data files, assets) directly or via CLI commands/scripts (such as \`cat\`, \`type\`, \`Get-Content\`, \`fs.readFile\`, \`Get-ChildItem\`, \`dir\`, \`grep\`). You are STRICTLY FORBIDDEN from running ad-hoc scripts, terminal commands, or one-liners (such as \`node -e\`, inline \`MongoClient\` scripts, raw database connection strings, or filesystem traversal commands). When using \`run_command\`, the CommandLine MUST strictly begin with \`node scripts/campaign-session-tool.js <read-only-command>\`. ALL campaign data and entities MUST be accessed strictly via the database companion tool.`,
       `18. FULL SESSION CONTENT PRESERVATION & NO CONCLUSION MISROUTING: When proposing a save or update to a session plan, ALWAYS generate \`node scripts/campaign-session-tool.js save --campaignId=${targetCamp} --sessionId=<id> --content="..."\`. You MUST pass the complete, full detailed markdown text of the session plan in \`--content\`. NEVER shorten, summarize, or truncate the session plan into a brief paragraph when executing the save command. The \`finalize\` command and \`conclussion\` field are STRICTLY RESERVED for debriefing what happened AFTER a session is played; NEVER save a session plan into \`conclussion\`.`,
-      `19. CONVERSATIONAL REVIEW & COMMAND GENERATION PROTOCOL (DRAFT FIRST, CONFIRM, THEN STAGE): When planning a session, drafting an entity, revising a plan, or preparing a conclusion: First query context using read-only commands (\`get-context\`, \`get-latest\`, \`get-entity\`, \`list-entities\`). Pitch ideas or draft the narrative plan / entity in chat using natural, clean entity names. Ask the user for their review and feedback. When the user approves or asks to save/finalize, output the single-line CLI command string in a bash code block with tagged IDs. DO NOT execute mutation commands via run_command.`
+      `19. CONVERSATIONAL REVIEW & COMMAND GENERATION PROTOCOL (DRAFT FIRST, CONFIRM, THEN STAGE): When planning a session, drafting an entity, revising a plan, or preparing a conclusion: First query context using read-only commands (\`get-context\`, \`get-latest\`, \`get-entity\`, \`list-entities\`). Pitch ideas or draft the narrative plan / entity in chat using natural, clean entity names. Ask the user for their review and feedback. When the user approves or asks to save/finalize, output the single-line CLI command string in a bash code block with tagged IDs. DO NOT execute mutation commands via run_command.`,
+      `20. WEAPON SPECIAL RULES DESCRIPTIONS: Whenever you describe or present a weapon (including its profiles), ALWAYS resolve and include the full name and effect/description of every special rule it has (never output bare rule IDs like "Rule 58"). If any special rule description is missing from your context, fetch it via \`node scripts/campaign-session-tool.js get-entity weapon <idOrName> --campaignId=${targetCamp}\` or \`get-entity weaponrule <id> --campaignId=${targetCamp}\` before answering.`
     ].filter(Boolean).join('\n');
   }
 
@@ -803,7 +804,7 @@ function createAgentSession({ onEvent, onError, onClose, model }) {
             const parsedErr = JSON.parse(agyErrMatch[1]);
             lastStderrError = parsedErr.short_error || parsedErr.message || errMsg;
             return;
-          } catch (_) {}
+          } catch (_) { }
         }
         if (!lastStderrError) {
           lastStderrError = errMsg.split(/\r?\n/)[0];
@@ -926,7 +927,7 @@ function listAgyModels() {
     });
     let stdout = '';
     const timer = setTimeout(() => {
-      try { child.kill('SIGTERM'); } catch (_) {}
+      try { child.kill('SIGTERM'); } catch (_) { }
       resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
     }, 8000);
 
