@@ -26,6 +26,42 @@
         </button>
       </div>
 
+      <!-- AI Engine Toggle -->
+      <div class="context-section">
+        <div class="context-label">AI Engine</div>
+        <div class="backend-toggle" role="group" aria-label="AI Engine">
+          <button type="button"
+                  class="backend-toggle-btn"
+                  [class.active]="agentBackend === 'colibri'"
+                  [disabled]="isAgentTyping"
+                  (click)="switchBackend('colibri')">
+            <span class="material-icons">memory</span>
+            <span>Colibri</span>
+          </button>
+          <button type="button"
+                  class="backend-toggle-btn"
+                  [class.active]="agentBackend === 'agy'"
+                  [disabled]="isAgentTyping"
+                  (click)="switchBackend('agy')">
+            <span class="material-icons">cloud</span>
+            <span>AGY</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- AGY Model Selector (visible when AGY engine is selected) -->
+      <div class="context-section" *ngIf="agentBackend === 'agy'">
+        <div class="context-label">AGY Model</div>
+        <select class="model-select"
+                aria-label="AGY Model"
+                [ngModel]="selectedAgyModel"
+                (ngModelChange)="onAgyModelChange($event)"
+                [disabled]="isAgentTyping">
+          <option value="">Default (AGY CLI)</option>
+          <option *ngFor="let m of agyModels" [value]="m.id">{{ m.label }}</option>
+        </select>
+      </div>
+
       <!-- Active Campaign -->
       <div class="context-section">
         <div class="context-label">Campaign</div>
@@ -110,7 +146,7 @@
       <div class="empty-state" *ngIf="messages.length === 0">
         <span class="material-icons empty-icon">smart_toy</span>
         <h2>AI Session Manager</h2>
-        <p>Chat with the Colibri AI agent to plan, create, and conclude campaign sessions.</p>
+        <p>Chat with the {{ agentBackend === 'agy' ? 'AGY' : 'Colibri AI' }} agent to plan, create, and conclude campaign sessions.</p>
         <p class="empty-hint">Use the quick actions on the right, or type a message below.</p>
       </div>
 

@@ -469,7 +469,7 @@ function handleToolOutputForStaging(rawOutput, onEvent) {
  * @param {function} options.onClose  — Called when the process exits
  * @returns {AgentSession}
  */
-function createAgentSession({ onEvent, onError, onClose }) {
+function createAgentSession({ onEvent, onError, onClose, model }) {
   let conversationId = null;
   let activeProcess = null;
   let isProcessing = false;
@@ -477,11 +477,13 @@ function createAgentSession({ onEvent, onError, onClose }) {
   let isDestroyed = false;
   let streamedTokenCount = 0;
   let activeCampaignId = 1;
+  let activeModel = typeof model === 'string' ? model.trim() : '';
   let streamedResponseText = '';
   let pendingCommandsCount = 0;
   let currentTurnUserPrompt = '';
   let executedToolsInTurn = [];
   let hasEmittedResponseEnd = false;
+  let lastStderrError = '';
 
   /**
    * Build the system preamble that primes the agent for session management.
@@ -529,11 +531,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '--add-dir', WORKSPACE_DIR,
     ];
 
+    if (activeModel) {
+      args.push('--model', activeModel);
+    }
+
     if (conversationId) {
       args.push('--conversation', conversationId);
     }
 
-    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'} (active campaign: ${activeCampaignId})`);
+    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'} (active campaign: ${activeCampaignId}, model: ${activeModel || 'default'})`);
 
     return spawn(AGY_CMD, args, {
       cwd: WORKSPACE_DIR,
@@ -703,6 +709,10 @@ function createAgentSession({ onEvent, onError, onClose }) {
           }
         }
 
+        if (res?.status === 'ERROR' && lastStderrError) {
+          onError(lastStderrError);
+        }
+
         onEvent({
           type: 'response_end',
           conversationId: res?.conversation_id || conversationId,
@@ -775,6 +785,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
       prompt = campHeader + text;
     }
 
+    lastStderrError = '';
     const proc = spawnAgy(prompt);
     activeProcess = proc;
 
@@ -786,6 +797,17 @@ function createAgentSession({ onEvent, onError, onClose }) {
       const errMsg = data.toString('utf8').trim();
       if (errMsg) {
         console.warn(`[AGY Bridge STDERR]: ${errMsg}`);
+        const agyErrMatch = errMsg.match(/AGY_ERROR:\s*(\{.*\})/);
+        if (agyErrMatch) {
+          try {
+            const parsedErr = JSON.parse(agyErrMatch[1]);
+            lastStderrError = parsedErr.short_error || parsedErr.message || errMsg;
+            return;
+          } catch (_) {}
+        }
+        if (!lastStderrError) {
+          lastStderrError = errMsg.split(/\r?\n/)[0];
+        }
       }
     });
 
@@ -858,6 +880,11 @@ function createAgentSession({ onEvent, onError, onClose }) {
     destroy,
     getConversationId: () => conversationId,
     getActiveCampaignId: () => activeCampaignId,
+    getModel: () => activeModel,
+    setModel: (newModel) => {
+      activeModel = typeof newModel === 'string' ? newModel.trim() : '';
+      console.log(`[AGY Bridge] Model updated to: ${activeModel || 'default'}`);
+    },
     isProcessing: () => isProcessing,
     setActiveCampaign: (newId) => {
       activeCampaignId = Number(newId) || activeCampaignId;
@@ -866,4 +893,67 @@ function createAgentSession({ onEvent, onError, onClose }) {
   };
 }
 
-module.exports = { createAgentSession };
+const FALLBACK_AGY_MODELS = [
+  { id: 'gemini-4-argon-high', label: 'Gemini 4 Argon (High)' },
+  { id: 'gemini-4-argon-medium', label: 'Gemini 4 Argon (Medium)' },
+  { id: 'gemini-4-argon-low', label: 'Gemini 4 Argon (Low)' },
+  { id: 'gemini-4-hydrogen-high', label: 'Gemini 4 Hydrogen (High)' },
+  { id: 'gemini-4-hydrogen-xhigh', label: 'Gemini 4 Hydrogen (XHigh)' },
+  { id: 'gemini-4-hydrogen-medium', label: 'Gemini 4 Hydrogen (Medium)' },
+  { id: 'gemini-4-hydrogen-low', label: 'Gemini 4 Hydrogen (Low)' },
+  { id: 'gemini-3.8-flash-high', label: 'Gemini 3.8 Flash (High)' },
+  { id: 'gemini-3.8-flash-medium', label: 'Gemini 3.8 Flash (Medium)' },
+  { id: 'gemini-3.8-flash-low', label: 'Gemini 3.8 Flash (Low)' },
+  { id: 'claude-opus-5-5-high', label: 'Claude Opus 5.5 (High)' },
+  { id: 'claude-opus-5-5-medium', label: 'Claude Opus 5.5 (Medium)' },
+  { id: 'claude-sonnet-5-5-high', label: 'Claude Sonnet 5.5 (High)' },
+  { id: 'claude-sonnet-5-5-medium', label: 'Claude Sonnet 5.5 (Medium)' },
+  { id: 'gpt-oss-120b-medium', label: 'GPT-OSS 120B (Medium)' }
+];
+
+let cachedAgyModels = null;
+let cachedAgyModelsAt = 0;
+
+function listAgyModels() {
+  if (cachedAgyModels && Date.now() - cachedAgyModelsAt < 5 * 60 * 1000) {
+    return Promise.resolve(cachedAgyModels);
+  }
+  return new Promise((resolve) => {
+    const child = spawn(AGY_CMD, ['models'], {
+      cwd: WORKSPACE_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false
+    });
+    let stdout = '';
+    const timer = setTimeout(() => {
+      try { child.kill('SIGTERM'); } catch (_) {}
+      resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+    }, 8000);
+
+    child.stdout.on('data', (d) => { stdout += d.toString('utf8'); });
+    child.on('error', () => {
+      clearTimeout(timer);
+      resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+    });
+    child.on('close', () => {
+      clearTimeout(timer);
+      const parsed = stdout
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line && line.includes('\t'))
+        .map(line => {
+          const [id, ...rest] = line.split('\t');
+          return { id: id.trim(), label: rest.join(' ').trim() || id.trim() };
+        });
+      if (parsed.length > 0) {
+        cachedAgyModels = parsed;
+        cachedAgyModelsAt = Date.now();
+        resolve(parsed);
+      } else {
+        resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+      }
+    });
+  });
+}
+
+module.exports = { createAgentSession, listAgyModels };

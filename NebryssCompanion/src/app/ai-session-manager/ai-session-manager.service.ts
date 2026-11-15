@@ -4,6 +4,12 @@ import { AuthService } from '../auth.service';
 import { AdminService } from '../admin.service';
 
 export type ConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'reconnecting';
+export type AgentBackend = 'colibri' | 'agy';
+
+export interface AgyModelOption {
+  id: string;
+  label: string;
+}
 
 export interface PendingCommand {
   id: string;
@@ -50,6 +56,9 @@ export class AiSessionManagerService implements OnDestroy {
   private destroyed = false;
 
   private connectionStatusSubject = new BehaviorSubject<ConnectionStatus>('disconnected');
+  private agentBackendSubject = new BehaviorSubject<AgentBackend>(this.loadSavedBackend());
+  private agyModelsSubject = new BehaviorSubject<AgyModelOption[]>([]);
+  private agyModelSubject = new BehaviorSubject<string>(this.loadSavedAgyModel());
   private messagesSubject = new BehaviorSubject<ChatMessage[]>([]);
   private isAgentTypingSubject = new BehaviorSubject<boolean>(false);
   private currentStatusSubject = new BehaviorSubject<string | null>(null);
@@ -63,6 +72,9 @@ export class AiSessionManagerService implements OnDestroy {
   private conversationId: string | null = null;
 
   connectionStatus$: Observable<ConnectionStatus> = this.connectionStatusSubject.asObservable();
+  agentBackend$: Observable<AgentBackend> = this.agentBackendSubject.asObservable();
+  agyModels$: Observable<AgyModelOption[]> = this.agyModelsSubject.asObservable();
+  agyModel$: Observable<string> = this.agyModelSubject.asObservable();
   messages$: Observable<ChatMessage[]> = this.messagesSubject.asObservable();
   isAgentTyping$: Observable<boolean> = this.isAgentTypingSubject.asObservable();
   currentStatus$: Observable<string | null> = this.currentStatusSubject.asObservable();
@@ -99,6 +111,11 @@ export class AiSessionManagerService implements OnDestroy {
     if (token) {
       const sep = wsUrl.includes('?') ? '&' : '?';
       wsUrl += `${sep}token=${encodeURIComponent(token)}`;
+    }
+    const backendSep = wsUrl.includes('?') ? '&' : '?';
+    wsUrl += `${backendSep}backend=${encodeURIComponent(this.agentBackendSubject.value)}`;
+    if (this.agyModelSubject.value) {
+      wsUrl += `&model=${encodeURIComponent(this.agyModelSubject.value)}`;
     }
 
     try {
@@ -202,6 +219,53 @@ export class AiSessionManagerService implements OnDestroy {
     console.log(`[AI Session] Campaign switched to ID: ${campaignId}`);
   }
 
+  setAgentBackend(backend: AgentBackend): void {
+    if (this.agentBackendSubject.value === backend) return;
+    this.agentBackendSubject.next(backend);
+    try {
+      localStorage.setItem('nebryss_ai_backend', backend);
+    } catch (_) {}
+
+    this.conversationId = null;
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'set_backend', backend }));
+    }
+    console.log(`[AI Session] Backend switched to: ${backend}`);
+  }
+
+  private loadSavedBackend(): AgentBackend {
+    try {
+      const saved = localStorage.getItem('nebryss_ai_backend');
+      if (saved === 'agy' || saved === 'colibri') return saved;
+    } catch (_) {}
+    return 'colibri';
+  }
+
+  setAgyModel(modelId: string): void {
+    const clean = (modelId || '').trim();
+    this.agyModelSubject.next(clean);
+    try {
+      localStorage.setItem('nebryss_agy_model', clean);
+    } catch (_) {}
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'set_model', model: clean }));
+    }
+    console.log(`[AI Session] AGY model set to: ${clean || 'default'}`);
+  }
+
+  requestAgyModels(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: 'get_agy_models' }));
+  }
+
+  private loadSavedAgyModel(): string {
+    try {
+      return localStorage.getItem('nebryss_agy_model') || '';
+    } catch (_) {
+      return '';
+    }
+  }
+
   clearHistory(): void {
     this.messagesSubject.next([]);
     this.conversationId = null;
@@ -218,6 +282,31 @@ export class AiSessionManagerService implements OnDestroy {
 
   private handleEvent(event: AgentEvent): void {
     switch (event.type) {
+      case 'connected':
+      case 'backend_changed':
+        if (event['backend'] === 'agy' || event['backend'] === 'colibri') {
+          this.agentBackendSubject.next(event['backend']);
+          if (event['backend'] === 'agy' && this.agyModelsSubject.value.length === 0) {
+            this.requestAgyModels();
+          }
+        }
+        if (typeof event['model'] === 'string') {
+          this.agyModelSubject.next(event['model']);
+        }
+        break;
+
+      case 'agy_models':
+        if (Array.isArray(event['models'])) {
+          this.agyModelsSubject.next(event['models']);
+        }
+        break;
+
+      case 'model_changed':
+        if (typeof event['model'] === 'string') {
+          this.agyModelSubject.next(event['model']);
+        }
+        break;
+
       case 'init':
         if (event['conversationId']) {
           this.conversationId = event['conversationId'];

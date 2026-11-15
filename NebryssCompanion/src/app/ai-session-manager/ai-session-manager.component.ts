@@ -15,6 +15,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import {
+  AgentBackend,
+  AgyModelOption,
   AiSessionManagerService,
   ChatMessage,
   ConnectionStatus,
@@ -56,6 +58,9 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   isAdmin = false;
   messages: ChatMessage[] = [];
   connectionStatus: ConnectionStatus = 'disconnected';
+  agentBackend: AgentBackend = 'colibri';
+  agyModels: AgyModelOption[] = [];
+  selectedAgyModel = '';
   isAgentTyping = false;
   inputText = '';
   sidebarCollapsed = false;
@@ -120,6 +125,26 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(status => {
         this.connectionStatus = status;
+      });
+
+    // Subscribe to active AI backend (Colibri / AGY)
+    this.aiService.agentBackend$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(backend => {
+        this.agentBackend = backend;
+      });
+
+    // Subscribe to AGY model list and selected model
+    this.aiService.agyModels$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(models => {
+        this.agyModels = models;
+      });
+
+    this.aiService.agyModel$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(model => {
+        this.selectedAgyModel = model;
       });
 
     // Subscribe to typing state
@@ -240,6 +265,28 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   reconnect(): void {
     this.aiService.connect();
+  }
+
+  switchBackend(backend: AgentBackend): void {
+    if (this.isAgentTyping || this.agentBackend === backend) return;
+    this.aiService.setAgentBackend(backend);
+    this.conversationId = null;
+    this.toastService.show(
+      `Switched AI Engine to ${backend === 'agy' ? 'AGY' : 'Colibri (Local)'}`,
+      'info',
+      3000
+    );
+  }
+
+  onAgyModelChange(modelId: string): void {
+    if (this.isAgentTyping) return;
+    this.aiService.setAgyModel(modelId);
+    const matched = this.agyModels.find(m => m.id === modelId);
+    this.toastService.show(
+      `AGY model set to ${matched ? matched.label : (modelId || 'Default')}`,
+      'info',
+      2500
+    );
   }
 
   // ─── Input Handling ───────────────────────────────────────────

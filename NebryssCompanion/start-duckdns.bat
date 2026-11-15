@@ -69,6 +69,19 @@ echo Running Command  : npm run start:duckdns
 echo ====================================================
 echo.
 
+:: Start Colibri in a separate independent window if port 8000 is not already listening
+netstat -ano | findstr ":8000 " | findstr "LISTENING" >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    if exist "C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd" (
+        echo Starting Colibri server in a separate window...
+        start "Colibri Server" /D "C:\Users\Jean\Desktop\colibri-2.1.0" cmd /k "coli.cmd serve --model .\colibri-models\qwen36-35b\ --ctx 10000 --vram 14 --ngen 4096"
+    ) else (
+        echo [WARNING] Colibri not found at C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd
+    )
+) else (
+    echo Colibri server is already running on port 8000.
+)
+
 call npm run start:duckdns
 
 if %ERRORLEVEL% neq 0 (

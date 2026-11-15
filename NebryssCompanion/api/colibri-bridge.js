@@ -75,7 +75,7 @@ function runToolAsync(args, campaignId) {
     const timer = setTimeout(() => {
       if (!settled) {
         settled = true;
-        try { child.kill('SIGTERM'); } catch (_) { }
+        try { child.kill('SIGTERM'); } catch (_) {}
         reject(new Error('Companion tool timed out after 20000ms'));
       }
     }, 20000);
@@ -168,7 +168,7 @@ function extractStagedData(rawOutput) {
     if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
       return parsedOut;
     }
-  } catch (_) { }
+  } catch (_) {}
 
   const firstBrace = str.indexOf('{');
   const lastBrace = str.lastIndexOf('}');
@@ -178,7 +178,7 @@ function extractStagedData(rawOutput) {
       if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
         return parsedOut;
       }
-    } catch (_) { }
+    } catch (_) {}
   }
 
   return null;
@@ -236,7 +236,7 @@ async function stageMutationCommand(cmdName, params, campaignId, onEvent) {
   } finally {
     try {
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-    } catch (_) { }
+    } catch (_) {}
   }
 }
 
@@ -851,7 +851,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(base, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) { }
+          } catch (_) {}
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -873,7 +873,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               }));
               out = JSON.stringify(compact, null, 2);
             }
-          } catch (_) { }
+          } catch (_) {}
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -889,7 +889,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(parsed, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) { }
+          } catch (_) {}
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -919,7 +919,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(parsed, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) { }
+          } catch (_) {}
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -1164,7 +1164,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
             let parsedArgs = {};
             try {
               parsedArgs = JSON.parse(tc.function.arguments || '{}');
-            } catch (_) { }
+            } catch (_) {}
 
             const summary = formatToolSummary(toolName, parsedArgs);
             executedToolsInTurn.push({ toolName, commandLine: parsedArgs.commandLine || '' });
@@ -1268,7 +1268,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
     messageQueue = [];
     cancel();
     if (onClose) {
-      try { onClose(); } catch (_) { }
+      try { onClose(); } catch (_) {}
     }
   }
 
