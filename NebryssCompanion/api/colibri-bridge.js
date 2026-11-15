@@ -8,13 +8,15 @@ const { spawn } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const { createColibriRag } = require('./colibri-rag');
 
 const WORKSPACE_DIR = path.resolve(__dirname, '../..');
 const COLIBRI_BASE_URL = (process.env.COLIBRI_BASE_URL || 'http://127.0.0.1:8000/v1').replace(/\/+$/, '');
 const COLIBRI_MODEL = process.env.COLIBRI_MODEL || 'qwen3.6-colibri';
 const COLIBRI_API_KEY = process.env.COLIBRI_API_KEY || '';
-const COLIBRI_MAX_CONTEXT_TOKENS = Number(process.env.COLIBRI_MAX_CONTEXT_TOKENS) || 8192;
+const COLIBRI_MAX_CONTEXT_TOKENS = Number(process.env.COLIBRI_MAX_CONTEXT_TOKENS) || 10000;
 const COLIBRI_INPUT_TOKEN_BUDGET = Math.max(2048, COLIBRI_MAX_CONTEXT_TOKENS - 2200);
+const COLIBRI_RAG_TOKEN_BUDGET = Number(process.env.COLIBRI_RAG_TOKEN_BUDGET) || 3200;
 const COLIBRI_MAX_TOOL_ITERATIONS = 8;
 const MAX_TOOL_OUTPUT_CHARS = 6500;
 
@@ -75,7 +77,7 @@ function runToolAsync(args, campaignId) {
     const timer = setTimeout(() => {
       if (!settled) {
         settled = true;
-        try { child.kill('SIGTERM'); } catch (_) {}
+        try { child.kill('SIGTERM'); } catch (_) { }
         reject(new Error('Companion tool timed out after 20000ms'));
       }
     }, 20000);
@@ -107,6 +109,14 @@ function truncateText(text, maxChars = MAX_TOOL_OUTPUT_CHARS) {
   if (!text || text.length <= maxChars) return text;
   return text.slice(0, maxChars) + `\n... [truncated ${text.length - maxChars} chars; use get_entity or list_entities with search/limit for details]`;
 }
+
+const ragEngine = createColibriRag({
+  workspaceDir: WORKSPACE_DIR,
+  colibriBaseUrl: COLIBRI_BASE_URL,
+  colibriModel: COLIBRI_MODEL,
+  colibriApiKey: COLIBRI_API_KEY,
+  runToolAsync
+});
 
 function extractTitleFromMarkdown(md) {
   if (!md || typeof md !== 'string') return '';
@@ -168,7 +178,7 @@ function extractStagedData(rawOutput) {
     if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
       return parsedOut;
     }
-  } catch (_) {}
+  } catch (_) { }
 
   const firstBrace = str.indexOf('{');
   const lastBrace = str.lastIndexOf('}');
@@ -178,7 +188,7 @@ function extractStagedData(rawOutput) {
       if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
         return parsedOut;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   return null;
@@ -232,11 +242,12 @@ async function stageMutationCommand(cmdName, params, campaignId, onEvent) {
     if (!stagedData) {
       throw new Error('Tool did not return a staging payload');
     }
+    ragEngine.invalidateCampaignIndex(payload.campaignId);
     return stagedData;
   } finally {
     try {
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-    } catch (_) {}
+    } catch (_) { }
   }
 }
 
@@ -548,6 +559,22 @@ const AGENT_TOOLS = [
   {
     type: 'function',
     function: {
+      name: 'rag_search',
+      description: 'Semantic and keyword RAG search across all active campaign entities, sessions, rules, and Nebryss lore. Use this when you need specific details not already in the retrieved context.',
+      parameters: {
+        type: 'object',
+        properties: {
+          query: { type: 'string', description: 'Search query (names, lore topics, mechanics, session events, etc.)' },
+          topK: { type: 'number', description: 'Number of chunks to return (default 8)' },
+          campaignId: { type: 'number', description: 'Campaign ID (defaults to active campaign)' }
+        },
+        required: ['query']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
       name: 'run_companion_tool',
       description: 'Run a read-only campaign-session-tool.js subcommand (help, clean-text, list-weapons, etc.). Mutations are blocked.',
       parameters: {
@@ -582,6 +609,8 @@ function formatToolSummary(toolName, args) {
       return `Auto-tagging entity references`;
     case 'stage_command':
       return `Staging ${args.command || 'mutation'} for GM approval`;
+    case 'rag_search':
+      return `Searching campaign & lore RAG for "${args.query || ''}"`;
     case 'run_companion_tool':
       return `Running ${args.commandLine || 'companion tool'}`;
     default:
@@ -851,7 +880,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(base, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) {}
+          } catch (_) { }
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -873,7 +902,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               }));
               out = JSON.stringify(compact, null, 2);
             }
-          } catch (_) {}
+          } catch (_) { }
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -889,7 +918,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(parsed, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) {}
+          } catch (_) { }
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -919,7 +948,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
               const enriched = await enrichWithRulesAndStates(parsed, campId);
               out = JSON.stringify(enriched, null, 2);
             }
-          } catch (_) {}
+          } catch (_) { }
           return { output: truncateText(out), status: 'done', staged: false };
         }
 
@@ -962,6 +991,34 @@ function createAgentSession({ onEvent, onError, onClose }) {
           };
         }
 
+        case 'rag_search': {
+          const query = String(args.query || '').trim();
+          if (!query) {
+            return { output: JSON.stringify({ error: 'query is required.' }), status: 'error', staged: false };
+          }
+          const ragRes = await ragEngine.retrieve(query, campId, {
+            topK: args.topK ? Math.min(15, Math.max(1, Number(args.topK))) : 8,
+            tokenBudget: COLIBRI_RAG_TOKEN_BUDGET,
+            rerank: true,
+            abortSignal: activeAbortController?.signal
+          });
+          const formatted = ragRes.chunks.map(c => ({
+            id: c.id,
+            sourceType: c.sourceType,
+            title: c.title,
+            text: c.text
+          }));
+          return {
+            output: truncateText(JSON.stringify({
+              totalIndexed: ragRes.totalIndexed,
+              returned: formatted.length,
+              results: formatted
+            }, null, 2)),
+            status: 'done',
+            staged: false
+          };
+        }
+
         case 'run_companion_tool': {
           const tokens = splitShellArgs(String(args.commandLine || '').trim());
           if (tokens.length === 0) {
@@ -994,13 +1051,29 @@ function createAgentSession({ onEvent, onError, onClose }) {
   /**
    * Calls Colibri /v1/chat/completions with SSE streaming and parses text + tool_calls.
    */
-  async function streamColibriCompletion(messages, abortSignal) {
+  async function streamColibriCompletion(messages, abortSignal, ragContextBlock = '') {
     const headers = { 'Content-Type': 'application/json' };
     if (COLIBRI_API_KEY) {
       headers['Authorization'] = `Bearer ${COLIBRI_API_KEY}`;
     }
 
-    const trimmedMessages = trimMessagesToBudget(messages);
+    let messagesForModel = messages;
+    if (ragContextBlock) {
+      messagesForModel = [...messages];
+      if (messagesForModel[0]?.role === 'system') {
+        messagesForModel[0] = {
+          ...messagesForModel[0],
+          content: `${messagesForModel[0].content}\n\n${ragContextBlock}`
+        };
+      } else {
+        messagesForModel.unshift({
+          role: 'system',
+          content: ragContextBlock
+        });
+      }
+    }
+
+    const trimmedMessages = trimMessagesToBudget(messagesForModel);
 
     const response = await fetch(`${COLIBRI_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -1146,10 +1219,43 @@ function createAgentSession({ onEvent, onError, onClose }) {
         content: `[Active Campaign ID: ${activeCampaignId}]\n${text}`
       });
 
+      let ragContextBlock = '';
+      try {
+        onEvent({
+          type: 'task_update',
+          summary: 'Retrieving & reranking campaign context...',
+          status: 'thinking'
+        });
+
+        // Enrich short follow-up queries with the previous user message for better recall
+        let ragQuery = text;
+        if (text.trim().length < 45) {
+          const prevUserMsgs = conversationHistory.filter(m => m.role === 'user');
+          if (prevUserMsgs.length >= 2) {
+            ragQuery = `${prevUserMsgs[prevUserMsgs.length - 2].content}\n${text}`;
+          }
+        }
+
+        const ragResult = await ragEngine.retrieve(ragQuery, activeCampaignId, {
+          tokenBudget: COLIBRI_RAG_TOKEN_BUDGET,
+          rerank: true,
+          abortSignal: activeAbortController.signal
+        });
+
+        if (ragResult.chunks.length > 0) {
+          ragContextBlock = ragEngine.formatContextBlock(ragResult.chunks);
+          console.log(`[Colibri RAG] Injected ${ragResult.chunks.length}/${ragResult.totalIndexed} chunks (~${ragResult.usedTokens} tokens, reranked=${ragResult.reranked}, embeddings=${ragResult.embeddingsUsed})`);
+        }
+      } catch (ragErr) {
+        if (ragErr.name !== 'AbortError') {
+          console.warn('[Colibri RAG] Retrieval failed (continuing without RAG):', ragErr.message);
+        }
+      }
+
       for (let iter = 0; iter < COLIBRI_MAX_TOOL_ITERATIONS; iter++) {
         if (isDestroyed || activeAbortController.signal.aborted) break;
 
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal);
+        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, ragContextBlock);
         if (result.usage) lastUsage = result.usage;
 
         if (result.toolCalls.length > 0) {
@@ -1164,7 +1270,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
             let parsedArgs = {};
             try {
               parsedArgs = JSON.parse(tc.function.arguments || '{}');
-            } catch (_) {}
+            } catch (_) { }
 
             const summary = formatToolSummary(toolName, parsedArgs);
             executedToolsInTurn.push({ toolName, commandLine: parsedArgs.commandLine || '' });
@@ -1268,7 +1374,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
     messageQueue = [];
     cancel();
     if (onClose) {
-      try { onClose(); } catch (_) {}
+      try { onClose(); } catch (_) { }
     }
   }
 
