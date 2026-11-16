@@ -74,7 +74,9 @@ netstat -ano | findstr ":8000 " | findstr "LISTENING" >nul 2>&1
 if %ERRORLEVEL% neq 0 (
     if exist "C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd" (
         echo Starting Colibri server in a separate window...
-        start "Colibri Server" /D "C:\Users\Jean\Desktop\colibri-2.1.0" cmd /k "coli.cmd serve --model .\colibri-models\qwen36-35b\ --ctx 10000 --vram 14 --ngen 4096"
+        :: COLI_PARK=0: the newest conversation always keeps the KV cache (no parking of an older, longer one)
+        :: --cap 160: experts cached in RAM per layer, keeps Colibri at about 15 GB of RAM
+        start "Colibri Server" /D "C:\Users\Jean\Desktop\colibri-2.1.0" cmd /k "set "COLI_PARK=0" && coli.cmd serve --model .\colibri-models\qwen36-35b\ --ctx 32000 --vram 14 --ngen 8000 --cap 160"
     ) else (
         echo [WARNING] Colibri not found at C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd
     )

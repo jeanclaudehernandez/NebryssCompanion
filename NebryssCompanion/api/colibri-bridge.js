@@ -14,11 +14,22 @@ const WORKSPACE_DIR = path.resolve(__dirname, '../..');
 const COLIBRI_BASE_URL = (process.env.COLIBRI_BASE_URL || 'http://127.0.0.1:8000/v1').replace(/\/+$/, '');
 const COLIBRI_MODEL = process.env.COLIBRI_MODEL || 'qwen3.6-colibri';
 const COLIBRI_API_KEY = process.env.COLIBRI_API_KEY || '';
-const COLIBRI_MAX_CONTEXT_TOKENS = Number(process.env.COLIBRI_MAX_CONTEXT_TOKENS) || 10000;
+// Prompt budget. `coli serve --ctx 32000 --ngen 8000` leaves ~24k tokens for the prompt.
+const COLIBRI_MAX_CONTEXT_TOKENS = Number(process.env.COLIBRI_MAX_CONTEXT_TOKENS) || 24000;
+// When history overflows, trim it down to this fraction of the budget in one go, so the
+// following turns keep extending the same prefix (and reuse the engine's KV cache) instead
+// of shifting the window by one turn on every request.
+const COLIBRI_TRIM_TARGET_RATIO = 0.6;
 const COLIBRI_INPUT_TOKEN_BUDGET = Math.max(2048, COLIBRI_MAX_CONTEXT_TOKENS - 2200);
-const COLIBRI_RAG_TOKEN_BUDGET = Number(process.env.COLIBRI_RAG_TOKEN_BUDGET) || 3200;
+// Every prompt token costs prefill time on the local engine (~13 ms/token when experts
+// spill out of VRAM), so keep the injected RAG block small by default.
+const COLIBRI_RAG_TOKEN_BUDGET = Number(process.env.COLIBRI_RAG_TOKEN_BUDGET) || 1200;
+// The LLM reranker is a separate full-prefill request that also evicts the conversation's
+// KV prefix on a single-slot server, so it is opt-in (COLIBRI_RAG_RERANK=true).
+const COLIBRI_RAG_RERANK = process.env.COLIBRI_RAG_RERANK === 'true';
 const COLIBRI_MAX_TOOL_ITERATIONS = 8;
 const MAX_TOOL_OUTPUT_CHARS = 3500;
+const COLIBRI_SUMMARY_MAX_CHARS = 6000;
 const CONTEXT_CACHE_TTL_MS = 60 * 1000;
 const campaignContextCache = new Map(); // campaignId -> { fetchedAt, data }
 let companionToolModule = null;
@@ -228,6 +239,105 @@ async function runToolAsync(args, campaignId) {
 function truncateText(text, maxChars = MAX_TOOL_OUTPUT_CHARS) {
   if (!text || text.length <= maxChars) return text;
   return text.slice(0, maxChars) + `\n... [truncated ${text.length - maxChars} chars; use get_entity or list_entities with search/limit for details]`;
+}
+
+// Attached reference sections, in the order they are dropped when a result is too long.
+const RELATED_SECTIONS = [
+  ['_relatedWeapons', 'weapons'],
+  ['_relatedAlteredStates', 'altered states'],
+  ['_relatedWeaponRules', 'weapon rules']
+];
+
+/** Removes Mongo bookkeeping fields (updates strip `_id` server-side anyway). */
+function stripDbNoise(value) {
+  if (Array.isArray(value)) return value.map(stripDbNoise);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [k, v] of Object.entries(value)) {
+      if (k === '_id' || k === '__v') continue;
+      out[k] = stripDbNoise(v);
+    }
+    return out;
+  }
+  return value;
+}
+
+/** Plain text for read-only reference lines (never for entity fields the model may write back). */
+function stripHtml(text) {
+  return String(text ?? '').replace(/<\/?[a-z][^>]*>/gi, '').replace(/\s+/g, ' ').trim();
+}
+
+/** Keeps whole leading items of a list that fit in `budget` chars of compact JSON. */
+function fitItems(items, budget) {
+  const kept = [];
+  let used = 2;
+  for (const item of items) {
+    const len = JSON.stringify(item).length + 1;
+    if (used + len > budget) break;
+    kept.push(item);
+    used += len;
+  }
+  return kept;
+}
+
+/**
+ * Serializes tool data for the model: compact JSON (no indentation), no `_id`/`__v`.
+ * When it is too long, whole attached reference sections are dropped first, then whole
+ * list items, so the model never receives a record cut off mid-field.
+ */
+function formatToolData(data, maxChars = MAX_TOOL_OUTPUT_CHARS) {
+  let payload = stripDbNoise(data);
+  let out = JSON.stringify(payload);
+  if (out === undefined) return String(data);
+  if (out.length <= maxChars || !payload || typeof payload !== 'object') return out;
+
+  if (Array.isArray(payload)) {
+    const kept = fitItems(payload, maxChars - 160);
+    return JSON.stringify({
+      items: kept,
+      _note: `Showing ${kept.length} of ${payload.length} results; use list_entities with search/limit or get_entity for the rest.`
+    });
+  }
+
+  payload = { ...payload };
+  const dropped = [];
+  for (const [key, label] of RELATED_SECTIONS) {
+    if (out.length <= maxChars) break;
+    if (payload[key] === undefined) continue;
+    delete payload[key];
+    dropped.push(label);
+    payload._note = `Omitted attached ${dropped.join(', ')} to fit; fetch them with get_entity if needed.`;
+    out = JSON.stringify(payload);
+  }
+
+  // Still too long: drop whole items from the largest list field, one list at a time.
+  const shown = {};
+  while (out.length > maxChars) {
+    const lists = Object.entries(payload)
+      .filter(([, v]) => Array.isArray(v) && v.length > 0)
+      .map(([k, v]) => [k, v, JSON.stringify(v).length])
+      .sort((a, b) => b[2] - a[2]);
+    if (lists.length === 0) break;
+    const [key, arr, len] = lists[0];
+    if (!shown[key]) shown[key] = arr.length;
+    let kept = fitItems(arr, Math.max(0, len - (out.length - maxChars) - 260));
+    if (kept.length === arr.length) kept = arr.slice(0, -1);
+    payload[key] = kept;
+    const counts = Object.entries(shown).map(([k, total]) => `${k} ${payload[k].length} of ${total}`).join(', ');
+    payload._note = `${dropped.length ? `Omitted attached ${dropped.join(', ')}. ` : ''}Showing ${counts}; use list_entities with search/limit or get_entity for the rest.`;
+    out = JSON.stringify(payload);
+  }
+
+  return truncateText(out, maxChars);
+}
+
+/** Like formatToolData, for raw tool stdout that may or may not be JSON. */
+function formatToolText(raw, maxChars = MAX_TOOL_OUTPUT_CHARS) {
+  try {
+    const parsed = JSON.parse(raw);
+    if (parsed && typeof parsed === 'object') return formatToolData(parsed, maxChars);
+  } catch (_) { }
+  return truncateText(raw, maxChars);
 }
 
 const ragEngine = createColibriRag({
@@ -490,13 +600,12 @@ async function buildCompactCampaignSummary(campaignId) {
       talentPoints: p.talentPoints,
       attributes: p.attributes
     })),
-    npcs: (ctx.npcs || []).map(n => ({
-      id: n.id,
-      name: n.name,
-      role: n.role,
-      faction: n.faction,
-      location: n.location,
-      discovered: n.discovered
+    sessions: (ctx.sessions || []).map(s => ({
+      sessionId: s.sessionId ?? s.id,
+      title: extractTitleFromMarkdown(s.content),
+      hasPlan: Boolean(s.content && s.content.trim()),
+      isConcluded: Boolean(s.conclussion && s.conclussion.trim()),
+      playerVisibleBranches: s.playerVisibleBranches || []
     })),
     locations: (ctx.locations || []).map(l => ({
       id: l.id,
@@ -512,12 +621,13 @@ async function buildCompactCampaignSummary(campaignId) {
       owner: s.owner,
       discovered: s.discovered
     })),
-    sessions: (ctx.sessions || []).map(s => ({
-      sessionId: s.sessionId ?? s.id,
-      title: extractTitleFromMarkdown(s.content),
-      hasPlan: Boolean(s.content && s.content.trim()),
-      isConcluded: Boolean(s.conclussion && s.conclussion.trim()),
-      playerVisibleBranches: s.playerVisibleBranches || []
+    npcs: (ctx.npcs || []).map(n => ({
+      id: n.id,
+      name: n.name,
+      role: n.role ? stripHtml(n.role).slice(0, 100) : n.role,
+      faction: n.faction,
+      location: n.location,
+      discovered: n.discovered
     })),
     catalogCounts: {
       bestiary: (ctx.bestiary || []).length,
@@ -530,7 +640,8 @@ async function buildCompactCampaignSummary(campaignId) {
     }
   };
 
-  return JSON.stringify(summary, null, 2);
+  // The overview tool gets a larger allowance; if it still overflows, the largest list (NPCs) is trimmed.
+  return formatToolData(summary, COLIBRI_SUMMARY_MAX_CHARS);
 }
 
 /**
@@ -749,6 +860,26 @@ async function getReferenceCatalogs(campaignId) {
 }
 
 /**
+ * One line per weapon for the attached reference section, e.g.
+ * "#47 Mistforged Plasma Gun: Rng 8, A4, WS3, D3/5, Piercing 1 | [super charge] Rng 10, ...".
+ * Rule names come from the catalog; their effects are listed once in _relatedWeaponRules.
+ */
+function formatWeaponLine(w, ruleById) {
+  const profiles = (Array.isArray(w.profiles) ? w.profiles : []).map(p => {
+    const dmg = p.damage && typeof p.damage === 'object' ? `${p.damage.min}/${p.damage.max}` : (p.damage ?? '?');
+    const range = p.rng === 0 || p.rng === '0' ? 'Melee' : `Rng ${p.rng ?? '?'}`;
+    const rules = (Array.isArray(p.specialRules) ? p.specialRules : []).map(sr => {
+      const def = ruleById.get(Number(sr?.ruleId));
+      const mod = sr?.modValue !== undefined && sr?.modValue !== null && sr?.modValue !== '' ? ` ${sr.modValue}` : '';
+      return `${def ? def.name : `Rule #${sr?.ruleId}`}${mod}`;
+    });
+    const label = p.profileName ? `[${p.profileName}] ` : '';
+    return `${label}${range}, A${p.attacks ?? '?'}, WS${p.ws ?? '?'}, D${dmg}${rules.length ? ', ' + rules.join(', ') : ''}`;
+  });
+  return `#${w.id} ${w.name}: ${profiles.join(' | ') || 'no profiles'}`;
+}
+
+/**
  * Automatically resolves and attaches related weapon rules and altered states
  * for any fetched entity, list of entities, or session payload.
  */
@@ -829,11 +960,12 @@ async function enrichWithRulesAndStates(data, campaignId) {
   scanEntity(data);
 
   // Resolve weapon IDs -> weapon rules
+  const ruleById = new Map(catalogs.weaponRules.map(r => [Number(r.id), r]));
   const relatedWeapons = [];
   for (const wid of weaponIds) {
     const w = catalogs.weapons.find(item => Number(item.id) === wid);
     if (w) {
-      relatedWeapons.push({ id: w.id, name: w.name, profiles: w.profiles });
+      relatedWeapons.push(formatWeaponLine(w, ruleById));
       if (Array.isArray(w.profiles)) {
         w.profiles.forEach(p => {
           if (Array.isArray(p.specialRules)) {
@@ -851,7 +983,8 @@ async function enrichWithRulesAndStates(data, campaignId) {
   for (const rid of ruleIds) {
     const r = catalogs.weaponRules.find(item => Number(item.id) === rid);
     if (r) {
-      relatedWeaponRules.push({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier });
+      const pr = r.prModifier !== undefined && r.prModifier !== null && r.prModifier !== '' ? ` (PR ${r.prModifier})` : '';
+      relatedWeaponRules.push(`#${r.id} ${r.name}${pr}: ${stripHtml(r.effect) || 'No description'}`);
       scanString(r.effect);
     }
   }
@@ -863,7 +996,7 @@ async function enrichWithRulesAndStates(data, campaignId) {
     if (stateIds.has(Number(st.id)) || (st.name && stateNames.has(st.name.toLowerCase()))) {
       if (!seenStateIds.has(st.id)) {
         seenStateIds.add(st.id);
-        relatedAlteredStates.push({ id: st.id, name: st.name, effect: st.effect });
+        relatedAlteredStates.push(`#${st.id} ${st.name}: ${stripHtml(st.effect) || 'No description'}`);
       }
     }
   }
@@ -890,6 +1023,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
   let activeCampaignId = 1;
   let activeAbortController = null;
   let conversationHistory = [];
+  let lastUserText = '';
   let initializedEmitted = false;
 
   function buildSystemPrompt(campaignId) {
@@ -922,12 +1056,12 @@ function createAgentSession({ onEvent, onError, onClose }) {
       switch (toolName) {
         case 'get_campaign_summary': {
           const output = await buildCompactCampaignSummary(campId);
-          return { output: truncateText(output), status: 'done', staged: false };
+          return { output, status: 'done', staged: false };
         }
 
         case 'get_latest_session': {
           const raw = await runToolAsync(['get-latest', String(campId), '--clean'], campId);
-          let out = raw;
+          let out = formatToolText(raw);
           try {
             const parsed = JSON.parse(raw);
             if (parsed && typeof parsed === 'object') {
@@ -939,15 +1073,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
                 playerVisibleBranches: parsed.playerVisibleBranches || []
               };
               const enriched = await enrichWithRulesAndStates(base, campId);
-              out = JSON.stringify(enriched, null, 2);
+              out = formatToolData(enriched);
             }
           } catch (_) { }
-          return { output: truncateText(out), status: 'done', staged: false };
+          return { output: out, status: 'done', staged: false };
         }
 
         case 'list_sessions': {
           const raw = await runToolAsync(['list', String(campId), '--clean'], campId);
-          let out = raw;
+          let out = formatToolText(raw);
           try {
             const arr = JSON.parse(raw);
             if (Array.isArray(arr)) {
@@ -961,10 +1095,10 @@ function createAgentSession({ onEvent, onError, onClose }) {
                 planPreview: (s.displayContent || s.content || '').slice(0, 220),
                 conclusionPreview: (s.displayConclussion || s.conclussion || '').slice(0, 220)
               }));
-              out = JSON.stringify(compact, null, 2);
+              out = formatToolData(compact);
             }
           } catch (_) { }
-          return { output: truncateText(out), status: 'done', staged: false };
+          return { output: out, status: 'done', staged: false };
         }
 
         case 'get_entity': {
@@ -972,15 +1106,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
             return { output: JSON.stringify({ error: 'Both type and idOrName are required.' }), status: 'error', staged: false };
           }
           const raw = await runToolAsync(['get-entity', String(args.type), String(args.idOrName), `--campaignId=${campId}`], campId);
-          let out = raw;
+          let out = formatToolText(raw);
           try {
             const parsed = JSON.parse(raw);
             if (parsed && typeof parsed === 'object') {
               const enriched = await enrichWithRulesAndStates(parsed, campId);
-              out = JSON.stringify(enriched, null, 2);
+              out = formatToolData(enriched);
             }
           } catch (_) { }
-          return { output: truncateText(out), status: 'done', staged: false };
+          return { output: out, status: 'done', staged: false };
         }
 
         case 'list_entities': {
@@ -991,7 +1125,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
           const cliArgs = ['list-entities', String(args.type), `--campaignId=${campId}`, `--limit=${limit}`];
           if (args.search) cliArgs.push(`--search=${args.search}`);
           const raw = await runToolAsync(cliArgs, campId);
-          let out = raw;
+          let out = formatToolText(raw);
           try {
             let parsed = JSON.parse(raw);
             if (raw.length > MAX_TOOL_OUTPUT_CHARS && Array.isArray(parsed)) {
@@ -1006,16 +1140,27 @@ function createAgentSession({ onEvent, onError, onClose }) {
               }));
             }
             if (parsed && typeof parsed === 'object') {
-              const enriched = await enrichWithRulesAndStates(parsed, campId);
-              out = JSON.stringify(enriched, null, 2);
+              let enriched = await enrichWithRulesAndStates(parsed, campId);
+              if (/^weapons?$/i.test(String(args.type)) && Array.isArray(parsed)) {
+                // One line per weapon (rule names inline, effects once in _relatedWeaponRules).
+                const catalogs = await getReferenceCatalogs(campId);
+                const ruleById = new Map(catalogs.weaponRules.map(r => [Number(r.id), r]));
+                const base = Array.isArray(enriched) ? {} : { ...enriched };
+                delete base._relatedWeapons;
+                enriched = {
+                  ...base,
+                  items: parsed.map(w => `${formatWeaponLine(w, ruleById)}${w.price ? ` (price ${w.price})` : ''}`)
+                };
+              }
+              out = formatToolData(enriched);
             }
           } catch (_) { }
-          return { output: truncateText(out), status: 'done', staged: false };
+          return { output: out, status: 'done', staged: false };
         }
 
         case 'context_usage': {
           const raw = await runToolAsync(['context-usage', String(campId)], campId);
-          return { output: truncateText(raw), status: 'done', staged: false };
+          return { output: formatToolText(raw), status: 'done', staged: false };
         }
 
         case 'calculate_pr': {
@@ -1030,12 +1175,12 @@ function createAgentSession({ onEvent, onError, onClose }) {
             cliArgs.push(`--abilities=${JSON.stringify(args.abilities)}`);
           }
           const raw = await runToolAsync(cliArgs, campId);
-          return { output: truncateText(raw), status: 'done', staged: false };
+          return { output: formatToolText(raw), status: 'done', staged: false };
         }
 
         case 'auto_tag': {
           const raw = await runToolAsync(['auto-tag', String(campId), `--input=${args.text || ''}`], campId);
-          return { output: truncateText(raw), status: 'done', staged: false };
+          return { output: formatToolText(raw), status: 'done', staged: false };
         }
 
         case 'stage_command': {
@@ -1060,7 +1205,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
           const ragRes = await ragEngine.retrieve(query, campId, {
             topK: args.topK ? Math.min(15, Math.max(1, Number(args.topK))) : 8,
             tokenBudget: COLIBRI_RAG_TOKEN_BUDGET,
-            rerank: true,
+            rerank: COLIBRI_RAG_RERANK,
             abortSignal: activeAbortController?.signal
           });
           const formatted = ragRes.chunks.map(c => ({
@@ -1070,11 +1215,11 @@ function createAgentSession({ onEvent, onError, onClose }) {
             text: c.text
           }));
           return {
-            output: truncateText(JSON.stringify({
+            output: formatToolData({
               totalIndexed: ragRes.totalIndexed,
               returned: formatted.length,
               results: formatted
-            }, null, 2)),
+            }),
             status: 'done',
             staged: false
           };
@@ -1095,10 +1240,10 @@ function createAgentSession({ onEvent, onError, onClose }) {
           }
           if (sub === 'get-context') {
             const targetId = tokens[1] && !tokens[1].startsWith('--') ? Number(tokens[1]) : campId;
-            return { output: truncateText(await buildCompactCampaignSummary(targetId)), status: 'done', staged: false };
+            return { output: await buildCompactCampaignSummary(targetId), status: 'done', staged: false };
           }
           const raw = await runToolAsync(tokens, campId);
-          return { output: truncateText(raw), status: 'done', staged: false };
+          return { output: formatToolText(raw), status: 'done', staged: false };
         }
 
         default:
@@ -1112,38 +1257,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
   /**
    * Calls Colibri /v1/chat/completions with SSE streaming and parses text + tool_calls.
    */
-  async function streamColibriCompletion(messages, abortSignal, ragContextBlock = '') {
+  async function streamColibriCompletion(messages, abortSignal) {
     const headers = { 'Content-Type': 'application/json' };
     if (COLIBRI_API_KEY) {
       headers['Authorization'] = `Bearer ${COLIBRI_API_KEY}`;
     }
 
-    let messagesForModel = messages;
-    if (ragContextBlock) {
-      messagesForModel = [...messages];
-      // Keep messages[0] (system prompt) 100% static so the LLM server's KV prefix cache stays hot.
-      // Inject RAG context into the latest user message instead.
-      let lastUserIdx = -1;
-      for (let i = messagesForModel.length - 1; i >= 0; i--) {
-        if (messagesForModel[i]?.role === 'user') {
-          lastUserIdx = i;
-          break;
-        }
-      }
-      if (lastUserIdx !== -1) {
-        messagesForModel[lastUserIdx] = {
-          ...messagesForModel[lastUserIdx],
-          content: `${ragContextBlock}\n\n[USER REQUEST]\n${messagesForModel[lastUserIdx].content}`
-        };
-      } else {
-        messagesForModel.push({
-          role: 'user',
-          content: ragContextBlock
-        });
-      }
-    }
-
-    const trimmedMessages = trimMessagesToBudget(messagesForModel);
+    // `messages` is sent exactly as stored in conversationHistory: the engine only skips
+    // re-prefilling when the new prompt begins byte-for-byte with what it already holds.
+    const trimmedMessages = trimMessagesToBudget(messages);
 
     const response = await fetch(`${COLIBRI_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -1169,6 +1291,8 @@ function createAgentSession({ onEvent, onError, onClose }) {
     const decoder = new TextDecoder('utf-8');
     let sseBuffer = '';
     let contentText = '';
+    let reasoningText = '';
+    let reasoningAnnounced = false;
     const toolCallsByIndex = new Map();
     let finishReason = null;
     let usage = null;
@@ -1209,11 +1333,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
         const delta = choice.delta || {};
 
         if (typeof delta.reasoning_content === 'string' && delta.reasoning_content.length > 0) {
-          onEvent({
-            type: 'task_update',
-            summary: 'Reasoning...',
-            status: 'thinking'
-          });
+          reasoningText += delta.reasoning_content;
+          if (!reasoningAnnounced) {
+            reasoningAnnounced = true;
+            onEvent({
+              type: 'task_update',
+              summary: 'Reasoning...',
+              status: 'thinking'
+            });
+          }
         }
 
         if (typeof delta.content === 'string' && delta.content.length > 0) {
@@ -1247,7 +1375,17 @@ function createAgentSession({ onEvent, onError, onClose }) {
       .sort((a, b) => a[0] - b[0])
       .map(([, v]) => v);
 
-    return { contentText, toolCalls, finishReason, usage };
+    return { contentText, reasoningText, toolCalls, finishReason, usage };
+  }
+
+  /**
+   * Assistant turn as it should be stored for the next request. Sending the reasoning back
+   * keeps the resent history identical to the engine's state when thinking is enabled.
+   */
+  function assistantHistoryMessage(result, content, extra = {}) {
+    const msg = { role: 'assistant', content, ...extra };
+    if (result.reasoningText) msg.reasoning_content = result.reasoningText;
+    return msg;
   }
 
   async function runTurn(text, campaignId) {
@@ -1284,32 +1422,25 @@ function createAgentSession({ onEvent, onError, onClose }) {
         conversationHistory[0].content = sysPrompt;
       }
 
-      conversationHistory.push({
-        role: 'user',
-        content: `[Active Campaign ID: ${activeCampaignId}]\n${text}`
-      });
+      const userLine = `[Active Campaign ID: ${activeCampaignId}]\n${text}`;
 
       let ragContextBlock = '';
       try {
-        const rerankEnabled = process.env.COLIBRI_RAG_RERANK !== 'false';
         onEvent({
           type: 'task_update',
-          summary: rerankEnabled ? 'Retrieving & reranking campaign context...' : 'Retrieving campaign context...',
+          summary: COLIBRI_RAG_RERANK ? 'Retrieving & reranking campaign context...' : 'Retrieving campaign context...',
           status: 'thinking'
         });
 
         // Enrich short follow-up queries with the previous user message for better recall
         let ragQuery = text;
-        if (text.trim().length < 45) {
-          const prevUserMsgs = conversationHistory.filter(m => m.role === 'user');
-          if (prevUserMsgs.length >= 2) {
-            ragQuery = `${prevUserMsgs[prevUserMsgs.length - 2].content}\n${text}`;
-          }
+        if (text.trim().length < 45 && lastUserText) {
+          ragQuery = `${lastUserText}\n${text}`;
         }
 
         const ragResult = await ragEngine.retrieve(ragQuery, activeCampaignId, {
           tokenBudget: COLIBRI_RAG_TOKEN_BUDGET,
-          rerank: rerankEnabled,
+          rerank: COLIBRI_RAG_RERANK,
           abortSignal: activeAbortController.signal
         });
 
@@ -1323,18 +1454,36 @@ function createAgentSession({ onEvent, onError, onClose }) {
         }
       }
 
+      // Store the user turn WITH its RAG block. The system prompt stays static, and every later
+      // request (tool iterations and following turns) resends this exact text, so it extends the
+      // prefix the engine already holds instead of forcing a full re-prefill of the conversation.
+      lastUserText = text;
+      conversationHistory.push({
+        role: 'user',
+        content: ragContextBlock ? `${ragContextBlock}\n\n[USER REQUEST]\n${userLine}` : userLine
+      });
+
       for (let iter = 0; iter < COLIBRI_MAX_TOOL_ITERATIONS; iter++) {
         if (isDestroyed || activeAbortController.signal.aborted) break;
 
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, ragContextBlock);
+        // Trim the stored history itself (with headroom) rather than a per-request copy, so the
+        // prompt prefix only changes on the rare request that actually has to trim.
+        if (estimateMessagesTokens(conversationHistory) > COLIBRI_INPUT_TOKEN_BUDGET) {
+          const before = conversationHistory.length;
+          conversationHistory = trimMessagesToBudget(
+            conversationHistory,
+            Math.floor(COLIBRI_INPUT_TOKEN_BUDGET * COLIBRI_TRIM_TARGET_RATIO)
+          );
+          console.log(`[Colibri Bridge] Trimmed history ${before} -> ${conversationHistory.length} messages (next request re-reads the prompt once)`);
+        }
+
+        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal);
         if (result.usage) lastUsage = result.usage;
 
         if (result.toolCalls.length > 0) {
-          conversationHistory.push({
-            role: 'assistant',
-            content: result.contentText || null,
+          conversationHistory.push(assistantHistoryMessage(result, result.contentText || null, {
             tool_calls: result.toolCalls
-          });
+          }));
 
           for (const tc of result.toolCalls) {
             const toolName = tc.function.name;
@@ -1376,10 +1525,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
 
         // Model produced final assistant message
         finalResponseText = result.contentText || '';
-        conversationHistory.push({
-          role: 'assistant',
-          content: finalResponseText
-        });
+        conversationHistory.push(assistantHistoryMessage(result, finalResponseText));
         break;
       }
 
