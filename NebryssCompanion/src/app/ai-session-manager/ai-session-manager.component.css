@@ -214,6 +214,45 @@
   border-radius: 4px;
 }
 
+/* Model context gauge */
+.context-gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.context-gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.context-gauge-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #8b5cf6;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.context-gauge.warn .context-gauge-fill { background: #f59e0b; }
+.context-gauge.high .context-gauge-fill { background: #ef4444; }
+/* where the bridge starts trimming old messages */
+.context-gauge-trim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.context-gauge-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+.context-gauge-percent {
+  color: rgba(255, 255, 255, 0.4);
+}
+
 /* Quick Actions */
 .quick-actions {
   display: flex;
@@ -922,6 +961,19 @@ body:not(.dark-theme) .system-message {
 
 body:not(.dark-theme) .status-bar {
   background: rgba(0, 0, 0, 0.04);
+}
+
+body:not(.dark-theme) .context-gauge-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+body:not(.dark-theme) .context-gauge-trim {
+  background: rgba(0, 0, 0, 0.35);
+}
+body:not(.dark-theme) .context-gauge-text {
+  color: rgba(0, 0, 0, 0.75);
+}
+body:not(.dark-theme) .context-gauge-percent {
+  color: rgba(0, 0, 0, 0.45);
 }
 
 body:not(.dark-theme) .quick-action-btn {

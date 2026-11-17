@@ -47,6 +47,15 @@ export interface AgentEvent {
   [key: string]: any;
 }
 
+/** How full the model's context is, as reported by the Colibri bridge with each reply. */
+export interface ContextUsage {
+  used: number;          // tokens in the conversation after the last reply
+  limit: number;         // the server's context size
+  replyReserve: number;  // tokens kept free for a reply
+  historyBudget: number; // size at which the bridge trims old messages
+  percent: number;       // used / limit, in %
+}
+
 @Injectable({ providedIn: 'root' })
 export class AiSessionManagerService implements OnDestroy {
   private ws: WebSocket | null = null;
@@ -63,6 +72,7 @@ export class AiSessionManagerService implements OnDestroy {
   private isAgentTypingSubject = new BehaviorSubject<boolean>(false);
   private currentStatusSubject = new BehaviorSubject<string | null>(null);
   private rawEventsSubject = new Subject<AgentEvent>();
+  private contextUsageSubject = new BehaviorSubject<ContextUsage | null>(null);
 
   private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
   public commandResult$ = this.commandResultSubject.asObservable();
@@ -79,6 +89,7 @@ export class AiSessionManagerService implements OnDestroy {
   isAgentTyping$: Observable<boolean> = this.isAgentTypingSubject.asObservable();
   currentStatus$: Observable<string | null> = this.currentStatusSubject.asObservable();
   rawEvents$: Observable<AgentEvent> = this.rawEventsSubject.asObservable();
+  contextUsage$: Observable<ContextUsage | null> = this.contextUsageSubject.asObservable();
 
   constructor(
     private readonly authService: AuthService,
@@ -227,6 +238,7 @@ export class AiSessionManagerService implements OnDestroy {
     } catch (_) {}
 
     this.conversationId = null;
+    this.contextUsageSubject.next(null);
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'set_backend', backend }));
     }
@@ -268,6 +280,7 @@ export class AiSessionManagerService implements OnDestroy {
 
   clearHistory(): void {
     this.messagesSubject.next([]);
+    this.contextUsageSubject.next(null);
     this.conversationId = null;
     this.currentStreamingMessage = null;
     this.isAgentTypingSubject.next(false);
@@ -336,6 +349,16 @@ export class AiSessionManagerService implements OnDestroy {
 
       case 'response_end':
         this.currentStatusSubject.next(null);
+        if (event['context'] && Number(event['context'].limit) > 0) {
+          const ctx = event['context'];
+          this.contextUsageSubject.next({
+            used: Number(ctx.used) || 0,
+            limit: Number(ctx.limit),
+            replyReserve: Number(ctx.replyReserve) || 0,
+            historyBudget: Number(ctx.historyBudget) || 0,
+            percent: Number(ctx.percent) || 0
+          });
+        }
         this.finalizeResponse(event['conversationId'], event['status']);
         break;
 

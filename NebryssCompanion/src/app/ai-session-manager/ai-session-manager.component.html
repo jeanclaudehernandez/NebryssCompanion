@@ -79,6 +79,31 @@
         <div class="context-value conversation-id">{{ conversationId | slice:0:12 }}...</div>
       </div>
 
+      <!-- Model context gauge (Colibri reports it with each reply) -->
+      <div class="context-section" *ngIf="contextUsage">
+        <div class="context-label">Model Context</div>
+        <div class="context-gauge"
+             [class.warn]="contextLevel === 'warn'"
+             [class.high]="contextLevel === 'high'"
+             role="meter"
+             aria-label="Model context used"
+             [attr.aria-valuenow]="contextUsage.used"
+             aria-valuemin="0"
+             [attr.aria-valuemax]="contextUsage.limit"
+             [attr.title]="'Older messages are trimmed above ' + formatTokens(contextUsage.historyBudget) + ' tokens; ' + formatTokens(contextUsage.replyReserve) + ' are kept free for replies.'">
+          <div class="context-gauge-track">
+            <div class="context-gauge-fill" [style.width.%]="contextUsage.percent > 100 ? 100 : contextUsage.percent"></div>
+            <div class="context-gauge-trim"
+                 *ngIf="contextUsage.historyBudget && contextUsage.limit"
+                 [style.left.%]="(contextUsage.historyBudget / contextUsage.limit) * 100"></div>
+          </div>
+          <div class="context-gauge-text">
+            {{ formatTokens(contextUsage.used) }} / {{ formatTokens(contextUsage.limit) }}
+            <span class="context-gauge-percent">({{ contextUsage.percent | number:'1.0-1' }}%)</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Actions -->
       <div class="context-section">
         <div class="context-label">Quick Actions</div>

@@ -20,6 +20,7 @@ import {
   AiSessionManagerService,
   ChatMessage,
   ConnectionStatus,
+  ContextUsage,
   PendingCommand
 } from './ai-session-manager.service';
 import { CampaignService } from '../campaign.service';
@@ -70,6 +71,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   activePlayers: Player[] = [];
   conversationId: string | null = null;
   agentStatus: string | null = null;
+  contextUsage: ContextUsage | null = null;
 
   private shouldScrollToBottom = false;
   private previousMessageCount = 0;
@@ -155,6 +157,13 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         if (typing) {
           this.shouldScrollToBottom = true;
         }
+      });
+
+    // How full the model's context is (Colibri reports it with each reply)
+    this.aiService.contextUsage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(usage => {
+        this.contextUsage = usage;
       });
 
     // Track conversation ID
@@ -265,6 +274,20 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   reconnect(): void {
     this.aiService.connect();
+  }
+
+  /** 12345 -> "12.3k" for the context gauge. */
+  formatTokens(value: number): string {
+    if (!Number.isFinite(value) || value <= 0) return '0';
+    return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(Math.round(value));
+  }
+
+  /** Gauge colour step: normal until the bridge is close to trimming old messages. */
+  get contextLevel(): 'ok' | 'warn' | 'high' {
+    const u = this.contextUsage;
+    if (!u || !u.historyBudget) return 'ok';
+    const ofBudget = u.used / u.historyBudget;
+    return ofBudget >= 0.9 ? 'high' : ofBudget >= 0.7 ? 'warn' : 'ok';
   }
 
   switchBackend(backend: AgentBackend): void {

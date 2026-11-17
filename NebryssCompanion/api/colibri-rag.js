@@ -15,6 +15,7 @@ const DEFAULT_INDEX_TTL_MS = Number(process.env.COLIBRI_RAG_TTL_MS) || 3 * 60 * 
 const DEFAULT_RAG_TOKEN_BUDGET = Number(process.env.COLIBRI_RAG_TOKEN_BUDGET) || 3200;
 const DEFAULT_CANDIDATE_COUNT = Number(process.env.COLIBRI_RAG_CANDIDATES) || 18;
 const DEFAULT_TOP_K = Number(process.env.COLIBRI_RAG_TOP_K) || 10;
+const MAX_HEADING_CHARS = 100;
 const EMBED_BATCH_SIZE = Number(process.env.COLIBRI_RAG_EMBED_BATCH) || 16;
 
 const STOPWORDS = new Set([
@@ -73,7 +74,10 @@ function chunkMarkdownText(text, { idPrefix, sourceType, titlePrefix, maxChars =
 
     const headingMatch = section.match(/^(#{1,4})\s+(.+?)(?:\r?\n|$)/);
     const heading = headingMatch ? headingMatch[2].replace(/\*\*/g, '').trim() : '';
-    const sectionTitle = heading ? `${titlePrefix}: ${heading}` : titlePrefix;
+    // Cap the heading: text without real line breaks (e.g. stored with literal "\n") would
+    // otherwise make the whole section the title, repeated on every part of it.
+    const shortHeading = heading.length > MAX_HEADING_CHARS ? `${heading.slice(0, MAX_HEADING_CHARS).trim()}…` : heading;
+    const sectionTitle = shortHeading ? `${titlePrefix}: ${shortHeading}` : titlePrefix;
 
     if (section.length <= maxChars) {
       chunks.push({
@@ -158,11 +162,50 @@ function loadStaticLoreChunks(workspaceDir) {
 }
 
 /**
+ * Replaces @type[id] tags (and @type[id: Name]) with entity names, so excerpts read naturally,
+ * the model does not echo raw tags into chat, and a search for a name finds session text that
+ * only held its tag. Unknown tags are left as they are.
+ */
+function buildTagResolver(ctx) {
+  const lists = {
+    player: ctx.players, npc: ctx.npcs, location: ctx.locations, shop: ctx.shops,
+    bestiary: ctx.bestiary, letter: ctx.letters, item: ctx.items, weapon: ctx.weapons,
+    weaponrule: ctx.weaponRules, alteredstate: ctx.alteredStates, affliction: ctx.afflictions
+  };
+  const names = {};
+  for (const [type, list] of Object.entries(lists)) {
+    names[type] = new Map();
+    for (const ent of Array.isArray(list) ? list : []) {
+      if (ent && ent.id !== undefined && ent.id !== null) {
+        const name = ent.name || ent.subject || ent.title;
+        if (name) names[type].set(String(ent.id), String(name));
+      }
+    }
+  }
+  return (text) => {
+    if (typeof text !== 'string' || !text.includes('@')) return text;
+    return text.replace(/@([a-z]+)\[([^\]:]+)(?::\s*([^\]]*))?\]/gi, (match, type, id, inlineName) => {
+      const known = names[type.toLowerCase()]?.get(String(id).trim());
+      return known || (inlineName ? inlineName.trim() : match);
+    });
+  };
+}
+
+/**
+ * Session text saved through a shell can hold literal "\n" (backslash + n) instead of line
+ * breaks; turn those into real ones so headings and paragraphs split correctly.
+ */
+function normalizeStoredText(text) {
+  return typeof text === 'string' ? text.replace(/\\r\\n|\\n/g, '\n') : text;
+}
+
+/**
  * Builds searchable chunks from a campaign's full get-context payload.
  */
 function buildCampaignChunks(ctx, campaignId) {
   const chunks = [];
   const prefix = `camp_${campaignId}`;
+  const resolveTags = buildTagResolver(ctx);
 
   const weaponRuleMap = new Map();
   if (Array.isArray(ctx.weaponRules)) {
@@ -214,7 +257,7 @@ function buildCampaignChunks(ctx, campaignId) {
       if (!ent || typeof ent !== 'object') continue;
       const entId = ent.id ?? ent.sessionId;
       const name = ent.name || ent.subject || ent.title || `#${entId}`;
-      const body = compactObjectFields(ent, ['_id', '__v', 'image', 'imageUrl', 'portrait', 'mapImage']);
+      const body = resolveTags(compactObjectFields(ent, ['_id', '__v', 'image', 'imageUrl', 'portrait', 'mapImage']));
       if (!body) continue;
       const extra = extraFormatter ? extraFormatter(ent) : '';
       chunks.push({
@@ -255,7 +298,7 @@ function buildCampaignChunks(ctx, campaignId) {
         : '';
 
       if (sess.content && sess.content.trim()) {
-        const planChunks = chunkMarkdownText(sess.content, {
+        const planChunks = chunkMarkdownText(resolveTags(normalizeStoredText(sess.content)), {
           idPrefix: `${prefix}_session_${sid}_plan`,
           sourceType: 'session',
           titlePrefix: `Session #${sid} Plan${isLatest ? ' (Latest)' : ''}`,
@@ -270,7 +313,7 @@ function buildCampaignChunks(ctx, campaignId) {
       }
 
       if (sess.conclussion && sess.conclussion.trim()) {
-        const concChunks = chunkMarkdownText(sess.conclussion, {
+        const concChunks = chunkMarkdownText(resolveTags(normalizeStoredText(sess.conclussion)), {
           idPrefix: `${prefix}_session_${sid}_conc`,
           sourceType: 'session',
           titlePrefix: `Session #${sid} Conclusion${isLatest ? ' (Latest)' : ''}`,
@@ -304,7 +347,8 @@ function buildBm25Index(chunks) {
     }
     chunk._tf = tf;
     chunk._len = tokens.length;
-    chunk._tokens = estimateTokens(chunk.text);
+    // Title + text: both are written into the attached block, so both count toward its budget.
+    chunk._tokens = estimateTokens(`${chunk.title}\n${chunk.text}`);
     totalLen += tokens.length;
 
     for (const term of tf.keys()) {
@@ -584,6 +628,10 @@ function createColibriRag({
   /**
    * Retrieves top-K chunks for a query within the configured token budget.
    */
+  /**
+   * Retrieves the best chunks for `query`. options.excludeKeys: a Set of chunkKey() values
+   * already in the conversation; those are dropped from the result (skippedSeen counts them).
+   */
   async function retrieve(query, campaignId, options = {}) {
     const topK = options.topK || DEFAULT_TOP_K;
     const tokenBudget = options.tokenBudget || DEFAULT_RAG_TOKEN_BUDGET;
@@ -627,7 +675,7 @@ function createColibriRag({
     const selected = [];
     let usedTokens = 0;
     for (const item of reranked) {
-      const chunkTokens = item.chunk._tokens || estimateTokens(item.chunk.text);
+      const chunkTokens = item.chunk._tokens || estimateTokens(`${item.chunk.title}\n${item.chunk.text}`);
       if (selected.length > 0 && usedTokens + chunkTokens > tokenBudget) {
         continue;
       }
@@ -636,10 +684,23 @@ function createColibriRag({
       if (selected.length >= topK) break;
     }
 
+    // Selection is unchanged; chunks the conversation already holds (options.excludeKeys, matched
+    // by content since chunk IDs are sequence numbers that can shift on a rebuild) are then left
+    // out. They are still in the model's context, so a follow-up on the same topic adds little.
+    const excludeKeys = options.excludeKeys;
+    let chunks = selected;
+    let skippedSeen = 0;
+    if (excludeKeys && excludeKeys.size > 0) {
+      chunks = selected.filter(c => !excludeKeys.has(chunkKey(c)));
+      skippedSeen = selected.length - chunks.length;
+      usedTokens = chunks.reduce((sum, c) => sum + (c._tokens || estimateTokens(`${c.title}\n${c.text}`)), 0);
+    }
+
     return {
-      chunks: selected,
+      chunks,
       totalIndexed: entry.index.docCount,
       usedTokens,
+      skippedSeen,
       embeddingsUsed: Boolean(entry.embeddingsPopulated),
       reranked: useRerank && process.env.COLIBRI_RAG_RERANK !== 'false'
     };
@@ -669,8 +730,14 @@ function createColibriRag({
   };
 }
 
+/** Identity of a chunk's content, stable across index rebuilds. */
+function chunkKey(chunk) {
+  return `${chunk.title}\n${chunk.text}`;
+}
+
 module.exports = {
   createColibriRag,
+  chunkKey,
   chunkMarkdownText,
   buildBm25Index,
   scoreBm25
