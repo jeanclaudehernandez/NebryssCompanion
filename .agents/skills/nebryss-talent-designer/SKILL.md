@@ -5,106 +5,17 @@ description: Designs, balances, and formats character Talents (combat perks, mag
 
 # Nebryss Talent Designer
 
-This skill governs the creation, balance, stat modifications, prerequisite trees, and category structures of character Talents within the Nebryss progression system.
+Talents live inside talent categories (`talent` collection). See existing categories and talents with `list-entities talent`.
 
----
+## 1. Steps
+1. **Category & ID**: combat (`c1`, `c2`...), magic/mist-weaving (`m...`), support/medicae/crafting/leadership (`s...`), or a custom category. Next free ID in the series.
+2. **Balance**: `cost` 1–5 talent points; `maxStacks` (1, more for tiered ranks); `requirements` = prerequisite talent IDs (`["c1"]`); `prModifier` null or 1–10 when used on combatants.
+3. **`effect`**: rules text; HTML like `<strong>+1 die</strong>` renders in the UI.
+4. **`statModifications`** for mechanical bonuses — same keys and targeting as afflictions: `stat` in `Movement`, `Wounds`, `Save`, `APL`, `hit`, `damage`, `attacks`, `crit`; optional `applyToType` `"range"` (`"0"` melee / `"-"` ranged), `"type"` (weapon category: `pistol`, `rifle`...), `"body"` (`human`, `astartes`...).
+5. Draft in chat for approval. Players hold talent IDs in `progression.talents` (`update-player --talents`).
 
-## 1. Execution Steps
+**Persistence**: no companion command; categories are saved through `PUT /api/talent`, which replaces the whole category — always send `id`, `name`, `description` and the COMPLETE `talents` array.
 
-1. **Select / Create Category**:
-   - Determine which category the talent belongs to: `combat` (prefix `c`), `magic` (prefix `m`), `support` (prefix `s`), or custom category.
-2. **Balance Talent Costs & Stacks**:
-   - `cost`: Talent point cost (typically `1` to `5`).
-   - `maxStacks`: Maximum number of times a player can purchase this talent (usually `1`, or higher for tiered ranks).
-   - `requirements`: Array of prerequisite talent IDs (e.g. `["c1", "c3"]`).
-   - `prModifier`: Optional Points Rating modifier when equipping onto combatants (typically `null` or `1` to `10`).
-3. **Configure Stat Modifications**:
-   - If the talent mechanically alters operative attributes, add structured `statModifications` objects.
-   - Use HTML formatting (e.g., `<strong>+1 die</strong>`) in `effect` for readable rendering in the UI.
-4. **Format Output**: Output valid JSON matching the `Talent` or `TalentCategory` schema.
-5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating a Talent Category (`PUT /api/talent`), always pass the **entire category object with all fields and the full `talents` array** (`id`, `name`, `description`, `talents`), NOT only the modified fields or individual talent slices.
-
----
-
-## 2. JSON Schemas
-
-### Format A: Single Talent Object (Inside a Category's `talents` array)
-
-```json
-{
-  "id": "c14",
-  "name": "Duelist's Riposte",
-  "cost": 2,
-  "effect": "Each time an enemy operative resolves a normal strike against you in melee combat, you can spend 1 focus to immediately resolve one of your retained parries as a strike instead.",
-  "prModifier": 6,
-  "requirements": [
-    "c1"
-  ],
-  "maxStacks": 1,
-  "statModifications": [
-    {
-      "stat": "crit",
-      "mod": 1,
-      "applyToType": "range",
-      "applyToValue": "0"
-    }
-  ]
-}
-```
-
-### Format B: Full Talent Category Object
-
-```json
-{
-  "id": "combat",
-  "name": "Combat Discipline",
-  "description": "Martial prowess, blade mastery, and firearm efficiency.",
-  "talents": [
-    {
-      "id": "c1",
-      "name": "Blade Precision",
-      "cost": 1,
-      "effect": "Improves melee Weapon Skill (WS) by 1 (e.g. 4+ becomes 3+).",
-      "prModifier": 4,
-      "requirements": [],
-      "maxStacks": 1,
-      "statModifications": [
-        {
-          "stat": "hit",
-          "mod": 1,
-          "applyToType": "range",
-          "applyToValue": "0"
-        }
-      ]
-    }
-  ]
-}
-```
-
----
-
-## 3. ID Prefix Conventions
-
-- `c...`: Combat talents (e.g. `c1`, `c2`, `c14`)
-- `m...`: Magic / Aether / Mist-Weaving talents (e.g. `m1`, `m2`)
-- `s...`: Support, Medicae, Crafting, and Leadership talents (e.g. `s1`, `s2`)
-
----
-
-## 4. Stat Modification Rules
-
-- **Allowed `stat` keys**:
-  - Direct attributes: `"Movement"`, `"Wounds"`, `"Save"`, `"APL"`
-  - Combat / Weapon mods: `"hit"`, `"damage"`, `"attacks"`, `"crit"`
-- **Targeting Modifiers (`applyToType` & `applyToValue`)**:
-  - `applyToType: "range"`: Use `"0"` for melee weapons only, `"-"` for ranged weapons only.
-  - `applyToType: "type"`: Use with weapon types (e.g. `"pistol"`, `"rifle"`, `"blade"`).
-  - `applyToType: "body"`: Use with body types (e.g. `"human"`, `"astartes"`).
-
----
-
-## 5. Database Scoping & API Operations
-
-- **Database Collection**: Talents and Talent Categories are stored globally in the `Nebryss-assets` database inside the `talent` collection.
-- **Update Rule (`PUT /api/talent`)**: Always send the entire category object with its complete array of talents to prevent losing existing talents during `replaceOne` document replacement.
-
+## 2. Schemas
+Talent: `{ "id": "c14", "name": str, "cost": n, "effect": str, "prModifier": n|null, "requirements": [talentId], "maxStacks": n, "statModifications": [{"stat": "crit", "mod": 1, "applyToType": "range", "applyToValue": "0"}] }`
+Category: `{ "id": "combat", "name": "Combat Discipline", "description": str, "talents": [Talent] }`

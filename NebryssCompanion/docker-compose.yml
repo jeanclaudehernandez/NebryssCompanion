@@ -10,4 +10,7 @@ services:
 
 volumes:
   nebryss_mongodb_data:
+    # Use the existing data volume as-is (without this, Compose would prefix it with the
+    # project name and start the database on a new, empty volume).
+    name: nebryss_mongodb_data
 

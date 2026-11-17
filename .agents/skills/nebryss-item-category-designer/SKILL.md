@@ -5,69 +5,14 @@ description: Designs, configures, and structures dynamic Item Categories and tab
 
 # Nebryss Item Category Designer
 
-This skill governs the creation and column binding of Item Categories (`itemCategories.json` / `itemCategory` collection), which define how items in the catalog are grouped, filtered, and dynamically rendered in generic table views.
+Item categories group the catalog and define the columns of the generic item tables (`itemCategory` collection). See existing ones with `list-entities itemcategory` — there is one per item `type` (armor, consumable, ammunition, mistEngine, shipHull, cannon, cannonball, deployable, modification, material, blueprint).
 
----
+## 1. Steps
+1. `name`: tab/menu label ("Mist Engines"); `key`: the `Item.type` it shows ("mistEngine").
+2. `headers`: column titles; `keys`: the matching `Item` property for each header, same order and length (e.g. `["Name","Price","Max Speed"]` ↔ `["name","price","maxSpeed"]`). Use only properties that type's items have (see `nebryss-item-designer`).
+3. Draft in chat for approval.
 
-## 1. Execution Steps
+**Persistence**: there is no companion command for categories; they are saved through `PUT /api/itemCategory`, which replaces the whole document — always send `id`, `name`, `key`, `headers` and `keys` together.
 
-1. **Establish Category Name & Key**:
-   - `name`: Display label for tab headers and menus (e.g., `"Armor"`, `"Mist Engines"`, `"Cannons"`).
-   - `key`: Lowercase/camelCase identifier that matches `Item.type` (e.g., `"armor"`, `"mistEngine"`, `"cannon"`).
-2. **Map Headers & Keys**:
-   - `headers`: Array of human-readable column titles (e.g. `["Name", "Price", "Optimal Conditions", "Max Speed", "Max Weight"]`).
-   - `keys`: Array of exact `Item` property keys corresponding 1:1 with each header in order (e.g. `["name", "price", "optimalConditions", "maxSpeed", "maxWeight"]`).
-3. **Format & Persist**: Output valid JSON matching the `ItemCategory` schema.
-4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating an Item Category (`PUT /api/itemCategory`), always pass the **entire object with all fields** (`id`, `name`, `key`, `headers`, `keys`), NOT only the modified fields.
-
----
-
-## 2. JSON Schema (`ItemCategory`)
-
-```json
-{
-  "id": 9999,
-  "name": "Mist Engines",
-  "key": "mistEngine",
-  "headers": [
-    "Name",
-    "Price",
-    "Optimal Conditions",
-    "Max Speed",
-    "Max Weight"
-  ],
-  "keys": [
-    "name",
-    "price",
-    "optimalConditions",
-    "maxSpeed",
-    "maxWeight"
-  ]
-}
-```
-
----
-
-## 3. Existing Item Categories Reference
-
-| ID | Name | Key | Configured Headers / Keys |
-|---|---|---|---|
-| 1 | **Armor** | `armor` | `name`, `price`, `description`, `raceReq` (Body) |
-| 2 | **Consumables** | `consumable` | `name`, `price`, `description` |
-| 3 | **Ammunition** | `ammunition` | `name`, `price`, `quantity`, `subtype`, `description` |
-| 4 | **Mist Engines** | `mistEngine` | `name`, `price`, `optimalConditions`, `maxSpeed`, `maxWeight` |
-| 5 | **Ship Hulls** | `shipHull` | `name`, `price`, `weight`, `shipWounds`, `defense`, `maxCargo` |
-| 6 | **Cannons** | `cannon` | `name`, `price`, `ammoType`, `weight` |
-| 7 | **Cannonballs** | `cannonball` | `name`, `price`, `damage` |
-| 8 | **Deployables** | `deployable` | `name`, `type`, `description` |
-| 9 | **Modification** | `modification` | `name`, `price`, `description`, `part` |
-| 10 | **Material** | `material` | `name`, `price`, `description`, `bestiaryId` (Dropped From) |
-| 11 | **Blueprint** | `blueprint` | `name`, `price`, `description`, `blueprintFor` (Weapon) |
-
----
-
-## 4. Database Scoping & API Operations
-
-- **Database Collection**: Item Categories are stored globally in the `Nebryss-assets` database inside the `itemCategory` collection.
-- **Update Rule (`PUT /api/itemCategory`)**: Always send the entire category object (`id`, `name`, `key`, `headers`, `keys`) to prevent losing column configurations during `replaceOne` overwrite.
-
+## 2. Schema (`ItemCategory`)
+`{ "id": n, "name": "Mist Engines", "key": "mistEngine", "headers": ["Name","Price","Optimal Conditions","Max Speed","Max Weight"], "keys": ["name","price","optimalConditions","maxSpeed","maxWeight"] }`

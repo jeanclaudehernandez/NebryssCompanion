@@ -26,6 +26,42 @@
         </button>
       </div>
 
+      <!-- AI Engine Toggle -->
+      <div class="context-section">
+        <div class="context-label">AI Engine</div>
+        <div class="backend-toggle" role="group" aria-label="AI Engine">
+          <button type="button"
+                  class="backend-toggle-btn"
+                  [class.active]="agentBackend === 'colibri'"
+                  [disabled]="isAgentTyping"
+                  (click)="switchBackend('colibri')">
+            <span class="material-icons">memory</span>
+            <span>Colibri</span>
+          </button>
+          <button type="button"
+                  class="backend-toggle-btn"
+                  [class.active]="agentBackend === 'agy'"
+                  [disabled]="isAgentTyping"
+                  (click)="switchBackend('agy')">
+            <span class="material-icons">cloud</span>
+            <span>AGY</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- AGY Model Selector (visible when AGY engine is selected) -->
+      <div class="context-section" *ngIf="agentBackend === 'agy'">
+        <div class="context-label">AGY Model</div>
+        <select class="model-select"
+                aria-label="AGY Model"
+                [ngModel]="selectedAgyModel"
+                (ngModelChange)="onAgyModelChange($event)"
+                [disabled]="isAgentTyping">
+          <option value="">Default (AGY CLI)</option>
+          <option *ngFor="let m of agyModels" [value]="m.id">{{ m.label }}</option>
+        </select>
+      </div>
+
       <!-- Active Campaign -->
       <div class="context-section">
         <div class="context-label">Campaign</div>
@@ -41,6 +77,31 @@
       <div class="context-section" *ngIf="conversationId">
         <div class="context-label">Conversation</div>
         <div class="context-value conversation-id">{{ conversationId | slice:0:12 }}...</div>
+      </div>
+
+      <!-- Model context gauge (Colibri reports it with each reply) -->
+      <div class="context-section" *ngIf="contextUsage">
+        <div class="context-label">Model Context</div>
+        <div class="context-gauge"
+             [class.warn]="contextLevel === 'warn'"
+             [class.high]="contextLevel === 'high'"
+             role="meter"
+             aria-label="Model context used"
+             [attr.aria-valuenow]="contextUsage.used"
+             aria-valuemin="0"
+             [attr.aria-valuemax]="contextUsage.limit"
+             [attr.title]="'Older messages are trimmed above ' + formatTokens(contextUsage.historyBudget) + ' tokens; ' + formatTokens(contextUsage.replyReserve) + ' are kept free for replies.'">
+          <div class="context-gauge-track">
+            <div class="context-gauge-fill" [style.width.%]="contextUsage.percent > 100 ? 100 : contextUsage.percent"></div>
+            <div class="context-gauge-trim"
+                 *ngIf="contextUsage.historyBudget && contextUsage.limit"
+                 [style.left.%]="(contextUsage.historyBudget / contextUsage.limit) * 100"></div>
+          </div>
+          <div class="context-gauge-text">
+            {{ formatTokens(contextUsage.used) }} / {{ formatTokens(contextUsage.limit) }}
+            <span class="context-gauge-percent">({{ contextUsage.percent | number:'1.0-1' }}%)</span>
+          </div>
+        </div>
       </div>
 
       <!-- Quick Actions -->
@@ -110,7 +171,7 @@
       <div class="empty-state" *ngIf="messages.length === 0">
         <span class="material-icons empty-icon">smart_toy</span>
         <h2>AI Session Manager</h2>
-        <p>Chat with the AGY agent to plan, create, and conclude campaign sessions.</p>
+        <p>Chat with the {{ agentBackend === 'agy' ? 'AGY' : 'Colibri AI' }} agent to plan, create, and conclude campaign sessions.</p>
         <p class="empty-hint">Use the quick actions on the right, or type a message below.</p>
       </div>
 
@@ -138,8 +199,9 @@
             <div *ngFor="let tc of msg.toolCalls" class="tool-chip"
                  [class.running]="tc.status === 'running'"
                  [class.done]="tc.status === 'done' || tc.status === 'success'"
-                 [class.staged]="tc.status === 'staged'">
-              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : (tc.status === 'staged' ? 'rate_review' : 'check_circle') }}</span>
+                 [class.staged]="tc.status === 'staged'"
+                 [class.error]="tc.status === 'error'">
+              <span class="material-icons tool-icon">{{ tc.status === 'running' ? 'hourglass_top' : (tc.status === 'staged' ? 'rate_review' : (tc.status === 'error' ? 'error' : 'check_circle')) }}</span>
               <span class="tool-name">{{ tc.summary || tc.name }}</span>
             </div>
           </div>

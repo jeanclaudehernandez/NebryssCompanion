@@ -5,75 +5,17 @@ description: Designs, formats, and manages in-game Letters (Imperial missives, e
 
 # Nebryss Letter Designer
 
-This skill governs the creation, narrative tone, recipient tracking, and formatting of in-game Letters and missives within the Nebryss universe.
+## 1. Steps
+1. **Subject & sender**: `subject` (e.g. "Decree of Excommunication - Voss Warrant"); `senderId` = existing NPC ID or `null` for anonymous; `senderName` = sender's title and name.
+2. **Body (`message`)**: immersive, lore-true text formatted with HTML (`<b>`, `<i>`, `<ul>`, `<li>`, `<div>`, `<br>`, `<p>`) for seals, parchment lines, redactions and log entries. The app displays `message`.
+3. **Date & recipients**: `date` in Imperial format (`0.217.087.M42`); `recipientIds` = player IDs who can see it; `targetNames` = intended recipients as text; `readBy` = player IDs who opened it (usually `[]`); `isDeleted` false.
+4. Draft in chat with clean names; stage `create-letter` after approval.
 
----
+**Updates merge**: send `--campaignId`, `--id` plus changed fields; `recipientIds`, `targetNames`, `readBy` replace the stored lists.
 
-## 1. Execution Steps
+## 2. Schema (`Letter`, campaign collection `${prefix}-letter`, tag `@letter[id]`)
+`{ "id": n, "subject": str, "senderId": npcId|null, "senderName": str, "message": "html", "date": "0.457.015.M42", "recipientIds": [playerId], "targetNames": [str], "readBy": [playerId], "isDeleted": false }`
 
-1. **Establish Subject & Sender**:
-   - `subject`: Descriptive title or header for the letter (e.g., *"Decree of Excommunication - Voss Warrant"*).
-   - `senderId`: Numeric ID of an NPC sender in `npcs.json` / `${prefix}-npc`, or `null` for anonymous / automated / unknown senders.
-   - `senderName`: String title and name of the sender (e.g., *"Inquisitor Vontis Mortis of the Ordo Hereticus"*).
-2. **Draft Message Content**:
-   - Write rich, immersive narrative text adhering to Nebryss world lore.
-   - Use HTML formatting tags (`<b>`, `<i>`, `<ul>`, `<li>`, `<div>`, `<br>`) to represent official letter seals, parchment lines, classified redactions, and log entries.
-3. **Set Imperial Date & Target Recipients**:
-   - `date`: Standard Imperial date format (e.g., `"0.217.087.M42"`).
-   - `recipientIds`: Array of player character numeric IDs eligible to receive or view the letter (e.g., `[1, 2, 3]`).
-   - `targetNames`: Array of intended recipient names or descriptions (e.g., `["Mark", "Claimants of House Voss"]`).
-   - `readBy`: Array of player IDs who have opened and read the letter (typically initialized to empty `[]` or `[1]`).
-   - `isDeleted`: Soft deletion flag (`false` by default).
-4. **Format & Persist**: Output valid JSON matching the `Letter` schema and stage the entity in MongoDB via `campaign-session-tool.js`.
-5. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When executing `update-letter`, retrieve the existing document first if needed (via `node scripts/campaign-session-tool.js get-entity letter <id> --campaignId=<campaignId>`), merge changes into the full document, and pass the **entire object with all fields** (`campaignId`, `id`, `subject`, `senderId`, `senderName`, `content` / `message`, `date`, `recipientIds`, `targetNames`, `readBy`, `isDeleted`), NOT only the modified fields.
-
----
-
-## 2. JSON Schema (`Letter`)
-
-```json
-{
-  "id": 9999,
-  "subject": "Intercepted Courier Log: Mist-Spire Route Beta",
-  "senderId": 3,
-  "senderName": "Master Navigator Seneschal Darius Mountain",
-  "message": "<div><b>CLASSIFIED / ACCORD CLEARANCE ONLY</b></div><br><p>The mist-conduits north of <i>Griefwater Cay</i> are fluctuating violently. Three cargo skiffs failed to check in at beacon four.</p><ul><li>Vessel 1: Presumed adrift in dense mist</li><li>Vessel 2: Hull breach detected</li><li>Vessel 3: Cargo intact, rerouted to Zephyria</li></ul>",
-  "date": "0.457.015.M42",
-  "readBy": [
-    1
-  ],
-  "recipientIds": [
-    1,
-    2,
-    3
-  ],
-  "targetNames": [
-    "mark",
-    "House Voss Claimants"
-  ],
-  "isDeleted": false
-}
-```
-
----
-
-## 3. Database Scoping & Reference Tagging
-
-- **Database Collection**: Letters are campaign-scoped entities stored in the `NebryssCampaignAssets` database inside `${prefix}-letter` (e.g. `nebryss-voss-succession-letter`).
-- **Entity Reference Tag**: `@letter[<id>]` (e.g. `@letter[6]`) for raw database persistence.
-- **Chat Display**: When presenting letter drafts in chat for user review, use clean text (e.g. `Letter: Seraphine Voss declared a heretic`), never raw reference tags.
-
----
-
-## 4. Companion Tool CLI Commands
-
-Execute mutations via `campaign-session-tool.js` (staged for interactive user approval). Always generate and run commands as a **single line** (no bash `\` continuations):
-
-```bash
-# Create standard Letter
-node scripts/campaign-session-tool.js create-letter --campaignId=1 --subject="Warning from the Docks" --senderName="Old Salt Brand" --content="<div>Keep your crews away from the eastern reef. The Corsairs have mined the narrows.</div>" --date="0.112.088.M42" --recipientIds="1,2"
-
-# Update existing Letter (Send the COMPLETE object with all fields)
-node scripts/campaign-session-tool.js update-letter --campaignId=1 --id=5 --subject="Voss Flagship Charter (Decrypted)" --senderId=3 --senderName="Master Navigator Seneschal Darius Mountain" --content="<div><b>DECRYPTED IMPERIAL DISPATCH</b></div><br><p>The coordinates of the hidden Voss cache have been verified north of Griefwater Cay.</p>" --date="0.458.015.M42" --recipientIds="1,2,3" --targetNames='["Mark","House Voss Claimants"]' --readBy='[1]' --isDeleted=false
-```
-
+## 3. Commands (single line)
+`node scripts/campaign-session-tool.js create-letter --campaignId=1 --subject="Warning from the Docks" --senderName="Old Salt Brand" --message="<div>Keep your crews away from the eastern reef. The Corsairs have mined the narrows.</div>" --date="0.112.088.M42" --recipientIds="2,3"`
+`node scripts/campaign-session-tool.js update-letter --campaignId=1 --id=5 --subject="Voss Flagship Charter (Decrypted)" --readBy='[2]'`

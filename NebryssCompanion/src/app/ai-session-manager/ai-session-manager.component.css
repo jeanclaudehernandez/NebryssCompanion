@@ -214,6 +214,45 @@
   border-radius: 4px;
 }
 
+/* Model context gauge */
+.context-gauge {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.context-gauge-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+.context-gauge-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: #8b5cf6;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+.context-gauge.warn .context-gauge-fill { background: #f59e0b; }
+.context-gauge.high .context-gauge-fill { background: #ef4444; }
+/* where the bridge starts trimming old messages */
+.context-gauge-trim {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(255, 255, 255, 0.35);
+}
+.context-gauge-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  font-variant-numeric: tabular-nums;
+}
+.context-gauge-percent {
+  color: rgba(255, 255, 255, 0.4);
+}
+
 /* Quick Actions */
 .quick-actions {
   display: flex;
@@ -922,6 +961,19 @@ body:not(.dark-theme) .system-message {
 
 body:not(.dark-theme) .status-bar {
   background: rgba(0, 0, 0, 0.04);
+}
+
+body:not(.dark-theme) .context-gauge-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+body:not(.dark-theme) .context-gauge-trim {
+  background: rgba(0, 0, 0, 0.35);
+}
+body:not(.dark-theme) .context-gauge-text {
+  color: rgba(0, 0, 0, 0.75);
+}
+body:not(.dark-theme) .context-gauge-percent {
+  color: rgba(0, 0, 0, 0.45);
 }
 
 body:not(.dark-theme) .quick-action-btn {
@@ -1690,4 +1742,118 @@ body:not(.dark-theme) .btn-toggle-raw-result:hover,
 body:not(.dark-theme) .btn-copy-raw-result:hover {
   background: rgba(16, 185, 129, 0.22);
   color: #065f46;
+}
+
+/* AI Engine Toggle (Colibri / AGY) */
+.backend-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.backend-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.backend-toggle-btn .material-icons {
+  font-size: 16px;
+}
+
+.backend-toggle-btn:hover:not(:disabled):not(.active) {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.backend-toggle-btn.active {
+  background: rgba(99, 102, 241, 0.25);
+  color: #e0e7ff;
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.5);
+}
+
+.backend-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body:not(.dark-theme) .backend-toggle {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+body:not(.dark-theme) .backend-toggle-btn {
+  color: rgba(15, 23, 42, 0.65);
+}
+
+body:not(.dark-theme) .backend-toggle-btn:hover:not(:disabled):not(.active) {
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f172a;
+}
+
+body:not(.dark-theme) .backend-toggle-btn.active {
+  background: rgba(99, 102, 241, 0.14);
+  color: #4338ca;
+  box-shadow: inset 0 0 0 1px rgba(99, 102, 241, 0.35);
+}
+
+.tool-chip.error {
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fca5a5;
+}
+
+.tool-chip.error .tool-icon {
+  color: #ef4444;
+}
+
+.model-select {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+}
+
+.model-select option {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.model-select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body:not(.dark-theme) .model-select {
+  background: #ffffff;
+  border-color: rgba(0, 0, 0, 0.14);
+  color: #0f172a;
+}
+
+body:not(.dark-theme) .model-select option {
+  background: #ffffff;
+  color: #0f172a;
 }

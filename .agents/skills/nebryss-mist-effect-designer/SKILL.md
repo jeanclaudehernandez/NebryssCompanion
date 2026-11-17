@@ -5,50 +5,19 @@ description: Designs, balances, and formats environmental Mist Effects, density 
 
 # Nebryss Mist Effect Designer
 
-This skill governs the creation, density scaling, and tactical combat rules of environmental Mist Effects within the Nebryss skirmish game.
+Mist effects are environmental rules per mist density (`mistEffect` collection). See existing ones with `list-entities misteffect`.
 
----
+## 1. Steps
+1. **`effectName`**: short hazard name (Mist Anomaly, Obscuration, Drift, Resonance...).
+2. **`densityLevel`** and its intensity:
+   - `"Light"`: visibility penalties (Obscured beyond ~10″), slight movement friction.
+   - `"Medium"`: action limits (no Dash), random 2″ drifts, Obscured beyond ~6″, worse ranged WS.
+   - `"Dense"`: random mortal wounds, Forces of Nature / warp ambushes, psychic resonance, no Silent/Conceal.
+   - `""`: universal or dispersal-zone rules.
+3. **`description`**: tabletop rules with clear triggers (start of turning point, on activation, on attack); HTML `<strong>` for key numbers.
+4. Draft in chat for approval.
 
-## 1. Execution Steps
+**Persistence**: no companion command; saved through `PUT /api/mistEffect`, which replaces the whole document — always send `id`, `effectName`, `densityLevel` and `description` together.
 
-1. **Establish Effect Concept & Density Level**:
-   - `effectName`: Clear, punchy hazard name (e.g., *"Mist Anomaly"*, *"Obscuration"*, *"Drift"*, *"Resonance"*, *"Mist Echoes"*).
-   - `densityLevel`: Select the environmental tier:
-     - `"Light"`: Subtle visibility penalties, minor movement adjustments.
-     - `"Medium"`: Action restrictions (e.g. no dash), positioning shifts, moderate WS penalties.
-     - `"Dense"`: Severe mortal wound triggers, creature spawning, ability suppression, heavy targeting limits.
-     - `""` (Empty): Universal or dispersal zone rules.
-2. **Draft Rules Text (`description`)**:
-   - Write clear tabletop rules for turning point triggers, activation checks, or combat dice modifications.
-   - Use HTML formatting tags (`<strong>4+</strong>`, `<strong>1D3 wound</strong>`, `10″`) for bold highlighting in table cards.
-3. **Format & Persist**: Output valid JSON matching the `MistEffect` schema.
-4. **Full Object Replacement on Updates (API Overwrite Rule)**: The API updates database records via full document overwrite (`replaceOne` matching the `id` field). When updating a Mist Effect (`PUT /api/mistEffect`), always pass the **entire object with all fields** (`id`, `effectName`, `densityLevel`, `description`), NOT only the modified fields.
-
----
-
-## 2. JSON Schema (`MistEffect`)
-
-```json
-{
-  "id": 9999,
-  "effectName": "Aetheric Surge",
-  "densityLevel": "Dense",
-  "description": "At the start of each Turning Point, all operatives in the mist zone roll <strong>1D6</strong>. On a <strong>1</strong>, that operative suffers <strong>1D3 mortal wounds</strong> from arcing mist electricity."
-}
-```
-
----
-
-## 3. Canonical Density Tiers Reference
-
-- **Light Mist**: Operatives treat line of sight beyond 10″ as Obscured; slight movement friction.
-- **Medium Mist**: Dash actions prohibited or restricted; random 2″ drifts; line of sight beyond 6″ obscured; worsening of ballistic WS.
-- **Dense Mist**: Random lethal wounds; warp entities / Forces of Nature ambushes; psychic resonance (+1 to hit but risk of self-wounding); inability to use Silent or Conceal abilities.
-
----
-
-## 4. Database Scoping & API Operations
-
-- **Database Collection**: Mist Effects are stored globally in the `Nebryss-assets` database inside the `mistEffect` collection.
-- **Update Rule (`PUT /api/mistEffect`)**: When updating existing mist effects, always send the full object (`id`, `effectName`, `densityLevel`, `description`) to avoid wiping out properties during `replaceOne` document replacement.
-
+## 2. Schema (`MistEffect`)
+`{ "id": n, "effectName": "Aetheric Surge", "densityLevel": "Dense", "description": "At the start of each Turning Point, operatives in the mist roll <strong>1D6</strong>; on a <strong>1</strong> they suffer <strong>1D3 mortal wounds</strong>." }`

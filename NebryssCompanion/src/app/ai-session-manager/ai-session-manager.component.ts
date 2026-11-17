@@ -15,9 +15,12 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import {
+  AgentBackend,
+  AgyModelOption,
   AiSessionManagerService,
   ChatMessage,
   ConnectionStatus,
+  ContextUsage,
   PendingCommand
 } from './ai-session-manager.service';
 import { CampaignService } from '../campaign.service';
@@ -56,6 +59,9 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   isAdmin = false;
   messages: ChatMessage[] = [];
   connectionStatus: ConnectionStatus = 'disconnected';
+  agentBackend: AgentBackend = 'colibri';
+  agyModels: AgyModelOption[] = [];
+  selectedAgyModel = '';
   isAgentTyping = false;
   inputText = '';
   sidebarCollapsed = false;
@@ -65,6 +71,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   activePlayers: Player[] = [];
   conversationId: string | null = null;
   agentStatus: string | null = null;
+  contextUsage: ContextUsage | null = null;
 
   private shouldScrollToBottom = false;
   private previousMessageCount = 0;
@@ -122,6 +129,26 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         this.connectionStatus = status;
       });
 
+    // Subscribe to active AI backend (Colibri / AGY)
+    this.aiService.agentBackend$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(backend => {
+        this.agentBackend = backend;
+      });
+
+    // Subscribe to AGY model list and selected model
+    this.aiService.agyModels$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(models => {
+        this.agyModels = models;
+      });
+
+    this.aiService.agyModel$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(model => {
+        this.selectedAgyModel = model;
+      });
+
     // Subscribe to typing state
     this.aiService.isAgentTyping$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -130,6 +157,13 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         if (typing) {
           this.shouldScrollToBottom = true;
         }
+      });
+
+    // How full the model's context is (Colibri reports it with each reply)
+    this.aiService.contextUsage$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(usage => {
+        this.contextUsage = usage;
       });
 
     // Track conversation ID
@@ -240,6 +274,42 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   reconnect(): void {
     this.aiService.connect();
+  }
+
+  /** 12345 -> "12.3k" for the context gauge. */
+  formatTokens(value: number): string {
+    if (!Number.isFinite(value) || value <= 0) return '0';
+    return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(Math.round(value));
+  }
+
+  /** Gauge colour step: normal until the bridge is close to trimming old messages. */
+  get contextLevel(): 'ok' | 'warn' | 'high' {
+    const u = this.contextUsage;
+    if (!u || !u.historyBudget) return 'ok';
+    const ofBudget = u.used / u.historyBudget;
+    return ofBudget >= 0.9 ? 'high' : ofBudget >= 0.7 ? 'warn' : 'ok';
+  }
+
+  switchBackend(backend: AgentBackend): void {
+    if (this.isAgentTyping || this.agentBackend === backend) return;
+    this.aiService.setAgentBackend(backend);
+    this.conversationId = null;
+    this.toastService.show(
+      `Switched AI Engine to ${backend === 'agy' ? 'AGY' : 'Colibri (Local)'}`,
+      'info',
+      3000
+    );
+  }
+
+  onAgyModelChange(modelId: string): void {
+    if (this.isAgentTyping) return;
+    this.aiService.setAgyModel(modelId);
+    const matched = this.agyModels.find(m => m.id === modelId);
+    this.toastService.show(
+      `AGY model set to ${matched ? matched.label : (modelId || 'Default')}`,
+      'info',
+      2500
+    );
   }
 
   // ─── Input Handling ───────────────────────────────────────────

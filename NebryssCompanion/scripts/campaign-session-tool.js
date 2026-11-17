@@ -1345,8 +1345,18 @@ async function updateShop(shopUpdateData) {
   };
 }
 
+// The app renders a letter's body from `message`; accept `content` as an alias for it.
+function normalizeLetterBody(fields) {
+  if (fields.content !== undefined) {
+    if (fields.message === undefined) fields.message = fields.content;
+    delete fields.content;
+  }
+  return fields;
+}
+
 async function createLetter(letterData) {
   const { campaignId, ...fields } = letterData;
+  normalizeLetterBody(fields);
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.subject && !fields.title) {
     throw new Error('Letter requires at least "subject" or "title".');
@@ -1372,6 +1382,7 @@ async function updateLetter(letterUpdateData) {
   Object.keys(updates).forEach(key => {
     if (updates[key] === undefined) delete updates[key];
   });
+  normalizeLetterBody(updates);
   if (updates.recipientIds !== undefined) {
     updates.recipientIds = parseIdArray(updates.recipientIds);
   }
@@ -2272,8 +2283,9 @@ Parameters:
   --notes="<string>"      Character notes / backstory
 
 Note:
-  Always pass all entity parameters (--attributes, --weapons, --abilities, --items, --progression/gold) to preserve the full character sheet.
-  If full parameters are not in context, run 'get-entity player <id>' first.
+  Fields you do not pass are kept. A list you pass (--weapons, --abilities, --items, --talents,
+  --afflictions) replaces the stored list, so run 'get-entity player <id>' first and send the full list.
+  --weapons holds weapon-table IDs; --items holds item-table IDs only, never weapons.
 `,
   'create-npc': `
 Command: create-npc
@@ -2378,14 +2390,18 @@ Parameters:
   --subject="<string>"    Letter title / subject (required)
   --senderId=<id>         Sender NPC ID
   --senderName="<string>" Sender name
-  --content="<string>"    HTML / text letter content
+  --message="<string>"    HTML / text letter body (--content is accepted as an alias)
   --date="<string>"       In-game imperial date
   --recipientIds="<ids>"  Comma-separated recipient player IDs
+  --targetNames='[...]'   JSON array of intended recipient names
+  --readBy='[...]'        JSON array of player IDs who read it
 `,
   'update-letter': `
 Command: update-letter
 Usage:
   node scripts/campaign-session-tool.js update-letter --campaignId=N --id=<id> [options]
+
+Takes the create-letter parameters; only the ones you pass are changed.
 `,
   'create-item': `
 Command: create-item

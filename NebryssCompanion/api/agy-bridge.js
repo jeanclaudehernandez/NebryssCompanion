@@ -63,7 +63,7 @@ function extractStagedData(rawOutput) {
     if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
       return parsedOut;
     }
-  } catch (_) {}
+  } catch (_) { }
 
   // 3. Extract JSON substring between outermost braces { ... }
   const firstBrace = str.indexOf('{');
@@ -75,7 +75,7 @@ function extractStagedData(rawOutput) {
       if (parsedOut && (parsedOut.requiresApproval || parsedOut.status === 'PENDING_USER_APPROVAL')) {
         return parsedOut;
       }
-    } catch (_) {}
+    } catch (_) { }
   }
 
   // 4. Regex fallback extraction for large/truncated outputs
@@ -93,7 +93,7 @@ function extractStagedData(rawOutput) {
         payload: {}
       };
     }
-  } catch (_) {}
+  } catch (_) { }
 
   return null;
 }
@@ -181,7 +181,7 @@ function extractCommandsFromText(fullText, campaignId, onEvent) {
 
       try {
         if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-      } catch (_) {}
+      } catch (_) { }
 
       if (res.stdout) {
         const staged = handleToolOutputForStaging(res.stdout, onEvent);
@@ -376,7 +376,7 @@ function tryFallbackAutoStage(fullText, campaignId, onEvent, currentTurnUserProm
   }
 
   const isSessionPlan = (sessionId !== null && (hasPlanStructure || hasSessionHeader || hasStagingKeywords || isConclusion)) ||
-                        (hasSessionHeader && hasPlanStructure);
+    (hasSessionHeader && hasPlanStructure);
 
   if (!isSessionPlan) {
     console.log('[AGY Bridge] Fallback auto-stager skipped: text does not match session plan structure.');
@@ -436,7 +436,7 @@ function tryFallbackAutoStage(fullText, campaignId, onEvent, currentTurnUserProm
   } finally {
     try {
       if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-    } catch (_) {}
+    } catch (_) { }
   }
 }
 
@@ -469,7 +469,7 @@ function handleToolOutputForStaging(rawOutput, onEvent) {
  * @param {function} options.onClose  — Called when the process exits
  * @returns {AgentSession}
  */
-function createAgentSession({ onEvent, onError, onClose }) {
+function createAgentSession({ onEvent, onError, onClose, model }) {
   let conversationId = null;
   let activeProcess = null;
   let isProcessing = false;
@@ -477,11 +477,13 @@ function createAgentSession({ onEvent, onError, onClose }) {
   let isDestroyed = false;
   let streamedTokenCount = 0;
   let activeCampaignId = 1;
+  let activeModel = typeof model === 'string' ? model.trim() : '';
   let streamedResponseText = '';
   let pendingCommandsCount = 0;
   let currentTurnUserPrompt = '';
   let executedToolsInTurn = [];
   let hasEmittedResponseEnd = false;
+  let lastStderrError = '';
 
   /**
    * Build the system preamble that primes the agent for session management.
@@ -508,11 +510,12 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '12. STRICT COLLECTION HANDLING & NO DUAL WRITES: All campaign entities must be stored directly in their specific campaign collection in NebryssCampaignAssets (e.g. `<campaign-prefix>-player`, `<campaign-prefix>-npc`, `<campaign-prefix>-location`, `<campaign-prefix>-shop`, `<campaign-prefix>-letter`). There are no fallback generic collections or dual writes. If the campaign collection is not present or an error is returned indicating that the collection does not exist in database, DO NOT guess or attempt to create fallback collections; immediately inform and prompt the user to indicate the collection/campaign name again.',
       `13. STRICT CAMPAIGN ISOLATION & MANDATORY --campaignId INVOCATION: The active campaign ID is ${targetCamp}. All session planning, history analysis, debriefing, narrative drafting, and entity manipulation workflows must strictly and exclusively target this active campaign. You MUST ALWAYS include --campaignId=${targetCamp} in EVERY CLI command you generate for campaign-scoped entities (players, npcs, locations, shops, letters, sessions). You must completely ignore all other campaigns in the database; never query, reference, mix, or allow characters, plot lines, sessions, or lore from other campaigns to bleed into the active campaign.`,
       '14. CONCISE CONFIRMATIONS (NO UNPROMPTED EXTRA STEPS OR SESSION PROPOSALS): When the user requests creating, updating, or deleting an entity (Player, NPC, Location, Shop, Bestiary creature, Letter, Item, Weapon, etc.), concisely draft the entity and summarize key details using clean names. Strictly DO NOT suggest unprompted extra steps, pitch follow-up tasks, or propose creating new campaign sessions unless the user explicitly requested session planning.',
-      `15. MANDATORY FULL ENTITY PARAMETERS ON ALL UPDATES (FETCH BEFORE UPDATE RULE): When proposing an update to ANY entity (update-player, update-npc, update-location, update-shop, update-bestiary, update-letter, update-item, update-weapon, update-weapon-rule, update-altered-state, update-affliction), you MUST ALWAYS supply the complete entity parameters in the command string. If the entity's complete attributes, abilities, or items are not fully known in your current context, you MUST FIRST run \`node scripts/campaign-session-tool.js get-entity <type> <id> --campaignId=${targetCamp}\` via run_command to fetch the complete entity document, merge your modifications into the complete document, and then output the full update command string with all fields fully populated.`,
+      `15. ENTITY UPDATES MERGE (FETCH LISTS BEFORE UPDATE): update-* commands (update-player, update-npc, update-location, update-shop, update-bestiary, update-letter, update-item, update-weapon, update-weapon-rule, update-altered-state, update-affliction) keep every field you do not pass, so pass --id plus the changed fields. A list parameter you pass (--weapons, --items, --abilities, --profiles, --talents, --wargear, --secrets...) REPLACES the stored list, so FIRST run \`node scripts/campaign-session-tool.js get-entity <type> <id> --campaignId=${targetCamp}\` via run_command and pass the complete new list. On players, --weapons holds weapon-table IDs and --items holds [{id, quant}] item-table IDs only (a weapon never goes in --items).`,
       `16. MANDATORY DATABASE FETCH BEFORE PLANNING OR CONCLUDING SESSIONS (ANTI-HALLUCINATION PROTOCOL): Before pitching, drafting, planning, or concluding any campaign session, you MUST FIRST execute \`node scripts/campaign-session-tool.js get-context ${targetCamp}\` and \`node scripts/campaign-session-tool.js get-latest ${targetCamp} --clean\` using run_command to inspect current active player stats, current location, previous session outcome, known NPCs, and open narrative threads. You MUST NEVER draft session ideas or conclusions out of thin air without querying the live database state first.`,
       `17. STRICT PROHIBITION OF AD-HOC SCRIPTS, DIRECT DB QUERIES, AND FILE READING: You are STRICTLY FORBIDDEN from reading, viewing, inspecting, searching, or querying ANY files on the filesystem (e.g. JSON files, source files, data files, assets) directly or via CLI commands/scripts (such as \`cat\`, \`type\`, \`Get-Content\`, \`fs.readFile\`, \`Get-ChildItem\`, \`dir\`, \`grep\`). You are STRICTLY FORBIDDEN from running ad-hoc scripts, terminal commands, or one-liners (such as \`node -e\`, inline \`MongoClient\` scripts, raw database connection strings, or filesystem traversal commands). When using \`run_command\`, the CommandLine MUST strictly begin with \`node scripts/campaign-session-tool.js <read-only-command>\`. ALL campaign data and entities MUST be accessed strictly via the database companion tool.`,
       `18. FULL SESSION CONTENT PRESERVATION & NO CONCLUSION MISROUTING: When proposing a save or update to a session plan, ALWAYS generate \`node scripts/campaign-session-tool.js save --campaignId=${targetCamp} --sessionId=<id> --content="..."\`. You MUST pass the complete, full detailed markdown text of the session plan in \`--content\`. NEVER shorten, summarize, or truncate the session plan into a brief paragraph when executing the save command. The \`finalize\` command and \`conclussion\` field are STRICTLY RESERVED for debriefing what happened AFTER a session is played; NEVER save a session plan into \`conclussion\`.`,
-      `19. CONVERSATIONAL REVIEW & COMMAND GENERATION PROTOCOL (DRAFT FIRST, CONFIRM, THEN STAGE): When planning a session, drafting an entity, revising a plan, or preparing a conclusion: First query context using read-only commands (\`get-context\`, \`get-latest\`, \`get-entity\`, \`list-entities\`). Pitch ideas or draft the narrative plan / entity in chat using natural, clean entity names. Ask the user for their review and feedback. When the user approves or asks to save/finalize, output the single-line CLI command string in a bash code block with tagged IDs. DO NOT execute mutation commands via run_command.`
+      `19. CONVERSATIONAL REVIEW & COMMAND GENERATION PROTOCOL (DRAFT FIRST, CONFIRM, THEN STAGE): When planning a session, drafting an entity, revising a plan, or preparing a conclusion: First query context using read-only commands (\`get-context\`, \`get-latest\`, \`get-entity\`, \`list-entities\`). Pitch ideas or draft the narrative plan / entity in chat using natural, clean entity names. Ask the user for their review and feedback. When the user approves or asks to save/finalize, output the single-line CLI command string in a bash code block with tagged IDs. DO NOT execute mutation commands via run_command.`,
+      `20. WEAPON SPECIAL RULES DESCRIPTIONS: Whenever you describe or present a weapon (including its profiles), ALWAYS resolve and include the full name and effect/description of every special rule it has (never output bare rule IDs like "Rule 58"). If any special rule description is missing from your context, fetch it via \`node scripts/campaign-session-tool.js get-entity weapon <idOrName> --campaignId=${targetCamp}\` or \`get-entity weaponrule <id> --campaignId=${targetCamp}\` before answering.`
     ].filter(Boolean).join('\n');
   }
 
@@ -529,11 +532,15 @@ function createAgentSession({ onEvent, onError, onClose }) {
       '--add-dir', WORKSPACE_DIR,
     ];
 
+    if (activeModel) {
+      args.push('--model', activeModel);
+    }
+
     if (conversationId) {
       args.push('--conversation', conversationId);
     }
 
-    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'} (active campaign: ${activeCampaignId})`);
+    console.log(`[AGY Bridge] Spawning agy with conversationId: ${conversationId || 'new'} (active campaign: ${activeCampaignId}, model: ${activeModel || 'default'})`);
 
     return spawn(AGY_CMD, args, {
       cwd: WORKSPACE_DIR,
@@ -703,6 +710,10 @@ function createAgentSession({ onEvent, onError, onClose }) {
           }
         }
 
+        if (res?.status === 'ERROR' && lastStderrError) {
+          onError(lastStderrError);
+        }
+
         onEvent({
           type: 'response_end',
           conversationId: res?.conversation_id || conversationId,
@@ -775,6 +786,7 @@ function createAgentSession({ onEvent, onError, onClose }) {
       prompt = campHeader + text;
     }
 
+    lastStderrError = '';
     const proc = spawnAgy(prompt);
     activeProcess = proc;
 
@@ -786,6 +798,17 @@ function createAgentSession({ onEvent, onError, onClose }) {
       const errMsg = data.toString('utf8').trim();
       if (errMsg) {
         console.warn(`[AGY Bridge STDERR]: ${errMsg}`);
+        const agyErrMatch = errMsg.match(/AGY_ERROR:\s*(\{.*\})/);
+        if (agyErrMatch) {
+          try {
+            const parsedErr = JSON.parse(agyErrMatch[1]);
+            lastStderrError = parsedErr.short_error || parsedErr.message || errMsg;
+            return;
+          } catch (_) { }
+        }
+        if (!lastStderrError) {
+          lastStderrError = errMsg.split(/\r?\n/)[0];
+        }
       }
     });
 
@@ -858,6 +881,11 @@ function createAgentSession({ onEvent, onError, onClose }) {
     destroy,
     getConversationId: () => conversationId,
     getActiveCampaignId: () => activeCampaignId,
+    getModel: () => activeModel,
+    setModel: (newModel) => {
+      activeModel = typeof newModel === 'string' ? newModel.trim() : '';
+      console.log(`[AGY Bridge] Model updated to: ${activeModel || 'default'}`);
+    },
     isProcessing: () => isProcessing,
     setActiveCampaign: (newId) => {
       activeCampaignId = Number(newId) || activeCampaignId;
@@ -866,4 +894,67 @@ function createAgentSession({ onEvent, onError, onClose }) {
   };
 }
 
-module.exports = { createAgentSession };
+const FALLBACK_AGY_MODELS = [
+  { id: 'gemini-4-argon-high', label: 'Gemini 4 Argon (High)' },
+  { id: 'gemini-4-argon-medium', label: 'Gemini 4 Argon (Medium)' },
+  { id: 'gemini-4-argon-low', label: 'Gemini 4 Argon (Low)' },
+  { id: 'gemini-4-hydrogen-high', label: 'Gemini 4 Hydrogen (High)' },
+  { id: 'gemini-4-hydrogen-xhigh', label: 'Gemini 4 Hydrogen (XHigh)' },
+  { id: 'gemini-4-hydrogen-medium', label: 'Gemini 4 Hydrogen (Medium)' },
+  { id: 'gemini-4-hydrogen-low', label: 'Gemini 4 Hydrogen (Low)' },
+  { id: 'gemini-3.8-flash-high', label: 'Gemini 3.8 Flash (High)' },
+  { id: 'gemini-3.8-flash-medium', label: 'Gemini 3.8 Flash (Medium)' },
+  { id: 'gemini-3.8-flash-low', label: 'Gemini 3.8 Flash (Low)' },
+  { id: 'claude-opus-5-5-high', label: 'Claude Opus 5.5 (High)' },
+  { id: 'claude-opus-5-5-medium', label: 'Claude Opus 5.5 (Medium)' },
+  { id: 'claude-sonnet-5-5-high', label: 'Claude Sonnet 5.5 (High)' },
+  { id: 'claude-sonnet-5-5-medium', label: 'Claude Sonnet 5.5 (Medium)' },
+  { id: 'gpt-oss-120b-medium', label: 'GPT-OSS 120B (Medium)' }
+];
+
+let cachedAgyModels = null;
+let cachedAgyModelsAt = 0;
+
+function listAgyModels() {
+  if (cachedAgyModels && Date.now() - cachedAgyModelsAt < 5 * 60 * 1000) {
+    return Promise.resolve(cachedAgyModels);
+  }
+  return new Promise((resolve) => {
+    const child = spawn(AGY_CMD, ['models'], {
+      cwd: WORKSPACE_DIR,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: false
+    });
+    let stdout = '';
+    const timer = setTimeout(() => {
+      try { child.kill('SIGTERM'); } catch (_) { }
+      resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+    }, 8000);
+
+    child.stdout.on('data', (d) => { stdout += d.toString('utf8'); });
+    child.on('error', () => {
+      clearTimeout(timer);
+      resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+    });
+    child.on('close', () => {
+      clearTimeout(timer);
+      const parsed = stdout
+        .split(/\r?\n/)
+        .map(line => line.trim())
+        .filter(line => line && line.includes('\t'))
+        .map(line => {
+          const [id, ...rest] = line.split('\t');
+          return { id: id.trim(), label: rest.join(' ').trim() || id.trim() };
+        });
+      if (parsed.length > 0) {
+        cachedAgyModels = parsed;
+        cachedAgyModelsAt = Date.now();
+        resolve(parsed);
+      } else {
+        resolve(cachedAgyModels || FALLBACK_AGY_MODELS);
+      }
+    });
+  });
+}
+
+module.exports = { createAgentSession, listAgyModels };

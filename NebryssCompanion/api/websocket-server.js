@@ -1,6 +1,7 @@
 const http = require('http');
 const { WebSocketServer, WebSocket } = require('ws');
-const { createAgentSession } = require('./agy-bridge');
+const { createAgentSession: createAgySession, listAgyModels } = require('./agy-bridge');
+const { createAgentSession: createColibriSession } = require('./colibri-bridge');
 
 function setupWebSocketServer(server) {
   // Main data-sync WebSocket server (existing)
@@ -44,31 +45,50 @@ function setupWebSocketServer(server) {
     });
   });
 
-  // ─── AGY Agent WebSocket ─────────────────────────────────────────
-  agentWss.on('connection', (ws) => {
+  // ─── AI Agent WebSocket (Colibri / AGY) ──────────────────────────
+  agentWss.on('connection', (ws, request) => {
     ws.isAlive = true;
     ws.on('pong', () => {
       ws.isAlive = true;
     });
 
-    console.log('[AGY WS] Client connected');
+    let requestedBackend = null;
+    let requestedModel = '';
+    try {
+      const reqUrl = new URL(request?.url || '/', `http://${request?.headers?.host || 'localhost'}`);
+      requestedBackend = reqUrl.searchParams.get('backend');
+      requestedModel = reqUrl.searchParams.get('model') || '';
+    } catch (_) {}
+
+    let activeBackend = (requestedBackend === 'agy' || requestedBackend === 'colibri')
+      ? requestedBackend
+      : (process.env.AGENT_BACKEND === 'agy' ? 'agy' : 'colibri');
+    let activeModel = typeof requestedModel === 'string' ? requestedModel.trim() : '';
+
+    const createSessionForBackend = (backendName) => {
+      const factory = backendName === 'agy' ? createAgySession : createColibriSession;
+      return factory({
+        model: backendName === 'agy' ? activeModel : undefined,
+        onEvent: (event) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify(event));
+          }
+        },
+        onError: (message) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'error', message }));
+          }
+        },
+        onClose: () => {
+          // Agent process closed — handled by onEvent response_end
+        },
+      });
+    };
+
+    console.log(`[Agent WS] Client connected (backend: ${activeBackend})`);
 
     // Create an agent session for this WebSocket connection
-    const session = createAgentSession({
-      onEvent: (event) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify(event));
-        }
-      },
-      onError: (message) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ type: 'error', message }));
-        }
-      },
-      onClose: () => {
-        // Agent process closed — handled by onEvent response_end
-      },
-    });
+    let session = createSessionForBackend(activeBackend);
 
     ws.on('message', (rawMessage) => {
       try {
@@ -249,6 +269,63 @@ function setupWebSocketServer(server) {
             break;
           }
 
+          case 'set_backend': {
+            const nextBackend = msg.backend === 'agy' ? 'agy' : (msg.backend === 'colibri' ? 'colibri' : null);
+            if (!nextBackend) {
+              ws.send(JSON.stringify({ type: 'error', message: `Invalid backend: ${msg.backend}` }));
+              break;
+            }
+            if (nextBackend !== activeBackend) {
+              const prevCampaignId = session.getActiveCampaignId ? session.getActiveCampaignId() : 1;
+              session.destroy();
+              activeBackend = nextBackend;
+              session = createSessionForBackend(activeBackend);
+              if (session.setActiveCampaign && prevCampaignId) {
+                session.setActiveCampaign(prevCampaignId);
+              }
+              console.log(`[Agent WS] Switched backend to: ${activeBackend} (campaign: ${prevCampaignId})`);
+            }
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'backend_changed',
+                backend: activeBackend,
+                model: activeBackend === 'agy' ? activeModel : undefined,
+              }));
+            }
+            break;
+          }
+
+          case 'get_agy_models': {
+            listAgyModels().then((models) => {
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                  type: 'agy_models',
+                  models,
+                  activeModel,
+                }));
+              }
+            }).catch((err) => {
+              if (ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'error', message: `Failed to list AGY models: ${err.message}` }));
+              }
+            });
+            break;
+          }
+
+          case 'set_model': {
+            activeModel = typeof msg.model === 'string' ? msg.model.trim() : '';
+            if (activeBackend === 'agy' && session.setModel) {
+              session.setModel(activeModel);
+            }
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({
+                type: 'model_changed',
+                model: activeModel,
+              }));
+            }
+            break;
+          }
+
           default:
             ws.send(JSON.stringify({
               type: 'error',
@@ -276,7 +353,9 @@ function setupWebSocketServer(server) {
     // Send initial connection confirmation
     ws.send(JSON.stringify({
       type: 'connected',
-      message: 'AGY bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.',
+      backend: activeBackend,
+      model: activeBackend === 'agy' ? activeModel : undefined,
+      message: `${activeBackend === 'agy' ? 'AGY' : 'Colibri'} bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.`,
     }));
   });
 
