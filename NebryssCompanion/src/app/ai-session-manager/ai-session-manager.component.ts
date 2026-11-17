@@ -3,6 +3,7 @@ import {
   DestroyRef,
   ElementRef,
   EventEmitter,
+  HostListener,
   OnInit,
   Output,
   ViewChild,
@@ -19,6 +20,8 @@ import {
   AgyModelOption,
   AiSessionManagerService,
   ChatMessage,
+  ColibriEngineMode,
+  ColibriEngineState,
   ConnectionStatus,
   ContextUsage,
   PendingCommand
@@ -46,13 +49,16 @@ interface Player {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ai-session-manager.component.html',
-  styleUrls: ['./ai-session-manager.component.css']
+  styleUrls: ['./ai-session-manager.component.css', './ai-session-manager.engine.css']
 })
 export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   @Output() viewChange = new EventEmitter<AppView>();
 
   @ViewChild('messagesContainer') messagesContainer!: ElementRef<HTMLDivElement>;
   @ViewChild('inputArea') inputArea!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('engineLog') engineLog?: ElementRef<HTMLPreElement>;
+  @ViewChild('enginePicker') enginePicker?: ElementRef<HTMLDivElement>;
+  @ViewChild('enginePickerButton') enginePickerButton?: ElementRef<HTMLButtonElement>;
 
   private readonly destroyRef = inject(DestroyRef);
 
@@ -72,6 +78,30 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   conversationId: string | null = null;
   agentStatus: string | null = null;
   contextUsage: ContextUsage | null = null;
+
+  // Colibri engine (CUDA / Vulkan) and the blocking popup shown while it switches
+  colibriEngine: ColibriEngineState | null = null;
+  engineModalOpen = false;
+  engineElapsed = '';
+  readonly engineSteps: { key: string; label: string }[] = [
+    { key: 'stopping', label: 'Stop the running engine' },
+    { key: 'starting', label: 'Launch Colibri' },
+    { key: 'loading', label: 'Load the model' },
+    { key: 'ready', label: 'Ready to answer' }
+  ];
+  // Experimental format (Colibri): list results as tables instead of JSON
+  experimentalFormat = false;
+
+  // AI Engine menu: level 1 picks the bridge, level 2 Colibri's engine or Antigravity's model
+  engineMenuOpen = false;
+  engineMenuView: 'bridges' | 'colibri' | 'agy' = 'bridges';
+  readonly colibriEngineOptions: { id: ColibriEngineMode; icon: string; desc: string }[] = [
+    { id: 'cuda', icon: 'bolt', desc: 'Fastest replies' },
+    { id: 'vulkan', icon: 'layers', desc: 'Larger context, slower to read long prompts' }
+  ];
+  private engineCloseTimer: any = null;
+  private engineElapsedTimer: any = null;
+  private shouldScrollEngineLog = false;
 
   private shouldScrollToBottom = false;
   private previousMessageCount = 0;
@@ -166,6 +196,21 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         this.contextUsage = usage;
       });
 
+    this.aiService.experimentalFormat$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(on => {
+        this.experimentalFormat = on;
+      });
+
+    // Colibri engine state and switch progress (from this or any other open UI)
+    this.aiService.colibriEngine$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(state => this.onColibriEngineState(state));
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(this.engineCloseTimer);
+      clearInterval(this.engineElapsedTimer);
+    });
+
     // Track conversation ID
     this.aiService.rawEvents$
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -220,6 +265,11 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     if (this.shouldScrollToBottom && this.isAtBottom) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
+    }
+    if (this.shouldScrollEngineLog && this.engineLog) {
+      const el = this.engineLog.nativeElement;
+      el.scrollTop = el.scrollHeight;
+      this.shouldScrollEngineLog = false;
     }
   }
 
@@ -299,6 +349,213 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       'info',
       3000
     );
+  }
+
+  onExperimentalFormatChange(enabled: boolean): void {
+    this.aiService.setExperimentalFormat(enabled);
+    this.toastService.show(
+      enabled ? 'Experimental format on: lists go to the model as tables' : 'Experimental format off: lists go to the model as JSON',
+      'info',
+      3000
+    );
+  }
+
+  // ─── AI Engine menu ──────────────────────────────────────────
+
+  /** Second line of the AI Engine button / Colibri row: the running GPU engine. */
+  get colibriEngineSummary(): string {
+    const e = this.colibriEngine;
+    if (!e) return 'Checking engine...';
+    if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
+    if (e.mode === 'cuda' || e.mode === 'vulkan') {
+      return `${this.engineProfileLabel(e.mode)} · ${e.contextTokens ? `${Math.round(e.contextTokens / 1024)}k` : this.engineProfileContext(e.mode)} context`;
+    }
+    return e.mode === 'offline' ? 'Server offline' : 'Port in use';
+  }
+
+  /** Second line of the AI Engine button / Antigravity row: the chosen model. */
+  get agyModelLabel(): string {
+    if (!this.selectedAgyModel) return 'Default model';
+    return this.agyModels.find(m => m.id === this.selectedAgyModel)?.label || this.selectedAgyModel;
+  }
+
+  toggleEngineMenu(): void {
+    if (this.engineMenuOpen) {
+      this.closeEngineMenu();
+      return;
+    }
+    this.engineMenuOpen = true;
+    this.engineMenuView = 'bridges';
+    this.focusFirstEngineMenuItem();
+  }
+
+  openEngineMenuView(view: 'bridges' | 'colibri' | 'agy'): void {
+    this.engineMenuView = view;
+    if (view === 'colibri') this.aiService.requestColibriEngine();
+    if (view === 'agy' && this.agyModels.length === 0) this.aiService.requestAgyModels();
+    this.focusFirstEngineMenuItem(view === 'bridges' ? 0 : 1);
+  }
+
+  closeEngineMenu(returnFocus = false): void {
+    this.engineMenuOpen = false;
+    if (returnFocus) this.enginePickerButton?.nativeElement.focus();
+  }
+
+  chooseColibriEngine(mode: ColibriEngineMode): void {
+    this.closeEngineMenu();
+    if (this.agentBackend !== 'colibri') this.switchBackend('colibri');
+    if (this.colibriEngine?.mode !== mode) this.switchColibriEngine(mode);
+  }
+
+  chooseAgyModel(modelId: string): void {
+    this.closeEngineMenu();
+    if (this.agentBackend !== 'agy') this.switchBackend('agy');
+    if (this.selectedAgyModel !== modelId) this.onAgyModelChange(modelId);
+  }
+
+  /** Arrow keys move between the menu's items; Escape closes it. */
+  onEngineMenuKeydown(event: KeyboardEvent): void {
+    if (!this.engineMenuOpen) return;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      if (this.engineMenuView !== 'bridges') this.openEngineMenuView('bridges');
+      else this.closeEngineMenu(true);
+      return;
+    }
+    if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') return;
+    const items = this.engineMenuItems();
+    if (items.length === 0) return;
+    event.preventDefault();
+    const index = items.indexOf(document.activeElement as HTMLButtonElement);
+    const next = event.key === 'ArrowDown'
+      ? (index + 1) % items.length
+      : (index <= 0 ? items.length - 1 : index - 1);
+    items[next].focus();
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    // composedPath() is fixed when the click happens: switching menu levels removes the clicked
+    // button before this runs, so `contains(event.target)` would wrongly count it as outside.
+    const picker = this.enginePicker?.nativeElement;
+    if (this.engineMenuOpen && picker && !event.composedPath().includes(picker)) {
+      this.closeEngineMenu();
+    }
+  }
+
+  private engineMenuItems(): HTMLButtonElement[] {
+    const root = this.enginePicker?.nativeElement;
+    if (!root) return [];
+    return Array.from(root.querySelectorAll<HTMLButtonElement>('.engine-menu button:not([disabled])'));
+  }
+
+  private focusFirstEngineMenuItem(index = 0): void {
+    setTimeout(() => {
+      const items = this.engineMenuItems();
+      (items[index] || items[0])?.focus();
+    });
+  }
+
+  // ─── Colibri engine (CUDA / Vulkan) ──────────────────────────
+
+  switchColibriEngine(mode: ColibriEngineMode): void {
+    const engine = this.colibriEngine;
+    if (this.isAgentTyping || engine?.switching || engine?.mode === mode) return;
+    if (!this.aiService.switchColibriEngine(mode)) {
+      this.toastService.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
+      return;
+    }
+    // Block the UI at once; the server's first progress update follows within a moment.
+    this.openEngineModal();
+  }
+
+  closeEngineModal(): void {
+    if (this.colibriEngine?.switching) return;
+    this.engineModalOpen = false;
+    clearTimeout(this.engineCloseTimer);
+    clearInterval(this.engineElapsedTimer);
+  }
+
+  engineProfileLabel(mode: string | null | undefined): string {
+    const profile = this.colibriEngine?.profiles?.find(p => p.id === mode);
+    return profile ? profile.label : (mode === 'vulkan' ? 'Vulkan' : 'CUDA');
+  }
+
+  engineProfileContext(mode: ColibriEngineMode): string {
+    const profile = this.colibriEngine?.profiles?.find(p => p.id === mode);
+    return profile ? `${Math.round(profile.contextTokens / 1024)}k` : (mode === 'vulkan' ? '100k' : '64k');
+  }
+
+  get engineStatusText(): string {
+    const e = this.colibriEngine;
+    if (!e) return 'Checking...';
+    if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
+    switch (e.mode) {
+      case 'cuda':
+      case 'vulkan':
+        return `Running on ${this.engineProfileLabel(e.mode)}` +
+          (e.contextTokens ? `, ${Math.round(e.contextTokens / 1024)}k context` : '');
+      case 'offline':
+        return 'No Colibri server is running';
+      default:
+        return 'Port in use by another program';
+    }
+  }
+
+  /** done / active / error / pending, for a step of the switch popup. */
+  engineStepStatus(index: number): 'done' | 'active' | 'error' | 'pending' {
+    const e = this.colibriEngine;
+    if (!e) return index === 0 ? 'active' : 'pending';
+    const order = this.engineSteps.map(s => s.key);
+    if (e.phase === 'ready') return 'done';
+    if (e.phase === 'error') {
+      const failed = Math.max(0, order.indexOf(e.failedPhase || 'stopping'));
+      return index < failed ? 'done' : index === failed ? 'error' : 'pending';
+    }
+    const current = Math.max(0, order.indexOf(e.phase));
+    return index < current ? 'done' : index === current ? 'active' : 'pending';
+  }
+
+  private openEngineModal(): void {
+    clearTimeout(this.engineCloseTimer);
+    if (!this.engineModalOpen) {
+      this.engineModalOpen = true;
+      this.updateEngineElapsed();
+      clearInterval(this.engineElapsedTimer);
+      this.engineElapsedTimer = setInterval(() => this.updateEngineElapsed(), 1000);
+    }
+  }
+
+  private onColibriEngineState(state: ColibriEngineState | null): void {
+    const previous = this.colibriEngine;
+    this.colibriEngine = state;
+    if (!state) return;
+
+    if (state.switching) {
+      this.openEngineModal();
+    } else if (state.mode === 'offline' && (previous?.mode === 'cuda' || previous?.mode === 'vulkan') && !previous?.switching) {
+      // Its terminal window was closed (or the server stopped some other way).
+      this.toastService.show(state.message || 'Colibri stopped.', 'info', 5000);
+    } else if (this.engineModalOpen && previous?.switching) {
+      clearInterval(this.engineElapsedTimer);
+      this.updateEngineElapsed();
+      if (state.phase === 'ready') {
+        this.toastService.show(state.message || `Colibri is running on ${this.engineProfileLabel(state.mode)}`, 'success', 4000);
+        this.engineCloseTimer = setTimeout(() => this.closeEngineModal(), 1500);
+      }
+      // On an error the popup stays open until it is closed, so the error can be read.
+    }
+    if (this.engineModalOpen) this.shouldScrollEngineLog = true;
+  }
+
+  private updateEngineElapsed(): void {
+    const started = this.colibriEngine?.startedAt;
+    if (!started) {
+      this.engineElapsed = '';
+      return;
+    }
+    const secs = Math.max(0, Math.round((Date.now() - started) / 1000));
+    this.engineElapsed = secs >= 60 ? `${Math.floor(secs / 60)}m ${String(secs % 60).padStart(2, '0')}s` : `${secs}s`;
   }
 
   onAgyModelChange(modelId: string): void {

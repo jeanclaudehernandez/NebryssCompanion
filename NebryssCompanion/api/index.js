@@ -272,7 +272,7 @@ async function fetchCollection(db, collectionName) {
         const parsed = JSON.parse(raw);
         // Handle wrapped formats like { items: [...] } or { locations: [...] }
         const arr = Array.isArray(parsed) ? parsed : (parsed.items || parsed.locations || parsed.locations || [parsed]);
-        return arr.filter(doc => !doc.isDeleted);
+        return arr.filter(doc => !doc.isDeleted).sort(compareById);   // same order as MongoDB's reads
       } catch (e) {
         console.error(`[LocalDB] Error reading ${filePath}:`, e);
       }
@@ -280,9 +280,51 @@ async function fetchCollection(db, collectionName) {
     return [];
   }
 
+  // Sorted by "id" through its index: lists come back in id order instead of insertion order,
+  // and a client paging through a list (offset 50, ...) sees the same order on every call.
   const collection = db.collection(collectionName);
-  const documents = await collection.find({ isDeleted: { $ne: true } }).toArray();
-  return documents;
+  const cursor = collection.find({ isDeleted: { $ne: true } }).sort({ id: 1 });
+  if (await ensureIdIndex(collection)) cursor.hint({ id: 1 });
+  return cursor.toArray();
+}
+
+// Collections whose { id: 1 } index is known to exist (checked once per collection per process).
+const idIndexReady = new Set();
+
+/**
+ * Makes sure the collection has its { id: 1 } index, so reads can sort by id through it and
+ * hint it (a hint naming a missing index fails the query). Most collections had it already;
+ * terrainRule and the testing-* campaign collections did not. Returns false if it could not be
+ * made, and the read then sorts without the hint.
+ */
+async function ensureIdIndex(collection) {
+  const key = `${collection.dbName}.${collection.collectionName}`;
+  if (idIndexReady.has(key)) return true;
+  try {
+    await collection.createIndex({ id: 1 });   // no-op when it exists
+    idIndexReady.add(key);
+    return true;
+  } catch (err) {
+    // An { id: 1 } index under another name also serves the hint.
+    try {
+      const indexes = await collection.indexes();
+      if (indexes.some(i => JSON.stringify(i.key) === JSON.stringify({ id: 1 }))) {
+        idIndexReady.add(key);
+        return true;
+      }
+    } catch (_) { }
+    console.warn(`[API] No { id: 1 } index on ${key} (${err.message}); reading it without the hint.`);
+    return false;
+  }
+}
+
+/** Ascending by id, the order MongoDB's sort gives: numbers before strings, missing ids first. */
+function compareById(a, b) {
+  const rank = (v) => (v === undefined || v === null ? 0 : typeof v === 'number' ? 1 : 2);
+  const ra = rank(a && a.id), rb = rank(b && b.id);
+  if (ra !== rb) return ra - rb;
+  if (ra === 0) return 0;
+  return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
 
 async function saveToLocalJson(collectionName, documents) {

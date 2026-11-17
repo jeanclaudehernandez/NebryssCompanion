@@ -15,6 +15,9 @@ const DEFAULT_INDEX_TTL_MS = Number(process.env.COLIBRI_RAG_TTL_MS) || 3 * 60 * 
 const DEFAULT_RAG_TOKEN_BUDGET = Number(process.env.COLIBRI_RAG_TOKEN_BUDGET) || 3200;
 const DEFAULT_CANDIDATE_COUNT = Number(process.env.COLIBRI_RAG_CANDIDATES) || 18;
 const DEFAULT_TOP_K = Number(process.env.COLIBRI_RAG_TOP_K) || 10;
+// Relevance floor: no chunk below this BM25 score, nor below this share of the best chunk's.
+const DEFAULT_MIN_SCORE = process.env.COLIBRI_RAG_MIN_SCORE !== undefined ? Number(process.env.COLIBRI_RAG_MIN_SCORE) : 8;
+const DEFAULT_RELATIVE_FLOOR = process.env.COLIBRI_RAG_RELATIVE_FLOOR !== undefined ? Number(process.env.COLIBRI_RAG_RELATIVE_FLOOR) : 0.6;
 const MAX_HEADING_CHARS = 100;
 const EMBED_BATCH_SIZE = Number(process.env.COLIBRI_RAG_EMBED_BATCH) || 16;
 
@@ -135,9 +138,26 @@ function compactObjectFields(obj, omitKeys = []) {
   return parts.join('\n');
 }
 
+/**
+ * Keeps the top-level "## N." sections of a Markdown file whose numbers are listed.
+ * CONTEXT.md mixes world lore with notes for coding agents (file index, tool commands,
+ * software architecture, agent protocols). Measured on real campaign chats, those notes were
+ * the chunks retrieved most often, for list requests and follow-ups that need none of them.
+ */
+function keepNumberedSections(content, numbers) {
+  const parts = content.split(/^(?=## )/m);
+  return parts
+    .filter(part => {
+      const m = part.match(/^## (\d+)\./);
+      return m && numbers.includes(Number(m[1]));
+    })
+    .join('\n');
+}
+
 function loadStaticLoreChunks(workspaceDir) {
   const candidates = [
-    { file: 'CONTEXT.md', title: 'Nebryss Master Context', maxChars: 1100 },
+    // 2 world & lore, 3 factions, 4 locations, 6 combat rules (Kill Team adaptation)
+    { file: 'CONTEXT.md', title: 'Nebryss Master Context', maxChars: 1100, sections: [2, 3, 4, 6] },
     { file: 'texts/nebryssOverview.txt', title: 'Nebryss World Overview', maxChars: 1000 }
   ];
 
@@ -146,7 +166,8 @@ function loadStaticLoreChunks(workspaceDir) {
     const fullPath = path.resolve(workspaceDir, item.file);
     if (!fs.existsSync(fullPath)) continue;
     try {
-      const content = fs.readFileSync(fullPath, 'utf8');
+      let content = fs.readFileSync(fullPath, 'utf8');
+      if (item.sections) content = keepNumberedSections(content, item.sections);
       const chunks = chunkMarkdownText(content, {
         idPrefix: `lore_${path.basename(item.file, path.extname(item.file))}`,
         sourceType: 'lore',
@@ -375,14 +396,24 @@ function scoreBm25(index, query) {
   const N = Math.max(1, index.docCount);
 
   const wantsSessionContext = /\b(session|plan|conclude|conclusion|debrief|latest|recap|next|party|players?)\b/i.test(query);
+  // Sessions the question names ("Session 2", "session #6", "sessions 3 and 4"). A question
+  // about one session ranked that session's own chunk 8th ("What did the party learn about the
+  // Pale Crown in Session 2?"), past the ~6 chunks the budget holds.
+  const namedSessions = new Set();
+  for (const m of String(query || '').matchAll(/\bsessions?\s*#?\s*(\d+)((?:\s*(?:,|and|&|or)\s*#?\s*\d+)*)/gi)) {
+    namedSessions.add(Number(m[1]));
+    for (const n of (m[2] || '').match(/\d+/g) || []) namedSessions.add(Number(n));
+  }
 
   const scored = [];
   for (const chunk of index.chunks) {
     let score = 0;
+    let topicHits = 0;   // query terms matched other than "session(s)" and bare numbers
 
     for (const term of queryTokens) {
       const tf = chunk._tf.get(term) || 0;
       if (tf === 0) continue;
+      if (!/^(sessions?|\d+)$/.test(term)) topicHits++;
       const docFreq = index.df.get(term) || 0;
       const idf = Math.log(1 + (N - docFreq + 0.5) / (docFreq + 0.5));
       const num = tf * (k1 + 1);
@@ -403,6 +434,13 @@ function scoreBm25(index, query) {
       if (lowerQuery.includes(tag.toLowerCase())) {
         score += 10.0;
       }
+    }
+
+    // A session the question names: its chunks that match the question's topic go first. Only
+    // chunks sharing a word with it besides "session" and the number, so "Session 2" alone does
+    // not pull in every chunk of that session.
+    if (topicHits > 0 && chunk.sourceType === 'session' && namedSessions.has(Number(chunk.entityId))) {
+      score += 8.0;
     }
 
     // Boost latest session and player roster when planning/concluding
@@ -667,6 +705,21 @@ function createColibriRag({
       }
     }
 
+    // Relevance floor (BM25 scores; the embeddings' fusion adds to them). Before, the budget was
+    // always filled: "go" or "list all weapons" got ~1.1k tokens of unrelated chunks. Measured on
+    // a real chat: list requests and follow-ups had a best score of 3.9-7.4, lore and history
+    // questions 14-30. A weak best match injects nothing; chunks far below the best are dropped.
+    const minScore = options.minScore !== undefined ? options.minScore : DEFAULT_MIN_SCORE;
+    const relativeFloor = options.relativeFloor !== undefined ? options.relativeFloor : DEFAULT_RELATIVE_FLOOR;
+    const bestScore = candidates.length > 0 ? candidates[0].score : 0;
+    if (bestScore < minScore) {
+      return {
+        chunks: [], totalIndexed: entry.index.docCount, usedTokens: 0, skippedSeen: 0,
+        bestScore, belowFloor: true, embeddingsUsed: Boolean(entry.embeddingsPopulated), reranked: false
+      };
+    }
+    candidates = candidates.filter(item => item.score >= Math.max(minScore, bestScore * relativeFloor));
+
     const topCandidates = candidates.slice(0, DEFAULT_CANDIDATE_COUNT);
     const reranked = useRerank
       ? await rerankWithColibri(query, topCandidates, topK, abortSignal)
@@ -701,6 +754,8 @@ function createColibriRag({
       totalIndexed: entry.index.docCount,
       usedTokens,
       skippedSeen,
+      bestScore,
+      belowFloor: false,
       embeddingsUsed: Boolean(entry.embeddingsPopulated),
       reranked: useRerank && process.env.COLIBRI_RAG_RERANK !== 'false'
     };

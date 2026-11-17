@@ -143,21 +143,17 @@ goto docker_done
 :docker_done
 echo.
 
-:: Start Colibri in a separate independent window if port 8000 is not already listening
-netstat -ano | findstr ":8000 " | findstr "LISTENING" >nul 2>&1
-if %ERRORLEVEL% neq 0 (
-    if exist "C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd" (
-        echo Starting Colibri server in a separate window...
-        rem Model: Qwen3.6-35B-A3B UD-IQ3_XXS GGUF, small enough that every expert sits in VRAM (GPU prompt reading).
-        rem COLI_PARK=0: the newest conversation always keeps the KV cache (no parking of an older, longer one).
-        rem --cap 32: small RAM expert cache; all experts are on the GPU, so a bigger cap only duplicates them in RAM.
-        rem --ctx 65536: conversation limit; the bridge reads it from Colibri and trims history to fit.
-        start "Colibri Server" /D "C:\Users\Jean\Desktop\colibri-2.1.0" cmd /k "set "COLI_PARK=0" && coli.cmd serve --model .\colibri-models\qwen36-35b-iq3xxs --ctx 65536 --vram 14 --ngen 8000 --cap 32"
-    ) else (
-        echo [WARNING] Colibri not found at C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd
-    )
+:: Start Colibri the same way the UI's CUDA/Vulkan switch does: its own window titled
+:: "colibri - CUDA" (or "colibri - Vulkan"), output also copied to a log the UI reads, and
+:: closing the window stops Colibri. Nothing happens if Colibri is already running.
+:: The engine's settings (model, context, VRAM reserve...) live in api\colibri-engine.js.
+:: Set COLIBRI_ENGINE=vulkan before running this file to start on Vulkan instead.
+if not defined COLIBRI_ENGINE set "COLIBRI_ENGINE=cuda"
+if exist "C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd" (
+    node api\colibri-engine.js start !COLIBRI_ENGINE!
+    if errorlevel 1 echo [WARNING] Colibri could not be started; see the message above.
 ) else (
-    echo Colibri server is already running on port 8000.
+    echo [WARNING] Colibri not found at C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd
 )
 
 call npm run start:duckdns

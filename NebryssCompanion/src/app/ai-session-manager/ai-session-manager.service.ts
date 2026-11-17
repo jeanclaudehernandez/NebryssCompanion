@@ -56,6 +56,24 @@ export interface ContextUsage {
   percent: number;       // used / limit, in %
 }
 
+export type ColibriEngineMode = 'cuda' | 'vulkan';
+
+/** The local Colibri server's engine and the progress of a switch, as the API reports it. */
+export interface ColibriEngineState {
+  mode: ColibriEngineMode | 'offline' | 'unknown';
+  contextTokens: number;
+  switching: boolean;
+  targetMode: ColibriEngineMode | null;
+  phase: 'idle' | 'stopping' | 'starting' | 'loading' | 'ready' | 'error';
+  failedPhase: string | null;
+  message: string;
+  error: string | null;
+  startedAt: number | null;
+  logFile: string;
+  log: string[];
+  profiles: { id: ColibriEngineMode; label: string; contextTokens: number }[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class AiSessionManagerService implements OnDestroy {
   private ws: WebSocket | null = null;
@@ -73,6 +91,9 @@ export class AiSessionManagerService implements OnDestroy {
   private currentStatusSubject = new BehaviorSubject<string | null>(null);
   private rawEventsSubject = new Subject<AgentEvent>();
   private contextUsageSubject = new BehaviorSubject<ContextUsage | null>(null);
+  private colibriEngineSubject = new BehaviorSubject<ColibriEngineState | null>(null);
+  // Experimental format (Colibri): list results sent to the model as tables instead of JSON
+  private experimentalFormatSubject = new BehaviorSubject<boolean>(this.loadSavedExperimentalFormat());
 
   private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
   public commandResult$ = this.commandResultSubject.asObservable();
@@ -90,6 +111,8 @@ export class AiSessionManagerService implements OnDestroy {
   currentStatus$: Observable<string | null> = this.currentStatusSubject.asObservable();
   rawEvents$: Observable<AgentEvent> = this.rawEventsSubject.asObservable();
   contextUsage$: Observable<ContextUsage | null> = this.contextUsageSubject.asObservable();
+  colibriEngine$: Observable<ColibriEngineState | null> = this.colibriEngineSubject.asObservable();
+  experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
 
   constructor(
     private readonly authService: AuthService,
@@ -127,6 +150,9 @@ export class AiSessionManagerService implements OnDestroy {
     wsUrl += `${backendSep}backend=${encodeURIComponent(this.agentBackendSubject.value)}`;
     if (this.agyModelSubject.value) {
       wsUrl += `&model=${encodeURIComponent(this.agyModelSubject.value)}`;
+    }
+    if (this.experimentalFormatSubject.value) {
+      wsUrl += '&format=table';
     }
 
     try {
@@ -270,6 +296,39 @@ export class AiSessionManagerService implements OnDestroy {
     this.ws.send(JSON.stringify({ type: 'get_agy_models' }));
   }
 
+  /** Asks the API which Colibri engine (CUDA / Vulkan) is running. */
+  requestColibriEngine(): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
+    this.ws.send(JSON.stringify({ type: 'get_colibri_engine' }));
+  }
+
+  /** Stops the running Colibri server and starts it on the other engine; progress arrives as colibri_engine events. */
+  switchColibriEngine(mode: ColibriEngineMode): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
+    this.contextUsageSubject.next(null);
+    this.ws.send(JSON.stringify({ type: 'switch_colibri_engine', mode }));
+    return true;
+  }
+
+  /** Colibri only: list results as tables (fewer tokens) instead of JSON; applies from the next tool call. */
+  setExperimentalFormat(enabled: boolean): void {
+    this.experimentalFormatSubject.next(enabled);
+    try {
+      localStorage.setItem('nebryss_experimental_format', enabled ? '1' : '0');
+    } catch (_) {}
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({ type: 'set_experimental_format', enabled }));
+    }
+  }
+
+  private loadSavedExperimentalFormat(): boolean {
+    try {
+      return localStorage.getItem('nebryss_experimental_format') === '1';
+    } catch (_) {
+      return false;
+    }
+  }
+
   private loadSavedAgyModel(): string {
     try {
       return localStorage.getItem('nebryss_agy_model') || '';
@@ -302,6 +361,9 @@ export class AiSessionManagerService implements OnDestroy {
           if (event['backend'] === 'agy' && this.agyModelsSubject.value.length === 0) {
             this.requestAgyModels();
           }
+          if (event['backend'] === 'colibri') {
+            this.requestColibriEngine();
+          }
         }
         if (typeof event['model'] === 'string') {
           this.agyModelSubject.next(event['model']);
@@ -320,6 +382,18 @@ export class AiSessionManagerService implements OnDestroy {
         }
         break;
 
+      case 'experimental_format_changed':
+        if (typeof event['enabled'] === 'boolean') {
+          this.experimentalFormatSubject.next(event['enabled']);
+        }
+        break;
+
+      case 'colibri_engine':
+        if (event['state'] && typeof event['state'] === 'object') {
+          this.colibriEngineSubject.next(event['state'] as ColibriEngineState);
+        }
+        break;
+
       case 'init':
         if (event['conversationId']) {
           this.conversationId = event['conversationId'];
@@ -330,6 +404,15 @@ export class AiSessionManagerService implements OnDestroy {
       case 'token':
         this.currentStatusSubject.next(null);
         this.appendToken(event['content'] || '');
+        break;
+
+      case 'rewind':
+        // The bridge dropped an unfinished last line of a reply cut by the length limit (the
+        // continuation starts again on that line): take it back off the streaming message.
+        if (this.currentStreamingMessage && Number(event['chars']) > 0) {
+          this.currentStreamingMessage.content = this.currentStreamingMessage.content.slice(0, -Number(event['chars']));
+          this.emitMessages();
+        }
         break;
 
       case 'tool_call':

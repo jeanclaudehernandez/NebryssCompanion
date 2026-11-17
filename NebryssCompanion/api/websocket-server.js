@@ -1,7 +1,8 @@
 const http = require('http');
 const { WebSocketServer, WebSocket } = require('ws');
 const { createAgentSession: createAgySession, listAgyModels } = require('./agy-bridge');
-const { createAgentSession: createColibriSession } = require('./colibri-bridge');
+const { createAgentSession: createColibriSession, forgetServerContext, invalidateCampaignData } = require('./colibri-bridge');
+const colibriEngine = require('./colibri-engine');
 
 function setupWebSocketServer(server) {
   // Main data-sync WebSocket server (existing)
@@ -54,10 +55,13 @@ function setupWebSocketServer(server) {
 
     let requestedBackend = null;
     let requestedModel = '';
+    // Experimental format (Colibri): list results as tables instead of JSON.
+    let experimentalFormat = false;
     try {
       const reqUrl = new URL(request?.url || '/', `http://${request?.headers?.host || 'localhost'}`);
       requestedBackend = reqUrl.searchParams.get('backend');
       requestedModel = reqUrl.searchParams.get('model') || '';
+      experimentalFormat = reqUrl.searchParams.get('format') === 'table';
     } catch (_) {}
 
     let activeBackend = (requestedBackend === 'agy' || requestedBackend === 'colibri')
@@ -69,6 +73,7 @@ function setupWebSocketServer(server) {
       const factory = backendName === 'agy' ? createAgySession : createColibriSession;
       return factory({
         model: backendName === 'agy' ? activeModel : undefined,
+        experimentalFormat: backendName === 'colibri' ? experimentalFormat : undefined,
         onEvent: (event) => {
           if (ws.readyState === WebSocket.OPEN) {
             ws.send(JSON.stringify(event));
@@ -90,6 +95,15 @@ function setupWebSocketServer(server) {
     // Create an agent session for this WebSocket connection
     let session = createSessionForBackend(activeBackend);
 
+    // Colibri engine (CUDA / Vulkan) state and switch progress go to every connected client,
+    // so a switch started anywhere blocks every open UI until the new engine is up.
+    const sendEngineState = (engineState) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'colibri_engine', state: engineState }));
+      }
+    };
+    const unsubscribeEngine = colibriEngine.subscribe(sendEngineState);
+
     ws.on('message', (rawMessage) => {
       try {
         const msg = JSON.parse(rawMessage.toString('utf8'));
@@ -98,6 +112,11 @@ function setupWebSocketServer(server) {
           case 'chat':
             if (!msg.message || typeof msg.message !== 'string') {
               ws.send(JSON.stringify({ type: 'error', message: 'Missing message field' }));
+              return;
+            }
+            if (activeBackend === 'colibri' && colibriEngine.isSwitching()) {
+              ws.send(JSON.stringify({ type: 'error', message: 'The Colibri engine is switching; send the message again once it is ready.' }));
+              ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
             session.sendMessage(msg.message, msg.campaignId || null);
@@ -216,6 +235,9 @@ function setupWebSocketServer(server) {
                 parsedResult = stdout.trim();
               }
 
+              // The change is applied: the Colibri bridge's cached data and RAG index are stale.
+              invalidateCampaignData(targetCampaignId);
+
               // Broadcast update to all clients to refresh lists/rosters in real time
               if (parsedResult && typeof parsedResult === 'object') {
                 const entityType = parsedResult.type || (targetCmd ? targetCmd.replace(/^(create|update|delete)-/, '') : 'entity');
@@ -326,6 +348,39 @@ function setupWebSocketServer(server) {
             break;
           }
 
+          case 'set_experimental_format': {
+            experimentalFormat = Boolean(msg.enabled);
+            if (session.setExperimentalFormat) session.setExperimentalFormat(experimentalFormat);
+            if (ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'experimental_format_changed', enabled: experimentalFormat }));
+            }
+            break;
+          }
+
+          case 'get_colibri_engine':
+            colibriEngine.refreshStatus()
+              .then(sendEngineState)
+              .catch((err) => sendEngineState({ ...colibriEngine.getState(), error: err.message }));
+            break;
+
+          case 'switch_colibri_engine': {
+            const target = msg.mode === 'vulkan' ? 'vulkan' : (msg.mode === 'cuda' ? 'cuda' : null);
+            if (!target) {
+              ws.send(JSON.stringify({ type: 'error', message: `Invalid Colibri engine: ${msg.mode}` }));
+              break;
+            }
+            if (colibriEngine.isSwitching()) {
+              sendEngineState(colibriEngine.getState());
+              break;
+            }
+            console.log(`[Agent WS] Switching the Colibri engine to ${target} (requested by ${ws.user?.email || ws.user?.username || 'unknown'})`);
+            // Progress reaches this and every other client through the subscription above.
+            colibriEngine.switchEngine(target, { onReady: forgetServerContext })
+              .then((s) => console.log(`[Agent WS] Colibri engine switch ${s.phase === 'ready' ? `done: ${s.mode}` : `failed: ${s.error}`}`))
+              .catch((err) => sendEngineState({ ...colibriEngine.getState(), phase: 'error', error: err.message }));
+            break;
+          }
+
           default:
             ws.send(JSON.stringify({
               type: 'error',
@@ -342,11 +397,13 @@ function setupWebSocketServer(server) {
 
     ws.on('close', () => {
       console.log('[AGY WS] Client disconnected');
+      unsubscribeEngine();
       session.destroy();
     });
 
     ws.on('error', (err) => {
       console.error('[AGY WS] WebSocket error:', err);
+      unsubscribeEngine();
       session.destroy();
     });
 
