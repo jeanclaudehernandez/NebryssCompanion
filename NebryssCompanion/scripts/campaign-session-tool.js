@@ -1004,6 +1004,13 @@ async function updatePlayer(playerUpdateData) {
     }
   }
 
+  // Strip shorthand/alias keys that map to nested progression or items fields so they aren't written to root
+  delete updatedDoc.inventory;
+  delete updatedDoc.gold;
+  delete updatedDoc.digitalGold;
+  delete updatedDoc.talentPoints;
+  delete updatedDoc.talents;
+  delete updatedDoc.afflictions;
   delete updatedDoc._id;
   const updated = await apiRequest('/player', 'PUT', updatedDoc, resolvedCampId);
   return {
@@ -1610,6 +1617,33 @@ async function getEntity({ type, id, name, campaignId }) {
       return label && (label.includes(cleaned) || cleaned.includes(label));
     });
     if (partial) return partial;
+  }
+
+  // Talents are nested inside talent category documents (category.talents[]).
+  // Support fetching an individual talent by ID (e.g. "att3", "c1") or name.
+  if (normalizedType === 'talent') {
+    const lookupKey = String(id !== undefined && id !== null ? id : (name || '')).trim().toLowerCase();
+    const cleanedName = name ? cleanString(name) : cleanString(String(id || ''));
+    for (const cat of list) {
+      if (!Array.isArray(cat.talents)) continue;
+      const byTalentId = cat.talents.find(t => String(t.id).toLowerCase() === lookupKey);
+      if (byTalentId) {
+        return { ...byTalentId, categoryId: cat.id, categoryName: cat.name };
+      }
+    }
+    if (cleanedName) {
+      for (const cat of list) {
+        if (!Array.isArray(cat.talents)) continue;
+        const byTalentName = cat.talents.find(t => cleanString(t.name) === cleanedName)
+          || cat.talents.find(t => {
+            const label = cleanString(t.name);
+            return label && (label.includes(cleanedName) || cleanedName.includes(label));
+          });
+        if (byTalentName) {
+          return { ...byTalentName, categoryId: cat.id, categoryName: cat.name };
+        }
+      }
+    }
   }
 
   throw new Error(`Entity of type '${type}' with ID '${id}' or name '${name}' not found.`);

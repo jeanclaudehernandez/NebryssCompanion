@@ -143,19 +143,6 @@ goto docker_done
 :docker_done
 echo.
 
-:: Start Colibri the same way the UI's CUDA/Vulkan switch does: its own window titled
-:: "colibri - CUDA" (or "colibri - Vulkan"), output also copied to a log the UI reads, and
-:: closing the window stops Colibri. Nothing happens if Colibri is already running.
-:: The engine's settings (model, context, VRAM reserve...) live in api\colibri-engine.js.
-:: Set COLIBRI_ENGINE=vulkan before running this file to start on Vulkan instead.
-if not defined COLIBRI_ENGINE set "COLIBRI_ENGINE=cuda"
-if exist "C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd" (
-    node api\colibri-engine.js start !COLIBRI_ENGINE!
-    if errorlevel 1 echo [WARNING] Colibri could not be started; see the message above.
-) else (
-    echo [WARNING] Colibri not found at C:\Users\Jean\Desktop\colibri-2.1.0\coli.cmd
-)
-
 call npm run start:duckdns
 
 if %ERRORLEVEL% neq 0 (

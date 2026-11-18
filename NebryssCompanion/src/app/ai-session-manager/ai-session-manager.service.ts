@@ -56,6 +56,34 @@ export interface ContextUsage {
   percent: number;       // used / limit, in %
 }
 
+/** One message of the model's stored conversation, exactly as the bridge will resend it. */
+export interface HistoryMessage {
+  id: string;
+  seq: number;           // place in the conversation (deleted messages included)
+  deleted: boolean;      // removed from the model's context; still listed, greyed out
+  index: number | null;  // position in what the model is sent; null once deleted
+  role: 'system' | 'user' | 'assistant' | 'tool' | string;
+  content: string;
+  reasoning: string;
+  toolCalls: { id: string; name: string; arguments: string }[];
+  toolCallId: string | null;
+  ragChars: number;      // length of the RAG block at the start of a user message
+  tokens: number;        // estimated
+  group: string | null;  // id of the assistant turn whose tool call this belongs to
+  locked: boolean;       // the system prompt: rebuilt every turn, cannot be deleted
+}
+
+export interface HistorySnapshot {
+  supported: boolean;
+  reason?: string;
+  processing: boolean;
+  messages: HistoryMessage[];
+  deletedCount?: number;
+  estimatedTokens?: number;
+  toolDefinitionTokens?: number;
+  outcome?: { ok: boolean; deleted?: number; notFound?: number; error?: string } | null;
+}
+
 export type ColibriEngineMode = 'cuda' | 'vulkan';
 
 /** The local Colibri server's engine and the progress of a switch, as the API reports it. */
@@ -92,6 +120,7 @@ export class AiSessionManagerService implements OnDestroy {
   private rawEventsSubject = new Subject<AgentEvent>();
   private contextUsageSubject = new BehaviorSubject<ContextUsage | null>(null);
   private colibriEngineSubject = new BehaviorSubject<ColibriEngineState | null>(null);
+  private historySubject = new Subject<HistorySnapshot>();
   // Experimental format (Colibri): list results sent to the model as tables instead of JSON
   private experimentalFormatSubject = new BehaviorSubject<boolean>(this.loadSavedExperimentalFormat());
 
@@ -113,6 +142,7 @@ export class AiSessionManagerService implements OnDestroy {
   contextUsage$: Observable<ContextUsage | null> = this.contextUsageSubject.asObservable();
   colibriEngine$: Observable<ColibriEngineState | null> = this.colibriEngineSubject.asObservable();
   experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
+  history$: Observable<HistorySnapshot> = this.historySubject.asObservable();
 
   constructor(
     private readonly authService: AuthService,
@@ -321,6 +351,20 @@ export class AiSessionManagerService implements OnDestroy {
     }
   }
 
+  /** Asks the bridge for every message it holds for the model; the answer arrives on history$. */
+  requestHistory(): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
+    this.ws.send(JSON.stringify({ type: 'get_history' }));
+    return true;
+  }
+
+  /** Removes these stored messages from the model's context; the updated list arrives on history$. */
+  deleteHistoryMessages(ids: string[]): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN || ids.length === 0) return false;
+    this.ws.send(JSON.stringify({ type: 'delete_history', ids }));
+    return true;
+  }
+
   private loadSavedExperimentalFormat(): boolean {
     try {
       return localStorage.getItem('nebryss_experimental_format') === '1';
@@ -391,6 +435,33 @@ export class AiSessionManagerService implements OnDestroy {
       case 'colibri_engine':
         if (event['state'] && typeof event['state'] === 'object') {
           this.colibriEngineSubject.next(event['state'] as ColibriEngineState);
+        }
+        break;
+
+      case 'history':
+        this.historySubject.next({
+          supported: event['supported'] !== false,
+          reason: event['reason'],
+          processing: Boolean(event['processing']),
+          messages: Array.isArray(event['messages']) ? event['messages'] : [],
+          deletedCount: Number(event['deletedCount']) || 0,
+          estimatedTokens: event['estimatedTokens'],
+          toolDefinitionTokens: event['toolDefinitionTokens'],
+          outcome: event['outcome'] || null
+        });
+        break;
+
+      case 'context_estimate':
+        // After messages were deleted: the bridge's estimate until the next reply reports the real size.
+        if (event['context'] && Number(event['context'].limit) > 0) {
+          const ctx = event['context'];
+          this.contextUsageSubject.next({
+            used: Number(ctx.used) || 0,
+            limit: Number(ctx.limit),
+            replyReserve: Number(ctx.replyReserve) || 0,
+            historyBudget: Number(ctx.historyBudget) || 0,
+            percent: Number(ctx.percent) || 0
+          });
         }
         break;
 

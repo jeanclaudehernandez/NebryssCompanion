@@ -104,6 +104,20 @@ function setupWebSocketServer(server) {
     };
     const unsubscribeEngine = colibriEngine.subscribe(sendEngineState);
 
+    // The model's stored conversation (Colibri only: AGY keeps its history inside the AGY CLI).
+    const sendHistory = (outcome) => {
+      if (ws.readyState !== WebSocket.OPEN) return;
+      const history = session.getHistory
+        ? session.getHistory()
+        : {
+          supported: false,
+          reason: 'Antigravity keeps its conversation inside the AGY CLI, so it cannot be viewed or edited from here.',
+          processing: false,
+          messages: []
+        };
+      ws.send(JSON.stringify({ type: 'history', ...history, outcome: outcome || null }));
+    };
+
     ws.on('message', (rawMessage) => {
       try {
         const msg = JSON.parse(rawMessage.toString('utf8'));
@@ -353,6 +367,23 @@ function setupWebSocketServer(server) {
             if (session.setExperimentalFormat) session.setExperimentalFormat(experimentalFormat);
             if (ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({ type: 'experimental_format_changed', enabled: experimentalFormat }));
+            }
+            break;
+          }
+
+          case 'get_history':
+            sendHistory();
+            break;
+
+          case 'delete_history': {
+            if (!session.deleteHistory) {
+              sendHistory();
+              break;
+            }
+            const outcome = session.deleteHistory(Array.isArray(msg.ids) ? msg.ids : []);
+            sendHistory(outcome);
+            if (outcome.ok && outcome.deleted > 0 && session.contextEstimate && ws.readyState === WebSocket.OPEN) {
+              ws.send(JSON.stringify({ type: 'context_estimate', context: session.contextEstimate() }));
             }
             break;
           }

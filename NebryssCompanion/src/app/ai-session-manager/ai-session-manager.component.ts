@@ -24,8 +24,14 @@ import {
   ColibriEngineState,
   ConnectionStatus,
   ContextUsage,
+  HistoryMessage,
+  HistorySnapshot,
   PendingCommand
 } from './ai-session-manager.service';
+
+// Separates a stored user message's RAG block from the user's own text (as in colibri-bridge.js).
+const USER_REQUEST_MARKER = '\n\n[USER REQUEST]\n';
+const HISTORY_PREVIEW_CHARS = 280;
 import { CampaignService } from '../campaign.service';
 import { DataService } from '../data.service';
 import { AdminService } from '../admin.service';
@@ -49,7 +55,11 @@ interface Player {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './ai-session-manager.component.html',
-  styleUrls: ['./ai-session-manager.component.css', './ai-session-manager.engine.css']
+  styleUrls: [
+    './ai-session-manager.component.css',
+    './ai-session-manager.engine.css',
+    './ai-session-manager.history.css'
+  ]
 })
 export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   @Output() viewChange = new EventEmitter<AppView>();
@@ -103,6 +113,15 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   private engineElapsedTimer: any = null;
   private shouldScrollEngineLog = false;
 
+  // Context editor: every message the model holds, with checkboxes to delete some
+  historyOpen = false;
+  historyLoading = false;
+  history: HistorySnapshot | null = null;
+  historySelected = new Set<string>();
+  historyExpanded = new Set<string>();
+  historyConfirming = false;
+  historyDeleting = false;
+
   private shouldScrollToBottom = false;
   private previousMessageCount = 0;
 
@@ -113,7 +132,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     private readonly sanitizer: DomSanitizer,
     private readonly adminService: AdminService,
     private readonly toastService: ToastService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Check admin role
@@ -218,7 +237,15 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         if (event.type === 'response_end' && event['conversationId']) {
           this.conversationId = event['conversationId'];
         }
+        // A reply finished while the context editor is open: show what it added.
+        if (event.type === 'response_end' && this.historyOpen) {
+          this.aiService.requestHistory();
+        }
       });
+
+    this.aiService.history$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(snapshot => this.onHistory(snapshot));
 
     // Subscribe to command execution results
     this.aiService.commandResult$
@@ -292,7 +319,6 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
     const prompts: Record<string, string> = {
       'get-context': `Get the full campaign context${campaignRef}. Show me the current sessions, active players, NPCs, and locations.`,
-      'context-usage': `Calculate and report the context window usage${campaignRef}. Run the context-usage command via campaign-session-tool.js (node scripts/campaign-session-tool.js context-usage ${campaignId || 1}) and provide a clear breakdown of estimated tokens, entity counts, percentage used, and remaining capacity.`,
       'plan-session': `Let's plan a new campaign session${campaignRef}. Follow the Session Manager skill workflow — read the previous sessions, identify unresolved plot hooks, and present 2-3 structured session ideas for my review.`,
       'conclude-session': `Let's conclude the latest session${campaignRef}. Follow the Session Manager skill conclusion workflow — fetch the latest session, then ask me debrief questions about what happened.`,
       'list-sessions': `List all sessions${campaignRef} with their titles and status (planned vs concluded).`,
@@ -308,6 +334,30 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       if (window.innerWidth <= 768) {
         this.sidebarCollapsed = true;
       }
+    }
+  }
+
+  inspectPlayer(player: Player): void {
+    if (this.isAgentTyping || this.connectionStatus !== 'connected') return;
+
+    const campaignId = this.activeCampaign?.id;
+    const campaignRef = campaignId ? ` in campaign ${campaignId}` : '';
+    const prompt =
+      `Give me ALL information regarding player "${player.name}" (ID ${player.id})${campaignRef}. ` +
+      `Fetch their full player record and cross-reference all related data so nothing is omitted: ` +
+      `1) Identity, race, origin, notes, and complete stats/attributes (including effective/modified values if applicable); ` +
+      `2) All equipped/owned weapons with their full profiles and all weapon rules with their full descriptions; ` +
+      `3) All abilities, equipment, items/inventory (with descriptions/quantities), and progression (talent points, digital and physical mistrals); ` +
+      `4) All talents with their full descriptions and mechanical effects; ` +
+      `5) All afflictions and any active altered states (if applicable) with their full descriptions and effects; ` +
+      `6) Session participation across all sessions (which sessions they appeared in, their actions, choices, and outcomes).`;
+
+    this.aiService.sendMessage(prompt, campaignId);
+    this.isAtBottom = true;
+    this.shouldScrollToBottom = true;
+
+    if (window.innerWidth <= 768) {
+      this.sidebarCollapsed = true;
     }
   }
 
@@ -358,6 +408,174 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       'info',
       3000
     );
+  }
+
+  // ─── Context editor (all stored messages) ────────────────────
+
+  openHistory(): void {
+    this.historyOpen = true;
+    this.historyConfirming = false;
+    this.refreshHistory();
+  }
+
+  closeHistory(): void {
+    this.historyOpen = false;
+    this.historyConfirming = false;
+    this.historySelected.clear();
+    this.historyExpanded.clear();
+  }
+
+  refreshHistory(): void {
+    if (!this.aiService.requestHistory()) {
+      this.historyLoading = false;
+      this.toastService.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
+      return;
+    }
+    this.historyLoading = true;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    if (!this.historyOpen) return;
+    if (this.historyConfirming) this.historyConfirming = false;
+    else this.closeHistory();
+  }
+
+  get historyMessages(): HistoryMessage[] {
+    return this.history?.messages || [];
+  }
+
+  private get selectableHistory(): HistoryMessage[] {
+    return this.historyMessages.filter(m => !m.locked && !m.deleted);
+  }
+
+  /** Messages the model still holds (the list also shows deleted ones, greyed out). */
+  get liveHistoryCount(): number {
+    return this.historyMessages.length - (this.history?.deletedCount || 0);
+  }
+
+  get allHistorySelected(): boolean {
+    const selectable = this.selectableHistory;
+    return selectable.length > 0 && selectable.every(m => this.historySelected.has(m.id));
+  }
+
+  get selectedHistoryTokens(): number {
+    return this.historyMessages
+      .filter(m => this.historySelected.has(m.id))
+      .reduce((sum, m) => sum + m.tokens, 0);
+  }
+
+  /** A tool call and its results are selected together: the model cannot have one without the other. */
+  toggleHistorySelect(msg: HistoryMessage): void {
+    if (msg.locked || msg.deleted) return;
+    const members = msg.group ? this.historyMessages.filter(m => m.group === msg.group && !m.deleted) : [msg];
+    const select = !this.historySelected.has(msg.id);
+    for (const m of members) {
+      if (select) this.historySelected.add(m.id);
+      else this.historySelected.delete(m.id);
+    }
+    this.historyConfirming = false;
+  }
+
+  toggleSelectAllHistory(): void {
+    if (this.allHistorySelected) this.historySelected.clear();
+    else for (const m of this.selectableHistory) this.historySelected.add(m.id);
+    this.historyConfirming = false;
+  }
+
+  toggleHistoryExpanded(msg: HistoryMessage): void {
+    if (this.historyExpanded.has(msg.id)) this.historyExpanded.delete(msg.id);
+    else this.historyExpanded.add(msg.id);
+  }
+
+  /** First click arms the button; the second deletes. */
+  deleteSelectedHistory(): void {
+    if (this.historySelected.size === 0 || this.history?.processing || this.historyDeleting) return;
+    if (!this.historyConfirming) {
+      this.historyConfirming = true;
+      return;
+    }
+    if (!this.aiService.deleteHistoryMessages([...this.historySelected])) {
+      this.toastService.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
+      return;
+    }
+    this.historyConfirming = false;
+    this.historyDeleting = true;
+  }
+
+  historyRoleLabel(msg: HistoryMessage): string {
+    if (msg.role === 'system') return 'System prompt';
+    if (msg.role === 'tool') return 'Tool result';
+    if (msg.role === 'assistant') return msg.toolCalls.length ? 'Assistant · tool call' : 'Assistant';
+    if (msg.role === 'user') return msg.content.startsWith('[BRIDGE CHECK]') ? 'Bridge note' : 'User';
+    return msg.role;
+  }
+
+  /** Name of the tool whose call a tool result answers. */
+  historyToolName(msg: HistoryMessage): string {
+    if (!msg.toolCallId) return '';
+    for (const m of this.historyMessages) {
+      const call = m.toolCalls.find(tc => tc.id === msg.toolCallId);
+      if (call) return call.name;
+    }
+    return '';
+  }
+
+  historyToolNames(msg: HistoryMessage): string {
+    return msg.toolCalls.map(tc => tc.name).join(', ');
+  }
+
+  /** Collapsed view: a user message's own request (its RAG block hidden), cut to a few lines. */
+  historyPreview(msg: HistoryMessage): string {
+    let text = msg.content || '';
+    const marker = text.indexOf(USER_REQUEST_MARKER);
+    if (msg.ragChars > 0 && marker >= 0) text = text.slice(marker + USER_REQUEST_MARKER.length);
+    if (!text && msg.toolCalls.length) {
+      text = msg.toolCalls.map(tc => `${tc.name}(${tc.arguments})`).join('\n');
+    }
+    return text.length > HISTORY_PREVIEW_CHARS ? `${text.slice(0, HISTORY_PREVIEW_CHARS)}...` : text;
+  }
+
+  historyHasMore(msg: HistoryMessage): boolean {
+    return (msg.content || '').length > HISTORY_PREVIEW_CHARS || msg.ragChars > 0 ||
+      msg.toolCalls.length > 0 || Boolean(msg.reasoning);
+  }
+
+  formatToolArguments(args: string): string {
+    try {
+      return JSON.stringify(JSON.parse(args), null, 2);
+    } catch (_) {
+      return args;
+    }
+  }
+
+  trackByHistoryId(_index: number, msg: HistoryMessage): string {
+    return msg.id;
+  }
+
+  private onHistory(snapshot: HistorySnapshot): void {
+    this.history = snapshot;
+    this.historyLoading = false;
+    this.historyDeleting = false;
+
+    const present = new Set(snapshot.messages.map(m => m.id));
+    const live = new Set(snapshot.messages.filter(m => !m.deleted).map(m => m.id));
+    for (const id of [...this.historySelected]) if (!live.has(id)) this.historySelected.delete(id);
+    for (const id of [...this.historyExpanded]) if (!present.has(id)) this.historyExpanded.delete(id);
+
+    const outcome = snapshot.outcome;
+    if (!outcome) return;
+    if (!outcome.ok) {
+      this.toastService.show(outcome.error || 'Could not delete the messages.', 'error', 5000);
+    } else if (outcome.notFound) {
+      this.toastService.show(
+        `Deleted ${outcome.deleted || 0} message(s); ${outcome.notFound} had changed (the bridge trimmed them). Check the list and try again.`,
+        'info',
+        6000
+      );
+    } else if (outcome.deleted) {
+      this.toastService.show(`Removed ${outcome.deleted} message(s) from the model's context`, 'success', 3500);
+    }
   }
 
   // ─── AI Engine menu ──────────────────────────────────────────
