@@ -1,0 +1,268 @@
+<div class="flux-studio">
+  <!-- Settings -->
+  <section class="fs-panel fs-controls" aria-label="Image settings">
+    <header class="fs-header">
+      <span class="material-icons fs-header-icon">image</span>
+      <div>
+        <h2 class="fs-title">FLUX image studio</h2>
+        <div class="fs-sub">Workflow: {{ catalog?.workflow?.name || 'FLUX (Nebryss studio)' }}<span *ngIf="catalog && !catalog.workflow.found"> (not found in ComfyUI: built-in defaults)</span></div>
+      </div>
+    </header>
+
+    <div class="fs-loading" *ngIf="!catalog">
+      <span class="material-icons spin">autorenew</span> Loading your LoRAs...
+    </div>
+
+    <ng-container *ngIf="catalog">
+      <!-- 1. LoRAs -->
+      <div class="fs-block">
+        <div class="fs-label" id="fs-loras-label">
+          <span class="fs-num">1</span> LoRAs
+          <span class="fs-label-hint">{{ loras.length }} of {{ maxLoras }}</span>
+        </div>
+
+        <ul class="fs-lora-list" *ngIf="loras.length; else noLoras" aria-labelledby="fs-loras-label">
+          <li class="fs-lora-row" *ngFor="let l of loras; let i = index">
+            <div class="fs-lora-top">
+              <span class="material-icons fs-lora-icon">{{ loraInfo(l.file)?.style ? 'brush' : 'sell' }}</span>
+              <span class="fs-lora-name">{{ loraInfo(l.file)?.label || l.file }}</span>
+              <button type="button" class="fs-icon-btn" (click)="removeLora(i)" [disabled]="busy"
+                [attr.aria-label]="'Remove ' + (loraInfo(l.file)?.label || l.file)" title="Remove">
+                <span class="material-icons">close</span>
+              </button>
+            </div>
+            <div class="fs-strength">
+              <label [for]="'fs-strength-' + i">Strength</label>
+              <input [id]="'fs-strength-' + i" type="range" min="0" max="1.5" step="0.05" [(ngModel)]="l.strength"
+                (ngModelChange)="onStrengthChange(l)" [disabled]="busy">
+              <span class="fs-value">{{ l.strength | number:'1.2-2' }}</span>
+            </div>
+            <div class="fs-strength-mode">
+              <span *ngIf="!l.manual" title="Set by the studio for this combination of LoRAs">auto</span>
+              <ng-container *ngIf="l.manual">set by hand ·
+                <button type="button" class="fs-link" (click)="resetStrength(l)" [disabled]="busy"
+                  title="Back to the strength the studio picks for this combination">Auto</button>
+              </ng-container>
+            </div>
+            <div class="fs-trigger" *ngIf="loraInfo(l.file)?.trigger">
+              <span>Trigger: <code>{{ loraInfo(l.file)?.trigger }}</code></span>
+              <button type="button" class="fs-link" *ngIf="!hasTrigger(activePrompt, loraInfo(l.file))"
+                (click)="addTrigger(l.file)">Add to prompt</button>
+              <span class="fs-ok" *ngIf="hasTrigger(activePrompt, loraInfo(l.file))">in the {{ fixing ? 'fix ' : '' }}prompt</span>
+            </div>
+          </li>
+        </ul>
+        <ng-template #noLoras>
+          <div class="fs-empty-note">No LoRA: plain FLUX. Add one below.</div>
+        </ng-template>
+
+        <select #loraPicker class="fs-select" aria-label="Add a LoRA"
+          [disabled]="busy || loras.length >= maxLoras"
+          (change)="addLora(loraPicker.value); loraPicker.value = ''">
+          <option value="">{{ loras.length >= maxLoras ? 'At most ' + maxLoras + ' LoRAs' : '+ Add a LoRA...' }}</option>
+          <optgroup label="Best">
+            <option *ngFor="let l of lorasIn('best')" [value]="l.file" [disabled]="isSelected(l.file)">
+              {{ l.family }}{{ l.style ? ' (style)' : l.detail ? ' (detail)' : '' }}</option>
+          </optgroup>
+          <optgroup label="All others">
+            <option *ngFor="let l of lorasIn('other')" [value]="l.file" [disabled]="isSelected(l.file)">{{ l.label }}
+            </option>
+          </optgroup>
+        </select>
+
+        <div class="fs-hint" *ngIf="loras.length > 1">Stacked LoRAs add up, so the studio lowers them for this
+          combination. Moving a slider keeps your value.</div>
+        <div class="fs-note" *ngIf="triggerNote">{{ triggerNote }}</div>
+      </div>
+
+      <!-- 3. Prompt -->
+      <div class="fs-block">
+        <label class="fs-label" for="fs-prompt"><span class="fs-num">2</span> Prompt</label>
+        <textarea id="fs-prompt" class="fs-prompt" rows="7" [(ngModel)]="prompt" (ngModelChange)="persist()"
+          (keydown)="onPromptKeydown($event)" [disabled]="busy"
+          placeholder="Who, what they wear and hold, where, light, framing, then the style (digital painting, photo of a painted miniature...)"></textarea>
+        <div class="fs-hint">Plain sentences work best. Ctrl+Enter generates. The Colibri chat can write prompts
+          for you: ask it for an image prompt before switching to FLUX.</div>
+      </div>
+
+      <!-- 4. Size and seed -->
+      <div class="fs-block">
+        <div class="fs-label" id="fs-size-label"><span class="fs-num">3</span> Size</div>
+        <div class="fs-sizes" role="radiogroup" aria-labelledby="fs-size-label">
+          <button type="button" class="fs-size" *ngFor="let s of catalog.sizes" role="radio"
+            [attr.aria-checked]="isSize(s.width, s.height)" [class.selected]="isSize(s.width, s.height)"
+            [disabled]="busy" (click)="setSize(s.width, s.height)">
+            <span class="fs-size-shape" [style.aspect-ratio]="s.width + ' / ' + s.height"></span>
+            <span>{{ s.label }}</span>
+            <span class="fs-size-px">{{ s.width }}×{{ s.height }}</span>
+          </button>
+        </div>
+
+        <div class="fs-seed">
+          <label class="fs-check">
+            <input type="checkbox" [(ngModel)]="randomSeed" [disabled]="busy"> Random seed
+          </label>
+          <input type="number" class="fs-input fs-seed-input" *ngIf="!randomSeed" [(ngModel)]="seed" min="0"
+            [disabled]="busy" aria-label="Seed">
+        </div>
+
+        <details class="fs-advanced">
+          <summary>Advanced</summary>
+          <div class="fs-adv-row">
+            <label for="fs-steps">Steps</label>
+            <input id="fs-steps" type="number" class="fs-input" min="1" max="60" [(ngModel)]="steps"
+              (ngModelChange)="persist()" [disabled]="busy">
+            <label for="fs-guidance">Guidance</label>
+            <input id="fs-guidance" type="number" class="fs-input" min="1" max="10" step="0.5" [(ngModel)]="guidance"
+              (ngModelChange)="persist()" [disabled]="busy">
+          </div>
+          <div class="fs-hint">20 steps and guidance 3.5 are FLUX's usual settings. More steps take longer.
+            <button type="button" class="fs-link" (click)="applyWorkflowDefaults(true)" [disabled]="busy">Back to the
+              workflow's settings</button></div>
+        </details>
+      </div>
+
+      <div class="fs-go">
+        <button type="button" class="fs-btn fs-btn-primary fs-generate" *ngIf="!busy" (click)="generate()"
+          [disabled]="!prompt.trim()">
+          <span class="material-icons">auto_awesome</span> Generate
+        </button>
+        <button type="button" class="fs-btn fs-btn-danger fs-generate" *ngIf="busy" (click)="cancel()">
+          <span class="material-icons">stop_circle</span> Cancel
+        </button>
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- Output -->
+  <section class="fs-panel fs-output" aria-label="Generated image">
+    <div class="fs-stage">
+      <!-- Making an image -->
+      <div class="fs-progress" *ngIf="busy" role="status" aria-live="polite">
+        <span class="material-icons fs-progress-icon spin">autorenew</span>
+        <div class="fs-progress-msg">{{ job?.message || 'Sending to ComfyUI...' }}</div>
+        <div class="fs-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+          [attr.aria-valuenow]="progressPercent">
+          <div class="fs-bar-fill" [style.width.%]="progressPercent"></div>
+        </div>
+        <div class="fs-progress-sub">{{ elapsed }}</div>
+      </div>
+
+      <!-- Fix an area: paint over the picture -->
+      <div class="fs-fix-wrap" *ngIf="!busy && fixing && current && imageUrl(current.id) as url">
+        <img #fixImg class="fs-image" [src]="url" [alt]="current.prompt" (load)="setupFixCanvas()">
+        <canvas #fixCanvas class="fs-fix-canvas" aria-label="Paint over the area to repaint"
+          (pointerdown)="onFixPointerDown($event)" (pointermove)="onFixPointerMove($event)"
+          (pointerup)="onFixPointerUp()" (pointercancel)="onFixPointerUp()"></canvas>
+      </div>
+
+      <!-- The selected picture -->
+      <ng-container *ngIf="!busy && !fixing">
+        <ng-container *ngIf="current; else noCurrent">
+          <img class="fs-image" *ngIf="imageUrl(current.id) as url; else imgLoading" [src]="url"
+            [alt]="current.prompt">
+          <ng-template #imgLoading>
+            <div class="fs-placeholder"><span class="material-icons spin">autorenew</span> Loading the picture...</div>
+          </ng-template>
+        </ng-container>
+        <ng-template #noCurrent>
+          <img class="fs-image" *ngIf="savedNotice && savedPreviewUrl; else nothing" [src]="savedPreviewUrl"
+            alt="The picture just saved">
+          <ng-template #nothing>
+            <div class="fs-placeholder">
+              <span class="material-icons fs-placeholder-icon">landscape</span>
+              <span>Your picture will appear here.</span>
+              <span class="fs-hint">The first one takes about a minute while FLUX loads; the next ones about
+                20 seconds.</span>
+            </div>
+          </ng-template>
+        </ng-template>
+      </ng-container>
+    </div>
+
+    <!-- Just saved -->
+    <div class="fs-saved" *ngIf="!busy && savedNotice" role="status">
+      <span class="material-icons">task_alt</span>
+      <span>Saved to the assets folder: <code>src/{{ savedNotice.url }}</code></span>
+    </div>
+
+    <!-- Fix an area: tools and settings -->
+    <div class="fs-fix-panel" *ngIf="!busy && fixing && current">
+      <div class="fs-fix-tools">
+        <span class="fs-label">Paint over what to fix</span>
+        <label class="fs-fix-brush" for="fs-brush">Brush
+          <input id="fs-brush" type="range" min="1" max="20" step="1" [(ngModel)]="brushPct">
+        </label>
+        <button type="button" class="fs-btn" [class.active]="erasing" (click)="erasing = !erasing"
+          [attr.aria-pressed]="erasing">
+          <span class="material-icons">{{ erasing ? 'brush' : 'auto_fix_off' }}</span> {{ erasing ? 'Paint' : 'Erase' }}
+        </button>
+        <button type="button" class="fs-btn" (click)="clearMask()" [disabled]="!hasMask">
+          <span class="material-icons">layers_clear</span> Clear
+        </button>
+      </div>
+      <label class="fs-label" for="fs-fix-prompt">What should be there</label>
+      <textarea id="fs-fix-prompt" class="fs-prompt" rows="4" [(ngModel)]="fixPrompt"></textarea>
+      <div class="fs-hint">Describe what the painted area should look like (shape, colours, emblems) and what is
+        around it, e.g. "wearing a white Mk X helmet with a dark slatted grille and red eye lenses, inside the
+        collar of his armour". FLUX ignores instructions like "fix" or "correct the shape". Uses the LoRAs on the
+        left; while fixing, Bolters / helmets go to full strength. Keep only the triggers of LoRAs you use.</div>
+      <div class="fs-strength">
+        <label for="fs-denoise">Change</label>
+        <input id="fs-denoise" type="range" min="0.3" max="1" step="0.05" [(ngModel)]="fixDenoise">
+        <span class="fs-value">{{ fixDenoise | number:'1.2-2' }}</span>
+      </div>
+      <div class="fs-hint">0.5 keeps the shapes and refines them; 0.85 redraws the details; 1.0 replaces what was there.</div>
+      <div class="fs-save-row">
+        <button type="button" class="fs-btn fs-btn-primary" (click)="applyFix()" [disabled]="!hasMask || !fixPrompt.trim()">
+          <span class="material-icons">auto_fix_high</span> Repaint area
+        </button>
+        <button type="button" class="fs-btn" (click)="cancelFix()">Cancel</button>
+      </div>
+      <div class="fs-hint">The result is a new picture; this one stays as it is.</div>
+    </div>
+
+    <!-- Save / discard the selected picture -->
+    <div class="fs-actions" *ngIf="!busy && !fixing && current">
+      <div class="fs-meta">
+        <span *ngFor="let l of imageLoras(current)">{{ l.name }} {{ l.strength | number:'1.0-2' }}</span>
+        <span *ngIf="!imageLoras(current).length">no LoRA</span>
+        <span *ngIf="current.fixOf">area fix</span>
+        <span>{{ current.width }}×{{ current.height }}</span>
+        <span>seed {{ current.seed }}</span>
+        <span *ngIf="current.seconds">{{ current.seconds }}s</span>
+        <button type="button" class="fs-link" (click)="reuseSettings()" title="Put this picture's prompt and settings back in the form">Use these settings</button>
+        <button type="button" class="fs-link" (click)="reuseSeed()" title="Make the next picture with this seed">Reuse seed</button>
+      </div>
+      <div class="fs-save-row">
+        <input type="text" class="fs-input fs-name" [(ngModel)]="saveName" [placeholder]="'Name (optional): ' + suggestedName"
+          (keydown.enter)="save()" aria-label="File name for the saved picture" maxlength="60">
+        <button type="button" class="fs-btn" (click)="startFix()" [disabled]="saving"
+          title="Paint over part of the picture and repaint just that part">
+          <span class="material-icons">auto_fix_high</span> Fix an area
+        </button>
+        <button type="button" class="fs-btn fs-btn-primary" (click)="save()" [disabled]="saving">
+          <span class="material-icons">{{ saving ? 'hourglass_top' : 'save' }}</span> Save
+        </button>
+        <button type="button" class="fs-btn fs-btn-danger" (click)="discard()" [disabled]="saving">
+          <span class="material-icons">delete</span> Discard
+        </button>
+      </div>
+      <div class="fs-hint">Not saved yet: it stays in the temporary folder until you save or discard it.</div>
+    </div>
+
+    <!-- Unsaved pictures -->
+    <div class="fs-gallery" *ngIf="images.length">
+      <div class="fs-label">Unsaved pictures ({{ images.length }}) <span class="fs-label-hint">in {{ state?.tempDir
+          }}</span></div>
+      <div class="fs-thumbs">
+        <button type="button" class="fs-thumb" *ngFor="let img of images | slice:0:24; trackBy: trackById"
+          [class.selected]="img.id === currentId" (click)="select(img.id)"
+          [title]="(imageLoras(img)[0]?.name || 'FLUX') + ' · ' + timeAgo(img.createdAt)"
+          [attr.aria-label]="'Show picture made ' + timeAgo(img.createdAt)">
+          <img *ngIf="imageUrl(img.id) as url" [src]="url" alt="">
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

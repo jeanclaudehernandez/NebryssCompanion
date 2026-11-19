@@ -1,0 +1,20 @@
+{
+  "_comment": "FLUX LoRAs the image studio knows: a file in ComfyUI models/loras belongs to the longest key its name starts with. name = what the studio shows; trigger = the words the prompt must start with; strength = its strength when used alone; style = a drawing style; detail = a part (weapon, helmet) stacked on a subject; best = the recommended file, listed under Best (default: the final file; false = none). The studio lowers strengths by itself when LoRAs are stacked. Unknown files still appear, under All others, without a trigger.",
+  "orks_mixed": { "name": "Orks", "trigger": "0rk40k, a Warhammer 40,000 Ork", "strength": 1, "best": "orks_mixed-step00001500.safetensors" },
+  "inquisitors_mixed": { "name": "Inquisitors", "trigger": "1nq40k, a Warhammer 40,000 Inquisitor", "strength": 1, "best": "inquisitors_mixed-step00001200.safetensors" },
+  "world_eaters_mixed": { "name": "World Eaters", "trigger": "w34t40k, a World Eaters Khorne Berzerker", "strength": 1 },
+  "fellgor_mixed": { "name": "Fellgor", "trigger": "f3llg0r, a Fellgor beastman", "strength": 1 },
+  "tzaangors_mixed": { "name": "Tzaangors", "trigger": "tz44ng0r, a Tzaangor", "strength": 1, "best": "tzaangors_mixed-step00001200.safetensors" },
+  "tau_real_mixed": { "name": "T'au Fire Warrior", "trigger": "t4ufw, a T'au Fire Warrior", "strength": 1 },
+  "tau_fire_warrior_512": { "name": "T'au Fire Warrior (first test, wrong helmet)", "trigger": "t4ufw, a T'au Fire Warrior", "strength": 1, "best": false },
+  "FluxUltraM40k": { "name": "Space Marines (Ultramarines)", "trigger": "UltraM40k, a space marine", "strength": 0.9 },
+  "FluxSisB40K": { "name": "Sisters of Battle", "trigger": "sisb40k, a Sister of Battle", "strength": 0.9 },
+  "FluxThouS40k": { "name": "Thousand Sons", "trigger": "thous40k, a Thousand Sons marine", "strength": 0.9 },
+  "Adeptus_Mechanicus_Warhammer_400000": { "name": "Adeptus Mechanicus", "trigger": "the figure of mechanicus warhammer 40000", "strength": 0.9 },
+  "40k-battleship": { "name": "Voidships", "trigger": "40k-battleship", "strength": 0.9 },
+  "40k-city-streets-better": { "name": "Hive city streets", "trigger": "40k-city-streets-better", "strength": 0.9 },
+  "cadian_mixed": { "name": "Cadian Shock Troopers", "trigger": "c4d14n, a Cadian Shock Trooper", "strength": 1 },
+  "bolter_mixed": { "name": "Bolters", "trigger": "b0ltg4n, a Warhammer 40,000 boltgun", "strength": 1, "best": "bolter_mixed-step00001200.safetensors", "detail": true },
+  "sm_helmets_mixed": { "name": "Space Marine helmets", "trigger": "sm4h3lm, a Space Marine helmet", "strength": 1, "detail": true },
+  "hand_drawn_style": { "name": "Hand-drawn style", "trigger": "h4nddr4wn, a hand-drawn fantasy illustration", "strength": 1.2, "style": true }
+}

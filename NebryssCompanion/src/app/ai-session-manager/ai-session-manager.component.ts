@@ -22,12 +22,15 @@ import {
   ChatMessage,
   ColibriEngineMode,
   ColibriEngineState,
+  ColibriProfile,
   ConnectionStatus,
   ContextUsage,
+  FLUX_MODE,
   HistoryMessage,
   HistorySnapshot,
   PendingCommand
 } from './ai-session-manager.service';
+import { FluxStudioComponent } from './flux-studio/flux-studio.component';
 
 // Separates a stored user message's RAG block from the user's own text (as in colibri-bridge.js).
 const USER_REQUEST_MARKER = '\n\n[USER REQUEST]\n';
@@ -53,12 +56,13 @@ interface Player {
 @Component({
   selector: 'app-ai-session-manager',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, FluxStudioComponent],
   templateUrl: './ai-session-manager.component.html',
   styleUrls: [
     './ai-session-manager.component.css',
     './ai-session-manager.engine.css',
-    './ai-session-manager.history.css'
+    './ai-session-manager.history.css',
+    './ai-session-manager.markdown.css'
   ]
 })
 export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
@@ -89,12 +93,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   agentStatus: string | null = null;
   contextUsage: ContextUsage | null = null;
 
-  // Colibri engine (CUDA / Vulkan) and the blocking popup shown while it switches
+  // Colibri's model setup (quantization + context) and the blocking popup shown while it switches
   colibriEngine: ColibriEngineState | null = null;
   engineModalOpen = false;
   engineElapsed = '';
   readonly engineSteps: { key: string; label: string }[] = [
-    { key: 'stopping', label: 'Stop the running engine' },
+    { key: 'stopping', label: 'Stop the running model' },
     { key: 'starting', label: 'Launch Colibri' },
     { key: 'loading', label: 'Load the model' },
     { key: 'ready', label: 'Ready to answer' }
@@ -102,13 +106,15 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   // Experimental format (Colibri): list results as tables instead of JSON
   experimentalFormat = false;
 
-  // AI Engine menu: level 1 picks the bridge, level 2 Colibri's engine or Antigravity's model
+  // AI Engine menu: level 1 picks the bridge, level 2 Colibri's model setup or Antigravity's model
   engineMenuOpen = false;
   engineMenuView: 'bridges' | 'colibri' | 'agy' = 'bridges';
-  readonly colibriEngineOptions: { id: ColibriEngineMode; icon: string; desc: string }[] = [
-    { id: 'cuda', icon: 'bolt', desc: 'Fastest replies' },
-    { id: 'vulkan', icon: 'layers', desc: 'Larger context, slower to read long prompts' }
-  ];
+  // Icons for the known setups (the list itself comes from the API with the engine state)
+  private readonly colibriProfileIcons: Record<string, string> = {
+    'iq3xxs-64k': 'bolt',
+    'q2kxl-96k': 'balance',
+    'iq2m-120k': 'unfold_more'
+  };
   private engineCloseTimer: any = null;
   private engineElapsedTimer: any = null;
   private shouldScrollEngineLog = false;
@@ -123,6 +129,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   historyDeleting = false;
 
   private shouldScrollToBottom = false;
+  private readonly markdownCache = new Map<string, SafeHtml>();
   private previousMessageCount = 0;
 
   constructor(
@@ -335,6 +342,64 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
         this.sidebarCollapsed = true;
       }
     }
+  }
+
+  /**
+   * Draft templates for the "Draft" quick actions: they fill the message box (nothing is sent),
+   * with [bracketed] fields to replace. The fields follow the designer guides' schemas.
+   */
+  readonly draftTemplates: { id: string; label: string; icon: string; text: string }[] = [
+    {
+      id: 'weapon', label: 'Weapon', icon: 'colorize',
+      text: 'Design a new weapon: [name or concept]. Kind: [melee / ranged / heavy / spell]. ' +
+        'Wielder body: [human / astartes / universal / spell / ...]. Profiles: [one, or e.g. Standard + Overcharge]. ' +
+        'Feel: [e.g. slow but devastating]. Special rules: [rules it should have, or "suggest existing ones"]. ' +
+        'Price: [mistrals, 0-250]. Use only existing weapon rules, and draft it in chat first; do not stage it until I approve.'
+    },
+    {
+      id: 'npc', label: 'NPC', icon: 'person_add',
+      text: 'Create a new NPC: [name]. Faction: [Imperium of Man / Gilded Accord / Abyssal Cabal / Nebryssian Liberation Republic / Crimson Corsairs]. ' +
+        'Role: [e.g. dock master, smuggler captain]. Location: [an existing location]. Personality: [traits]. ' +
+        'Mission and methods: [what they want and how they get it]. Combat: [civilian / fighter with bestiary stats]. ' +
+        'Hooks: [ties to players, NPCs or past sessions]. Draft it in chat first; do not stage it until I approve.'
+    },
+    {
+      id: 'bestiary', label: 'Creature', icon: 'pest_control',
+      text: 'Create a new bestiary creature: [name or concept]. Faction: [Imperium of Man / Gilded Accord / Abyssal Cabal / Nebryssian Liberation Republic / Crimson Corsairs]. ' +
+        'Subgroup: [e.g. Construct, Daemon, Behemoth, Swarm]. Threat tier: [minion / troop / elite / boss]. Habitat: [where it lives]. ' +
+        'Weapons: [existing weapons it should use, or "suggest some"]. Abilities: [special traits]. ' +
+        'Use only existing weapons, calculate its PR, and draft it in chat first; do not stage it until I approve.'
+    },
+    {
+      id: 'location', label: 'Location', icon: 'add_location_alt',
+      text: 'Create a new location: [name]. Category: [fortress / trading post / city / island / ruins / reef / sanctuary / shipwreck / dock], size [1-5]. ' +
+        'Faction: [faction, or Neutral / Forces of Nature]. Map position: [near which existing location, or "pick a free spot"]. ' +
+        'Description: [atmosphere and key features]. Secrets: [hidden hooks for the GM]. Discovered by the players: [yes / no]. ' +
+        'Include a battle map layout. Draft it in chat first; do not stage it until I approve.'
+    }
+  ];
+
+  /** Puts a draft template in the message box (without sending it) and selects its first [field]. */
+  prefillDraft(id: string): void {
+    const template = this.draftTemplates.find(t => t.id === id);
+    if (!template) return;
+    const current = this.inputText.trim();
+    const isTemplate = this.draftTemplates.some(t => t.text === current);
+    if (current && !isTemplate && !window.confirm('Replace the text in the message box with this template?')) return;
+
+    this.inputText = template.text;
+    if (window.innerWidth <= 768) this.sidebarCollapsed = true;
+    // After Angular has written the new value into the textarea.
+    setTimeout(() => {
+      const el = this.inputArea?.nativeElement;
+      if (!el) return;
+      this.autoResizeInput();
+      el.focus();
+      const start = template.text.indexOf('[');
+      const end = template.text.indexOf(']', start);
+      if (start >= 0 && end > start) el.setSelectionRange(start, end + 1);
+      el.scrollTop = 0;
+    });
   }
 
   inspectPlayer(player: Player): void {
@@ -580,15 +645,33 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   // ─── AI Engine menu ──────────────────────────────────────────
 
-  /** Second line of the AI Engine button / Colibri row: the running GPU engine. */
+  /** Second line of the AI Engine button / Colibri row: the running model setup. */
   get colibriEngineSummary(): string {
     const e = this.colibriEngine;
-    if (!e) return 'Checking engine...';
+    if (!e) return 'Checking model...';
     if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
-    if (e.mode === 'cuda' || e.mode === 'vulkan') {
-      return `${this.engineProfileLabel(e.mode)} · ${e.contextTokens ? `${Math.round(e.contextTokens / 1024)}k` : this.engineProfileContext(e.mode)} context`;
+    if (e.mode === FLUX_MODE) return 'Stopped: FLUX has the GPU';
+    if (e.mode === 'offline') return 'Server offline';
+    if (e.mode === 'unknown') return 'Port in use';
+    if (e.mode === 'custom') {
+      return `${e.runningModel || 'Other model'}${e.contextTokens ? ` · ${this.formatContext(e.contextTokens)}` : ''}`;
     }
-    return e.mode === 'offline' ? 'Server offline' : 'Port in use';
+    return `${this.engineProfileLabel(e.mode)} context`;
+  }
+
+  /** The model setups the switch offers (sent by the API with the engine state). */
+  get colibriProfiles(): ColibriProfile[] {
+    return this.colibriEngine?.profiles || [];
+  }
+
+  colibriProfileIcon(id: string): string {
+    return this.colibriProfileIcons[id] || 'memory';
+  }
+
+  /** 65536 -> "64k", 96000 -> "96k", 120000 -> "120k". */
+  formatContext(tokens: number): string {
+    if (!tokens) return '';
+    return `${tokens % 1024 === 0 ? tokens / 1024 : Math.round(tokens / 1000)}k`;
   }
 
   /** Second line of the AI Engine button / Antigravity row: the chosen model. */
@@ -623,6 +706,27 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     this.closeEngineMenu();
     if (this.agentBackend !== 'colibri') this.switchBackend('colibri');
     if (this.colibriEngine?.mode !== mode) this.switchColibriEngine(mode);
+  }
+
+  // ─── FLUX images (ComfyUI takes the GPU instead of Colibri) ───
+
+  /** FLUX has the GPU and the local bridge is selected: the image studio replaces the chat. */
+  get fluxActive(): boolean {
+    return this.agentBackend === 'colibri' && this.colibriEngine?.mode === FLUX_MODE;
+  }
+
+  /** Second line of the FLUX row in the AI Engine menu. */
+  get fluxSummary(): string {
+    const e = this.colibriEngine;
+    if (e?.switching && e.targetMode === FLUX_MODE) return 'Starting ComfyUI...';
+    if (e?.mode === FLUX_MODE) return 'ComfyUI is running';
+    return 'Stops Colibri, starts ComfyUI';
+  }
+
+  chooseFlux(): void {
+    this.closeEngineMenu();
+    if (this.agentBackend !== 'colibri') this.switchBackend('colibri');
+    if (this.colibriEngine?.mode !== FLUX_MODE) this.switchColibriEngine(FLUX_MODE);
   }
 
   chooseAgyModel(modelId: string): void {
@@ -674,7 +778,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  // ─── Colibri engine (CUDA / Vulkan) ──────────────────────────
+  // ─── Colibri model setup (quantization + context) ────────────
 
   switchColibriEngine(mode: ColibriEngineMode): void {
     const engine = this.colibriEngine;
@@ -694,14 +798,16 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     clearInterval(this.engineElapsedTimer);
   }
 
+  /** "UD-IQ2_M · 120k" for a setup id. */
   engineProfileLabel(mode: string | null | undefined): string {
-    const profile = this.colibriEngine?.profiles?.find(p => p.id === mode);
-    return profile ? profile.label : (mode === 'vulkan' ? 'Vulkan' : 'CUDA');
+    if (mode === FLUX_MODE) return this.colibriEngine?.flux?.label || 'FLUX.1 [dev]';
+    const profile = this.colibriProfiles.find(p => p.id === mode);
+    return profile ? `${profile.label} · ${this.formatContext(profile.contextTokens)}` : 'the new model';
   }
 
-  engineProfileContext(mode: ColibriEngineMode): string {
-    const profile = this.colibriEngine?.profiles?.find(p => p.id === mode);
-    return profile ? `${Math.round(profile.contextTokens / 1024)}k` : (mode === 'vulkan' ? '100k' : '64k');
+  /** A setup the server is running (as opposed to offline, another program, or our own state). */
+  private isRunningSetup(mode: string | undefined): boolean {
+    return !!mode && mode !== 'offline' && mode !== 'unknown';
   }
 
   get engineStatusText(): string {
@@ -709,15 +815,39 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     if (!e) return 'Checking...';
     if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
     switch (e.mode) {
-      case 'cuda':
-      case 'vulkan':
-        return `Running on ${this.engineProfileLabel(e.mode)}` +
-          (e.contextTokens ? `, ${Math.round(e.contextTokens / 1024)}k context` : '');
+      case FLUX_MODE:
+        return 'FLUX (ComfyUI) has the GPU, so Colibri is stopped';
       case 'offline':
         return 'No Colibri server is running';
-      default:
+      case 'unknown':
         return 'Port in use by another program';
+      case 'custom':
+        return `Running ${e.runningModel || 'a model of its own'}` +
+          (e.contextTokens ? ` with ${this.formatContext(e.contextTokens)} context` : '') + ', not one of these setups';
+      default:
+        return `Running ${this.engineProfileLabel(e.mode)} context`;
     }
+  }
+
+  /** The switch popup is about FLUX (starting ComfyUI) rather than a Colibri model. */
+  get engineTargetIsFlux(): boolean {
+    return this.colibriEngine?.targetMode === FLUX_MODE;
+  }
+
+  /** A step's text in the switch popup. */
+  engineStepLabel(index: number): string {
+    const flux = this.engineTargetIsFlux;
+    if (index === 0) return flux ? 'Stop Colibri (frees the GPU)' : this.engineSteps[0].label;
+    if (index === 1) return flux ? 'Launch ComfyUI' : 'Launch Colibri with ' + this.engineProfileLabel(this.colibriEngine?.targetMode);
+    if (index === 2) return flux ? 'Load ComfyUI' : this.engineSteps[2].label;
+    return flux ? 'Ready to make images' : this.engineSteps[3].label;
+  }
+
+  get engineModalTitle(): string {
+    const e = this.colibriEngine;
+    if (e?.phase === 'error') return 'Engine switch failed';
+    if (e?.phase === 'ready') return this.engineTargetIsFlux ? 'FLUX is ready' : 'Colibri is ready';
+    return this.engineTargetIsFlux ? 'Switching to FLUX images' : 'Switching Colibri to ' + this.engineProfileLabel(e?.targetMode);
   }
 
   /** done / active / error / pending, for a step of the switch popup. */
@@ -751,14 +881,14 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
     if (state.switching) {
       this.openEngineModal();
-    } else if (state.mode === 'offline' && (previous?.mode === 'cuda' || previous?.mode === 'vulkan') && !previous?.switching) {
+    } else if (state.mode === 'offline' && this.isRunningSetup(previous?.mode) && !previous?.switching) {
       // Its terminal window was closed (or the server stopped some other way).
       this.toastService.show(state.message || 'Colibri stopped.', 'info', 5000);
     } else if (this.engineModalOpen && previous?.switching) {
       clearInterval(this.engineElapsedTimer);
       this.updateEngineElapsed();
       if (state.phase === 'ready') {
-        this.toastService.show(state.message || `Colibri is running on ${this.engineProfileLabel(state.mode)}`, 'success', 4000);
+        this.toastService.show(state.message || `Colibri is running ${this.engineProfileLabel(state.mode)}`, 'success', 4000);
         this.engineCloseTimer = setTimeout(() => this.closeEngineModal(), 1500);
       }
       // On an error the popup stays open until it is closed, so the error can be read.
@@ -826,14 +956,43 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   // ─── Markdown Rendering ───────────────────────────────────────
 
+  /**
+   * The rendered HTML of a message, cached by its text. The template calls this on every change
+   * detection; a new SafeHtml object each time made Angular rebuild the message's DOM each time,
+   * so a click on a code block's Copy button was lost when anything (e.g. the message box losing
+   * focus) triggered change detection between mouse-down and mouse-up.
+   */
   renderMarkdown(text: string): SafeHtml {
+    const key = text || '';
+    const cached = this.markdownCache.get(key);
+    if (cached) return cached;
+    const html = this.buildMarkdown(key);
+    this.markdownCache.set(key, html);
+    // Streaming replies add a new text per token: keep only the most recent entries.
+    if (this.markdownCache.size > 300) {
+      const oldest = this.markdownCache.keys().next().value;
+      if (oldest !== undefined) this.markdownCache.delete(oldest);
+    }
+    return html;
+  }
+
+  private buildMarkdown(text: string): SafeHtml {
     if (!text) return this.sanitizer.bypassSecurityTrustHtml('');
 
     let html = this.escapeHtml(text);
 
-    // Code blocks (``` ... ```)
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_match, lang, code) => {
-      return `<pre><code class="language-${lang}">${code.trim()}</code></pre>`;
+    // Code blocks (``` ... ```): set aside first, so the rules below (line breaks, bold, italics,
+    // lists) leave their text exactly as written, and give each a Copy button (see onMessagesClick).
+    const codeBlocks: string[] = [];
+    html = html.replace(/```([\w-]*)\n([\s\S]*?)```/g, (_match, lang, code) => {
+      const body = code.replace(/^\n+/, '').replace(/\s+$/, '');
+      codeBlocks.push(
+        '<div class="code-block">' +
+        '<button type="button" class="code-copy-btn" title="Copy to clipboard" aria-label="Copy code">' +
+        '<span class="material-icons" aria-hidden="true">content_copy</span><span class="code-copy-label">Copy</span></button>' +
+        `<pre><code class="language-${lang}">${body}</code></pre></div>`
+      );
+      return `\u0000CODE${codeBlocks.length - 1}\u0000`;
     });
 
     // Inline code
@@ -876,9 +1035,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     // Line breaks
     html = html.replace(/\n/g, '<br>');
 
+    // Code blocks back in place
+    html = html.replace(/\u0000CODE(\d+)\u0000/g, (_match, i) => codeBlocks[Number(i)] || '');
+
     // Clean up double <br> around block elements
-    html = html.replace(/<br><(h[1-3]|pre|blockquote|ul|ol|table|hr)/g, '<$1');
-    html = html.replace(/<\/(h[1-3]|pre|blockquote|ul|ol|table)><br>/g, '</$1>');
+    html = html.replace(/<br><(h[1-3]|pre|blockquote|ul|ol|table|hr|div)/g, '<$1');
+    html = html.replace(/<\/(h[1-3]|pre|blockquote|ul|ol|table|div)><br>/g, '</$1>');
 
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
@@ -1066,13 +1228,53 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  copyText(text: string, label: string = 'Copied to clipboard!'): void {
-    if (!text) return;
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).then(() => {
-        this.toastService.show(label, 'success');
-      });
+  copyText(text: string, label: string = 'Copied to clipboard!'): Promise<boolean> {
+    if (!text) return Promise.resolve(false);
+    const done = (ok: boolean) => {
+      this.toastService.show(ok ? label : 'Could not copy; select the text and copy it by hand.', ok ? 'success' : 'error');
+      return ok;
+    };
+    // navigator.clipboard only exists on https or localhost; over plain http on the LAN, fall back.
+    if (navigator.clipboard && window.isSecureContext) {
+      return navigator.clipboard.writeText(text).then(() => done(true), () => done(this.copyWithTextarea(text)));
     }
+    return Promise.resolve(done(this.copyWithTextarea(text)));
+  }
+
+  private copyWithTextarea(text: string): boolean {
+    const area = document.createElement('textarea');
+    area.value = text;
+    area.setAttribute('readonly', '');
+    area.style.position = 'fixed';
+    area.style.opacity = '0';
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (_) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+
+  /** Copy buttons on code blocks in agent messages (they are inside [innerHTML], so no Angular bindings). */
+  onMessagesClick(event: MouseEvent): void {
+    const button = (event.target as HTMLElement | null)?.closest?.('.code-copy-btn') as HTMLElement | null;
+    if (!button) return;
+    const code = button.parentElement?.querySelector('pre code');
+    const text = code?.textContent || '';
+    if (!text) return;
+    this.copyText(text, 'Copied!').then((ok) => {
+      if (!ok) return;
+      const label = button.querySelector('.code-copy-label');
+      const icon = button.querySelector('.material-icons');
+      button.classList.add('copied');
+      if (label) label.textContent = 'Copied';
+      if (icon) icon.textContent = 'check';
+      setTimeout(() => {
+        button.classList.remove('copied');
+        if (label) label.textContent = 'Copy';
+        if (icon) icon.textContent = 'content_copy';
+      }, 1500);
+    });
   }
 
   isObject(val: any): boolean {

@@ -1,0 +1,100 @@
+/* Code blocks in agent messages: a Copy button in the top-right corner (rendered through
+   [innerHTML], hence ::ng-deep; split from the main stylesheet, which is over its size budget). */
+
+:host ::ng-deep .agent-content .code-block {
+  position: relative;
+  margin: 6px 0;
+}
+
+:host ::ng-deep .agent-content .code-block pre {
+  margin: 0;
+  padding-top: 34px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Plain text: the global Prism theme (angular.json) makes code[class*="language-"] black with a white
+   text-shadow and no wrapping; chat code blocks keep the message's own text colour and wrap. */
+:host ::ng-deep .agent-content pre,
+:host ::ng-deep .agent-content pre code,
+:host ::ng-deep .agent-content pre code[class*="language-"] {
+  color: rgba(255, 255, 255, 0.92);
+  text-shadow: none;
+  white-space: pre-wrap;
+  text-wrap: wrap;
+  word-wrap: anywhere;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content pre,
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content pre code,
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content pre code[class*="language-"] {
+  color: #0f172a;
+}
+
+:host ::ng-deep .agent-content .code-copy-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 26px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+:host ::ng-deep .agent-content .code-copy-btn .material-icons {
+  font-size: 15px;
+}
+
+:host ::ng-deep .agent-content .code-copy-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+:host ::ng-deep .agent-content .code-copy-btn:focus-visible {
+  outline: 2px solid #818cf8;
+  outline-offset: 1px;
+}
+
+:host ::ng-deep .agent-content .code-copy-btn.copied {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+/* Light theme */
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content .code-copy-btn {
+  border-color: rgba(15, 23, 42, 0.18);
+  background: rgba(255, 255, 255, 0.85);
+  color: #0f172a;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content .code-copy-btn:hover {
+  background: #ffffff;
+}
+
+:host-context(body:not(.dark-theme)) ::ng-deep .agent-content .code-copy-btn.copied {
+  color: #059669;
+  border-color: rgba(5, 150, 105, 0.5);
+}
+
+/* Phones: a bigger touch target */
+@media (max-width: 768px) {
+  :host ::ng-deep .agent-content .code-copy-btn {
+    min-height: 34px;
+    padding: 6px 12px;
+  }
+
+  :host ::ng-deep .agent-content .code-block pre {
+    padding-top: 44px;
+  }
+}

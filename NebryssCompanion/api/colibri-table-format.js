@@ -9,7 +9,11 @@
  * commands, which need their exact structure.
  */
 
-const BOOKKEEPING = /^(_id|__v|isDiscovered|discoveredCampaignIds|image|imageUrl|portrait|mapImage|createdAt|updatedAt)$/;
+const BOOKKEEPING = /^(_id|__v|isDiscovered|discoveredCampaignIds|createdAt|updatedAt)$/;
+// Image links: the model cannot use them, and they cost tokens in every shop and location.
+const IMAGE_FIELD = /^(image|imageUrl|imgUrl|img|thumbnail|thumbnailUrl|thumb|portrait|mapImage|avatar|icon|iconUrl)$/i;
+// A field present in fewer entries than this share goes in the "other" column instead of its own.
+const COMMON_SHARE = 0.6;
 
 // A real HTML tag (a name of two or more letters, or b/i/p/q/s/u): rule text holds
 // placeholders like "<x>" ("Penetrating <x>") that must stay.
@@ -36,6 +40,12 @@ function scalarText(v) {
 function inlineText(v) {
   if (isScalar(v)) return scalarText(v);
   if (Array.isArray(v)) {
+    // A list of plain objects (a shop's stock: {id, price, type}...) stays compact JSON: written
+    // as "(id 16, price 5, type item); ..." it repeated the keys anyway and cost 24% more tokens.
+    if (v.length > 0 && v.every(x => x && typeof x === 'object' && !Array.isArray(x)) &&
+        !v.every(x => x.name && (x.effect || x.description))) {
+      return JSON.stringify(v.map(withoutNoise)).replace(/\|/g, '/');
+    }
     return v.map((x) => {
       if (isScalar(x)) return scalarText(x);
       if (x.name && (x.effect || x.description)) return `${scalarText(x.name)}: ${scalarText(x.effect || x.description)}`;
@@ -50,25 +60,64 @@ function inlineText(v) {
     .join(', ');
 }
 
-/** The entry without bookkeeping fields and empty values. */
-function cleanEntry(entry) {
-  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return { value: entry };
+/** A value without bookkeeping fields, image links and empty values, at every level. */
+function withoutNoise(v) {
+  if (Array.isArray(v)) return v.map(withoutNoise);
+  if (!v || typeof v !== 'object') return v;
   const out = {};
-  for (const [k, v] of Object.entries(entry)) {
-    if (!BOOKKEEPING.test(k) && !isEmpty(v)) out[k] = v;
+  for (const [k, x] of Object.entries(v)) {
+    if (!BOOKKEEPING.test(k) && !IMAGE_FIELD.test(k) && !isEmpty(x)) out[k] = withoutNoise(x);
   }
   return out;
 }
 
-/** Header (column names in order of first appearance) and one row per entry. */
+/** The entry without bookkeeping fields, image links and empty values. */
+function cleanEntry(entry) {
+  if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return { value: entry };
+  return withoutNoise(entry);
+}
+
+/**
+ * Header and one row per entry. Fields most entries have get a column each, in order of first
+ * appearance; the rest go in a last column, "other", as "name value" pairs on the rows that
+ * have them. Items mix consumables, ship parts and blueprints: with a column for every field
+ * the table had 26 columns, 75% of the cells empty, and cost 49% more tokens than JSON.
+ */
 function buildTable(entries) {
   const cleaned = entries.map(cleanEntry);
-  const columns = [];
-  for (const e of cleaned) for (const k of Object.keys(e)) if (!columns.includes(k)) columns.push(k);
-  return {
-    header: columns.join(' | '),
-    rows: cleaned.map(e => columns.map(c => (e[c] === undefined ? '' : inlineText(e[c]))).join(' | '))
+  const order = [];
+  const count = new Map();
+  for (const e of cleaned) {
+    for (const k of Object.keys(e)) {
+      if (!count.has(k)) { order.push(k); count.set(k, 0); }
+      count.set(k, count.get(k) + 1);
+    }
+  }
+  const columns = order.filter(k => count.get(k) >= cleaned.length * COMMON_SHARE);
+  const rare = order.filter(k => !columns.includes(k));
+  const otherText = (e) => {
+    const extra = {};
+    for (const k of rare) if (e[k] !== undefined) extra[k] = e[k];
+    return Object.keys(extra).length ? inlineText(extra) : '';
   };
+  return {
+    rareFields: rare,
+    header: [...columns, ...(rare.length ? ['other'] : [])].join(' | '),
+    rows: cleaned.map(e => [
+      ...columns.map(c => (e[c] === undefined ? '' : inlineText(e[c]))),
+      ...(rare.length ? [otherText(e)] : [])
+    ].join(' | '))
+  };
+}
+
+/**
+ * Rough token count, close enough to choose the smaller of two formats: words, short number
+ * groups, punctuation runs and whitespace runs, roughly as the model's tokenizer splits them.
+ * Checked against the served tokenizer's real counts on 20 list results (10 lists, JSON and
+ * table): it picked the smaller format in all 18 that differed; estimate/real stayed within 1.2x.
+ */
+function estimateTokens(text) {
+  return (String(text).match(/[A-Za-z]{1,10}|[0-9]{1,3}|[^\sA-Za-z0-9]{1,3}|\s{2,}|\n/g) || []).length;
 }
 
 // Attached reference sections, in the order they are dropped when the result is too long.
@@ -80,14 +129,15 @@ const RELATED = [
 
 /**
  * A list_entities result as text: a line saying which entries these are, the table, the
- * reference sections, and where to continue when the list did not fit.
+ * reference sections, and where to continue when the list did not fit. Returns
+ * { text, rareFields }.
  *
  * entries: the entries from `offset` on (already cut to the requested limit)
  * enrich:  async (entries) => object whose _related* arrays hold the rules/states/weapons the
  *          entries refer to (the bridge's enrichWithRulesAndStates)
  */
 async function formatListAsTable({ type, entries, total, offset, budget, enrich, pagingNote }) {
-  const { header, rows } = buildTable(entries);
+  const { header, rows, rareFields } = buildTable(entries);
   // Rows that fit, leaving a fifth of the budget for the reference sections.
   const fitted = [];
   let length = header.length + 200;
@@ -102,7 +152,8 @@ async function formatListAsTable({ type, entries, total, offset, budget, enrich,
   // The range first, worded as an instruction when the list is incomplete (pagingNote, from the
   // bridge): at the end of a long result the model answered from the first page alone.
   const range = pagingNote ? pagingNote(end) : `${type}: entries ${offset + 1}-${end} of ${total}.`;
-  const head = `${range}\nTable: the first row names the columns, then one row per entry ("|" between columns).`;
+  const head = `${range}\nTable: the first row names the columns, then one row per entry ("|" between columns)` +
+    (header.endsWith('| other') ? '; fields few entries have are in the last column, "other", as name value pairs.' : '.');
   const more = end < total ? `(Incomplete: entries ${end + 1}-${total} need list_entities with offset=${end}.)` : '';
   const sections = RELATED
     .filter(([key]) => Array.isArray(enriched[key]) && enriched[key].length > 0)
@@ -120,7 +171,8 @@ async function formatListAsTable({ type, entries, total, offset, budget, enrich,
     text = compose();
   }
   if (dropped.length) text += `\n(Omitted to fit: ${dropped.join(', ')}; fetch them with get_entity if needed.)`;
-  return text;
+  // rareFields: the fields in the "other" column (the bridge sends JSON when there are many)
+  return { text, rareFields };
 }
 
-module.exports = { formatListAsTable, buildTable, inlineText };
+module.exports = { formatListAsTable, buildTable, inlineText, estimateTokens, withoutNoise, IMAGE_FIELD };

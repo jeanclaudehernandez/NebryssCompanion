@@ -3,6 +3,7 @@ const { WebSocketServer, WebSocket } = require('ws');
 const { createAgentSession: createAgySession, listAgyModels } = require('./agy-bridge');
 const { createAgentSession: createColibriSession, forgetServerContext, invalidateCampaignData } = require('./colibri-bridge');
 const colibriEngine = require('./colibri-engine');
+const fluxEngine = require('./flux-engine');
 
 function setupWebSocketServer(server) {
   // Main data-sync WebSocket server (existing)
@@ -95,14 +96,27 @@ function setupWebSocketServer(server) {
     // Create an agent session for this WebSocket connection
     let session = createSessionForBackend(activeBackend);
 
-    // Colibri engine (CUDA / Vulkan) state and switch progress go to every connected client,
+    // Colibri model setup state and switch progress go to every connected client,
     // so a switch started anywhere blocks every open UI until the new engine is up.
     const sendEngineState = (engineState) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'colibri_engine', state: engineState }));
       }
     };
-    const unsubscribeEngine = colibriEngine.subscribe(sendEngineState);
+    const unsubscribeColibri = colibriEngine.subscribe(sendEngineState);
+    // FLUX image studio: the image being made and the unsaved images, to every client.
+    const sendFluxState = (fluxState) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'flux_state', state: fluxState }));
+      }
+    };
+    const unsubscribeFlux = fluxEngine.subscribe(sendFluxState);
+    const unsubscribeEngine = () => { unsubscribeColibri(); unsubscribeFlux(); };
+    const sendFluxError = (action, err) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'flux_error', action, message: err.message || String(err) }));
+      }
+    };
 
     // The model's stored conversation (Colibri only: AGY keeps its history inside the AGY CLI).
     const sendHistory = (outcome) => {
@@ -130,6 +144,11 @@ function setupWebSocketServer(server) {
             }
             if (activeBackend === 'colibri' && colibriEngine.isSwitching()) {
               ws.send(JSON.stringify({ type: 'error', message: 'The Colibri engine is switching; send the message again once it is ready.' }));
+              ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
+              return;
+            }
+            if (activeBackend === 'colibri' && colibriEngine.getState().mode === colibriEngine.FLUX_MODE) {
+              ws.send(JSON.stringify({ type: 'error', message: 'FLUX has the GPU, so Colibri is stopped. Switch the AI engine back to a Colibri model to chat.' }));
               ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
@@ -395,11 +414,13 @@ function setupWebSocketServer(server) {
             break;
 
           case 'switch_colibri_engine': {
-            const target = msg.mode === 'vulkan' ? 'vulkan' : (msg.mode === 'cuda' ? 'cuda' : null);
-            if (!target) {
-              ws.send(JSON.stringify({ type: 'error', message: `Invalid Colibri engine: ${msg.mode}` }));
+            const toFlux = msg.mode === colibriEngine.FLUX_MODE;
+            const profile = !toFlux && typeof msg.mode === 'string' ? colibriEngine.resolveProfile(msg.mode) : null;
+            if (!toFlux && !profile) {
+              ws.send(JSON.stringify({ type: 'error', message: `Invalid Colibri setup: ${msg.mode}` }));
               break;
             }
+            const target = toFlux ? colibriEngine.FLUX_MODE : profile.id;
             if (colibriEngine.isSwitching()) {
               sendEngineState(colibriEngine.getState());
               break;
@@ -411,6 +432,54 @@ function setupWebSocketServer(server) {
               .catch((err) => sendEngineState({ ...colibriEngine.getState(), phase: 'error', error: err.message }));
             break;
           }
+
+          // ─── FLUX image studio ───
+          case 'flux_get_catalog':
+            try {
+              ws.send(JSON.stringify({ type: 'flux_catalog', catalog: fluxEngine.catalog() }));
+              sendFluxState(fluxEngine.getState());
+            } catch (err) {
+              sendFluxError('catalog', err);
+            }
+            break;
+
+          case 'flux_generate':
+            if (colibriEngine.isSwitching()) {
+              sendFluxError('generate', new Error('The engine is switching; try again once FLUX is ready.'));
+              break;
+            }
+            fluxEngine.generate(msg.params || {}).catch((err) => sendFluxError('generate', err));
+            break;
+
+          case 'flux_fix':
+            if (colibriEngine.isSwitching()) {
+              sendFluxError('fix', new Error('The engine is switching; try again once FLUX is ready.'));
+              break;
+            }
+            fluxEngine.fixArea(msg.params || {}).catch((err) => sendFluxError('fix', err));
+            break;
+
+          case 'flux_cancel':
+            fluxEngine.cancel().catch((err) => sendFluxError('cancel', err));
+            break;
+
+          case 'flux_save':
+            try {
+              const saved = fluxEngine.save(msg.id, typeof msg.name === 'string' ? msg.name : '');
+              console.log(`[Agent WS] FLUX image saved to ${saved.path}`);
+              ws.send(JSON.stringify({ type: 'flux_saved', ...saved }));
+            } catch (err) {
+              sendFluxError('save', err);
+            }
+            break;
+
+          case 'flux_discard':
+            try {
+              ws.send(JSON.stringify({ type: 'flux_discarded', ...fluxEngine.discard(msg.id) }));
+            } catch (err) {
+              sendFluxError('discard', err);
+            }
+            break;
 
           default:
             ws.send(JSON.stringify({

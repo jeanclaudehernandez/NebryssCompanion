@@ -1,4 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { AdminService } from '../admin.service';
@@ -84,11 +85,22 @@ export interface HistorySnapshot {
   outcome?: { ok: boolean; deleted?: number; notFound?: number; error?: string } | null;
 }
 
-export type ColibriEngineMode = 'cuda' | 'vulkan';
+/** A Colibri model setup's id, as api/colibri-engine.js defines them (e.g. 'iq2m-120k'). */
+export type ColibriEngineMode = string;
 
-/** The local Colibri server's engine and the progress of a switch, as the API reports it. */
+export interface ColibriProfile {
+  id: ColibriEngineMode;
+  label: string;          // the quantization, e.g. 'UD-IQ2_M'
+  detail: string;         // one line on what it is good for
+  contextTokens: number;
+}
+
+/** The local Colibri server's model setup and the progress of a switch, as the API reports it. */
 export interface ColibriEngineState {
-  mode: ColibriEngineMode | 'offline' | 'unknown';
+  // A profile id, 'custom' (a Colibri server started some other way), 'offline' or
+  // 'unknown' (the port is used by another program)
+  mode: ColibriEngineMode;
+  runningModel: string;   // the running server's model folder
   contextTokens: number;
   switching: boolean;
   targetMode: ColibriEngineMode | null;
@@ -99,8 +111,127 @@ export interface ColibriEngineState {
   startedAt: number | null;
   logFile: string;
   log: string[];
-  profiles: { id: ColibriEngineMode; label: string; contextTokens: number }[];
+  profiles: ColibriProfile[];
+  // FLUX image generation (ComfyUI), the other thing the switch can give the GPU to
+  flux?: { id: string; label: string; detail: string };
 }
+
+/** The engine-switch target that stops Colibri and starts ComfyUI for FLUX images. */
+export const FLUX_MODE = 'flux';
+
+/** The studio's one workflow (FLUX (Nebryss studio).json in ComfyUI): the base settings. */
+export interface FluxStudioWorkflow {
+  id: string;
+  name: string;
+  found: boolean;         // false: the file is missing and built-in defaults are used
+  checkpoint: string;
+  width: number;
+  height: number;
+  guidance: number;
+  steps: number;
+  sampler: string;
+  scheduler: string;
+}
+
+export interface FluxLora {
+  file: string;
+  label: string;          // e.g. 'Orks · step 1500'
+  family: string;         // e.g. 'Orks'
+  trigger: string;        // the words the prompt must start with
+  strength: number;       // default strength
+  step: number | null;    // a training checkpoint's step
+  group: 'best' | 'other'; // best = the recommended file of each LoRA
+  style: boolean;         // a drawing style, stacked on top of a subject LoRA
+  detail: boolean;        // a part (weapon, helmet) stacked on a subject LoRA
+}
+
+/** A LoRA in use: which file, how strong, and its readable name. */
+export interface FluxLoraUse { file: string; strength: number; name: string; }
+
+export interface FluxSize { id: string; label: string; width: number; height: number; }
+
+export interface FluxCatalog {
+  workflow: FluxStudioWorkflow;
+  loras: FluxLora[];
+  sizes: FluxSize[];
+  defaults: { checkpoint: string; guidance: number; steps: number; sampler: string; scheduler: string };
+  maxLoras: number;
+  tempDir: string;
+  saveDir: string;
+}
+
+/** An image made but not yet saved or discarded (in the temporary folder). */
+export interface FluxImage {
+  id: string;
+  file: string;
+  createdAt: number;
+  prompt: string;
+  checkpoint: string;
+  loras?: FluxLoraUse[];
+  // Images made before the multi-LoRA picker
+  lora?: string | null;
+  loraName?: string;
+  loraStrength?: number;
+  lora2?: string | null;
+  lora2Name?: string;
+  lora2Strength?: number;
+  seed: number;
+  width: number;
+  height: number;
+  steps: number;
+  guidance: number;
+  seconds: number;
+  fixOf?: string;         // set when this picture is an area fix of another one (its file)
+  denoise?: number;
+}
+
+export interface FluxJob {
+  id: string;
+  imageId: string | null;
+  phase: 'queued' | 'loading' | 'sampling' | 'decoding' | 'done' | 'error' | 'cancelled';
+  message: string;
+  step: number;
+  totalSteps: number;
+  startedAt: number;
+  finishedAt: number | null;
+  error: string | null;
+}
+
+export interface FluxState { job: FluxJob | null; images: FluxImage[]; tempDir: string; saveDir: string; }
+
+export interface FluxGenerateParams {
+  prompt: string;
+  checkpoint?: string;
+  loras: FluxLoraUse[];   // in order; up to the catalog's maxLoras
+  width: number;
+  height: number;
+  steps: number;
+  guidance: number;
+  sampler?: string;
+  scheduler?: string;
+  seed: number | null;    // null = random
+}
+
+/** Repaint the painted area of a picture (temporary or saved) with the studio's LoRAs and a prompt. */
+export interface FluxFixParams {
+  source: string;         // the picture's file name
+  mask: string;           // PNG data URL the size of the picture, white = repaint
+  area: { x: number; y: number; w: number; h: number }; // the painted box, in the picture's pixels
+  prompt: string;
+  checkpoint?: string;
+  loras: FluxLoraUse[];
+  denoise: number;        // 0.3 (subtle) .. 1 (redraw)
+  steps: number;
+  guidance: number;
+  sampler?: string;
+  scheduler?: string;
+  seed: number | null;
+}
+
+export type FluxEvent =
+  | { type: 'saved'; id: string; file: string; path: string; url: string }
+  | { type: 'discarded'; id: string }
+  | { type: 'error'; action: string; message: string };
 
 @Injectable({ providedIn: 'root' })
 export class AiSessionManagerService implements OnDestroy {
@@ -121,6 +252,10 @@ export class AiSessionManagerService implements OnDestroy {
   private contextUsageSubject = new BehaviorSubject<ContextUsage | null>(null);
   private colibriEngineSubject = new BehaviorSubject<ColibriEngineState | null>(null);
   private historySubject = new Subject<HistorySnapshot>();
+  // FLUX image studio
+  private fluxCatalogSubject = new BehaviorSubject<FluxCatalog | null>(null);
+  private fluxStateSubject = new BehaviorSubject<FluxState | null>(null);
+  private fluxEventsSubject = new Subject<FluxEvent>();
   // Experimental format (Colibri): list results sent to the model as tables instead of JSON
   private experimentalFormatSubject = new BehaviorSubject<boolean>(this.loadSavedExperimentalFormat());
 
@@ -143,10 +278,14 @@ export class AiSessionManagerService implements OnDestroy {
   colibriEngine$: Observable<ColibriEngineState | null> = this.colibriEngineSubject.asObservable();
   experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
   history$: Observable<HistorySnapshot> = this.historySubject.asObservable();
+  fluxCatalog$: Observable<FluxCatalog | null> = this.fluxCatalogSubject.asObservable();
+  fluxState$: Observable<FluxState | null> = this.fluxStateSubject.asObservable();
+  fluxEvents$: Observable<FluxEvent> = this.fluxEventsSubject.asObservable();
 
   constructor(
     private readonly authService: AuthService,
-    private readonly adminService: AdminService
+    private readonly adminService: AdminService,
+    private readonly http: HttpClient
   ) {}
 
   get isConnected(): boolean {
@@ -326,18 +465,62 @@ export class AiSessionManagerService implements OnDestroy {
     this.ws.send(JSON.stringify({ type: 'get_agy_models' }));
   }
 
-  /** Asks the API which Colibri engine (CUDA / Vulkan) is running. */
+  /** Asks the API which Colibri model setup is running. */
   requestColibriEngine(): void {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
     this.ws.send(JSON.stringify({ type: 'get_colibri_engine' }));
   }
 
-  /** Stops the running Colibri server and starts it on the other engine; progress arrives as colibri_engine events. */
+  /** Stops the running Colibri server and starts it with another model setup; progress arrives as colibri_engine events. */
   switchColibriEngine(mode: ColibriEngineMode): boolean {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
     this.contextUsageSubject.next(null);
     this.ws.send(JSON.stringify({ type: 'switch_colibri_engine', mode }));
     return true;
+  }
+
+  // ─── FLUX image studio ──────────────────────────────────────────
+
+  private sendIfOpen(payload: object): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
+    this.ws.send(JSON.stringify(payload));
+    return true;
+  }
+
+  /** Asks for the FLUX workflows, LoRAs and sizes (fluxCatalog$) and the studio's state (fluxState$). */
+  requestFluxCatalog(): boolean {
+    return this.sendIfOpen({ type: 'flux_get_catalog' });
+  }
+
+  /** Starts an image; progress and the result arrive on fluxState$, a refusal on fluxEvents$. */
+  /** Repaints an area of a picture; progress and the new picture arrive on fluxState$ like a generation. */
+  fixFluxArea(params: FluxFixParams): boolean {
+    return this.sendIfOpen({ type: 'flux_fix', params });
+  }
+
+  generateFluxImage(params: FluxGenerateParams): boolean {
+    return this.sendIfOpen({ type: 'flux_generate', params });
+  }
+
+  cancelFluxImage(): boolean {
+    return this.sendIfOpen({ type: 'flux_cancel' });
+  }
+
+  /** Moves an image from the temporary folder to the app's assets folder (name optional). */
+  saveFluxImage(id: string, name: string): boolean {
+    return this.sendIfOpen({ type: 'flux_save', id, name });
+  }
+
+  /** Deletes an image from the temporary folder. */
+  discardFluxImage(id: string): boolean {
+    return this.sendIfOpen({ type: 'flux_discard', id });
+  }
+
+  /** The picture itself (temporary or saved), fetched with the session's credentials. */
+  loadFluxImage(file: string): Observable<Blob> {
+    const win = window as any;
+    const apiUrl = win.API_URL || `${window.location.origin}/api`;
+    return this.http.get(`${apiUrl}/flux/images/${encodeURIComponent(file)}`, { responseType: 'blob' });
   }
 
   /** Colibri only: list results as tables (fewer tokens) instead of JSON; applies from the next tool call. */
@@ -436,6 +619,30 @@ export class AiSessionManagerService implements OnDestroy {
         if (event['state'] && typeof event['state'] === 'object') {
           this.colibriEngineSubject.next(event['state'] as ColibriEngineState);
         }
+        break;
+
+      case 'flux_catalog':
+        if (event['catalog'] && typeof event['catalog'] === 'object') {
+          this.fluxCatalogSubject.next(event['catalog'] as FluxCatalog);
+        }
+        break;
+
+      case 'flux_state':
+        if (event['state'] && typeof event['state'] === 'object') {
+          this.fluxStateSubject.next(event['state'] as FluxState);
+        }
+        break;
+
+      case 'flux_saved':
+        this.fluxEventsSubject.next({ type: 'saved', id: event['id'], file: event['file'], path: event['path'], url: event['url'] });
+        break;
+
+      case 'flux_discarded':
+        this.fluxEventsSubject.next({ type: 'discarded', id: event['id'] });
+        break;
+
+      case 'flux_error':
+        this.fluxEventsSubject.next({ type: 'error', action: String(event['action'] || ''), message: String(event['message'] || 'FLUX error') });
         break;
 
       case 'history':

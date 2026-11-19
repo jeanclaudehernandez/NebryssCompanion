@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "flux-test-api", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/Jean/AppData/Local/Temp/claude/f797ea697db8e3b4/f2eaff2d-6857-4a23-a4f1-d634b63a62b2/scratchpad/test_api.js"], "port": 8090 },
+    { "name": "flux-test-ui", "runtimeExecutable": "node", "runtimeArgs": ["C:/Users/Jean/AppData/Local/Temp/claude/f797ea697db8e3b4/f2eaff2d-6857-4a23-a4f1-d634b63a62b2/scratchpad/test_ui.js"], "port": 4300 }
+  ]
+}

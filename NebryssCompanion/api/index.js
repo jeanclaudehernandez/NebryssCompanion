@@ -221,6 +221,16 @@ app.use('/api', (req, res, next) => {
   return authModule.requireAuth(req, res, next);
 });
 
+// FLUX image studio (AI Session Manager): the pictures it made, temporary or saved. GM/Admin only.
+app.get('/api/flux/images/:file', (req, res) => {
+  if (req.user?.role !== 'admin' && req.user?.role !== 'gm') {
+    return res.status(403).json({ error: 'Forbidden: GM/Admin role required' });
+  }
+  const file = require('./flux-engine').imagePath(req.params.file);
+  if (!file) return res.status(404).json({ error: 'Image not found' });
+  res.sendFile(file);
+});
+
 // Maps prefixed campaign collection names back to their base JSON asset filename
 const COLLECTION_TO_JSON_FILE = {
   'campaign': 'campaigns',

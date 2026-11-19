@@ -33,11 +33,13 @@
           <button type="button" class="engine-picker-btn" #enginePickerButton aria-haspopup="menu"
             aria-labelledby="engine-picker-label engine-picker-current" [attr.aria-expanded]="engineMenuOpen"
             [disabled]="isAgentTyping || colibriEngine?.switching" (click)="toggleEngineMenu()">
-            <span class="material-icons engine-picker-icon">{{ agentBackend === 'agy' ? 'cloud' : 'memory' }}</span>
+            <span class="material-icons engine-picker-icon">{{ agentBackend === 'agy' ? 'cloud' : fluxActive ? 'image' :
+              'memory' }}</span>
             <span class="engine-picker-text" id="engine-picker-current">
-              <span class="engine-picker-name">{{ agentBackend === 'agy' ? 'Antigravity' : 'Colibri' }}</span>
-              <span class="engine-picker-detail">{{ agentBackend === 'agy' ? agyModelLabel : colibriEngineSummary
-                }}</span>
+              <span class="engine-picker-name">{{ agentBackend === 'agy' ? 'Antigravity' : fluxActive ? 'FLUX images' :
+                'Colibri' }}</span>
+              <span class="engine-picker-detail">{{ agentBackend === 'agy' ? agyModelLabel : fluxActive ? fluxSummary :
+                colibriEngineSummary }}</span>
             </span>
             <span class="material-icons engine-picker-chevron">{{ engineMenuOpen ? 'expand_less' : 'expand_more'
               }}</span>
@@ -55,9 +57,18 @@
                   <span class="engine-menu-name">Colibri <span class="engine-menu-tag">local</span></span>
                   <span class="engine-menu-desc">{{ colibriEngineSummary }}</span>
                 </span>
-                <span class="material-icons engine-menu-current" *ngIf="agentBackend === 'colibri'"
+                <span class="material-icons engine-menu-current" *ngIf="agentBackend === 'colibri' && !fluxActive"
                   aria-label="current">check</span>
                 <span class="material-icons engine-menu-next">chevron_right</span>
+              </button>
+              <button type="button" class="engine-menu-item" role="menuitem"
+                [disabled]="connectionStatus !== 'connected'" (click)="chooseFlux()">
+                <span class="material-icons engine-menu-icon">image</span>
+                <span class="engine-menu-text">
+                  <span class="engine-menu-name">FLUX images <span class="engine-menu-tag">local</span></span>
+                  <span class="engine-menu-desc">{{ fluxSummary }}</span>
+                </span>
+                <span class="material-icons engine-menu-current" *ngIf="fluxActive" aria-label="current">check</span>
               </button>
               <button type="button" class="engine-menu-item" role="menuitem" aria-haspopup="menu"
                 (click)="openEngineMenuView('agy')">
@@ -72,26 +83,26 @@
               </button>
             </ng-container>
 
-            <!-- Level 2: Colibri's GPU engine -->
+            <!-- Level 2: Colibri's model setup (quantization + context size) -->
             <ng-container *ngIf="engineMenuView === 'colibri'">
               <button type="button" class="engine-menu-back" role="menuitem" (click)="openEngineMenuView('bridges')">
-                <span class="material-icons">chevron_left</span> Colibri engine
+                <span class="material-icons">chevron_left</span> Colibri model
               </button>
               <button type="button" class="engine-menu-item" role="menuitemradio"
-                *ngFor="let opt of colibriEngineOptions"
-                [attr.aria-checked]="agentBackend === 'colibri' && colibriEngine?.mode === opt.id"
-                [disabled]="connectionStatus !== 'connected'" (click)="chooseColibriEngine(opt.id)">
-                <span class="material-icons engine-menu-icon">{{ opt.icon }}</span>
+                *ngFor="let p of colibriProfiles"
+                [attr.aria-checked]="agentBackend === 'colibri' && colibriEngine?.mode === p.id"
+                [disabled]="connectionStatus !== 'connected'" (click)="chooseColibriEngine(p.id)">
+                <span class="material-icons engine-menu-icon">{{ colibriProfileIcon(p.id) }}</span>
                 <span class="engine-menu-text">
-                  <span class="engine-menu-name">{{ engineProfileLabel(opt.id) }} · {{ engineProfileContext(opt.id)
-                    }}</span>
-                  <span class="engine-menu-desc">{{ opt.desc }}</span>
+                  <span class="engine-menu-name">{{ p.label }} · {{ formatContext(p.contextTokens) }} context</span>
+                  <span class="engine-menu-desc">{{ p.detail }}</span>
                 </span>
-                <span class="material-icons engine-menu-current" *ngIf="colibriEngine?.mode === opt.id"
+                <span class="material-icons engine-menu-current" *ngIf="colibriEngine?.mode === p.id"
                   aria-label="running">check</span>
               </button>
+              <div class="engine-menu-note" *ngIf="colibriProfiles.length === 0">Loading the model list...</div>
               <div class="engine-menu-note"
-                [class.warn]="colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown'">
+                [class.warn]="colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown' || colibriEngine?.mode === 'custom'">
                 {{ engineStatusText }}. Changing it restarts Colibri.
               </div>
             </ng-container>
@@ -131,7 +142,7 @@
           *ngIf="agentBackend === 'colibri' && (colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown')">
           {{ engineStatusText }}
         </div>
-        <label class="experimental-format" *ngIf="agentBackend === 'colibri'"
+        <label class="experimental-format" *ngIf="agentBackend === 'colibri' && !fluxActive"
           title="Sends lists (bestiary, players, rules...) to the model as tables instead of JSON: about 12-24% fewer tokens. Applies from the next tool call.">
           <input type="checkbox" [ngModel]="experimentalFormat" (ngModelChange)="onExperimentalFormatChange($event)"
             [disabled]="isAgentTyping">
@@ -179,8 +190,8 @@
         </div>
       </div>
 
-      <!-- Quick Actions -->
-      <div class="context-section">
+      <!-- Quick Actions (chat only: hidden while FLUX has the GPU) -->
+      <div class="context-section" *ngIf="!fluxActive">
         <div class="context-label">Quick Actions</div>
         <div class="quick-actions">
           <button class="quick-action-btn" (click)="sendQuickAction('get-context')"
@@ -204,10 +215,23 @@
             <span>List Sessions</span>
           </button>
         </div>
+
+        <!-- Draft templates: fill the message box, nothing is sent -->
+        <div class="context-label draft-label" id="draft-actions-label">
+          Draft <span class="draft-label-hint">fills the message box</span>
+        </div>
+        <div class="draft-actions" role="group" aria-labelledby="draft-actions-label">
+          <button type="button" class="quick-action-btn" *ngFor="let t of draftTemplates" (click)="prefillDraft(t.id)"
+            [disabled]="connectionStatus !== 'connected'"
+            [title]="'Put a ' + t.label.toLowerCase() + ' template in the message box to fill in (not sent)'">
+            <span class="material-icons">{{ t.icon }}</span>
+            <span>{{ t.label }}</span>
+          </button>
+        </div>
       </div>
 
       <!-- Active Players -->
-      <div class="context-section" *ngIf="activePlayers.length > 0">
+      <div class="context-section" *ngIf="activePlayers.length > 0 && !fluxActive">
         <div class="context-label">Active Players</div>
         <div class="player-list">
             <button type="button" class="player-chip" *ngFor="let player of activePlayers"
@@ -220,7 +244,7 @@
       </div>
 
       <!-- New Conversation / context editor -->
-      <div class="context-section conversation-actions">
+      <div class="context-section conversation-actions" *ngIf="!fluxActive">
         <button type="button" class="btn-view-history" (click)="openHistory()"
           [disabled]="connectionStatus !== 'connected'"
           title="See every message the model holds (prompt, RAG, tool calls and results) and delete some to free context">
@@ -244,8 +268,12 @@
       <span class="reopen-label">Context</span>
     </button>
 
+    <!-- FLUX image studio: replaces the chat while FLUX has the GPU -->
+    <app-flux-studio *ngIf="fluxActive"></app-flux-studio>
+
+    <ng-container *ngIf="!fluxActive">
     <!-- Messages -->
-    <div class="messages-container" #messagesContainer (scroll)="onScroll()">
+    <div class="messages-container" #messagesContainer (scroll)="onScroll()" (click)="onMessagesClick($event)">
       <!-- Empty state -->
       <div class="empty-state" *ngIf="messages.length === 0">
         <span class="material-icons empty-icon">smart_toy</span>
@@ -494,6 +522,7 @@
         </button>
       </div>
     </div>
+    </ng-container>
   </main>
 
   <!-- Context editor: every message the model is sent, with checkboxes to delete some -->
@@ -621,11 +650,7 @@
           'autorenew') }}
         </span>
         <div class="engine-modal-titles">
-          <h3 id="engine-modal-title">
-            {{ colibriEngine?.phase === 'error' ? 'Engine switch failed'
-            : colibriEngine?.phase === 'ready' ? 'Colibri is ready'
-            : 'Switching Colibri to ' + engineProfileLabel(colibriEngine?.targetMode) }}
-          </h3>
+          <h3 id="engine-modal-title">{{ engineModalTitle }}</h3>
           <div class="engine-modal-sub">
             {{ colibriEngine?.message || 'Contacting the server...' }}
             <span class="engine-elapsed" *ngIf="engineElapsed">· {{ engineElapsed }}</span>
@@ -640,7 +665,7 @@
             : engineStepStatus(i) === 'error' ? 'cancel'
             : engineStepStatus(i) === 'active' ? 'pending' : 'radio_button_unchecked' }}
           </span>
-          <span>{{ i === 1 ? 'Launch Colibri on ' + engineProfileLabel(colibriEngine?.targetMode) : step.label }}</span>
+          <span>{{ engineStepLabel(i) }}</span>
         </li>
       </ol>
 

@@ -1,9 +1,10 @@
 /**
- * Colibri engine manager: finds which Colibri server (CUDA or Vulkan) is running on the local
- * port, stops it, and starts the other one, reporting each stage and the engine's log to
- * listeners (the agent WebSocket relays them to the UI's switch popup).
+ * Colibri engine manager: finds which model setup (a Qwen3.6-35B-A3B quantization and its
+ * context size, all on CUDA) the Colibri server on the local port runs, stops it, and starts
+ * another, reporting each stage and the engine's log to listeners (the agent WebSocket relays
+ * them to the UI's switch popup).
  *
- * The engine runs in a terminal window titled "colibri - <engine>" (closing it stops the
+ * The engine runs in a terminal window titled "colibri - <setup>" (closing it stops the
  * server), with its output also copied to a log file. It is started outside the API's process
  * tree, so it keeps running if the API restarts. Only a process whose command line is a
  * `coli ... serve` is ever stopped.
@@ -13,9 +14,11 @@ const fs = require('fs');
 const net = require('net');
 const os = require('os');
 const path = require('path');
+// FLUX image generation (ComfyUI) shares the GPU with Colibri: the switch also moves between them.
+const fluxEngine = require('./flux-engine');
+const FLUX_MODE = 'flux';
 
 const COLIBRI_DIR = process.env.COLIBRI_DIR || 'C:\\Users\\Jean\\Desktop\\colibri-2.1.0';
-const COLIBRI_MODEL_PATH = process.env.COLIBRI_MODEL_PATH || '.\\colibri-models\\qwen36-35b-iq3xxs';
 const BASE_URL = (process.env.COLIBRI_BASE_URL || 'http://127.0.0.1:8000/v1').replace(/\/+$/, '');
 const SERVER_ORIGIN = BASE_URL.replace(/\/v1$/, '');
 const SERVER_PORT = Number(new URL(SERVER_ORIGIN).port) || 8000;
@@ -30,36 +33,52 @@ const STOP_TIMEOUT_MS = 30000;
 const READY_TIMEOUT_MS = 6 * 60 * 1000;
 const LOG_TAIL_LINES = 80;
 
-// The two measured setups (see the bridge's notes): CUDA is 2-3x faster, Vulkan holds a
-// 100k context entirely in VRAM. `--gpu none` keeps the CUDA tier off so Vulkan runs.
-const PROFILES = {
-  cuda: {
-    id: 'cuda',
-    label: 'CUDA',
-    contextTokens: 65536,
+// The measured setups: unsloth's Qwen3.6-35B-A3B GGUFs (imported in link mode under
+// colibri-models), each with every expert in VRAM on CUDA and the largest context that still
+// leaves room on a 16 GB RTX 5080. Measured 2026-11-17 near each one's trim point (the bridge
+// trims at context - 8000 - 2200): decode steps stay at ~9-10 ms with 450-650 MiB of VRAM free.
+// The engine reserves VRAM by --ctx, so a larger --ctx than these leaves too little and the
+// driver starts paging (UD-Q2_K_XL at 102400: decode steps 11 -> 84 ms at a 94k prompt).
+// Only the IQ3_XXS default can be overridden from the environment (COLIBRI_MODEL_PATH).
+const CUDA_ARGS = ['--vram', '14', '--ngen', '8000', '--cap', '32'];
+function cudaProfile(id, label, detail, modelPath, contextTokens) {
+  return {
+    id,
+    label,
+    detail,
+    modelPath,
+    contextTokens,
     env: { COLI_PARK: '0' },
-    args: ['--model', COLIBRI_MODEL_PATH, '--ctx', '65536', '--vram', '14', '--ngen', '8000', '--cap', '32']
-  },
-  vulkan: {
-    id: 'vulkan',
-    label: 'Vulkan',
-    contextTokens: 102400,
-    // Vulkan sizes its expert tier from the VRAM other apps leave free, keeping only 1 GiB by
-    // default for everything else, KV cache included. At 100k the cache alone grows to ~2 GiB,
-    // so with a browser or launcher holding VRAM it split, switched to float32 and lost the
-    // device (engine crash, seen at ~60k). The reserve leaves room for the full cache, prompt
-    // scratch and the driver (a few % of experts then run on the CPU); with the split off the
-    // engine falls back to the CPU instead of taking the path that crashed.
-    env: { COLI_PARK: '0', COLI_VULKAN: '1', COLI_VK_TIER_RESERVE_GB: '3.5', COLI_VK_KV_SPLIT: '0' },
-    args: ['--model', COLIBRI_MODEL_PATH, '--ctx', '102400', '--gpu', 'none', '--ngen', '8000', '--cap', '32']
-  }
+    args: ['--model', modelPath, '--ctx', String(contextTokens), ...CUDA_ARGS]
+  };
+}
+const PROFILES = {
+  'iq3xxs-64k': cudaProfile('iq3xxs-64k', 'IQ3_XXS', 'The original setup, longest in use',
+    process.env.COLIBRI_MODEL_PATH || '.\\colibri-models\\qwen36-35b-iq3xxs', 65536),
+  'q2kxl-96k': cudaProfile('q2kxl-96k', 'UD-Q2_K_XL', 'Same accuracy as IQ3_XXS, larger context',
+    '.\\colibri-models\\qwen36-35b-q2kxl', 96000),
+  'iq2m-120k': cudaProfile('iq2m-120k', 'UD-IQ2_M', 'Largest context; slightly weaker tool use',
+    '.\\colibri-models\\qwen36-35b-iq2m', 120000)
 };
-// Engine variables that one profile sets and the other must not inherit from the API's env.
+const DEFAULT_PROFILE = 'iq3xxs-64k';
+// Older names (the CUDA / Vulkan switch): 'cuda' was the IQ3_XXS 64k setup.
+const PROFILE_ALIASES = { cuda: DEFAULT_PROFILE };
+// Engine variables no profile sets that must not be inherited from the API's env (the old
+// Vulkan profile's, which would turn the CUDA tier off).
 const PROFILE_ENV_KEYS = ['COLI_VULKAN', 'COLI_CUDA', 'COLI_VK_TIER_RESERVE_GB', 'COLI_VK_KV_SPLIT'];
+
+/** The profile for an id or an older alias; null for anything else (own keys only). */
+function resolveProfile(id) {
+  const own = (obj, key) => (typeof key === 'string' && Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : null);
+  return own(PROFILES, id) || own(PROFILES, own(PROFILE_ALIASES, id)) || null;
+}
 
 const listeners = new Set();
 let state = {
-  mode: 'unknown',        // 'cuda' | 'vulkan' | 'offline' | 'unknown' (a server we did not recognise)
+  // A profile id | 'custom' (a Colibri server started some other way) | 'offline' |
+  // 'unknown' (the port is used by another program) | 'flux' (no Colibri; ComfyUI has the GPU)
+  mode: 'unknown',
+  runningModel: '',       // the model folder of the running server, e.g. 'qwen36-35b-iq2m'
   contextTokens: 0,
   switching: false,
   targetMode: null,
@@ -78,7 +97,8 @@ function publicState() {
   return {
     ...state,
     log: state.log.slice(-LOG_TAIL_LINES),
-    profiles: Object.values(PROFILES).map(p => ({ id: p.id, label: p.label, contextTokens: p.contextTokens }))
+    profiles: Object.values(PROFILES).map(p => ({ id: p.id, label: p.label, detail: p.detail, contextTokens: p.contextTokens })),
+    flux: { id: FLUX_MODE, label: fluxEngine.label, detail: fluxEngine.detail }
   };
 }
 
@@ -147,8 +167,38 @@ function isColibriServer(proc) {
   return /\bcoli(\.cmd)?\b/i.test(proc.commandLine) && /\bserve\b/i.test(proc.commandLine);
 }
 
-function modeFromCommandLine(commandLine) {
-  return /--gpu\s+none/i.test(commandLine) ? 'vulkan' : 'cuda';
+/** 'C:\\x\\colibri-models\\qwen36-35b-iq2m\\' or './colibri-models/qwen36-35b-iq2m' -> 'qwen36-35b-iq2m'. */
+function modelFolder(modelPath) {
+  return String(modelPath || '').replace(/^["']|["']$/g, '').replace(/[\\/]+$/, '').split(/[\\/]/).pop().toLowerCase();
+}
+
+function argValue(commandLine, name) {
+  const m = String(commandLine).match(new RegExp(`--${name}(?:\\s+|=)("[^"]*"|\\S+)`, 'i'));
+  return m ? m[1].replace(/^"|"$/g, '') : '';
+}
+
+/**
+ * Which profile a running server's command line is: its --model folder, and its --ctx when
+ * several profiles share a folder. Another folder (or the old Vulkan setup, --gpu none) is
+ * 'custom': a Colibri server, but not one of these setups.
+ */
+function describeServer(commandLine) {
+  const runningModel = modelFolder(argValue(commandLine, 'model'));
+  const ctx = Number(argValue(commandLine, 'ctx')) || 0;
+  const sameModel = Object.values(PROFILES).filter(p => modelFolder(p.modelPath) === runningModel);
+  const profile = /--gpu\s+none/i.test(commandLine) ? null
+    : (sameModel.find(p => p.contextTokens === ctx) || (sameModel.length === 1 ? sameModel[0] : null));
+  return { mode: profile ? profile.id : 'custom', runningModel };
+}
+
+/** 65536 -> "64k", 96000 -> "96k", 120000 -> "120k" (as the UI shows them). */
+function formatContext(tokens) {
+  return `${tokens % 1024 === 0 ? tokens / 1024 : Math.round(tokens / 1000)}k`;
+}
+
+function profileLabel(id) {
+  const p = resolveProfile(id);
+  return p ? `${p.label} · ${formatContext(p.contextTokens)}` : 'the running setup';
 }
 
 async function fetchHealth() {
@@ -165,12 +215,12 @@ async function refreshStatus() {
   if (state.switching) return publicState();
   const proc = await findServerProcess();
   if (!proc) {
-    update({ mode: 'offline', contextTokens: 0 });
+    update({ mode: (await fluxEngine.isRunning()) ? FLUX_MODE : 'offline', runningModel: '', contextTokens: 0 });
   } else if (!isColibriServer(proc)) {
-    update({ mode: 'unknown', contextTokens: 0 });
+    update({ mode: 'unknown', runningModel: '', contextTokens: 0 });
   } else {
     const health = await fetchHealth();
-    update({ mode: modeFromCommandLine(proc.commandLine), contextTokens: Number(health?.context_tokens) || 0 });
+    update({ ...describeServer(proc.commandLine), contextTokens: Number(health?.context_tokens) || 0 });
   }
   return publicState();
 }
@@ -242,16 +292,16 @@ async function stopServer(proc) {
   throw new Error(`The previous engine was still running ${STOP_TIMEOUT_MS / 1000}s after it was told to stop.`);
 }
 
-/** Follows the engine's log file from `offset`, calling back with whole new lines. */
-function tailLog(onLines) {
+/** Follows an engine's log file (this launch's Colibri log by default), calling back with whole new lines. */
+function tailLog(onLines, file = LOG_FILE) {
   let offset = 0;
   let partial = '';
   const timer = setInterval(() => {
     let fd;
     try {
-      const size = fs.statSync(LOG_FILE).size;
+      const size = fs.statSync(file).size;
       if (size <= offset) return;
-      fd = fs.openSync(LOG_FILE, 'r');
+      fd = fs.openSync(file, 'r');
       const buf = Buffer.alloc(size - offset);
       fs.readSync(fd, buf, 0, buf.length, offset);
       offset = size;
@@ -276,9 +326,9 @@ const q = (s) => `"${String(s).replace(/"/g, '')}"`;
 
 const CONSOLE_SCRIPT = path.join(__dirname, 'colibri-console.js');
 
-/** The terminal's title, also what Task Manager lists under the app: "colibri - Vulkan". */
+/** The terminal's title, also what Task Manager lists under the app: "colibri - UD-IQ2_M 120k". */
 function windowTitle(profile) {
-  return `colibri - ${profile.label}`;
+  return `colibri - ${profile.label} ${formatContext(profile.contextTokens)}`;
 }
 
 /**
@@ -385,15 +435,15 @@ function waitUntilReady(pid) {
 
 let windowWatch = null;
 
-/** Reports Colibri offline once its terminal (pid = the window's console host) is closed. */
-function watchWindow(pid, profile) {
+/** Reports the engine offline once its terminal (pid = the window's console host) is closed. */
+function watchWindow(pid, title, engineName = 'Colibri') {
   stopWatchingWindow();
   windowWatch = setInterval(() => {
     if (state.switching || isAlive(pid)) return;
     stopWatchingWindow();
     update({
       mode: 'offline', contextTokens: 0, phase: 'idle', error: null,
-      message: `The "${windowTitle(profile)}" window was closed, so Colibri stopped.`
+      message: `The "${title}" window was closed, so ${engineName} stopped.`
     });
   }, 3000);
   windowWatch.unref();
@@ -405,12 +455,15 @@ function stopWatchingWindow() {
 }
 
 /**
- * Switches the running engine to `targetMode` ('cuda' | 'vulkan'). Resolves with the final
- * state; failures are reported in the state (phase 'error'), not thrown.
+ * Switches the GPU to the Colibri profile `targetId` (a PROFILES key) or to FLUX ('flux':
+ * Colibri stopped, ComfyUI started). Resolves with the final state; failures are reported in
+ * the state (phase 'error'), not thrown.
  */
-async function switchEngine(targetMode, { onReady } = {}) {
-  const profile = PROFILES[targetMode];
-  if (!profile) throw new Error(`Unknown Colibri engine: ${targetMode}`);
+async function switchEngine(targetId, { onReady } = {}) {
+  const toFlux = targetId === FLUX_MODE;
+  const profile = toFlux ? null : resolveProfile(targetId);
+  if (!toFlux && !profile) throw new Error(`Unknown Colibri setup: ${targetId}`);
+  const targetMode = toFlux ? FLUX_MODE : profile.id;
   if (state.switching) throw new Error('A Colibri engine switch is already in progress.');
 
   stopWatchingWindow(); // the stop below closes that window on purpose
@@ -426,13 +479,46 @@ async function switchEngine(targetMode, { onReady } = {}) {
       if (!isColibriServer(proc)) {
         throw new Error(`Port ${SERVER_PORT} is used by another program (${proc.name}, pid ${proc.pid}), not a Colibri server; it was left running.`);
       }
-      update({ message: `Stopping the ${PROFILES[modeFromCommandLine(proc.commandLine)].label} engine...` });
+      const running = describeServer(proc.commandLine);
+      update({ message: `Stopping ${running.mode === 'custom' ? `the running server (${running.runningModel || 'unknown model'})` : profileLabel(running.mode)}...` });
       await stopServer(proc);
     } else {
-      addLog(['[switch] no engine was running']);
+      addLog([toFlux ? '[switch] Colibri was not running' : '[switch] no engine was running']);
     }
 
-    update({ phase: 'starting', message: `Starting Colibri on ${profile.label}...` });
+    if (toFlux) {
+      let windowPid = null;
+      if (await fluxEngine.isRunning()) {
+        addLog(['[switch] ComfyUI is already running']);
+      } else {
+        update({ phase: 'starting', message: 'Starting ComfyUI for FLUX...' });
+        windowPid = await fluxEngine.start(addLog);
+        state.logFile = fluxEngine.getLogFile();
+        stopTail = tailLog((lines) => {
+          addLog(lines);
+          if (state.phase === 'starting') update({ phase: 'loading', message: 'ComfyUI is loading...' });
+        }, fluxEngine.getLogFile());
+        await fluxEngine.waitUntilReady(windowPid);
+        stopTail();
+        stopTail = null;
+      }
+      update({
+        switching: false, phase: 'ready', mode: FLUX_MODE, runningModel: '', contextTokens: 0,
+        message: 'FLUX is ready. The first image also loads the model, about a minute.'
+      });
+      if (windowPid) watchWindow(windowPid, 'ComfyUI - FLUX', 'ComfyUI');
+      if (onReady) onReady();
+      return publicState();
+    }
+
+    // ComfyUI keeps FLUX (about 12 GB) in VRAM once it has made an image: free it before Colibri loads.
+    const comfy = await fluxEngine.findProcess().catch(() => null);
+    if (comfy && fluxEngine.isComfyProcess(comfy)) {
+      update({ message: 'Stopping ComfyUI (FLUX)...' });
+      await fluxEngine.stop(comfy, addLog);
+    }
+
+    update({ phase: 'starting', message: `Starting Colibri with ${profileLabel(profile.id)}...` });
     const pid = await startServer(profile);
     // Follows this launch's log file from its start, so no line written meanwhile is lost.
     stopTail = tailLog((lines) => {
@@ -444,11 +530,11 @@ async function switchEngine(targetMode, { onReady } = {}) {
     stopTail = null;
 
     update({
-      switching: false, phase: 'ready', mode: targetMode,
+      switching: false, phase: 'ready', mode: targetMode, runningModel: modelFolder(profile.modelPath),
       contextTokens: Number(health.context_tokens) || profile.contextTokens,
-      message: `Colibri is running on ${profile.label} (${Math.round((Number(health.context_tokens) || profile.contextTokens) / 1024)}k context).`
+      message: `Colibri is running ${profile.label} with a ${formatContext(Number(health.context_tokens) || profile.contextTokens)} context.`
     });
-    watchWindow(pid, profile);
+    watchWindow(pid, windowTitle(profile));
     if (onReady) onReady();
   } catch (err) {
     // Let the tail pick up the engine's last words before reporting.
@@ -459,31 +545,34 @@ async function switchEngine(targetMode, { onReady } = {}) {
       error += lastLine ? `: ${lastLine.trim()}` : '. The engine wrote nothing to its log.';
     }
     const proc = await findServerProcess().catch(() => null);
-    const mode = proc ? (isColibriServer(proc) ? modeFromCommandLine(proc.commandLine) : 'unknown') : 'offline';
+    const running = proc
+      ? (isColibriServer(proc) ? describeServer(proc.commandLine) : { mode: 'unknown', runningModel: '' })
+      : { mode: (await fluxEngine.isRunning()) ? FLUX_MODE : 'offline', runningModel: '' };
     update({
       switching: false,
       failedPhase: state.phase,
       phase: 'error',
       error,
       message: 'The switch failed.',
-      mode,
-      contextTokens: mode === 'cuda' || mode === 'vulkan' ? state.contextTokens : 0
+      ...running,
+      contextTokens: running.mode === 'offline' || running.mode === 'unknown' || running.mode === FLUX_MODE ? 0 : state.contextTokens
     });
   }
   return publicState();
 }
 
 /**
- * Command line, for start-duckdns.bat:  node api/colibri-engine.js start [cuda|vulkan] [--wait]
- * Opens Colibri in its "colibri - <engine>" window, the same way the UI's switch does, unless a
+ * Command line:  node api/colibri-engine.js start [setup] [--wait]
+ * (setup: iq3xxs-64k, the default, q2kxl-96k or iq2m-120k; `cuda` still means iq3xxs-64k).
+ * Opens Colibri in its "colibri - <setup>" window, the same way the UI's switch does, unless a
  * Colibri server already answers on the port. --wait returns only once it is ready.
  * Exit code: 0 started or already running, 1 failed, 2 port used by another program.
  */
 async function cli(argv) {
-  const [command, modeArg = 'cuda', ...flags] = argv;
-  const profile = PROFILES[modeArg];
+  const [command, modeArg = DEFAULT_PROFILE, ...flags] = argv;
+  const profile = resolveProfile(modeArg);
   if (command !== 'start' || !profile) {
-    console.log('Usage: node api/colibri-engine.js start [cuda|vulkan] [--wait]');
+    console.log(`Usage: node api/colibri-engine.js start [${Object.keys(PROFILES).join('|')}] [--wait]`);
     return 1;
   }
   const proc = await findServerProcess();
@@ -492,7 +581,8 @@ async function cli(argv) {
       console.log(`[Colibri] Port ${SERVER_PORT} is used by another program (${proc.name}, pid ${proc.pid}); Colibri was not started.`);
       return 2;
     }
-    console.log(`[Colibri] Already running (or still loading) on ${PROFILES[modeFromCommandLine(proc.commandLine)].label} (pid ${proc.pid}); nothing started.`);
+    const running = describeServer(proc.commandLine);
+    console.log(`[Colibri] Already running (or still loading) ${running.mode === 'custom' ? running.runningModel || 'a setup of its own' : profileLabel(running.mode)} (pid ${proc.pid}); nothing started.`);
     return 0;
   }
   try {
@@ -519,5 +609,9 @@ module.exports = {
   switchEngine,
   isSwitching: () => state.switching,
   getState: publicState,
-  PROFILES
+  resolveProfile,
+  PROFILES,
+  FLUX_MODE,
+  // for tests
+  _describeServer: describeServer
 };

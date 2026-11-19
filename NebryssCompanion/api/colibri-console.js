@@ -1,7 +1,7 @@
 /**
  * Runs inside Colibri's terminal window, at the end of the pipe from `coli serve`:
  * shows the server's output in the window, appends it to the log file the API follows for
- * the UI's switch popup, and keeps the window titled (e.g. "colibri - Vulkan").
+ * the UI's switch popup, and keeps the window titled (e.g. "colibri - UD-IQ2_M 120k").
  *
  * Usage: node colibri-console.js <log file> <window title>
  *
