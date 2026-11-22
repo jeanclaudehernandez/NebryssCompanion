@@ -70,7 +70,12 @@ import { BodyTypeIconsComponent } from '../body-type-icons/body-type-icons.compo
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of sortedData" [class.in-inventory]="highlightInventory && isInInventory(item)">
+              <tr *ngFor="let item of sortedData"
+                  [class.in-inventory]="highlightInventory && isInInventory(item)"
+                  [class.row-active]="isRowActive ? isRowActive(item) : false"
+                  [class.row-clickable]="rowsClickable"
+                  [attr.title]="rowsClickable ? rowClickTitle : null"
+                  (click)="rowsClickable ? rowClick.emit(item) : null">
                 <td 
                   *ngFor="let header of headerKeys"
                   [class.col-compact]="isCompactColumn(header)"
@@ -170,6 +175,12 @@ export class GenericTableComponent implements OnInit, OnChanges {
   @Input() characterBody: string[] = [];
   @Input() enableBodyFilter: boolean = false;
   @Input() nameColumnWidth: string = '95px';
+  /** Marks rows as active (highlighted), e.g. the mist effects in play. */
+  @Input() isRowActive?: (item: any) => boolean;
+  /** Rows emit rowClick when clicked. */
+  @Input() rowsClickable: boolean = false;
+  @Input() rowClickTitle: string = '';
+  @Output() rowClick = new EventEmitter<any>();
 
   @Output() craft = new EventEmitter<any>();
   @Output() clone = new EventEmitter<any>();

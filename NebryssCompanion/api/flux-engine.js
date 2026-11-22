@@ -58,6 +58,11 @@ const DEFAULTS = { checkpoint: 'flux1-dev-fp8.safetensors', guidance: 3.5, steps
 const STUDIO_WORKFLOW = 'FLUX (Nebryss studio).json';
 const MAX_LORAS = 4;
 const LORA_NODE_IDS = ['2', '10', '11', '12'];
+// LoRAs the GM picks in the studio; the "always" ones (the Hand-drawn style) are added on top by
+// normalizeParams, so 3 picks + the style fill the 4 LoRA nodes.
+const MAX_PICKED_LORAS = 3;
+// The studio's dropdowns, in order: flux-loras.json's "category" of each LoRA.
+const LORA_CATEGORIES = ['Space Marines', 'Chaos', 'Imperium', 'Sororitas', 'Xenos', 'Scenes', 'Details'];
 
 // Image files the studio hands out: our own names only, never a path.
 const IMAGE_ID_RE = /^flux-[0-9a-z-]+$/;
@@ -304,24 +309,103 @@ function listLoras() {
       strength: info && Number(info.strength) ? Number(info.strength) : 1,
       style: !!(info && info.style), // a drawing style, stacked on top of a subject LoRA
       detail: !!(info && info.detail), // a part (weapon, helmet) stacked on a subject LoRA
+      category: info && LORA_CATEGORIES.includes(info.category) ? info.category : 'Other', // the studio dropdown
+      always: !!(info && info.always), // added to every image by normalizeParams, never picked
       step: stepMatch ? Number(stepMatch[1]) : null,
       group: best ? 'best' : 'other'
     };
   }).sort((a, b) => a.family.localeCompare(b.family) || (a.step ?? 1e9) - (b.step ?? 1e9));
 }
 
+/** The "always" LoRAs' recommended files (the Hand-drawn style), added to every image. */
+function alwaysLoras() {
+  return listLoras().filter(l => l.always && l.group === 'best');
+}
+
 function catalog() {
-  return { workflow: readStudioWorkflow(), loras: listLoras(), sizes: SIZES, defaults: DEFAULTS, maxLoras: MAX_LORAS, tempDir: TEMP_DIR, saveDir: SAVE_DIR };
+  return {
+    workflow: readStudioWorkflow(), loras: listLoras(), sizes: SIZES, defaults: DEFAULTS,
+    maxLoras: MAX_PICKED_LORAS, categories: LORA_CATEGORIES, tempDir: TEMP_DIR, saveDir: SAVE_DIR
+  };
+}
+
+// ─── Hot-added LoRAs ─────────────────────────────────────────────
+// listLoras() always reads the folder and flux-loras.json afresh; this watch also pushes the new
+// catalog to open studios when a LoRA file is added, removed or finishes copying, or the table changes.
+
+const catalogListeners = new Set();
+let catalogWatching = false;
+let catalogTimer = null;
+let catalogKey = '';
+
+/** Names and sizes of the LoRA files plus the table's change time: changes when anything relevant does. */
+function loraSignature() {
+  let files = [];
+  try {
+    files = fs.readdirSync(LORA_DIR).filter(f => f.toLowerCase().endsWith('.safetensors')).sort()
+      .map((f) => { try { return `${f}:${fs.statSync(path.join(LORA_DIR, f)).size}`; } catch (_) { return f; } });
+  } catch (_) { }
+  let tableTime = 0;
+  try { tableTime = fs.statSync(LORA_TABLE_FILE).mtimeMs; } catch (_) { }
+  return `${tableTime}|${files.join(',')}`;
+}
+
+function checkCatalog() {
+  clearTimeout(catalogTimer);
+  // Wait for a burst of events (a 50 MB copy, an editor's save) to settle.
+  catalogTimer = setTimeout(() => {
+    if (!catalogListeners.size) return;
+    const key = loraSignature();
+    if (key === catalogKey) return;
+    catalogKey = key;
+    let next;
+    try { next = catalog(); } catch (_) { return; }
+    for (const fn of catalogListeners) {
+      try { fn(next); } catch (_) { }
+    }
+  }, 2000);
+}
+
+function startCatalogWatch() {
+  if (catalogWatching) return;
+  catalogWatching = true;
+  catalogKey = loraSignature();
+  try { fs.watch(LORA_DIR, checkCatalog).unref(); } catch (_) { }
+  const tableName = path.basename(LORA_TABLE_FILE);
+  try {
+    fs.watch(path.dirname(LORA_TABLE_FILE), (_event, name) => { if (!name || name === tableName) checkCatalog(); }).unref();
+  } catch (_) { }
+  // fs.watch can miss events (network drives, some editors): look again every 30 s.
+  setInterval(checkCatalog, 30000).unref();
+}
+
+/** Calls fn(catalog) whenever the LoRA files or flux-loras.json change. Returns the unsubscribe. */
+function onCatalogChange(fn) {
+  catalogListeners.add(fn);
+  startCatalogWatch();
+  return () => catalogListeners.delete(fn);
 }
 
 // ─── Images: temporary, saved, discarded ─────────────────────────
 
 let imagesCache = null;
+let imagesCacheKey = '';
 
+/**
+ * The temporary pictures, newest first. Cached, but re-read whenever the folder changes on disk
+ * (its modification time and file names), so pictures added or deleted by another process (a
+ * second API, a script, the user in Explorer) never leave a stale list pointing at missing files.
+ */
 function listImages() {
-  if (imagesCache) return imagesCache;
   let files = [];
-  try { files = fs.readdirSync(TEMP_DIR).filter(f => IMAGE_ID_RE.test(f.replace(/\.png$/, '')) && f.endsWith('.png')); } catch (_) { }
+  let dirTime = 0;
+  try {
+    dirTime = fs.statSync(TEMP_DIR).mtimeMs;
+    files = fs.readdirSync(TEMP_DIR).filter(f => IMAGE_ID_RE.test(f.replace(/\.png$/, '')) && f.endsWith('.png'));
+  } catch (_) { }
+  const key = `${dirTime}|${files.length}|${files.join(',')}`;
+  if (imagesCache && key === imagesCacheKey) return imagesCache;
+  imagesCacheKey = key;
   imagesCache = files.map((f) => {
     const id = f.replace(/\.png$/, '');
     let meta = {};
@@ -456,14 +540,28 @@ function normalizeParams(p = {}) {
   const requested = Array.isArray(p.loras)
     ? p.loras
     : [p.lora && { file: p.lora, strength: p.loraStrength, name: p.loraName }, p.lora2 && { file: p.lora2, strength: p.lora2Strength, name: p.lora2Name }].filter(Boolean);
+  // The "always" LoRAs (the Hand-drawn style) are not the studio's to send: one in the request
+  // (an older picture's settings) is dropped here and added back below, once.
+  const always = alwaysLoras();
+  const alwaysFiles = new Set(listLoras().filter(l => l.always).map(l => l.file));
   const loras = [];
   for (const item of requested) {
     const file = String(item?.file || '');
-    if (!file || loras.some(l => l.file === file)) continue;
+    if (!file || alwaysFiles.has(file) || loras.some(l => l.file === file)) continue;
     if (path.basename(file) !== file || !fs.existsSync(path.join(LORA_DIR, file))) throw new Error(`The LoRA ${file} is not in ComfyUI's models/loras.`);
     loras.push({ file, strength: num(item.strength, 0, 2, 1), name: typeof item.name === 'string' ? item.name.slice(0, 120) : '' });
   }
-  if (loras.length > MAX_LORAS) throw new Error(`At most ${MAX_LORAS} LoRAs at once.`);
+  if (loras.length > MAX_PICKED_LORAS) throw new Error(`At most ${MAX_PICKED_LORAS} LoRAs at once.`);
+  // Then the always-on ones, after the picked LoRAs, with their trigger words appended to the
+  // prompt ComfyUI gets. `prompt` stays the GM's own text: the picture's saved settings and a
+  // reused prompt never carry the style's trigger.
+  let graphPrompt = prompt;
+  for (const a of always) {
+    if (loras.length >= MAX_LORAS) break;
+    loras.push({ file: a.file, strength: a.strength, name: a.family, always: true });
+    const token = a.trigger ? a.trigger.split(',')[0].trim().toLowerCase() : '';
+    if (token && !graphPrompt.toLowerCase().includes(token)) graphPrompt = `${graphPrompt.replace(/[\s,.]+$/, '')}, ${a.trigger}`;
+  }
   const snap16 = (v) => Math.round(v / 16) * 16;
   const word = (v, fallback) => (/^[a-z0-9_]+$/i.test(String(v || '')) ? String(v) : fallback);
   const seed = p.seed === null || p.seed === undefined || p.seed === '' || Number(p.seed) < 0
@@ -471,6 +569,7 @@ function normalizeParams(p = {}) {
     : Math.floor(num(p.seed, 0, Number.MAX_SAFE_INTEGER, 0));
   return {
     prompt,
+    graphPrompt,
     checkpoint,
     loras,
     width: snap16(num(p.width, 256, 2048, 832)),
@@ -497,7 +596,7 @@ function buildGraph(s, prefix) {
   const graph = {
     ...loraNodes,
     1: { class_type: 'CheckpointLoaderSimple', inputs: { ckpt_name: s.checkpoint } },
-    3: { class_type: 'CLIPTextEncode', inputs: { text: s.prompt, clip } },
+    3: { class_type: 'CLIPTextEncode', inputs: { text: s.graphPrompt || s.prompt, clip } },
     4: { class_type: 'FluxGuidance', inputs: { guidance: s.guidance, conditioning: ['3', 0] } },
     5: { class_type: 'ConditioningZeroOut', inputs: { conditioning: ['3', 0] } },
     6: { class_type: 'EmptySD3LatentImage', inputs: { width: s.width, height: s.height, batch_size: 1 } },
@@ -786,6 +885,7 @@ module.exports = {
   detail: 'Image generation with ComfyUI',
   // Studio
   catalog,
+  onCatalogChange,
   subscribe,
   getState: publicState,
   generate,

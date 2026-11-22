@@ -115,6 +115,26 @@ export class AuthService {
     }, { withCredentials: true });
   }
 
+  requestPasswordReset(email: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/forgot-password`, {
+      email: email.trim(),
+    }, { withCredentials: true });
+  }
+
+  resetPassword(email: string, code: string, newPassword: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/auth/reset-password`, {
+      email: email.trim(),
+      code: code.trim(),
+      newPassword,
+    }, { withCredentials: true }).pipe(
+      tap((res) => {
+        if (res && res.success && res.user) {
+          this.saveSession(res.user, res.token);
+        }
+      })
+    );
+  }
+
   logout(): Observable<any> {
     this.clearSession();
     return this.http.post(`${this.apiUrl}/auth/logout`, {}, { withCredentials: true }).pipe(

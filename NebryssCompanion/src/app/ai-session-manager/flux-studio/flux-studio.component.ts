@@ -6,6 +6,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
   AiSessionManagerService,
   FluxCatalog,
+  FluxFixParams,
   FluxImage,
   FluxJob,
   FluxLora,
@@ -17,7 +18,8 @@ import { ToastService } from '../../toast.service';
 const SETTINGS_KEY = 'nebryss_flux_studio';
 
 /**
- * Stacked LoRAs add up, so the studio lowers them by itself (values from the test renders):
+ * Stacked LoRAs add up, so the studio lowers them by itself (values from the test renders). The
+ * Hand-drawn style is on every picture (the API adds it after the GM's picks), so it always counts:
  * - a style (hand-drawn) keeps its own strength (1.2);
  * - a detail LoRA (Bolters, helmets): alone 1.0; with a subject 0.8, or 0.7 with a style too;
  *   with only a style 0.8;
@@ -102,6 +104,9 @@ export class FluxStudioComponent implements OnInit {
   erasing = false;
   hasMask = false;
   private painting = false;
+  // The last fix sent (its strokes, prompt, change and the request itself), to retry or adjust it.
+  lastFix: { sourceId: string; sourceFile: string; strokes: string; prompt: string; denoise: number; request: FluxFixParams } | null = null;
+  private pendingStrokes: string | null = null;
   private lastPoint: { x: number; y: number } | null = null;
 
   ngOnInit(): void {
@@ -148,7 +153,10 @@ export class FluxStudioComponent implements OnInit {
       saved.lora ? { file: saved.lora, strength: saved.loraStrength ?? 1 } : null,
       saved.lora2 ? { file: saved.lora2, strength: saved.lora2Strength ?? 1 } : null
     ].filter((l): l is SelectedLora => !!l);
-    this.loras = (saved.loras || older).filter(l => this.loraInfo(l.file)).slice(0, this.maxLoras);
+    // Only what the dropdowns can show (one per category except Details, at most maxLoras, never the always-on
+    // style); strengths are the studio's own for the combination.
+    this.loras = this.pickedOnly(saved.loras || older);
+    this.rebalance();
     if (saved.width && saved.height) { this.width = saved.width; this.height = saved.height; }
     if (saved.steps) this.steps = saved.steps;
     if (saved.guidance) this.guidance = saved.guidance;
@@ -169,12 +177,111 @@ export class FluxStudioComponent implements OnInit {
   }
 
   get maxLoras(): number {
-    return this.catalog?.maxLoras || 4;
+    return this.catalog?.maxLoras || 3;
   }
 
-  /** The add-a-LoRA list: 'best' = each LoRA's recommended file, 'other' = checkpoints and older versions. */
-  lorasIn(group: FluxLora['group']): FluxLora[] {
-    return (this.catalog?.loras || []).filter(l => l.group === group);
+  // ─── Category dropdowns: one LoRA per category (several for Details), at most maxLoras in all ─────
+
+  /** Categories that take several LoRAs at once: details (weapons, helmets) stack on one subject. */
+  private static readonly MULTI_CATEGORIES = new Set(['Details']);
+
+  isMultiCategory(category: string): boolean {
+    return FluxStudioComponent.MULTI_CATEGORIES.has(category);
+  }
+
+  /** The files picked in a category, in pick order. */
+  pickedListIn(category: string): string[] {
+    return this.loras.filter(l => (this.loraInfo(l.file)?.category || 'Other') === category).map(l => l.file);
+  }
+
+  /**
+   * The dropdowns a category shows, as their current picks ('' = empty): one for a normal category;
+   * for Details one per pick, plus an empty one to add another while the maximum is not reached.
+   */
+  loraSlots(category: string): string[] {
+    const picked = this.pickedListIn(category);
+    if (!this.isMultiCategory(category)) return [picked[0] || ''];
+    if (!picked.length) return [''];
+    return this.loras.length < this.maxLoras ? [...picked, ''] : picked;
+  }
+
+  /** A dropdown's options: its category's LoRAs, minus those already picked in its other dropdowns. */
+  slotOptions(category: string, current: string): FluxLora[] {
+    return this.lorasInCategory(category).filter(l => l.file === current || !this.isSelected(l.file));
+  }
+
+  /** An empty dropdown is locked once the maximum is picked; a filled one can always change. */
+  slotLocked(current: string): boolean {
+    return this.busy || (!current && this.loras.length >= this.maxLoras);
+  }
+
+  /** Label of a dropdown: the category, numbered for the second and later Details picks. */
+  slotLabel(category: string, index: number): string {
+    return index === 0 ? category : `${category} ${index + 1}`;
+  }
+
+  trackSlot(index: number): number {
+    return index;
+  }
+
+  /** A LoRA the dropdowns offer: its recommended file, not the always-on style. */
+  private isPickable(info: FluxLora | undefined): info is FluxLora {
+    return !!info && info.group === 'best' && !info.always;
+  }
+
+  /** The dropdowns, in the catalog's order, each with at least one LoRA ('Other' last, if used). */
+  get loraCategories(): string[] {
+    const used = new Set((this.catalog?.loras || []).filter(l => this.isPickable(l)).map(l => l.category || 'Other'));
+    const order = [...(this.catalog?.categories || []), 'Other'];
+    return order.filter(c => used.has(c));
+  }
+
+  /** The LoRAs of one dropdown, by name. */
+  lorasInCategory(category: string): FluxLora[] {
+    return (this.catalog?.loras || [])
+      .filter(l => this.isPickable(l) && (l.category || 'Other') === category)
+      .sort((a, b) => a.family.localeCompare(b.family));
+  }
+
+  /** The file picked in a dropdown ('' for none). */
+  pickedIn(category: string): string {
+    return this.loras.find(l => (this.loraInfo(l.file)?.category || 'Other') === category)?.file || '';
+  }
+
+  /** A dropdown is locked when the maximum is picked elsewhere (its own pick can still change). */
+  categoryLocked(category: string): boolean {
+    return this.busy || (this.loras.length >= this.maxLoras && !this.pickedIn(category));
+  }
+
+  /**
+   * A dropdown changed: its old LoRA (and its trigger words) out, the new one (and its trigger) in.
+   * `old` is that dropdown's previous pick (Details has several dropdowns); it defaults to the category's pick.
+   */
+  onCategoryChange(category: string, file: string, old: string = this.pickedIn(category)): void {
+    if (this.busy) return;
+    if (old === file) return;
+    if (old) {
+      const oldInfo = this.loraInfo(old);
+      this.loras = this.loras.filter(l => l.file !== old);
+      this.removeTrigger(oldInfo);
+    }
+    this.triggerNote = '';
+    if (file) this.addLora(file);
+    else { this.rebalance(); this.persist(); }
+  }
+
+  /** Saved or reused LoRAs cut down to what the dropdowns can hold. */
+  private pickedOnly(list: { file: string; strength: number }[]): SelectedLora[] {
+    const out: SelectedLora[] = [];
+    for (const l of list || []) {
+      const info = this.loraInfo(l.file);
+      if (!this.isPickable(info) || out.length >= this.maxLoras) continue;
+      if (out.some(o => o.file === l.file)) continue;
+      if (!this.isMultiCategory(info.category || 'Other')
+        && out.some(o => (this.loraInfo(o.file)?.category || 'Other') === (info.category || 'Other'))) continue;
+      out.push({ file: l.file, strength: info.strength, manual: false });
+    }
+    return out;
   }
 
   loraInfo(file: string): FluxLora | undefined {
@@ -188,7 +295,8 @@ export class FluxStudioComponent implements OnInit {
   /** The strength the stacking rules (STACK) give a LoRA in the current combination. */
   autoStrength(info: FluxLora): number {
     const infos = this.loras.map(l => this.loraInfo(l.file)).filter((i): i is FluxLora => !!i);
-    const hasStyle = infos.some(i => i.style);
+    // The Hand-drawn style is on every picture (added by the API), so the stack always has a style.
+    const hasStyle = true;
     const hasDetail = infos.some(i => i.detail);
     const subjects = infos.filter(i => !i.style && !i.detail).length;
     if (info.style) return info.strength;
@@ -216,25 +324,10 @@ export class FluxStudioComponent implements OnInit {
     }
   }
 
-  /** A strength moved by hand: the stacking rules leave that LoRA alone from now on. */
-  onStrengthChange(l: SelectedLora): void {
-    l.manual = true;
-    this.persist();
-  }
-
-  /** Back to the automatic strength for this combination. */
-  resetStrength(l: SelectedLora): void {
-    const info = this.loraInfo(l.file);
-    if (!info) return;
-    l.manual = false;
-    l.strength = this.autoStrength(info);
-    this.persist();
-  }
-
   /** Adds a LoRA (strengths of the whole stack follow the stacking rules) and puts its trigger words at the start of the prompt if missing (nothing else in the prompt changes). */
-  addLora(file: string): void {
+  private addLora(file: string): void {
     const info = this.loraInfo(file);
-    if (!info || this.busy || this.isSelected(file) || this.loras.length >= this.maxLoras) return;
+    if (!this.isPickable(info) || this.busy || this.isSelected(file) || this.loras.length >= this.maxLoras) return;
     this.loras = [...this.loras, { file, strength: info.strength }];
     this.rebalance();
     this.triggerNote = this.prependTrigger(info) ? `Added "${info.trigger}" at the start of the ${this.fixing ? 'fix ' : ''}prompt.` : '';
@@ -251,16 +344,14 @@ export class FluxStudioComponent implements OnInit {
     else this.prompt = text;
   }
 
-  /** Removes a LoRA (its trigger words stay in the prompt: delete them by hand if you want). */
-  removeLora(index: number): void {
-    if (this.busy) return;
-    const removed = this.loraInfo(this.loras[index]?.file);
-    this.loras = this.loras.filter((_, i) => i !== index);
-    this.rebalance();
-    this.triggerNote = removed?.trigger && this.hasTrigger(this.activePrompt, removed)
-      ? `Removed ${removed.family}; its trigger words are still in the ${this.fixing ? 'fix ' : ''}prompt.`
-      : '';
-    this.persist();
+  /** Takes a LoRA's trigger words ("0rk40k, a Warhammer 40,000 Ork, ") out of the prompt in use, where they were added. */
+  private removeTrigger(lora: FluxLora | undefined): void {
+    if (!lora?.trigger) return;
+    const text = this.activePrompt;
+    const at = text.indexOf(lora.trigger);
+    if (at < 0) return;
+    const after = text.slice(at + lora.trigger.length).replace(/^\s*,\s*/, '');
+    this.setActivePrompt((text.slice(0, at) + after).replace(/^\s*,\s*/, ''));
   }
 
   /** Puts a LoRA's trigger words at the start of the prompt in use (main or fix) if missing. True if it added them. */
@@ -276,14 +367,6 @@ export class FluxStudioComponent implements OnInit {
     if (!lora?.trigger) return true;
     const token = lora.trigger.split(',')[0].trim().toLowerCase();
     return text.toLowerCase().includes(token);
-  }
-
-  addTrigger(file: string): void {
-    const info = this.loraInfo(file);
-    if (!info?.trigger) return;
-    this.setActivePrompt(`${info.trigger}, ${this.activePrompt.trim()}`);
-    this.triggerNote = '';
-    this.persist();
   }
 
   setSize(width: number, height: number): void {
@@ -312,6 +395,35 @@ export class FluxStudioComponent implements OnInit {
 
   get job(): FluxJob | null {
     return this.state?.job || null;
+  }
+
+  /**
+   * While a picture is being made, an older one the GM clicked to look at (null = show the progress).
+   * Kept apart from currentId, so a running area fix keeps its own picture.
+   */
+  peekId: string | null = null;
+
+  /** The older picture shown during a job, if one was clicked and it still exists. */
+  get peekImage(): FluxImage | undefined {
+    return this.busy && this.peekId ? this.images.find(i => i.id === this.peekId) : undefined;
+  }
+
+  /** A thumbnail was clicked: during a job it is only shown (progress stays above it); otherwise selected. */
+  onThumbClick(id: string): void {
+    if (!this.busy) { this.select(id); return; }
+    this.peekId = id;
+    const img = this.images.find(i => i.id === id);
+    if (img) this.ensureLoaded(img);
+  }
+
+  /** Back to the big progress view of the running job. */
+  backToProgress(): void {
+    this.peekId = null;
+  }
+
+  /** The thumbnail outlined as selected: the peeked one during a job, else the current one. */
+  isThumbSelected(id: string): boolean {
+    return this.peekImage ? id === this.peekId : id === this.currentId;
   }
 
   get busy(): boolean {
@@ -347,6 +459,7 @@ export class FluxStudioComponent implements OnInit {
       return;
     }
     this.pendingGenerate = true;
+    this.peekId = null;
     this.savedNotice = null;
     this.persist();
   }
@@ -372,6 +485,7 @@ export class FluxStudioComponent implements OnInit {
     if (job && ['done', 'error', 'cancelled'].includes(job.phase) && job.id !== this.lastDoneJob) {
       this.pendingGenerate = false;
       this.lastDoneJob = job.id;
+      this.peekId = null; // the job is over: the stage shows its result (or the current picture) again
       if (job.phase === 'done' && job.imageId) {
         if (this.fixing) {
           this.fixing = false; // the fixed picture is the new current one
@@ -483,7 +597,9 @@ export class FluxStudioComponent implements OnInit {
     const c = this.current;
     if (!c || this.busy) return;
     this.prompt = c.prompt;
-    this.loras = this.imageLoras(c).filter(l => this.loraInfo(l.file)).map(l => ({ file: l.file, strength: l.strength })).slice(0, this.maxLoras);
+    // The picture's LoRAs without the always-on style (the API adds it again); strengths are the studio's.
+    this.loras = this.pickedOnly(this.imageLoras(c));
+    this.rebalance();
     this.width = c.width;
     this.height = c.height;
     this.steps = c.steps;
@@ -494,16 +610,51 @@ export class FluxStudioComponent implements OnInit {
 
   // ─── Fix an area ────────────────────────────────────────────────
 
-  /** Opens the painting tool on the current picture; the prompt starts as the studio's prompt. */
+  /**
+   * Opens the painting tool on the current picture. On the picture of the last fix, its strokes,
+   * prompt and change come back (Clear starts over); otherwise the prompt starts as the studio's.
+   */
   startFix(): void {
     const c = this.current;
     if (!c || this.busy) return;
     this.fixing = true;
     this.erasing = false;
     this.hasMask = false;
-    this.fixPrompt = this.prompt.trim() || c.prompt;
+    const last = this.lastFix && this.lastFix.sourceId === c.id ? this.lastFix : null;
+    this.fixPrompt = last ? last.prompt : (this.prompt.trim() || c.prompt);
+    if (last) this.fixDenoise = last.denoise;
+    this.pendingStrokes = last ? last.strokes : null;
     this.rebalance(); // detail LoRAs to full strength for the fix
     setTimeout(() => this.setupFixCanvas());
+  }
+
+  /** The result of the last fix is shown: Retry / Adjust apply to it. */
+  get canRedoFix(): boolean {
+    return !!this.lastFix && !!this.current && this.current.fixOf === this.lastFix.sourceFile;
+  }
+
+  /** The same fix again on the same picture (same strokes, prompt, LoRAs and change), with a new seed. */
+  retryFix(): void {
+    if (!this.lastFix || this.busy) return;
+    if (!this.ai.fixFluxArea({ ...this.lastFix.request, seed: null })) {
+      this.toast.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
+      return;
+    }
+    this.pendingGenerate = true;
+    this.peekId = null;
+    this.savedNotice = null;
+  }
+
+  /** Back to the picture of the last fix, with its strokes and prompt, to change them and repaint. */
+  adjustFix(): void {
+    const last = this.lastFix;
+    if (!last || this.busy) return;
+    if (!this.images.some(i => i.id === last.sourceId)) {
+      this.toast.show('The original picture is no longer in the unsaved list.', 'info', 4000);
+      return;
+    }
+    this.select(last.sourceId);
+    this.startFix();
   }
 
   cancelFix(): void {
@@ -521,6 +672,16 @@ export class FluxStudioComponent implements OnInit {
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
       this.hasMask = false;
+    }
+    // Strokes of the last fix on this picture: paint them back.
+    if (this.pendingStrokes) {
+      const strokes = new Image();
+      strokes.onload = () => {
+        canvas.getContext('2d')?.drawImage(strokes, 0, 0, canvas.width, canvas.height);
+        this.hasMask = true;
+      };
+      strokes.src = this.pendingStrokes;
+      this.pendingStrokes = null;
     }
   }
 
@@ -622,7 +783,7 @@ export class FluxStudioComponent implements OnInit {
       x: Math.max(0, minX - pad), y: Math.max(0, minY - pad),
       w: Math.min(w, maxX + pad + 1) - Math.max(0, minX - pad), h: Math.min(h, maxY + pad + 1) - Math.max(0, minY - pad)
     };
-    const ok = this.ai.fixFluxArea({
+    const request: FluxFixParams = {
       source: c.file,
       mask: mask.toDataURL('image/png'),
       area,
@@ -635,12 +796,16 @@ export class FluxStudioComponent implements OnInit {
       sampler: this.sampler,
       scheduler: this.scheduler,
       seed: this.randomSeed ? null : (this.seed ?? 0)
-    });
+    };
+    // Remembered for Retry / Adjust (the strokes as painted, not the softened mask).
+    this.lastFix = { sourceId: c.id, sourceFile: c.file, strokes: canvas.toDataURL('image/png'), prompt: request.prompt, denoise: request.denoise, request };
+    const ok = this.ai.fixFluxArea(request);
     if (!ok) {
       this.toast.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
       return;
     }
     this.pendingGenerate = true;
+    this.peekId = null;
     this.savedNotice = null;
   }
 

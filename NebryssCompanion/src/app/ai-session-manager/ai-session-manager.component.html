@@ -26,19 +26,19 @@
         </button>
       </div>
 
-      <!-- AI Engine: one button; its menu picks the bridge, then Colibri's GPU engine or Antigravity's model -->
+      <!-- AI Engine: one button; its menu picks Local (Colibri or llama.cpp setups), FLUX images or AGY (and its model) -->
       <div class="context-section">
         <div class="context-label" id="engine-picker-label">AI Engine</div>
         <div class="engine-picker" #enginePicker (keydown)="onEngineMenuKeydown($event)">
           <button type="button" class="engine-picker-btn" #enginePickerButton aria-haspopup="menu"
             aria-labelledby="engine-picker-label engine-picker-current" [attr.aria-expanded]="engineMenuOpen"
             [disabled]="isAgentTyping || colibriEngine?.switching" (click)="toggleEngineMenu()">
-            <span class="material-icons engine-picker-icon">{{ agentBackend === 'agy' ? 'cloud' : fluxActive ? 'image' :
+            <span class="material-icons engine-picker-icon">{{ fluxActive ? 'image' : agentBackend === 'agy' ? 'cloud' :
               'memory' }}</span>
             <span class="engine-picker-text" id="engine-picker-current">
-              <span class="engine-picker-name">{{ agentBackend === 'agy' ? 'Antigravity' : fluxActive ? 'FLUX images' :
-                'Colibri' }}</span>
-              <span class="engine-picker-detail">{{ agentBackend === 'agy' ? agyModelLabel : fluxActive ? fluxSummary :
+              <span class="engine-picker-name">{{ fluxActive ? 'FLUX images' : agentBackend === 'agy' ? 'AGY' :
+                'Local' }}</span>
+              <span class="engine-picker-detail">{{ fluxActive ? fluxSummary : agentBackend === 'agy' ? agyModelLabel :
                 colibriEngineSummary }}</span>
             </span>
             <span class="material-icons engine-picker-chevron">{{ engineMenuOpen ? 'expand_less' : 'expand_more'
@@ -46,15 +46,15 @@
           </button>
 
           <div class="engine-menu" *ngIf="engineMenuOpen" role="menu"
-            [attr.aria-label]="engineMenuView === 'bridges' ? 'Choose a bridge' : engineMenuView === 'colibri' ? 'Colibri GPU engine' : 'Antigravity model'">
-            <!-- Level 1: the bridge -->
+            [attr.aria-label]="engineMenuView === 'bridges' ? 'Choose an AI engine' : engineMenuView === 'colibri' ? 'Local model setup' : 'AGY model'">
+            <!-- Level 1: Local, FLUX images or AGY -->
             <ng-container *ngIf="engineMenuView === 'bridges'">
-              <div class="engine-menu-heading">Bridge</div>
+              <div class="engine-menu-heading">AI Engine</div>
               <button type="button" class="engine-menu-item" role="menuitem" aria-haspopup="menu"
                 (click)="openEngineMenuView('colibri')">
                 <span class="material-icons engine-menu-icon">memory</span>
                 <span class="engine-menu-text">
-                  <span class="engine-menu-name">Colibri <span class="engine-menu-tag">local</span></span>
+                  <span class="engine-menu-name">Local <span class="engine-menu-tag">this PC</span></span>
                   <span class="engine-menu-desc">{{ colibriEngineSummary }}</span>
                 </span>
                 <span class="material-icons engine-menu-current" *ngIf="agentBackend === 'colibri' && !fluxActive"
@@ -74,19 +74,19 @@
                 (click)="openEngineMenuView('agy')">
                 <span class="material-icons engine-menu-icon">cloud</span>
                 <span class="engine-menu-text">
-                  <span class="engine-menu-name">Antigravity <span class="engine-menu-tag">cloud</span></span>
+                  <span class="engine-menu-name">AGY <span class="engine-menu-tag">cloud</span></span>
                   <span class="engine-menu-desc">{{ agyModelLabel }}</span>
                 </span>
-                <span class="material-icons engine-menu-current" *ngIf="agentBackend === 'agy'"
+                <span class="material-icons engine-menu-current" *ngIf="agentBackend === 'agy' && !fluxActive"
                   aria-label="current">check</span>
                 <span class="material-icons engine-menu-next">chevron_right</span>
               </button>
             </ng-container>
 
-            <!-- Level 2: Colibri's model setup (quantization + context size) -->
+            <!-- Level 2: the local setup (engine, quantization, max context, KV cache) -->
             <ng-container *ngIf="engineMenuView === 'colibri'">
               <button type="button" class="engine-menu-back" role="menuitem" (click)="openEngineMenuView('bridges')">
-                <span class="material-icons">chevron_left</span> Colibri model
+                <span class="material-icons">chevron_left</span> Local model
               </button>
               <button type="button" class="engine-menu-item" role="menuitemradio"
                 *ngFor="let p of colibriProfiles"
@@ -94,8 +94,8 @@
                 [disabled]="connectionStatus !== 'connected'" (click)="chooseColibriEngine(p.id)">
                 <span class="material-icons engine-menu-icon">{{ colibriProfileIcon(p.id) }}</span>
                 <span class="engine-menu-text">
-                  <span class="engine-menu-name">{{ p.label }} · {{ formatContext(p.contextTokens) }} context</span>
-                  <span class="engine-menu-desc">{{ p.detail }}</span>
+                  <span class="engine-menu-name">{{ profileName(p) }}</span>
+                  <span class="engine-menu-desc">{{ profileDescription(p) }}</span>
                 </span>
                 <span class="material-icons engine-menu-current" *ngIf="colibriEngine?.mode === p.id"
                   aria-label="running">check</span>
@@ -103,14 +103,14 @@
               <div class="engine-menu-note" *ngIf="colibriProfiles.length === 0">Loading the model list...</div>
               <div class="engine-menu-note"
                 [class.warn]="colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown' || colibriEngine?.mode === 'custom'">
-                {{ engineStatusText }}. Changing it restarts Colibri.
+                {{ engineStatusText }}. Changing it restarts the local engine.
               </div>
             </ng-container>
 
-            <!-- Level 2: Antigravity's model -->
+            <!-- Level 2: AGY's model -->
             <ng-container *ngIf="engineMenuView === 'agy'">
               <button type="button" class="engine-menu-back" role="menuitem" (click)="openEngineMenuView('bridges')">
-                <span class="material-icons">chevron_left</span> Antigravity model
+                <span class="material-icons">chevron_left</span> AGY model
               </button>
               <div class="engine-menu-scroll">
                 <button type="button" class="engine-menu-item" role="menuitemradio"
@@ -142,6 +142,18 @@
           *ngIf="agentBackend === 'colibri' && (colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown')">
           {{ engineStatusText }}
         </div>
+        <button type="button" class="engine-stop-btn" *ngIf="canStopEngine"
+          [disabled]="isAgentTyping && agentBackend === 'colibri' && !fluxActive" (click)="stopEngine()"
+          [title]="(colibriEngine?.mode === 'flux' ? 'Stops ComfyUI' : 'Stops the ' + (localEngineName || 'local') + ' server') + ' and frees the GPU. The conversation is kept; pick an engine in the menu above to start one again.'">
+          <span class="material-icons">power_settings_new</span>
+          <span>{{ stopEngineLabel }}</span>
+        </button>
+        <button type="button" class="engine-stop-btn engine-start-btn" *ngIf="canStartEngine"
+          [disabled]="isAgentTyping || connectionStatus !== 'connected'" (click)="startEngine()"
+          [title]="'Starts ' + (defaultEngineProfile ? profileName(defaultEngineProfile) + ' (' + profileDescription(defaultEngineProfile) + ')' : 'the default local setup') + ' on the GPU. Other setups are in the menu above.'">
+          <span class="material-icons">power_settings_new</span>
+          <span>{{ startEngineLabel }}</span>
+        </button>
         <label class="experimental-format" *ngIf="agentBackend === 'colibri' && !fluxActive"
           title="Sends lists (bestiary, players, rules...) to the model as tables instead of JSON: about 12-24% fewer tokens. Applies from the next tool call.">
           <input type="checkbox" [ngModel]="experimentalFormat" (ngModelChange)="onExperimentalFormatChange($event)"
@@ -170,9 +182,12 @@
         <div class="context-value conversation-id">{{ conversationId | slice:0:12 }}...</div>
       </div>
 
-      <!-- Model context gauge (Colibri reports it with each reply) -->
+      <!-- Model context gauge (the local engine reports it with each reply) -->
       <div class="context-section" *ngIf="contextUsage">
         <div class="context-label">Model Context</div>
+        <div class="context-gauge-note" *ngIf="fluxActive || colibriEngine?.mode === 'offline'">
+          Last reading: the conversation continues when the local model runs again
+        </div>
         <div class="context-gauge" [class.warn]="contextLevel === 'warn'" [class.high]="contextLevel === 'high'"
           role="meter" aria-label="Model context used" [attr.aria-valuenow]="contextUsage.used" aria-valuemin="0"
           [attr.aria-valuemax]="contextUsage.limit"
@@ -187,6 +202,10 @@
             {{ formatTokens(contextUsage.used) }} / {{ formatTokens(contextUsage.limit) }}
             <span class="context-gauge-percent">({{ contextUsage.percent | number:'1.0-1' }}%)</span>
           </div>
+        </div>
+        <!-- llama.cpp only: how much of the last request's prompt came from the server's cache -->
+        <div class="context-gauge-cache" *ngIf="contextCacheLine" [attr.title]="contextSpeedTitle">
+          {{ contextCacheLine }}
         </div>
       </div>
 
@@ -278,7 +297,7 @@
       <div class="empty-state" *ngIf="messages.length === 0">
         <span class="material-icons empty-icon">smart_toy</span>
         <h2>AI Session Manager</h2>
-        <p>Chat with the {{ agentBackend === 'agy' ? 'AGY' : 'Colibri AI' }} agent to plan, create, and conclude
+        <p>Chat with the {{ agentBackend === 'agy' ? 'AGY' : (localEngineName || 'local') }} agent to plan, create, and conclude
           campaign sessions.</p>
         <p class="empty-hint">Use the quick actions on the right, or type a message below.</p>
       </div>
@@ -659,7 +678,8 @@
       </div>
 
       <ol class="engine-steps">
-        <li *ngFor="let step of engineSteps; let i = index" [attr.data-status]="engineStepStatus(i)">
+        <ng-container *ngFor="let step of engineSteps; let i = index">
+        <li *ngIf="engineStepVisible(i)" [attr.data-status]="engineStepStatus(i)">
           <span class="material-icons engine-step-icon">
             {{ engineStepStatus(i) === 'done' ? 'check_circle'
             : engineStepStatus(i) === 'error' ? 'cancel'
@@ -667,6 +687,7 @@
           </span>
           <span>{{ engineStepLabel(i) }}</span>
         </li>
+        </ng-container>
       </ol>
 
       <div class="engine-error" *ngIf="colibriEngine?.phase === 'error'" role="alert">

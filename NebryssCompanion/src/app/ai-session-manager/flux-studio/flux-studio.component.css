@@ -525,6 +525,51 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* An older picture looked at while a new one is being made: progress strip on top, picture below */
+.fs-peek {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+}
+
+.fs-peek .fs-image {
+  max-height: calc(100vh - 380px);
+}
+
+.fs-peek-progress {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  width: min(520px, 100%);
+  font-size: 12px;
+  color: var(--fs-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.fs-peek-progress .material-icons {
+  font-size: 18px;
+  color: var(--fs-accent);
+}
+
+.fs-peek-msg {
+  flex: 1 1 auto;
+  min-width: 0;
+  color: var(--fs-text);
+}
+
+.fs-peek-progress .fs-bar {
+  flex: 1 0 100%;
+  height: 6px;
+}
+
+.fs-peek-progress .fs-link {
+  min-height: 44px;
+}
+
 .spin {
   animation: fs-spin 1.2s linear infinite;
 }
@@ -563,6 +608,13 @@
 
 .fs-save-row {
   display: flex;
+  gap: 8px;
+}
+
+.fs-redo-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
 }
 
@@ -686,5 +738,54 @@
 
   .fs-save-row .fs-btn {
     flex: 1;
+  }
+}
+
+/* LoRA dropdowns: one per category (Space Marines, Chaos, Xenos, Details...). Colours come from
+   the --fs-* variables, so the light theme override above applies. Two columns where the panel is
+   wide enough, one on narrow phones; each select keeps a 44px touch target. */
+.fs-cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.fs-cat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fs-cat-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--fs-muted);
+  user-select: none;
+}
+
+.fs-cat .fs-select {
+  min-height: 44px;
+  text-overflow: ellipsis;
+}
+
+.fs-cat.picked .fs-cat-name {
+  color: var(--fs-accent);
+}
+
+.fs-cat.picked .fs-select {
+  border-color: var(--fs-accent);
+}
+
+.fs-cat .fs-select:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 360px) {
+  .fs-cat-grid {
+    grid-template-columns: 1fr;
   }
 }

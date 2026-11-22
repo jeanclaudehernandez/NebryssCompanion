@@ -16,7 +16,7 @@
     </div>
 
     <!-- Navigation Tabs (Login / Register) -->
-    <div class="auth-tabs" *ngIf="mode !== 'verify'">
+    <div class="auth-tabs" *ngIf="mode === 'login' || mode === 'register'">
       <button
         type="button"
         class="tab-btn"
@@ -83,6 +83,9 @@
             required
             [disabled]="isLoading"
           />
+        </div>
+        <div class="forgot-link-row">
+          <button type="button" class="link-btn" (click)="openForgotPassword()" [disabled]="isLoading">Forgot password?</button>
         </div>
       </div>
 
@@ -234,6 +237,147 @@
         >
           <span class="material-icons resend-icon">refresh</span>
           <span *ngIf="resendCooldown === 0">Resend 6-Digit Code</span>
+          <span *ngIf="resendCooldown > 0">Resend Code in {{ resendCooldown }}s</span>
+        </button>
+      </div>
+
+      <div class="form-footer-links">
+        <button type="button" class="link-btn" (click)="setMode('login')">← Back to Log In</button>
+      </div>
+    </form>
+
+    <!-- ─── FORGOT PASSWORD FORM ───────────────────────────────────── -->
+    <form *ngIf="mode === 'forgot'" (ngSubmit)="onForgotPassword()" class="auth-form">
+      <div class="verify-header">
+        <div class="verify-icon-bubble">
+          <span class="material-icons">lock_reset</span>
+        </div>
+        <h2 class="verify-title">Reset Password</h2>
+        <p class="verify-desc">
+          Enter the email address of your account and we'll send you a 6-digit reset code.
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="forgot-email-input" class="form-label">Email Address</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">email</span>
+          <input
+            id="forgot-email-input"
+            name="forgot-email-input"
+            type="email"
+            class="form-input"
+            [(ngModel)]="resetEmail"
+            placeholder="player@domain.com"
+            autocomplete="email"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn primary-glow-btn" [disabled]="isLoading || !resetEmail">
+        <div class="spinner-inline" *ngIf="isLoading"></div>
+        <span class="material-icons btn-icon" *ngIf="!isLoading">send</span>
+        <span>{{ isLoading ? 'Sending...' : 'Send Reset Code' }}</span>
+      </button>
+
+      <div class="form-footer-links">
+        <span>Already have a code?</span>
+        <button type="button" class="link-btn" (click)="setMode('reset')" [disabled]="!resetEmail">Enter Code</button>
+      </div>
+
+      <div class="form-footer-links">
+        <button type="button" class="link-btn" (click)="setMode('login')">← Back to Log In</button>
+      </div>
+    </form>
+
+    <!-- ─── RESET PASSWORD FORM ────────────────────────────────────── -->
+    <form *ngIf="mode === 'reset'" (ngSubmit)="onResetPassword()" class="auth-form" autocomplete="on">
+      <div class="verify-header">
+        <div class="verify-icon-bubble">
+          <span class="material-icons">password</span>
+        </div>
+        <h2 class="verify-title">Choose a New Password</h2>
+        <p class="verify-desc">
+          Enter the 6-digit reset code sent to:
+          <strong class="verify-target-email">{{ resetEmail }}</strong>
+        </p>
+      </div>
+
+      <!-- Hidden username field so password managers save the new password to the right account -->
+      <input type="email" name="reset-username" class="visually-hidden" [value]="resetEmail" autocomplete="username" tabindex="-1" aria-hidden="true" readonly />
+
+      <div class="form-group">
+        <label for="reset-code-input" class="form-label">6-Digit Reset Code</label>
+        <div class="input-wrapper code-input-wrapper">
+          <input
+            id="reset-code-input"
+            name="reset-code-input"
+            type="text"
+            inputmode="numeric"
+            maxlength="6"
+            class="form-input code-input"
+            [(ngModel)]="resetCode"
+            placeholder="••••••"
+            autocomplete="one-time-code"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reset-password-input" class="form-label">New Password (Min. 6 characters)</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">lock</span>
+          <input
+            id="reset-password-input"
+            name="reset-password-input"
+            type="password"
+            class="form-input"
+            [(ngModel)]="resetPassword"
+            placeholder="••••••••••••"
+            autocomplete="new-password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reset-confirm-input" class="form-label">Confirm New Password</label>
+        <div class="input-wrapper">
+          <span class="material-icons input-icon">lock_outline</span>
+          <input
+            id="reset-confirm-input"
+            name="reset-confirm-input"
+            type="password"
+            class="form-input"
+            [(ngModel)]="resetConfirmPassword"
+            placeholder="••••••••••••"
+            autocomplete="new-password"
+            required
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn primary-glow-btn" [disabled]="isLoading || !resetCode">
+        <div class="spinner-inline" *ngIf="isLoading"></div>
+        <span class="material-icons btn-icon" *ngIf="!isLoading">lock_reset</span>
+        <span>{{ isLoading ? 'Updating...' : 'Update Password & Log In' }}</span>
+      </button>
+
+      <div class="resend-wrapper">
+        <button
+          type="button"
+          class="resend-btn"
+          (click)="onResendResetCode()"
+          [disabled]="isLoading || resendCooldown > 0 || !resetEmail"
+        >
+          <span class="material-icons resend-icon">refresh</span>
+          <span *ngIf="resendCooldown === 0">Resend Reset Code</span>
           <span *ngIf="resendCooldown > 0">Resend Code in {{ resendCooldown }}s</span>
         </button>
       </div>

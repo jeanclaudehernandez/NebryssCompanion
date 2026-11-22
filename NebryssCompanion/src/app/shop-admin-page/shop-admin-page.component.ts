@@ -74,8 +74,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
   name = '';
   ownerId: number | null = null;
   locationId: number | null = null;
-  locationName = '';
-  location = '';
+  location = '';   // the label on the shop card; the location's name comes from locationId
   description = '';
   discovered = true;
   imgUrl = '';
@@ -92,17 +91,29 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     return this.shops.filter(s =>
       s.name.toLowerCase().includes(term) ||
       (s.location && s.location.toLowerCase().includes(term)) ||
-      (s.locationName && s.locationName.toLowerCase().includes(term))
+      this.locationNameFor(s.locationId).toLowerCase().includes(term)
     );
   }
 
+  /** The name of the location with this id ('Unbound' for 0, no fixed place; '' if unknown). */
+  locationNameFor(locationId: number | null | undefined): string {
+    if (locationId === 0) return 'Unbound';
+    if (locationId === null || locationId === undefined) return '';
+    return this.locations.find(l => l.id === Number(locationId))?.name || '';
+  }
+
+  /** The group a shop is listed under: its location's name (from locationId), else its label. */
+  private shopGroupName(shop: Shop): string {
+    return (this.locationNameFor(shop.locationId) || shop.location || 'Unassigned Location').trim();
+  }
+
   /**
-   * Group shops by location (locationName || location || 'Unassigned Location')
+   * Group shops by location (the location's name from locationId, else the label, else 'Unassigned Location')
    */
   get groupedShops(): LocationShopGroup[] {
     const map = new Map<string, Shop[]>();
     for (const shop of this.filteredShops) {
-      const loc = (shop.locationName || shop.location || 'Unassigned Location').trim();
+      const loc = this.shopGroupName(shop);
       if (!map.has(loc)) {
         map.set(loc, []);
       }
@@ -349,9 +360,10 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     const locId = Number(locationIdVal);
     const selectedLoc = this.locations.find(l => l.id === locId);
     if (selectedLoc) {
+      // The label follows the new location while it is still the default for the old one.
+      const previousName = this.locationNameFor(this.locationId);
       this.locationId = selectedLoc.id;
-      this.locationName = selectedLoc.name;
-      if (!this.location || this.location === this.locationName) {
+      if (!this.location || this.location === previousName || this.location === `${previousName} Sky Bazaar`) {
         this.location = `${selectedLoc.name} Sky Bazaar`;
       }
     }
@@ -367,11 +379,9 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     this.ownerId = this.npcs.length > 0 ? this.npcs[0].id : null;
     if (this.locations.length > 0) {
       this.locationId = this.locations[0].id;
-      this.locationName = this.locations[0].name;
       this.location = `${this.locations[0].name} Sky Bazaar`;
     } else {
       this.locationId = null;
-      this.locationName = '';
       this.location = '';
     }
     this.description = '';
@@ -392,7 +402,6 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     this.name = shop.name || '';
     this.ownerId = shop.owner;
     this.locationId = shop.locationId ?? null;
-    this.locationName = shop.locationName || '';
     this.location = shop.location || '';
     this.description = shop.description || '';
     this.discovered = shop.discovered !== false;
@@ -405,8 +414,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
     this.showDeleteConfirm = false;
 
     // Expand location group of selected shop
-    const loc = (shop.locationName || shop.location || 'Unassigned Location').trim();
-    this.expandedLocations.add(loc);
+    this.expandedLocations.add(this.shopGroupName(shop));
   }
 
   // ── Catalog: Add items to shop ───────────────────────────────────────────────
@@ -532,8 +540,7 @@ export class ShopAdminPageComponent implements OnInit, OnChanges {
       name: this.name.trim(),
       owner: Number(this.ownerId),
       locationId: this.locationId !== null ? Number(this.locationId) : undefined,
-      locationName: this.locationName.trim() || 'Zephyria',
-      location: this.location.trim() || this.locationName.trim(),
+      location: this.location.trim() || this.locationNameFor(this.locationId),
       description: this.description.trim() || undefined,
       discovered: this.discovered,
       categories: Array.from(shopCategoryIds),

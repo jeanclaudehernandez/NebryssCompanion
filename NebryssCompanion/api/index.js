@@ -171,8 +171,19 @@ const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/NebryssCo
 const mainDbName = process.env.MONGODB_DB_MAIN || process.env.MONGODB_DB_NAME || 'Nebryss-assets';
 const playersDbName = process.env.MONGODB_DB_PLAYERS || process.env.MONGODB_PLAYERS_DB_NAME || 'NebryssCampaignAssets';
 
-// Attempt MongoDB connection (Atlas or Local), falling back to Local PC JSON if unreachable
-let isUsingLocalJsonFallback = !mongoUri;
+// MongoDB (Atlas or local), or the JSON files in src/assets:
+// - NEBRYSS_LOCAL_JSON=true: the JSON files on purpose (offline, no MongoDB), reads and saves.
+// - Otherwise MongoDB. When it does not answer, reads fall back to the JSON files only until it
+//   does: the connection is retried every MONGO_RETRY_MS. (It used to switch to the JSON files for
+//   good after one slow first connect, 2 s: the app then showed a Nov 12 copy with sessions 1-6
+//   of 8, and saved a location and the mist state into the JSON files instead of the database.)
+//   Saves are refused meanwhile (requireDatabaseForSaves below), so the two never split again.
+const localJsonByChoice = process.env.NEBRYSS_LOCAL_JSON === 'true';
+let isUsingLocalJsonFallback = localJsonByChoice || !mongoUri;
+const MONGO_CONNECT_TIMEOUT_MS = 5000;
+const MONGO_RETRY_MS = 10000;
+let lastMongoFailureAt = 0;
+let pendingConnect = null;
 
 const assetsDir = path.join(__dirname, '../src/assets');
 
@@ -181,7 +192,7 @@ let cachedMainDb = null;
 let cachedPlayersDb = null;
 
 async function getDatabases() {
-  if (isUsingLocalJsonFallback) {
+  if (localJsonByChoice || !mongoUri) {
     return null;
   }
 
@@ -189,21 +200,56 @@ async function getDatabases() {
     return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
   }
 
-  try {
-    const client = new MongoClient(mongoUri, { serverSelectionTimeoutMS: 2000 });
-    await client.connect();
-
-    cachedClient = client;
-    cachedMainDb = client.db(mainDbName);
-    cachedPlayersDb = client.db(playersDbName);
-    console.log('[Database] Connected successfully to local MongoDB instance!');
-
-    return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
-  } catch (err) {
-    console.warn('[Database] Local MongoDB connection unavailable. Switching to Local PC Filesystem Database (JSON)...');
-    isUsingLocalJsonFallback = true;
+  // MongoDB did not answer a moment ago: the JSON files until the next retry.
+  if (isUsingLocalJsonFallback && Date.now() - lastMongoFailureAt < MONGO_RETRY_MS) {
     return null;
   }
+
+  // One connection attempt at a time; concurrent requests wait for it.
+  if (!pendingConnect) {
+    pendingConnect = (async () => {
+      const client = new MongoClient(mongoUri, { serverSelectionTimeoutMS: MONGO_CONNECT_TIMEOUT_MS });
+      try {
+        await client.connect();
+        cachedClient = client;
+        cachedMainDb = client.db(mainDbName);
+        cachedPlayersDb = client.db(playersDbName);
+        if (isUsingLocalJsonFallback) {
+          console.log('[Database] MongoDB is reachable again: back on the database (saves allowed again).');
+        } else {
+          console.log('[Database] Connected successfully to local MongoDB instance!');
+        }
+        isUsingLocalJsonFallback = false;
+        return { mainDb: cachedMainDb, playersDb: cachedPlayersDb };
+      } catch (err) {
+        try { await client.close(); } catch (_) { }
+        if (!isUsingLocalJsonFallback) {
+          console.warn(`[Database] MongoDB is not reachable (${err.message}). Reading the JSON files in src/assets until it is (retrying every ${MONGO_RETRY_MS / 1000} s); saves are refused meanwhile.`);
+        }
+        isUsingLocalJsonFallback = true;
+        lastMongoFailureAt = Date.now();
+        return null;
+      } finally {
+        pendingConnect = null;
+      }
+    })();
+  }
+  return pendingConnect;
+}
+
+/**
+ * While MongoDB is configured but not reachable, saves (anything but GET) are refused with 503
+ * instead of going into the JSON files, which the next start would no longer read.
+ */
+async function requireDatabaseForSaves(req, res, next) {
+  if (req.method === 'GET' || req.method === 'HEAD' || req.method === 'OPTIONS' || localJsonByChoice || !mongoUri) {
+    return next();
+  }
+  const dbs = await getDatabases();
+  if (dbs) return next();
+  return res.status(503).json({
+    error: 'The database (MongoDB) is not reachable, so nothing was saved. Start Docker / MongoDB, wait a few seconds and try again.'
+  });
 }
 
 // Initialize Authentication Module
@@ -220,6 +266,10 @@ app.use('/api', (req, res, next) => {
   }
   return authModule.requireAuth(req, res, next);
 });
+
+// Saves need the database (see getDatabases): refused while MongoDB is down instead of being
+// written to the JSON files.
+app.use('/api', requireDatabaseForSaves);
 
 // FLUX image studio (AI Session Manager): the pictures it made, temporary or saved. GM/Admin only.
 app.get('/api/flux/images/:file', (req, res) => {
@@ -1348,6 +1398,74 @@ app.post('/api/letter/:id/read', async (req, res) => {
     const updatedLetter = await collection.findOne(query);
     notifyChange('letter', 'update', updatedLetter, campaign);
     res.json(updatedLetter);
+  } catch (error) {
+    console.error(error);
+    res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+// --- Mist state (per campaign): the mist density the GM set and the mist effects active now ---
+// One document { id: 1, density, activeEffects, counts } in the campaign's mistState collection.
+// Everyone can read it; only a GM/Admin can change it. Every change is pushed to all clients.
+const MIST_TIERS = ['Light', 'Medium', 'Dense'];
+const DEFAULT_MIST_COUNTS = {
+  Light: { Light: 2 },
+  Medium: { Medium: 1, Light: 2 },
+  Dense: { Dense: 1, Medium: 2, Light: 2 }
+};
+
+function normalizeMistState(input) {
+  const src = input && typeof input === 'object' ? input : {};
+  const density = MIST_TIERS.includes(src.density) ? src.density : '';
+  const activeEffects = Array.isArray(src.activeEffects)
+    ? [...new Set(src.activeEffects.filter(k => typeof k === 'string' || typeof k === 'number').map(k => String(k).slice(0, 200)))].slice(0, 200)
+    : [];
+  const counts = {};
+  MIST_TIERS.forEach((level, i) => {
+    counts[level] = {};
+    MIST_TIERS.slice(0, i + 1).forEach(tier => {
+      const n = Number(src.counts?.[level]?.[tier]);
+      counts[level][tier] = Number.isInteger(n) && n >= 0 && n <= 20 ? n : DEFAULT_MIST_COUNTS[level][tier];
+    });
+  });
+  return { id: 1, density, activeEffects, counts };
+}
+
+app.get('/api/mistState', async (req, res) => {
+  const campaignId = extractCampaignId(req);
+  if (!campaignId) return res.status(400).json({ error: "campaignId is required for 'mistState'." });
+  try {
+    const targetCollection = await getCampaignCollectionName(campaignId, 'mistState');
+    const dbs = await getDatabases();
+    const doc = dbs
+      ? await dbs.playersDb.collection(targetCollection).findOne({ id: 1 })
+      : (await fetchCollection(null, targetCollection)).find(d => Number(d.id) === 1);
+    res.json(normalizeMistState(doc));
+  } catch (error) {
+    console.error(error);
+    res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });
+  }
+});
+
+app.put('/api/mistState', async (req, res) => {
+  if (req.user?.role !== 'admin' && req.user?.role !== 'gm') {
+    return res.status(403).json({ error: 'Forbidden: GM/Admin role required' });
+  }
+  const { payload, campaignId } = extractPayloadAndCampaignId(req);
+  if (!campaignId) return res.status(400).json({ error: "campaignId is required for 'mistState'." });
+  const state = normalizeMistState(payload);
+  try {
+    const targetCollection = await getCampaignCollectionName(campaignId, 'mistState');
+    const campaign = (await resolveCampaignPrefix(campaignId)).campaign;
+    const dbs = await getDatabases();
+    if (!dbs) {
+      const docs = (await fetchCollection(null, targetCollection)).filter(d => Number(d.id) !== 1);
+      await saveToLocalJson(targetCollection, [state, ...docs]);
+    } else {
+      await dbs.playersDb.collection(targetCollection).updateOne({ id: 1 }, { $set: state }, { upsert: true });
+    }
+    notifyChange('mistState', 'update', state, campaign);
+    res.json(state);
   } catch (error) {
     console.error(error);
     res.status(error.message && error.message.includes('campaign') ? 400 : 500).json({ error: error.message || 'Internal server error' });

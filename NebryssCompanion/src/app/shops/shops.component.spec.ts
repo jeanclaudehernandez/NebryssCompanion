@@ -71,7 +71,6 @@ describe('ShopsComponent', () => {
         name: "Herbwhisper's Apothecary",
         owner: 6,
         locationId: 1,
-        locationName: 'Zephyria',
         location: "Zephyria's Sky Bazaar",
         discovered: true,
         items: [{ id: 16, price: 5, type: 'item' }],

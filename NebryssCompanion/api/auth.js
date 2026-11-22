@@ -2,14 +2,31 @@ const crypto = require('crypto');
 const path = require('path');
 const fs = require('fs');
 const express = require('express');
-const { sendVerificationEmail } = require('./mailer');
+const { sendVerificationEmail, sendPasswordResetEmail } = require('./mailer');
 
 const COOKIE_NAME = 'nebryss_auth_session';
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days (1 Month)
 const SESSION_DURATION_SEC = 30 * 24 * 60 * 60;
 
+const RESET_CODE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+const RESET_REQUEST_COOLDOWN_MS = 60 * 1000; // 1 new code per minute per account
+const RESET_MAX_ATTEMPTS = 5; // wrong guesses before the code is burned
+
 function getAuthSecret() {
   return process.env.AUTH_SECRET || process.env.JWT_SECRET || 'nebryss-campaign-imperial-auth-secret-key-2026';
+}
+
+// Reset codes are stored hashed (HMAC with the auth secret) so a DB dump or
+// backup never contains a usable code.
+function hashResetCode(code) {
+  return crypto.createHmac('sha256', getAuthSecret()).update(String(code).trim()).digest('hex');
+}
+
+function resetCodeMatches(code, expectedHash) {
+  if (!expectedHash) return false;
+  const a = Buffer.from(hashResetCode(code), 'hex');
+  const b = Buffer.from(String(expectedHash), 'hex');
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
 }
 
 // ─── Cryptographic Password Hashing & Verification ───────────────────────────
@@ -533,6 +550,125 @@ function createAuthModule(getDatabasesFn, assetsDir) {
     } catch (err) {
       console.error('[Auth] Login error:', err);
       return res.status(500).json({ error: 'Failed to authenticate user.' });
+    }
+  });
+
+  // POST /api/auth/forgot-password
+  // Always answers with the same generic message so it can't be used to find
+  // out which emails have accounts.
+  router.post('/forgot-password', async (req, res) => {
+    const genericResponse = {
+      success: true,
+      message: 'If an account exists for that email, a 6-digit reset code has been sent to it.',
+    };
+    try {
+      const { email } = req.body;
+      if (!email || !String(email).trim()) {
+        return res.status(400).json({ error: 'Email is required.' });
+      }
+
+      const user = await findUserByEmail(email);
+      if (!user) {
+        return res.json(genericResponse);
+      }
+
+      const lastRequest = Number(user.resetCodeRequestedAt) || 0;
+      if (Date.now() - lastRequest < RESET_REQUEST_COOLDOWN_MS) {
+        return res.json(genericResponse);
+      }
+
+      const resetCode = crypto.randomInt(100000, 1000000).toString();
+      await updateUser(user._id || user.id, {
+        resetCodeHash: hashResetCode(resetCode),
+        resetCodeExpires: Date.now() + RESET_CODE_TTL_MS,
+        resetCodeRequestedAt: Date.now(),
+        resetAttempts: 0,
+      });
+
+      sendPasswordResetEmail(user.email, resetCode, user.username).catch(err => {
+        console.error('[Auth] Failed to send password reset email:', err);
+      });
+
+      return res.json(genericResponse);
+    } catch (err) {
+      console.error('[Auth] Forgot password error:', err);
+      return res.status(500).json({ error: 'Failed to start password reset.' });
+    }
+  });
+
+  // POST /api/auth/reset-password
+  router.post('/reset-password', async (req, res) => {
+    const invalidCode = 'Invalid or expired reset code. Please request a new one.';
+    try {
+      const { email, code, newPassword } = req.body;
+
+      if (!email || !code || !newPassword) {
+        return res.status(400).json({ error: 'Email, reset code and new password are required.' });
+      }
+      if (String(newPassword).length < 6) {
+        return res.status(400).json({ error: 'Password must be at least 6 characters long.' });
+      }
+
+      const user = await findUserByEmail(email);
+      if (!user || !user.resetCodeHash) {
+        return res.status(400).json({ error: invalidCode });
+      }
+
+      const userId = user._id || user.id;
+      const clearReset = { resetCodeHash: null, resetCodeExpires: null, resetAttempts: 0 };
+
+      if (!user.resetCodeExpires || Date.now() > user.resetCodeExpires) {
+        await updateUser(userId, clearReset);
+        return res.status(400).json({ error: invalidCode });
+      }
+
+      if (!resetCodeMatches(code, user.resetCodeHash)) {
+        const attempts = (Number(user.resetAttempts) || 0) + 1;
+        if (attempts >= RESET_MAX_ATTEMPTS) {
+          await updateUser(userId, clearReset);
+          return res.status(400).json({ error: 'Too many incorrect attempts. Please request a new reset code.' });
+        }
+        await updateUser(userId, { resetAttempts: attempts });
+        return res.status(400).json({ error: 'Incorrect reset code. Please check your email.' });
+      }
+
+      const { salt, hash } = hashPassword(newPassword);
+      const now = new Date().toISOString();
+      // Receiving the code proves the user owns the email, so this also verifies the account.
+      const updated = await updateUser(userId, {
+        ...clearReset,
+        passwordHash: hash,
+        salt,
+        isVerified: true,
+        verificationCode: null,
+        verificationCodeExpires: null,
+        passwordChangedAt: now,
+        lastLoginAt: now,
+      });
+
+      const token = signSessionToken({
+        userId: String(updated._id || updated.id),
+        email: updated.email,
+        username: updated.username,
+        role: updated.role || 'user',
+      });
+      setAuthCookie(res, token, req);
+
+      return res.json({
+        success: true,
+        message: 'Password updated. You are now logged in.',
+        user: {
+          id: String(updated._id || updated.id),
+          email: updated.email,
+          username: updated.username,
+          role: updated.role || 'user',
+          isVerified: true,
+        },
+        token,
+      });
+    } catch (err) {
+      console.error('[Auth] Reset password error:', err);
+      return res.status(500).json({ error: 'Failed to reset password.' });
     }
   });
 

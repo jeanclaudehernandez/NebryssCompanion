@@ -55,6 +55,30 @@ export interface ContextUsage {
   replyReserve: number;  // tokens kept free for a reply
   historyBudget: number; // size at which the bridge trims old messages
   percent: number;       // used / limit, in %
+  engine?: 'colibri' | 'llamacpp'; // the server that answered
+  // llama.cpp only (from its timings, for the last request of the reply):
+  cachedTokens?: number;     // prompt tokens reused from the server's cache
+  newPromptTokens?: number;  // prompt tokens it had to read anew
+  promptPerSecond?: number;  // prompt reading speed, tok/s
+  replyPerSecond?: number;   // reply speed, tok/s
+}
+
+/** A context report from the bridge (response_end / context_estimate) as ContextUsage; null if it has no limit. */
+function toContextUsage(ctx: any): ContextUsage | null {
+  if (!ctx || !(Number(ctx.limit) > 0)) return null;
+  const optional = (v: any) => (v === undefined || v === null || !Number.isFinite(Number(v)) ? undefined : Number(v));
+  return {
+    used: Number(ctx.used) || 0,
+    limit: Number(ctx.limit),
+    replyReserve: Number(ctx.replyReserve) || 0,
+    historyBudget: Number(ctx.historyBudget) || 0,
+    percent: Number(ctx.percent) || 0,
+    engine: ctx.engine === 'llamacpp' ? 'llamacpp' : (ctx.engine === 'colibri' ? 'colibri' : undefined),
+    cachedTokens: optional(ctx.cachedTokens),
+    newPromptTokens: optional(ctx.newPromptTokens),
+    promptPerSecond: optional(ctx.promptPerSecond),
+    replyPerSecond: optional(ctx.replyPerSecond)
+  };
 }
 
 /** One message of the model's stored conversation, exactly as the bridge will resend it. */
@@ -90,18 +114,24 @@ export type ColibriEngineMode = string;
 
 export interface ColibriProfile {
   id: ColibriEngineMode;
-  label: string;          // the quantization, e.g. 'UD-IQ2_M'
+  label: string;          // the quantization, e.g. 'IQ3_XXS'
   detail: string;         // one line on what it is good for
   contextTokens: number;
+  engine?: 'colibri' | 'llamacpp';
+  engineName?: string;    // 'Colibri' | 'llama.cpp'
+  kvCache?: string;       // 'f16' (16-bit) | 'q8_0' (8-bit)
 }
 
-/** The local Colibri server's model setup and the progress of a switch, as the API reports it. */
+/** The local model server's setup (Colibri or llama.cpp) and the progress of a switch, as the API reports it. */
 export interface ColibriEngineState {
-  // A profile id, 'custom' (a Colibri server started some other way), 'offline' or
+  // A profile id, 'custom' (a server started some other way), 'offline' or
   // 'unknown' (the port is used by another program)
   mode: ColibriEngineMode;
   runningModel: string;   // the running server's model folder
   contextTokens: number;
+  engineName?: string;            // the engine running now: 'Colibri' | 'llama.cpp' | ''
+  targetEngineName?: string;      // the engine a switch is starting
+  runningProfile?: ColibriProfile | null;   // the running setup, also when it is not offered
   switching: boolean;
   targetMode: ColibriEngineMode | null;
   phase: 'idle' | 'stopping' | 'starting' | 'loading' | 'ready' | 'error';
@@ -112,12 +142,16 @@ export interface ColibriEngineState {
   logFile: string;
   log: string[];
   profiles: ColibriProfile[];
+  defaultProfile?: ColibriProfile | null;   // the setup the Start button starts
   // FLUX image generation (ComfyUI), the other thing the switch can give the GPU to
   flux?: { id: string; label: string; detail: string };
 }
 
 /** The engine-switch target that stops Colibri and starts ComfyUI for FLUX images. */
 export const FLUX_MODE = 'flux';
+
+/** The target of a stop: Colibri and ComfyUI both stopped, the GPU free (as api/colibri-engine.js). */
+export const STOP_MODE = 'offline';
 
 /** The studio's one workflow (FLUX (Nebryss studio).json in ComfyUI): the base settings. */
 export interface FluxStudioWorkflow {
@@ -143,6 +177,8 @@ export interface FluxLora {
   group: 'best' | 'other'; // best = the recommended file of each LoRA
   style: boolean;         // a drawing style, stacked on top of a subject LoRA
   detail: boolean;        // a part (weapon, helmet) stacked on a subject LoRA
+  category?: string;      // the studio dropdown it is listed under ('Xenos', 'Details'...)
+  always?: boolean;       // added to every image by the API (the Hand-drawn style): never picked
 }
 
 /** A LoRA in use: which file, how strong, and its readable name. */
@@ -155,7 +191,8 @@ export interface FluxCatalog {
   loras: FluxLora[];
   sizes: FluxSize[];
   defaults: { checkpoint: string; guidance: number; steps: number; sampler: string; scheduler: string };
-  maxLoras: number;
+  maxLoras: number;       // LoRAs the GM picks (the always-on style comes on top)
+  categories?: string[];  // the studio's dropdowns, in order
   tempDir: string;
   saveDir: string;
 }
@@ -320,9 +357,7 @@ export class AiSessionManagerService implements OnDestroy {
     if (this.agyModelSubject.value) {
       wsUrl += `&model=${encodeURIComponent(this.agyModelSubject.value)}`;
     }
-    if (this.experimentalFormatSubject.value) {
-      wsUrl += '&format=table';
-    }
+    wsUrl += this.experimentalFormatSubject.value ? '&format=table' : '&format=json';
 
     try {
       this.ws = new WebSocket(wsUrl);
@@ -474,9 +509,34 @@ export class AiSessionManagerService implements OnDestroy {
   /** Stops the running Colibri server and starts it with another model setup; progress arrives as colibri_engine events. */
   switchColibriEngine(mode: ColibriEngineMode): boolean {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
-    this.contextUsageSubject.next(null);
+    // The bridge keeps its conversation across a switch, so the last context reading stays
+    // valid (FLUX, or a setup with the same context size). Only a new size makes it stale.
+    const usage = this.contextUsageSubject.value;
+    const profile = this.colibriEngineSubject.value?.profiles?.find(p => p.id === mode);
+    if (usage && mode !== FLUX_MODE && profile && profile.contextTokens !== usage.limit) {
+      this.contextUsageSubject.next(null);
+    }
     this.ws.send(JSON.stringify({ type: 'switch_colibri_engine', mode }));
     return true;
+  }
+
+  /**
+   * Stops whatever has the GPU (Colibri and/or ComfyUI) without starting anything; progress
+   * arrives as colibri_engine events. The bridge's conversation (and its context reading) stays.
+   */
+  stopColibriEngine(): boolean {
+    return this.sendIfOpen({ type: 'stop_colibri_engine' });
+  }
+
+  /**
+   * FLUX picked while Antigravity is the bridge: the studio opens over the AGY chat without
+   * switching the backend (a switch would end the AGY conversation). Not kept across reloads.
+   */
+  imageStudioOverAgy = false;
+
+  /** Phase of the image being made, if any (to warn before stopping ComfyUI). */
+  get fluxJobPhase(): string | null {
+    return this.fluxStateSubject.value?.job?.phase || null;
   }
 
   // ─── FLUX image studio ──────────────────────────────────────────
@@ -527,7 +587,7 @@ export class AiSessionManagerService implements OnDestroy {
   setExperimentalFormat(enabled: boolean): void {
     this.experimentalFormatSubject.next(enabled);
     try {
-      localStorage.setItem('nebryss_experimental_format', enabled ? '1' : '0');
+      localStorage.setItem('nebryss_experimental_format_v2', enabled ? '1' : '0');
     } catch (_) {}
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify({ type: 'set_experimental_format', enabled }));
@@ -548,11 +608,12 @@ export class AiSessionManagerService implements OnDestroy {
     return true;
   }
 
+  /** On by default; off only when it was turned off here. */
   private loadSavedExperimentalFormat(): boolean {
     try {
-      return localStorage.getItem('nebryss_experimental_format') === '1';
+      return localStorage.getItem('nebryss_experimental_format_v2') !== '0';
     } catch (_) {
-      return false;
+      return true;
     }
   }
 
@@ -588,7 +649,8 @@ export class AiSessionManagerService implements OnDestroy {
           if (event['backend'] === 'agy' && this.agyModelsSubject.value.length === 0) {
             this.requestAgyModels();
           }
-          if (event['backend'] === 'colibri') {
+          // With AGY too on connect: the stop button and the image studio need the GPU engine's state.
+          if (event['backend'] === 'colibri' || event.type === 'connected') {
             this.requestColibriEngine();
           }
         }
@@ -660,15 +722,9 @@ export class AiSessionManagerService implements OnDestroy {
 
       case 'context_estimate':
         // After messages were deleted: the bridge's estimate until the next reply reports the real size.
-        if (event['context'] && Number(event['context'].limit) > 0) {
-          const ctx = event['context'];
-          this.contextUsageSubject.next({
-            used: Number(ctx.used) || 0,
-            limit: Number(ctx.limit),
-            replyReserve: Number(ctx.replyReserve) || 0,
-            historyBudget: Number(ctx.historyBudget) || 0,
-            percent: Number(ctx.percent) || 0
-          });
+        {
+          const usage = toContextUsage(event['context']);
+          if (usage) this.contextUsageSubject.next(usage);
         }
         break;
 
@@ -710,15 +766,9 @@ export class AiSessionManagerService implements OnDestroy {
 
       case 'response_end':
         this.currentStatusSubject.next(null);
-        if (event['context'] && Number(event['context'].limit) > 0) {
-          const ctx = event['context'];
-          this.contextUsageSubject.next({
-            used: Number(ctx.used) || 0,
-            limit: Number(ctx.limit),
-            replyReserve: Number(ctx.replyReserve) || 0,
-            historyBudget: Number(ctx.historyBudget) || 0,
-            percent: Number(ctx.percent) || 0
-          });
+        {
+          const usage = toContextUsage(event['context']);
+          if (usage) this.contextUsageSubject.next(usage);
         }
         this.finalizeResponse(event['conversationId'], event['status']);
         break;

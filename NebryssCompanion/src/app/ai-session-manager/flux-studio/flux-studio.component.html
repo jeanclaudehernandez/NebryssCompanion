@@ -14,64 +14,31 @@
     </div>
 
     <ng-container *ngIf="catalog">
-      <!-- 1. LoRAs -->
+      <!-- 1. LoRAs: one dropdown per category (Details gets one per pick plus an empty one), up to maxLoras
+           picks in all (the hand-drawn style is added by the API) -->
       <div class="fs-block">
         <div class="fs-label" id="fs-loras-label">
           <span class="fs-num">1</span> LoRAs
           <span class="fs-label-hint">{{ loras.length }} of {{ maxLoras }}</span>
         </div>
 
-        <ul class="fs-lora-list" *ngIf="loras.length; else noLoras" aria-labelledby="fs-loras-label">
-          <li class="fs-lora-row" *ngFor="let l of loras; let i = index">
-            <div class="fs-lora-top">
-              <span class="material-icons fs-lora-icon">{{ loraInfo(l.file)?.style ? 'brush' : 'sell' }}</span>
-              <span class="fs-lora-name">{{ loraInfo(l.file)?.label || l.file }}</span>
-              <button type="button" class="fs-icon-btn" (click)="removeLora(i)" [disabled]="busy"
-                [attr.aria-label]="'Remove ' + (loraInfo(l.file)?.label || l.file)" title="Remove">
-                <span class="material-icons">close</span>
-              </button>
-            </div>
-            <div class="fs-strength">
-              <label [for]="'fs-strength-' + i">Strength</label>
-              <input [id]="'fs-strength-' + i" type="range" min="0" max="1.5" step="0.05" [(ngModel)]="l.strength"
-                (ngModelChange)="onStrengthChange(l)" [disabled]="busy">
-              <span class="fs-value">{{ l.strength | number:'1.2-2' }}</span>
-            </div>
-            <div class="fs-strength-mode">
-              <span *ngIf="!l.manual" title="Set by the studio for this combination of LoRAs">auto</span>
-              <ng-container *ngIf="l.manual">set by hand ·
-                <button type="button" class="fs-link" (click)="resetStrength(l)" [disabled]="busy"
-                  title="Back to the strength the studio picks for this combination">Auto</button>
-              </ng-container>
-            </div>
-            <div class="fs-trigger" *ngIf="loraInfo(l.file)?.trigger">
-              <span>Trigger: <code>{{ loraInfo(l.file)?.trigger }}</code></span>
-              <button type="button" class="fs-link" *ngIf="!hasTrigger(activePrompt, loraInfo(l.file))"
-                (click)="addTrigger(l.file)">Add to prompt</button>
-              <span class="fs-ok" *ngIf="hasTrigger(activePrompt, loraInfo(l.file))">in the {{ fixing ? 'fix ' : '' }}prompt</span>
-            </div>
-          </li>
-        </ul>
-        <ng-template #noLoras>
-          <div class="fs-empty-note">No LoRA: plain FLUX. Add one below.</div>
-        </ng-template>
+        <div class="fs-cat-grid" role="group" aria-labelledby="fs-loras-label">
+          <ng-container *ngFor="let cat of loraCategories">
+            <label class="fs-cat" *ngFor="let slot of loraSlots(cat); let i = index; trackBy: trackSlot"
+              [class.picked]="!!slot">
+              <span class="fs-cat-name">{{ slotLabel(cat, i) }}</span>
+              <select class="fs-select" [attr.aria-label]="slotLabel(cat, i) + ' LoRA'" [disabled]="slotLocked(slot)"
+                [ngModel]="slot" (ngModelChange)="onCategoryChange(cat, $event, slot)">
+                <option value="">{{ slotLocked(slot) && !busy ? maxLoras + ' picked' : 'None' }}</option>
+                <option *ngFor="let l of slotOptions(cat, slot)" [value]="l.file">{{ l.family }}</option>
+              </select>
+            </label>
+          </ng-container>
+        </div>
 
-        <select #loraPicker class="fs-select" aria-label="Add a LoRA"
-          [disabled]="busy || loras.length >= maxLoras"
-          (change)="addLora(loraPicker.value); loraPicker.value = ''">
-          <option value="">{{ loras.length >= maxLoras ? 'At most ' + maxLoras + ' LoRAs' : '+ Add a LoRA...' }}</option>
-          <optgroup label="Best">
-            <option *ngFor="let l of lorasIn('best')" [value]="l.file" [disabled]="isSelected(l.file)">
-              {{ l.family }}{{ l.style ? ' (style)' : l.detail ? ' (detail)' : '' }}</option>
-          </optgroup>
-          <optgroup label="All others">
-            <option *ngFor="let l of lorasIn('other')" [value]="l.file" [disabled]="isSelected(l.file)">{{ l.label }}
-            </option>
-          </optgroup>
-        </select>
-
-        <div class="fs-hint" *ngIf="loras.length > 1">Stacked LoRAs add up, so the studio lowers them for this
-          combination. Moving a slider keeps your value.</div>
+        <div class="fs-hint">Up to {{ maxLoras }} LoRAs, one per category except Details, which can take several
+          (a weapon and a helmet, for example); the studio sets their strengths for the combination and adds
+          their trigger words to the prompt.</div>
         <div class="fs-note" *ngIf="triggerNote">{{ triggerNote }}</div>
       </div>
 
@@ -81,7 +48,7 @@
         <textarea id="fs-prompt" class="fs-prompt" rows="7" [(ngModel)]="prompt" (ngModelChange)="persist()"
           (keydown)="onPromptKeydown($event)" [disabled]="busy"
           placeholder="Who, what they wear and hold, where, light, framing, then the style (digital painting, photo of a painted miniature...)"></textarea>
-        <div class="fs-hint">Plain sentences work best. Ctrl+Enter generates. The Colibri chat can write prompts
+        <div class="fs-hint">Plain sentences work best. Ctrl+Enter generates. The local chat can write prompts
           for you: ask it for an image prompt before switching to FLUX.</div>
       </div>
 
@@ -137,8 +104,25 @@
   <!-- Output -->
   <section class="fs-panel fs-output" aria-label="Generated image">
     <div class="fs-stage">
+      <!-- Making an image, while looking at an older picture: a small progress strip above it -->
+      <div class="fs-peek" *ngIf="peekImage as peek">
+        <div class="fs-peek-progress" role="status" aria-live="polite">
+          <span class="material-icons spin">autorenew</span>
+          <span class="fs-peek-msg">{{ job?.message || 'Sending to ComfyUI...' }} · {{ elapsed }}</span>
+          <div class="fs-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+            [attr.aria-valuenow]="progressPercent">
+            <div class="fs-bar-fill" [style.width.%]="progressPercent"></div>
+          </div>
+          <button type="button" class="fs-link" (click)="backToProgress()">Show progress</button>
+        </div>
+        <img class="fs-image" *ngIf="imageUrl(peek.id) as url; else peekLoading" [src]="url" [alt]="peek.prompt">
+        <ng-template #peekLoading>
+          <div class="fs-placeholder"><span class="material-icons spin">autorenew</span> Loading the picture...</div>
+        </ng-template>
+      </div>
+
       <!-- Making an image -->
-      <div class="fs-progress" *ngIf="busy" role="status" aria-live="polite">
+      <div class="fs-progress" *ngIf="busy && !peekImage" role="status" aria-live="polite">
         <span class="material-icons fs-progress-icon spin">autorenew</span>
         <div class="fs-progress-msg">{{ job?.message || 'Sending to ComfyUI...' }}</div>
         <div class="fs-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
@@ -222,6 +206,19 @@
       <div class="fs-hint">The result is a new picture; this one stays as it is.</div>
     </div>
 
+    <!-- An older picture looked at during a job: its details only (saving and fixing wait for the job) -->
+    <div class="fs-actions" *ngIf="peekImage as peek">
+      <div class="fs-meta">
+        <span *ngFor="let l of imageLoras(peek)">{{ l.name }} {{ l.strength | number:'1.0-2' }}</span>
+        <span *ngIf="!imageLoras(peek).length">no LoRA</span>
+        <span *ngIf="peek.fixOf">area fix</span>
+        <span>{{ peek.width }}×{{ peek.height }}</span>
+        <span>seed {{ peek.seed }}</span>
+        <span *ngIf="peek.seconds">{{ peek.seconds }}s</span>
+      </div>
+      <div class="fs-hint">Saving, discarding and fixing are available again once the new picture is done.</div>
+    </div>
+
     <!-- Save / discard the selected picture -->
     <div class="fs-actions" *ngIf="!busy && !fixing && current">
       <div class="fs-meta">
@@ -233,6 +230,17 @@
         <span *ngIf="current.seconds">{{ current.seconds }}s</span>
         <button type="button" class="fs-link" (click)="reuseSettings()" title="Put this picture's prompt and settings back in the form">Use these settings</button>
         <button type="button" class="fs-link" (click)="reuseSeed()" title="Make the next picture with this seed">Reuse seed</button>
+      </div>
+      <div class="fs-redo-row" *ngIf="canRedoFix">
+        <span class="fs-label-hint">Not right?</span>
+        <button type="button" class="fs-btn" (click)="retryFix()" [disabled]="saving"
+          title="Same painted area, prompt, LoRAs and change on the original picture, with a new seed">
+          <span class="material-icons">refresh</span> Retry fix
+        </button>
+        <button type="button" class="fs-btn" (click)="adjustFix()" [disabled]="saving"
+          title="Back to the original picture with your painted area and prompt, to change them">
+          <span class="material-icons">tune</span> Adjust fix
+        </button>
       </div>
       <div class="fs-save-row">
         <input type="text" class="fs-input fs-name" [(ngModel)]="saveName" [placeholder]="'Name (optional): ' + suggestedName"
@@ -257,7 +265,7 @@
           }}</span></div>
       <div class="fs-thumbs">
         <button type="button" class="fs-thumb" *ngFor="let img of images | slice:0:24; trackBy: trackById"
-          [class.selected]="img.id === currentId" (click)="select(img.id)"
+          [class.selected]="isThumbSelected(img.id)" (click)="onThumbClick(img.id)"
           [title]="(imageLoras(img)[0]?.name || 'FLUX') + ' · ' + timeAgo(img.createdAt)"
           [attr.aria-label]="'Show picture made ' + timeAgo(img.createdAt)">
           <img *ngIf="imageUrl(img.id) as url" [src]="url" alt="">

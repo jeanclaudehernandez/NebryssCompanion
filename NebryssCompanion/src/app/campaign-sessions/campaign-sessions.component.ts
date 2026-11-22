@@ -1030,8 +1030,8 @@ export class CampaignSessionsComponent implements OnInit, OnChanges {
           if (loc && (loc.discovered === false || (loc.isSecret && !loc.isSecretRevealed))) {
             return false;
           }
-        } else if (shop.locationName || shop.location) {
-          const locName = (shop.locationName || shop.location || '').trim().toLowerCase();
+        } else if (shop.location) {
+          const locName = shop.location.trim().toLowerCase();
           const loc = this.lookup.locations.find(l => l.name.trim().toLowerCase() === locName);
           if (loc && (loc.discovered === false || (loc.isSecret && !loc.isSecretRevealed))) {
             return false;

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { ToastService } from '../toast.service';
 
-type AuthMode = 'login' | 'register' | 'verify';
+type AuthMode = 'login' | 'register' | 'verify' | 'forgot' | 'reset';
 
 @Component({
   selector: 'app-auth-gateway',
@@ -29,6 +29,11 @@ export class AuthGatewayComponent implements OnInit, OnDestroy {
 
   verifyEmail = '';
   verifyCode = '';
+
+  resetEmail = '';
+  resetCode = '';
+  resetPassword = '';
+  resetConfirmPassword = '';
 
   // Resend Timer
   resendCooldown = 0;
@@ -172,6 +177,86 @@ export class AuthGatewayComponent implements OnInit, OnDestroy {
       error: (err) => {
         this.isLoading = false;
         this.errorMessage = err.error?.error || 'Failed to resend verification code.';
+      }
+    });
+  }
+
+  openForgotPassword(): void {
+    const id = this.loginIdentifier.trim();
+    if (id.includes('@')) {
+      this.resetEmail = id;
+    }
+    this.setMode('forgot');
+  }
+
+  onForgotPassword(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const email = this.resetEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      this.errorMessage = 'Please enter the email address of your account.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.authService.requestPasswordReset(email).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.resetCode = '';
+        this.resetPassword = '';
+        this.resetConfirmPassword = '';
+        this.setMode('reset');
+        this.successMessage = res.message || 'If an account exists for that email, a 6-digit reset code has been sent to it.';
+        this.startResendCountdown();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Failed to request a reset code. Please try again.';
+      }
+    });
+  }
+
+  onResendResetCode(): void {
+    if (this.resendCooldown > 0 || !this.resetEmail.trim()) return;
+    this.onForgotPassword();
+  }
+
+  onResetPassword(): void {
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    const email = this.resetEmail.trim();
+    const code = this.resetCode.trim();
+    const password = this.resetPassword;
+
+    if (!email || !code) {
+      this.errorMessage = 'Please enter the 6-digit reset code from your email.';
+      return;
+    }
+
+    if (password.length < 6) {
+      this.errorMessage = 'Password must be at least 6 characters long.';
+      return;
+    }
+
+    if (password !== this.resetConfirmPassword) {
+      this.errorMessage = 'Passwords do not match.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.authService.resetPassword(email, code, password).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        if (res.success) {
+          this.toastService.show('Password updated! Welcome back to Nebryss.', 'success');
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Invalid or expired reset code.';
       }
     });
   }

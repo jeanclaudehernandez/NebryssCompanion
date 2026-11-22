@@ -296,6 +296,18 @@ export interface MistEffect {
   description: string;
 }
 
+export const MIST_TIERS = ['Light', 'Medium', 'Dense'] as const;
+export type MistTier = typeof MIST_TIERS[number];
+export type MistDensity = MistTier | '';
+
+/** A campaign's active mist: the density the GM set, the active effects (mistEffectKey) and how many effects of each tier a density rolls. */
+export interface MistState {
+  id: number;
+  density: MistDensity;
+  activeEffects: string[];
+  counts: Record<MistTier, Partial<Record<MistTier, number>>>;
+}
+
 // npcs.ts
 export interface NPC {
   id: number;
@@ -371,9 +383,10 @@ export interface Shop {
   id: number;
   name: string;
   owner: number;
+  // The shop's place: locationId points to a location (0 = Unbound, no fixed place); the location's
+  // name always comes from there. location is the label shown on the shop card ("Zephyria's Sky Bazaar").
   locationId?: number;
   location: string;
-  locationName: string;
   description?: string;
   discovered?: boolean;
   categories?: number[];

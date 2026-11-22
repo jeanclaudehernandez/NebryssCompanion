@@ -362,7 +362,7 @@ export class ShopsComponent implements OnInit, OnDestroy, OnChanges {
         locationId = typeof matchedLocation?.id === 'number'
           ? matchedLocation.id
           : (typeof shop.locationId === 'number' ? shop.locationId : null);
-        locationName = matchedLocation?.name || shop.locationName || shop.location || 'Unknown Location';
+        locationName = matchedLocation?.name || shop.location || 'Unknown Location';
         groupKey = locationId !== null
           ? `location-${locationId}`
           : `location-name-${locationName.toLowerCase()}`;
@@ -612,10 +612,12 @@ export class ShopsComponent implements OnInit, OnDestroy, OnChanges {
     return this.itemsCategories.filter((category) => category.id === categoryId)[0];
   }
 
+  /** The name of the location a shop is in (from its locationId), or 'Unbound'. */
+  shopLocationName(shop: Shop): string {
+    return this.findShopLocation(shop)?.name || 'Unbound';
+  }
+
   private findShopLocation(shop: Shop): Location | undefined {
-    if (shop.locationName && shop.locationName.trim().toLowerCase() === 'unbound') {
-      return undefined;
-    }
     if (shop.location && shop.location.trim().toLowerCase() === 'unbound') {
       return undefined;
     }
@@ -629,7 +631,8 @@ export class ShopsComponent implements OnInit, OnDestroy, OnChanges {
       }
     }
 
-    const normalizedLocationName = this.normalizeText(shop.locationName || shop.location);
+    // No usable locationId (older data): a label that is exactly a location's name still finds it.
+    const normalizedLocationName = this.normalizeText(shop.location);
     if (!normalizedLocationName || normalizedLocationName === 'unbound') {
       return undefined;
     }

@@ -46,8 +46,8 @@
             </div>
           </div>
         </div>
-        <p class="location" (click)="onLocationClick(shop.locationName || shop.location || 'Unbound')"
-          style="cursor: pointer;" title="Go to location">{{ shop.location || shop.locationName || 'Unbound' }}</p>
+        <p class="location" (click)="onLocationClick(shopLocationName(shop))"
+          style="cursor: pointer;" title="Go to location">{{ shop.location || shopLocationName(shop) }}</p>
         <p class="owner" [class.clickable-owner]="!!getOwnerNpc(shop.owner)"
           (click)="onNpcOwnerClick(shop.owner, $event)"
           [title]="getOwnerNpc(shop.owner) ? 'View NPC details for ' + getOwnerName(shop.owner) : ''">

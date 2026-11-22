@@ -589,3 +589,105 @@ body:not(.dark-theme) .experimental-format {
 body:not(.dark-theme) .experimental-format-hint {
   color: rgba(15, 23, 42, 0.55);
 }
+
+/* Stop engine button (Colibri or ComfyUI): frees the GPU */
+.engine-stop-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  border-radius: 10px;
+  background: rgba(248, 113, 113, 0.08);
+  color: #fca5a5;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.engine-stop-btn .material-icons {
+  font-size: 18px;
+}
+
+.engine-stop-btn:hover:not(:disabled) {
+  background: rgba(248, 113, 113, 0.16);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+.engine-stop-btn:focus-visible {
+  outline: 2px solid #fca5a5;
+  outline-offset: 2px;
+}
+
+.engine-stop-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+body:not(.dark-theme) .engine-stop-btn {
+  background: rgba(220, 38, 38, 0.06);
+  border-color: rgba(220, 38, 38, 0.35);
+  color: #b91c1c;
+}
+
+body:not(.dark-theme) .engine-stop-btn:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.12);
+}
+
+/* The start button: same place and shape as the stop button, in green */
+.engine-start-btn {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(74, 222, 128, 0.08);
+  color: #86efac;
+}
+
+.engine-start-btn:hover:not(:disabled) {
+  background: rgba(74, 222, 128, 0.16);
+  border-color: rgba(74, 222, 128, 0.6);
+}
+
+.engine-start-btn:focus-visible {
+  outline-color: #86efac;
+}
+
+body:not(.dark-theme) .engine-start-btn {
+  background: rgba(22, 163, 74, 0.06);
+  border-color: rgba(22, 163, 74, 0.35);
+  color: #15803d;
+}
+
+body:not(.dark-theme) .engine-start-btn:hover:not(:disabled) {
+  background: rgba(22, 163, 74, 0.12);
+}
+
+/* The context gauge while Colibri is not running (FLUX has the GPU, or it was stopped) */
+.context-gauge-note {
+  margin: -2px 0 6px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+body:not(.dark-theme) .context-gauge-note {
+  color: rgba(15, 23, 42, 0.55);
+}
+
+/* llama.cpp: prompt-cache reuse under the context gauge */
+.context-gauge-cache {
+  margin-top: 4px;
+  font-size: 11px;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.5);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+body:not(.dark-theme) .context-gauge-cache {
+  color: rgba(15, 23, 42, 0.55);
+}

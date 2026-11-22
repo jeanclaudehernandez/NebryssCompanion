@@ -620,6 +620,20 @@ async function getCampaignContext(campaignId) {
     Number(s.campaignId) === Number(resolvedCampaignId)
   ).sort((a, b) => (a.sessionId || a.id || 0) - (b.sessionId || b.id || 0));
 
+  // Names for the ids a shop holds: its owner (an NPC) and its place (locationId). The bridge's
+  // RAG index and campaign summary are built from this context; with only "owner: 34" the model
+  // answered "owned by entity #34". A shop stores no location name: it is the name of the location
+  // its locationId points to (0 = Unbound). Its "location" is the exact spot, sent as "place".
+  const npcNameById = new Map((npcs || []).map(n => [String(n.id), n.name]));
+  const locationNameById = new Map((locations || []).map(l => [String(l.id), l.name]));
+  const weaponNameById = new Map((weapons || []).map(w => [String(w.id), w.name]));
+  const shopLocationName = (s) => {
+    if (s.locationId !== undefined && s.locationId !== null && Number(s.locationId) === 0) return 'Unbound';
+    const fromId = s.locationId !== undefined && s.locationId !== null
+      ? locationNameById.get(String(s.locationId)) : undefined;
+    return fromId || s.location;
+  };
+
   const context = {
     campaignId: Number(resolvedCampaignId),
     campaign,
@@ -627,10 +641,31 @@ async function getCampaignContext(campaignId) {
     campaigns: [campaign],
     sessions: campaignSessions,
     players: (players || []).map(p => ({ id: p.id, name: p.name, race: p.race, origin: p.origin })),
-    npcs: (npcs || []).map(n => ({ id: n.id, name: n.name, faction: n.faction, role: n.role, location: n.location, bestiaryId: n.bestiaryId })),
+    // subgroup: the NPC's group or calling ("Adeptus Mechanicus", "Weaponsmith"); without it the
+    // model said NPCs had none, answering from this context without fetching the record.
+    npcs: (npcs || []).map(n => ({ id: n.id, name: n.name, subgroup: n.subgroup, faction: n.faction, role: n.role, location: n.location, bestiaryId: n.bestiaryId })),
     locations: (locations || []).map(l => ({ id: l.id, name: l.name, faction: l.faction, isCapital: l.isCapital })),
-    shops: (shops || []).map(s => ({ id: s.id, name: s.name, locationName: s.locationName || s.location, owner: s.owner })),
-    bestiary: (bestiary || []).map(b => ({ id: b.id, name: b.name, factionId: b.factionId, pr: b.pr, weapons: b.weapons })),
+    shops: (shops || []).map(s => ({
+      id: s.id,
+      name: s.name,
+      locationName: shopLocationName(s),
+      place: s.location && s.location !== shopLocationName(s) ? s.location : undefined,
+      owner: s.owner,
+      ownerName: npcNameById.get(String(s.owner))
+    })),
+    // weaponNames beside the ids: from "weapons: [100,30]" alone the model listed a creature's
+    // weapons as "Weapon ID 100, Weapon ID 30". subgroup: for "every creature in the X subgroup".
+    bestiary: (bestiary || []).map(b => ({
+      id: b.id,
+      name: b.name,
+      subgroup: b.subgroup,
+      factionId: b.factionId,
+      pr: b.pr,
+      weapons: b.weapons,
+      weaponNames: Array.isArray(b.weapons)
+        ? b.weapons.map(wid => weaponNameById.get(String(wid))).filter(Boolean)
+        : undefined
+    })),
     weapons: (weapons || []).map(w => ({ id: w.id, name: w.name, price: w.price, profiles: w.profiles })),
     weaponRules: (weaponRules || []).map(r => ({ id: r.id, name: r.name, effect: r.effect, prModifier: r.prModifier })),
     letters: (letters || []).filter(l => !l.isDeleted).map(l => ({ id: l.id, subject: l.subject, title: l.subject, senderName: l.senderName, date: l.date })),
@@ -1310,8 +1345,13 @@ async function updateLocation(locationUpdateData) {
   };
 }
 
+// A shop's location name is not stored: it is the name of the location its locationId points to
+// (a stored copy, locationName, drifted from locationId on shop 12). Dropped on every write.
+const DROPPED_SHOP_FIELDS = ['locationName'];
+
 async function createShop(shopData) {
   const { campaignId, ...fields } = shopData;
+  for (const key of DROPPED_SHOP_FIELDS) delete fields[key];
   const resolvedCampId = (await resolveCampaign(campaignId)).campaign.id;
   if (!fields.name) {
     throw new Error('Shop requires at least a "name".');
@@ -1343,6 +1383,7 @@ async function updateShop(shopUpdateData) {
     id: Number(id) || id
   };
   delete updatedDoc._id;
+  for (const key of DROPPED_SHOP_FIELDS) delete updatedDoc[key];
   const updated = await apiRequest('/shop', 'PUT', updatedDoc, resolvedCampId);
   return {
     ...updatedDoc,
@@ -2374,8 +2415,8 @@ Parameters:
   --campaignId=<id>       Active campaign ID (required)
   --name="<string>"       Shop Name (required)
   --owner=<id>            Owner NPC ID
-  --locationId=<id>       Location ID
-  --locationName="<str>"  Location name
+  --locationId=<id>       Location ID (0 = Unbound, no fixed place); the location's name comes from it
+  --location="<str>"      The exact spot shown on the shop card (e.g. "Zephyria's Sky Bazaar")
   --categories='[...]'    JSON array of category IDs (e.g. [1, 2, 3])
   --items='[...]'         JSON array of item objects [{"id":1,"price":50,"type":"item"}]
   --discovered=<boolean>  Whether discovered (default: true)
@@ -2820,7 +2861,6 @@ async function main() {
       name: p.name || '',
       owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
       locationId: p.locationId ? Number(p.locationId) : undefined,
-      locationName: p.locationName || undefined,
       location: p.location || '',
       description: p.description || '',
       discovered: p.discovered === 'true' || p.discovered === true,
@@ -2841,7 +2881,6 @@ async function main() {
       name: p.name || undefined,
       owner: p.owner ? (isNaN(Number(p.owner)) ? p.owner : Number(p.owner)) : undefined,
       locationId: p.locationId ? Number(p.locationId) : undefined,
-      locationName: p.locationName || undefined,
       location: p.location || undefined,
       description: p.description || undefined,
       discovered: p.discovered !== undefined ? (p.discovered === 'true' || p.discovered === true) : undefined,

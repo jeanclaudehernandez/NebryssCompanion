@@ -25,26 +25,32 @@ function createTransporter() {
   });
 }
 
-async function sendVerificationEmail(toEmail, code, username = 'Adventurer') {
-  console.log(`\n======================================================`);
-  console.log(`[AUTH CODE] Verification Code for ${toEmail} (${username}):`);
-  console.log(`            >>>  ${code}  <<<`);
-  console.log(`======================================================\n`);
+const CODE_EMAILS = {
+  verification: {
+    pageTitle: 'Nebryss Account Verification',
+    intro: 'Enter the 6-digit access code below to verify your email address and authorize your clearance level.',
+    subject: (code) => `[Nebryss Companion] Your Verification Code: ${code}`,
+    text: (username, code) => `Greetings ${username},\n\nYour 6-digit verification code for Nebryss Companion is: ${code}\n\nThis code will expire in 15 minutes.\n`,
+    footer: 'If you did not initiate this request, you can safely disregard this transmission.',
+    logLabel: 'Verification',
+  },
+  passwordReset: {
+    pageTitle: 'Nebryss Password Reset',
+    intro: 'A password reset was requested for your account. Enter the 6-digit code below in Nebryss Companion to choose a new password.',
+    subject: (code) => `[Nebryss Companion] Your Password Reset Code: ${code}`,
+    text: (username, code) => `Greetings ${username},\n\nYour 6-digit password reset code for Nebryss Companion is: ${code}\n\nThis code will expire in 15 minutes. If you did not request a password reset, ignore this email and your password will stay the same.\n`,
+    footer: 'If you did not request a password reset, ignore this email. Your password will not change.',
+    logLabel: 'Password Reset',
+  },
+};
 
-  const transporter = createTransporter();
-  if (!transporter) {
-    console.warn(`[Mailer] SMTP credentials (SMTP_USER/SMTP_PASS) not configured in .env. Code logged to terminal.`);
-    return { success: true, deliveredVia: 'console_fallback' };
-  }
-
-  const fromAddress = process.env.SMTP_FROM || `"Nebryss Companion" <${process.env.SMTP_USER}>`;
-
-  const htmlContent = `
+function buildCodeEmailHtml(template, code, username) {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Nebryss Account Verification</title>
+  <title>${template.pageTitle}</title>
   <style>
     body {
       margin: 0;
@@ -126,27 +132,49 @@ async function sendVerificationEmail(toEmail, code, username = 'Adventurer') {
     </div>
     <div class="content">
       <p class="greeting">Greetings, <strong>${username}</strong>.</p>
-      <p class="info">Enter the 6-digit access code below to verify your email address and authorize your clearance level.</p>
+      <p class="info">${template.intro}</p>
       <div class="code-box">${code}</div>
-      <p class="info">This verification code will expire in <strong>15 minutes</strong>.</p>
+      <p class="info">This code will expire in <strong>15 minutes</strong>.</p>
     </div>
     <div class="footer">
-      If you did not initiate this request, you can safely disregard this transmission.
+      ${template.footer}
     </div>
   </div>
 </body>
 </html>
   `;
+}
+
+async function sendCodeEmail(kind, toEmail, code, username = 'Adventurer') {
+  const template = CODE_EMAILS[kind];
+  const transporter = createTransporter();
+
+  // Verification codes are always echoed to the terminal (existing dev behaviour).
+  // Password reset codes are only echoed when SMTP is not configured, so live
+  // server logs never contain a code that could take over an account.
+  if (kind !== 'passwordReset' || !transporter) {
+    console.log(`\n======================================================`);
+    console.log(`[AUTH CODE] ${template.logLabel} Code for ${toEmail} (${username}):`);
+    console.log(`            >>>  ${code}  <<<`);
+    console.log(`======================================================\n`);
+  }
+
+  if (!transporter) {
+    console.warn(`[Mailer] SMTP credentials (SMTP_USER/SMTP_PASS) not configured in .env. Code logged to terminal.`);
+    return { success: true, deliveredVia: 'console_fallback' };
+  }
+
+  const fromAddress = process.env.SMTP_FROM || `"Nebryss Companion" <${process.env.SMTP_USER}>`;
 
   try {
     const info = await transporter.sendMail({
       from: fromAddress,
       to: toEmail,
-      subject: `[Nebryss Companion] Your Verification Code: ${code}`,
-      text: `Greetings ${username},\n\nYour 6-digit verification code for Nebryss Companion is: ${code}\n\nThis code will expire in 15 minutes.\n`,
-      html: htmlContent,
+      subject: template.subject(code),
+      text: template.text(username, code),
+      html: buildCodeEmailHtml(template, code, username),
     });
-    console.log(`[Mailer] Verification email successfully sent to ${toEmail} (Message ID: ${info.messageId})`);
+    console.log(`[Mailer] ${template.logLabel} email successfully sent to ${toEmail} (Message ID: ${info.messageId})`);
     return { success: true, deliveredVia: 'smtp', messageId: info.messageId };
   } catch (err) {
     console.error(`[Mailer] Error delivering email to ${toEmail}:`, err);
@@ -154,7 +182,16 @@ async function sendVerificationEmail(toEmail, code, username = 'Adventurer') {
   }
 }
 
+function sendVerificationEmail(toEmail, code, username = 'Adventurer') {
+  return sendCodeEmail('verification', toEmail, code, username);
+}
+
+function sendPasswordResetEmail(toEmail, code, username = 'Adventurer') {
+  return sendCodeEmail('passwordReset', toEmail, code, username);
+}
+
 module.exports = {
   sendVerificationEmail,
+  sendPasswordResetEmail,
   createTransporter,
 };

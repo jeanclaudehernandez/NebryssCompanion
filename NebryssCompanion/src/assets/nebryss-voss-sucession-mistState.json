@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "density": "Light",
+    "activeEffects": [
+      "Mist Veil",
+      "Obscuration"
+    ],
+    "counts": {
+      "Light": {
+        "Light": 2
+      },
+      "Medium": {
+        "Light": 2,
+        "Medium": 1
+      },
+      "Dense": {
+        "Light": 2,
+        "Medium": 2,
+        "Dense": 1
+      }
+    }
+  }
+]

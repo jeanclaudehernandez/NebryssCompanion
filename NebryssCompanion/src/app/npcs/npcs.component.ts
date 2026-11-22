@@ -351,9 +351,11 @@ export class NpcsComponent implements OnInit, OnChanges {
 
   private isShopLocationDiscovered(shop: Shop): boolean {
     if (this.isAdmin) return true;
-    const locName = shop.locationName || shop.location;
-    if (!locName || locName === 'Unbound') return true;
-    const loc = this.locations.find(l => l.name.toLowerCase() === locName.toLowerCase() || l.id === shop.locationId);
+    if (shop.locationId === 0) return true;   // Unbound: no fixed place
+    const byId = typeof shop.locationId === 'number' ? this.locations.find(l => l.id === shop.locationId) : undefined;
+    const locName = shop.location;
+    if (!byId && (!locName || locName === 'Unbound')) return true;
+    const loc = byId || this.locations.find(l => l.name.toLowerCase() === locName!.toLowerCase());
     if (!loc) return true;
     return !!(loc.discovered !== false && (!loc.isSecret || loc.isSecretRevealed));
   }

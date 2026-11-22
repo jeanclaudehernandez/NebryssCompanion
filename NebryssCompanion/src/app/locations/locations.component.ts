@@ -510,9 +510,8 @@ export class LocationsComponent implements OnInit, OnChanges {
     const locId = this.selectedLocation.id;
     return this.shops.filter(shop =>
       (this.isAdmin || shop.discovered !== false) &&
-      ((shop.location && shop.location.toLowerCase() === locName) ||
-       (shop.locationName && shop.locationName.toLowerCase() === locName) ||
-       (typeof shop.locationId === 'number' && shop.locationId === locId))
+      ((typeof shop.locationId === 'number' && shop.locationId === locId) ||
+       (typeof shop.locationId !== 'number' && !!shop.location && shop.location.toLowerCase() === locName))
     );
   }
 

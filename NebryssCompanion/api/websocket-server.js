@@ -56,13 +56,14 @@ function setupWebSocketServer(server) {
 
     let requestedBackend = null;
     let requestedModel = '';
-    // Experimental format (Colibri): list results as tables instead of JSON.
-    let experimentalFormat = false;
+    // Experimental format (Colibri): list results as tables instead of JSON. On unless the
+    // client asks for JSON (format=json).
+    let experimentalFormat = true;
     try {
       const reqUrl = new URL(request?.url || '/', `http://${request?.headers?.host || 'localhost'}`);
       requestedBackend = reqUrl.searchParams.get('backend');
       requestedModel = reqUrl.searchParams.get('model') || '';
-      experimentalFormat = reqUrl.searchParams.get('format') === 'table';
+      experimentalFormat = reqUrl.searchParams.get('format') !== 'json';
     } catch (_) {}
 
     let activeBackend = (requestedBackend === 'agy' || requestedBackend === 'colibri')
@@ -111,7 +112,14 @@ function setupWebSocketServer(server) {
       }
     };
     const unsubscribeFlux = fluxEngine.subscribe(sendFluxState);
-    const unsubscribeEngine = () => { unsubscribeColibri(); unsubscribeFlux(); };
+    // New or changed LoRAs (files in ComfyUI's loras folder, flux-loras.json) reach open studios
+    // without restarting the API.
+    const unsubscribeCatalog = fluxEngine.onCatalogChange((catalog) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: 'flux_catalog', catalog }));
+      }
+    });
+    const unsubscribeEngine = () => { unsubscribeColibri(); unsubscribeFlux(); unsubscribeCatalog(); };
     const sendFluxError = (action, err) => {
       if (ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify({ type: 'flux_error', action, message: err.message || String(err) }));
@@ -143,12 +151,14 @@ function setupWebSocketServer(server) {
               return;
             }
             if (activeBackend === 'colibri' && colibriEngine.isSwitching()) {
-              ws.send(JSON.stringify({ type: 'error', message: 'The Colibri engine is switching; send the message again once it is ready.' }));
+              // Named after the engine being started ('llama.cpp' / 'Colibri'), or the local engine.
+              const switchingTo = colibriEngine.getState().targetEngineName || 'local';
+              ws.send(JSON.stringify({ type: 'error', message: `The ${switchingTo} engine is starting; send the message again once it is ready.` }));
               ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
             if (activeBackend === 'colibri' && colibriEngine.getState().mode === colibriEngine.FLUX_MODE) {
-              ws.send(JSON.stringify({ type: 'error', message: 'FLUX has the GPU, so Colibri is stopped. Switch the AI engine back to a Colibri model to chat.' }));
+              ws.send(JSON.stringify({ type: 'error', message: 'FLUX has the GPU, so the local model is stopped. Switch the AI engine back to Local to chat.' }));
               ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
@@ -417,7 +427,7 @@ function setupWebSocketServer(server) {
             const toFlux = msg.mode === colibriEngine.FLUX_MODE;
             const profile = !toFlux && typeof msg.mode === 'string' ? colibriEngine.resolveProfile(msg.mode) : null;
             if (!toFlux && !profile) {
-              ws.send(JSON.stringify({ type: 'error', message: `Invalid Colibri setup: ${msg.mode}` }));
+              ws.send(JSON.stringify({ type: 'error', message: `Invalid local setup: ${msg.mode}` }));
               break;
             }
             const target = toFlux ? colibriEngine.FLUX_MODE : profile.id;
@@ -429,6 +439,19 @@ function setupWebSocketServer(server) {
             // Progress reaches this and every other client through the subscription above.
             colibriEngine.switchEngine(target, { onReady: forgetServerContext })
               .then((s) => console.log(`[Agent WS] Colibri engine switch ${s.phase === 'ready' ? `done: ${s.mode}` : `failed: ${s.error}`}`))
+              .catch((err) => sendEngineState({ ...colibriEngine.getState(), phase: 'error', error: err.message }));
+            break;
+          }
+
+          case 'stop_colibri_engine': {
+            if (colibriEngine.isSwitching()) {
+              sendEngineState(colibriEngine.getState());
+              break;
+            }
+            console.log(`[Agent WS] Stopping the GPU engine (requested by ${ws.user?.email || ws.user?.username || 'unknown'})`);
+            // The bridge's conversation is kept; only the server's prompt cache is gone.
+            colibriEngine.stopEngine({ onStopped: forgetServerContext })
+              .then((s) => console.log(`[Agent WS] Engine stop ${s.phase === 'ready' ? 'done' : `failed: ${s.error}`}`))
               .catch((err) => sendEngineState({ ...colibriEngine.getState(), phase: 'error', error: err.message }));
             break;
           }
@@ -512,7 +535,7 @@ function setupWebSocketServer(server) {
       type: 'connected',
       backend: activeBackend,
       model: activeBackend === 'agy' ? activeModel : undefined,
-      message: `${activeBackend === 'agy' ? 'AGY' : 'Colibri'} bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.`,
+      message: `${activeBackend === 'agy' ? 'AGY' : 'Local'} bridge connected. Send { type: "chat", message: "...", campaignId: N } to start.`,
     }));
   });
 

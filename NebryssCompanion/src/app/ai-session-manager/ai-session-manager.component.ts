@@ -26,6 +26,7 @@ import {
   ConnectionStatus,
   ContextUsage,
   FLUX_MODE,
+  STOP_MODE,
   HistoryMessage,
   HistorySnapshot,
   PendingCommand
@@ -99,21 +100,26 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   engineElapsed = '';
   readonly engineSteps: { key: string; label: string }[] = [
     { key: 'stopping', label: 'Stop the running model' },
-    { key: 'starting', label: 'Launch Colibri' },
+    { key: 'starting', label: 'Launch the engine' },
     { key: 'loading', label: 'Load the model' },
     { key: 'ready', label: 'Ready to answer' }
   ];
-  // Experimental format (Colibri): list results as tables instead of JSON
-  experimentalFormat = false;
+  // Experimental format (Colibri): list results as tables instead of JSON (on by default)
+  experimentalFormat = true;
 
-  // AI Engine menu: level 1 picks the bridge, level 2 Colibri's model setup or Antigravity's model
+  // AI Engine menu: level 1 picks Local, FLUX or AGY; level 2 the local setup (Colibri or
+  // llama.cpp) or AGY's model
   engineMenuOpen = false;
   engineMenuView: 'bridges' | 'colibri' | 'agy' = 'bridges';
   // Icons for the known setups (the list itself comes from the API with the engine state)
   private readonly colibriProfileIcons: Record<string, string> = {
     'iq3xxs-64k': 'bolt',
     'q2kxl-96k': 'balance',
-    'iq2m-120k': 'unfold_more'
+    'iq2m-120k': 'unfold_more',
+    'llamacpp-q2kxl-150k-q8': 'star',
+    'llamacpp-iq3xxs-120k-q8': 'speed',
+    'llamacpp-iq3xxs-128k': 'speed',
+    'llamacpp-iq3xxs-256k': 'all_inclusive'
   };
   private engineCloseTimer: any = null;
   private engineElapsedTimer: any = null;
@@ -415,7 +421,8 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       `3) All abilities, equipment, items/inventory (with descriptions/quantities), and progression (talent points, digital and physical mistrals); ` +
       `4) All talents with their full descriptions and mechanical effects; ` +
       `5) All afflictions and any active altered states (if applicable) with their full descriptions and effects; ` +
-      `6) Session participation across all sessions (which sessions they appeared in, their actions, choices, and outcomes).`;
+      `6) Session participation across all sessions (which sessions they appeared in, their actions, choices, and outcomes): ` +
+      `the player record does not include it, so read the sessions (search_sessions for their name).`;
 
     this.aiService.sendMessage(prompt, campaignId);
     this.isAtBottom = true;
@@ -447,6 +454,27 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     return value >= 1000 ? `${(value / 1000).toFixed(1)}k` : String(Math.round(value));
   }
 
+  /**
+   * llama.cpp only: how much of the last request's prompt the server reused from its cache,
+   * e.g. "Cache reused 250.1k of 251.0k prompt tokens · 61 tok/s". Empty for Colibri.
+   */
+  get contextCacheLine(): string {
+    const u = this.contextUsage;
+    if (!u || u.engine !== 'llamacpp' || u.cachedTokens === undefined) return '';
+    const prompt = u.cachedTokens + (u.newPromptTokens || 0);
+    const speed = u.replyPerSecond ? ` · ${u.replyPerSecond} tok/s` : '';
+    return `Cache reused ${this.formatTokens(u.cachedTokens)} of ${this.formatTokens(prompt)} prompt tokens${speed}`;
+  }
+
+  /** Tooltip for the cache line: the last request's new prompt tokens and both speeds. */
+  get contextSpeedTitle(): string {
+    const u = this.contextUsage;
+    if (!u || u.engine !== 'llamacpp') return '';
+    const rate = (v?: number) => (v ? `${v} tok/s` : 'an unknown speed');
+    return `llama.cpp, last request: read ${this.formatTokens(u.newPromptTokens || 0)} new prompt tokens at ` +
+      `${rate(u.promptPerSecond)} and wrote the reply at ${rate(u.replyPerSecond)}.`;
+  }
+
   /** Gauge colour step: normal until the bridge is close to trimming old messages. */
   get contextLevel(): 'ok' | 'warn' | 'high' {
     const u = this.contextUsage;
@@ -460,7 +488,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     this.aiService.setAgentBackend(backend);
     this.conversationId = null;
     this.toastService.show(
-      `Switched AI Engine to ${backend === 'agy' ? 'AGY' : 'Colibri (Local)'}`,
+      `Switched AI Engine to ${backend === 'agy' ? 'AGY' : 'Local'}`,
       'info',
       3000
     );
@@ -645,18 +673,47 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   // ─── AI Engine menu ──────────────────────────────────────────
 
-  /** Second line of the AI Engine button / Colibri row: the running model setup. */
+  /** Second line of the AI Engine button / Local row: the running model setup. */
   get colibriEngineSummary(): string {
     const e = this.colibriEngine;
     if (!e) return 'Checking model...';
-    if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
+    if (e.switching) return e.targetMode === STOP_MODE ? 'Stopping...' : `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
     if (e.mode === FLUX_MODE) return 'Stopped: FLUX has the GPU';
     if (e.mode === 'offline') return 'Server offline';
     if (e.mode === 'unknown') return 'Port in use';
     if (e.mode === 'custom') {
-      return `${e.runningModel || 'Other model'}${e.contextTokens ? ` · ${this.formatContext(e.contextTokens)}` : ''}`;
+      const engine = e.engineName ? `${e.engineName} ` : '';
+      return `${engine}${e.runningModel || 'Other model'}${e.contextTokens ? ` · ${this.formatContext(e.contextTokens)}` : ''}`;
     }
     return `${this.engineProfileLabel(e.mode)} context`;
+  }
+
+  /**
+   * The local engine running now ('Colibri' / 'llama.cpp'), for messages; while a switch starts
+   * one, the engine being started. '' when none is running.
+   */
+  get localEngineName(): string {
+    const e = this.colibriEngine;
+    if (!e) return '';
+    if (e.switching && e.targetMode !== FLUX_MODE && e.targetMode !== STOP_MODE && e.targetEngineName) return e.targetEngineName;
+    return e.engineName || '';
+  }
+
+  /** A setup's name in the Local menu: "llama.cpp · IQ3_XXS". */
+  profileName(p: ColibriProfile): string {
+    return p.engineName ? `${p.engineName} · ${p.label}` : p.label;
+  }
+
+  /** A setup's second line in the Local menu: "120k max context · 8-bit KV cache". */
+  profileDescription(p: ColibriProfile): string {
+    return `${this.formatContext(p.contextTokens)} max context · ${this.kvCacheLabel(p.kvCache)} KV cache`;
+  }
+
+  /** 'q8_0' -> '8-bit', 'f16' (or unset) -> '16-bit'. */
+  kvCacheLabel(kv: string | undefined): string {
+    if (!kv || kv === 'f16') return '16-bit';
+    const bits = /^q(\d+)/i.exec(kv);
+    return bits ? `${bits[1]}-bit` : kv;
   }
 
   /** The model setups the switch offers (sent by the API with the engine state). */
@@ -704,15 +761,21 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   chooseColibriEngine(mode: ColibriEngineMode): void {
     this.closeEngineMenu();
+    this.aiService.imageStudioOverAgy = false;
     if (this.agentBackend !== 'colibri') this.switchBackend('colibri');
     if (this.colibriEngine?.mode !== mode) this.switchColibriEngine(mode);
   }
 
   // ─── FLUX images (ComfyUI takes the GPU instead of Colibri) ───
 
-  /** FLUX has the GPU and the local bridge is selected: the image studio replaces the chat. */
+  /**
+   * FLUX has the GPU and the studio is picked: the image studio replaces the chat. With
+   * Colibri that is whenever FLUX runs; with Antigravity only once FLUX was picked in the menu
+   * (the AGY conversation goes on underneath, and comes back when Antigravity is picked again).
+   */
   get fluxActive(): boolean {
-    return this.agentBackend === 'colibri' && this.colibriEngine?.mode === FLUX_MODE;
+    return this.colibriEngine?.mode === FLUX_MODE &&
+      (this.agentBackend === 'colibri' || this.aiService.imageStudioOverAgy);
   }
 
   /** Second line of the FLUX row in the AI Engine menu. */
@@ -720,19 +783,76 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     const e = this.colibriEngine;
     if (e?.switching && e.targetMode === FLUX_MODE) return 'Starting ComfyUI...';
     if (e?.mode === FLUX_MODE) return 'ComfyUI is running';
-    return 'Stops Colibri, starts ComfyUI';
+    return `Stops ${this.localEngineName || 'the local model'}, starts ComfyUI`;
   }
 
+  /** Opens the studio, keeping the current bridge and its conversation (Colibri's or AGY's). */
   chooseFlux(): void {
     this.closeEngineMenu();
-    if (this.agentBackend !== 'colibri') this.switchBackend('colibri');
+    if (this.agentBackend === 'agy') this.aiService.imageStudioOverAgy = true;
     if (this.colibriEngine?.mode !== FLUX_MODE) this.switchColibriEngine(FLUX_MODE);
   }
 
   chooseAgyModel(modelId: string): void {
     this.closeEngineMenu();
+    this.aiService.imageStudioOverAgy = false;
     if (this.agentBackend !== 'agy') this.switchBackend('agy');
     if (this.selectedAgyModel !== modelId) this.onAgyModelChange(modelId);
+  }
+
+  // ─── Stop the GPU engine (Colibri or ComfyUI) ────────────────
+
+  /** Colibri (one of the setups, or one started some other way) or ComfyUI is running. */
+  get canStopEngine(): boolean {
+    const e = this.colibriEngine;
+    return !!e && !e.switching && e.mode !== 'offline' && e.mode !== 'unknown';
+  }
+
+  /** Text of the stop button: what it stops. */
+  get stopEngineLabel(): string {
+    return this.colibriEngine?.mode === FLUX_MODE ? 'Stop ComfyUI (FLUX)' : `Stop ${this.localEngineName || 'the local engine'}`;
+  }
+
+  /** Stops the running engine and frees the GPU; the conversation is kept for the next start. */
+  stopEngine(): void {
+    if (!this.canStopEngine) return;
+    const flux = this.colibriEngine?.mode === FLUX_MODE;
+    const busy = flux && ['queued', 'loading', 'sampling', 'decoding'].includes(this.aiService.fluxJobPhase || '');
+    const question = flux
+      ? `Stop ComfyUI and free the GPU?${busy ? ' The image being made is cancelled.' : ''} Unsaved images stay in the temporary folder.`
+      : `Stop ${this.localEngineName || 'the local engine'} and free the GPU? The conversation is kept; pick a Local setup to start it again.`;
+    if (!window.confirm(question)) return;
+    if (!this.aiService.stopColibriEngine()) {
+      this.toastService.show('Not connected to the AI bridge; reconnect and try again.', 'error', 4000);
+      return;
+    }
+    this.openEngineModal();
+  }
+
+  // ─── Start the default local setup (one click, no menu) ──────
+
+  /** The setup the Start button starts (llama.cpp UD-Q2_K_XL 150k), sent by the API. */
+  get defaultEngineProfile(): ColibriProfile | null {
+    return this.colibriEngine?.defaultProfile || null;
+  }
+
+  /** Nothing holds the GPU (the local engine was stopped or is not running) and no switch is on. */
+  get canStartEngine(): boolean {
+    const e = this.colibriEngine;
+    return !!e && !e.switching && e.mode === 'offline' && !!this.defaultEngineProfile;
+  }
+
+  /** Text of the start button: "Start llama.cpp · UD-Q2_K_XL". */
+  get startEngineLabel(): string {
+    const p = this.defaultEngineProfile;
+    return p ? `Start ${this.profileName(p)}` : 'Start the local engine';
+  }
+
+  /** Starts the default setup and makes Local the agent, as picking it in the menu does. */
+  startEngine(): void {
+    const p = this.defaultEngineProfile;
+    if (!this.canStartEngine || !p) return;
+    this.chooseColibriEngine(p.id);
   }
 
   /** Arrow keys move between the menu's items; Escape closes it. */
@@ -798,11 +918,14 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     clearInterval(this.engineElapsedTimer);
   }
 
-  /** "UD-IQ2_M · 120k" for a setup id. */
+  /** "llama.cpp IQ3_XXS · 120k" for a setup id (also the running one when it is not offered). */
   engineProfileLabel(mode: string | null | undefined): string {
     if (mode === FLUX_MODE) return this.colibriEngine?.flux?.label || 'FLUX.1 [dev]';
-    const profile = this.colibriProfiles.find(p => p.id === mode);
-    return profile ? `${profile.label} · ${this.formatContext(profile.contextTokens)}` : 'the new model';
+    const running = this.colibriEngine?.runningProfile;
+    const profile = this.colibriProfiles.find(p => p.id === mode) || (running && running.id === mode ? running : null);
+    if (!profile) return 'the new model';
+    const engine = profile.engineName ? `${profile.engineName} ` : '';
+    return `${engine}${profile.label} · ${this.formatContext(profile.contextTokens)}`;
   }
 
   /** A setup the server is running (as opposed to offline, another program, or our own state). */
@@ -813,12 +936,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   get engineStatusText(): string {
     const e = this.colibriEngine;
     if (!e) return 'Checking...';
-    if (e.switching) return `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
+    if (e.switching) return e.targetMode === STOP_MODE ? 'Stopping the engine...' : `Switching to ${this.engineProfileLabel(e.targetMode)}...`;
     switch (e.mode) {
       case FLUX_MODE:
-        return 'FLUX (ComfyUI) has the GPU, so Colibri is stopped';
+        return 'FLUX (ComfyUI) has the GPU, so the local model is stopped';
       case 'offline':
-        return 'No Colibri server is running';
+        return 'No local model server is running';
       case 'unknown':
         return 'Port in use by another program';
       case 'custom':
@@ -834,20 +957,34 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     return this.colibriEngine?.targetMode === FLUX_MODE;
   }
 
+  /** The popup is about stopping the engine (nothing is started). */
+  get engineTargetIsStop(): boolean {
+    return this.colibriEngine?.targetMode === STOP_MODE;
+  }
+
+  /** A stop has only two steps: stop, then the GPU is free (launch and load are skipped). */
+  engineStepVisible(index: number): boolean {
+    return !this.engineTargetIsStop || index === 0 || index === this.engineSteps.length - 1;
+  }
+
   /** A step's text in the switch popup. */
   engineStepLabel(index: number): string {
+    if (this.engineTargetIsStop) return index === 0 ? 'Stop the running engine' : 'GPU is free';
     const flux = this.engineTargetIsFlux;
-    if (index === 0) return flux ? 'Stop Colibri (frees the GPU)' : this.engineSteps[0].label;
-    if (index === 1) return flux ? 'Launch ComfyUI' : 'Launch Colibri with ' + this.engineProfileLabel(this.colibriEngine?.targetMode);
+    if (index === 0) return flux ? 'Stop the local model (frees the GPU)' : this.engineSteps[0].label;
+    if (index === 1) return flux ? 'Launch ComfyUI' : 'Launch ' + this.engineProfileLabel(this.colibriEngine?.targetMode);
     if (index === 2) return flux ? 'Load ComfyUI' : this.engineSteps[2].label;
     return flux ? 'Ready to make images' : this.engineSteps[3].label;
   }
 
   get engineModalTitle(): string {
     const e = this.colibriEngine;
+    if (this.engineTargetIsStop) {
+      return e?.phase === 'error' ? 'Stopping the engine failed' : e?.phase === 'ready' ? 'Engine stopped' : 'Stopping the engine';
+    }
     if (e?.phase === 'error') return 'Engine switch failed';
-    if (e?.phase === 'ready') return this.engineTargetIsFlux ? 'FLUX is ready' : 'Colibri is ready';
-    return this.engineTargetIsFlux ? 'Switching to FLUX images' : 'Switching Colibri to ' + this.engineProfileLabel(e?.targetMode);
+    if (e?.phase === 'ready') return this.engineTargetIsFlux ? 'FLUX is ready' : `${this.localEngineName || 'The local engine'} is ready`;
+    return this.engineTargetIsFlux ? 'Switching to FLUX images' : 'Switching to ' + this.engineProfileLabel(e?.targetMode);
   }
 
   /** done / active / error / pending, for a step of the switch popup. */
@@ -883,12 +1020,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       this.openEngineModal();
     } else if (state.mode === 'offline' && this.isRunningSetup(previous?.mode) && !previous?.switching) {
       // Its terminal window was closed (or the server stopped some other way).
-      this.toastService.show(state.message || 'Colibri stopped.', 'info', 5000);
+      this.toastService.show(state.message || `${previous?.engineName || 'The local engine'} stopped.`, 'info', 5000);
     } else if (this.engineModalOpen && previous?.switching) {
       clearInterval(this.engineElapsedTimer);
       this.updateEngineElapsed();
       if (state.phase === 'ready') {
-        this.toastService.show(state.message || `Colibri is running ${this.engineProfileLabel(state.mode)}`, 'success', 4000);
+        this.toastService.show(state.message || `Running ${this.engineProfileLabel(state.mode)}`, 'success', 4000);
         this.engineCloseTimer = setTimeout(() => this.closeEngineModal(), 1500);
       }
       // On an error the popup stays open until it is closed, so the error can be read.
@@ -1176,7 +1313,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     addField('Faction', result.faction);
     addField('Subgroup', result.subgroup);
     addField('Role', result.role);
-    addField('Location', result.location || result.locationName);
+    addField('Location', result.location);
     addField('Category', result.category);
     addField('Type', result.type || result.subtype);
     if (result.price !== undefined) addField('Price', `${result.price} Gold`);

@@ -297,6 +297,19 @@ body.dark-theme .items-table th {
     transition: background-color 0.3s;
 }
 
+.row-clickable {
+    cursor: pointer;
+}
+
+.row-clickable:hover {
+    filter: brightness(0.96);
+}
+
+.items-table tr.row-active {
+    background-color: #e3ecfb;
+    box-shadow: inset 4px 0 0 #5b7fc4;
+}
+
 h3 {
     margin: 0;
     font-size: 0.95rem;
@@ -517,6 +530,15 @@ body.dark-theme .items-table td {
 
 body.dark-theme .in-inventory {
     background-color: #0d2015 !important; /* Darker green background for dark mode */
+}
+
+body.dark-theme .items-table tr.row-active {
+    background-color: #17243d !important;
+    box-shadow: inset 4px 0 0 #7d9fe0;
+}
+
+body.dark-theme .row-clickable:hover {
+    filter: brightness(1.2);
 }
 
 body.dark-theme h3 {

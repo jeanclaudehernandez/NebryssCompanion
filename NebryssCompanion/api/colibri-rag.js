@@ -712,7 +712,15 @@ function createColibriRag({
     const minScore = options.minScore !== undefined ? options.minScore : DEFAULT_MIN_SCORE;
     const relativeFloor = options.relativeFloor !== undefined ? options.relativeFloor : DEFAULT_RELATIVE_FLOOR;
     const bestScore = candidates.length > 0 ? candidates[0].score : 0;
-    if (bestScore < minScore) {
+    // A question that names a session ("summarize session 7", "what happened in session #3"):
+    // that session's chunks (its plan, then its conclusion, in order) go first, ahead of the
+    // relevance floor. By score alone, "summarize session 7" got two pieces of its conclusion
+    // (the rest fell below 60% of the best match) and was answered from those.
+    const sessionMatch = String(query).match(/\bsession\s*#?\s*(\d+)\b/i);
+    const focusChunks = sessionMatch
+      ? entry.index.chunks.filter(c => c.sourceType === 'session' && Number(c.entityId) === Number(sessionMatch[1]))
+      : [];
+    if (bestScore < minScore && focusChunks.length === 0) {
       return {
         chunks: [], totalIndexed: entry.index.docCount, usedTokens: 0, skippedSeen: 0,
         bestScore, belowFloor: true, embeddingsUsed: Boolean(entry.embeddingsPopulated), reranked: false
@@ -725,16 +733,38 @@ function createColibriRag({
       ? await rerankWithColibri(query, topCandidates, topK, abortSignal)
       : topCandidates.slice(0, topK);
 
+    // A summary of the session ("summarize session 7", "what happened in session 4") may fill the
+    // whole budget with it. A question that only uses the session as a reference point ("was
+    // Chinchilla in the party during session 2?") gets at most half: the rest goes to the best
+    // matches for the rest of the question (Chinchilla's own record, the session she joined in).
+    // With the session's pieces first and nothing else, the model answered "no" from session 2
+    // alone and never said when she joined.
+    const isSessionSummary = /\b(summar\w*|recap\w*|what happened|overview|retell|events? of|tell me about session|walk me through)\b/i.test(query);
+    const focusBudget = isSessionSummary ? tokenBudget : Math.floor(tokenBudget * 0.5);
+    const focusSet = new Set(focusChunks);
+    const maxChunks = topK + focusChunks.length;
     const selected = [];
     let usedTokens = 0;
-    for (const item of reranked) {
-      const chunkTokens = item.chunk._tokens || estimateTokens(`${item.chunk.title}\n${item.chunk.text}`);
-      if (selected.length > 0 && usedTokens + chunkTokens > tokenBudget) {
-        continue;
-      }
-      selected.push(item.chunk);
+    const take = (chunk, limit) => {
+      const chunkTokens = chunk._tokens || estimateTokens(`${chunk.title}\n${chunk.text}`);
+      if (selected.length > 0 && usedTokens + chunkTokens > limit) return;
+      selected.push(chunk);
       usedTokens += chunkTokens;
-      if (selected.length >= topK) break;
+    };
+    // A summary reads the session in order; any other question gets its best-matching pieces of
+    // that session first ("what did the party learn about the Pale Crown in session 2?": the clue
+    // is in the conclusion, which fell outside the half budget when the plan came first).
+    const scoreOf = new Map(bm25Scored.map(item => [item.chunk.id, item.score]));
+    const focusOrder = isSessionSummary
+      ? focusChunks
+      : [...focusChunks].sort((a, b) => (scoreOf.get(b.id) || 0) - (scoreOf.get(a.id) || 0));
+    for (const chunk of focusOrder) {
+      if (selected.length >= maxChunks) break;
+      take(chunk, focusBudget);
+    }
+    for (const item of reranked) {
+      if (selected.length >= maxChunks) break;
+      if (!focusSet.has(item.chunk)) take(item.chunk, tokenBudget);
     }
 
     // Selection is unchanged; chunks the conversation already holds (options.excludeKeys, matched
