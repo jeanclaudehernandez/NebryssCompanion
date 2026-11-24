@@ -867,7 +867,7 @@ async function checkPlayerPayload(payload, campaignId, requestText = null) {
     // mistrals to Xarion Vex", models staged digital 0 -> 7.
     const nextDigital = payload.digitalGold ?? payload.progression?.mistrals?.digital;
     if (nextDigital !== undefined && nextDigital !== null && nextDigital !== '' &&
-        Number(nextDigital) !== Number(mistrals.digital ?? 0) && requestText !== null && !/\bdigital\b/i.test(String(requestText))) {
+      Number(nextDigital) !== Number(mistrals.digital ?? 0) && requestText !== null && !/\bdigital\b/i.test(String(requestText))) {
       problems.push('The GM did not say digital: plain "mistrals" are physical mistrals. Put the change in gold ' +
         '(progression.mistrals.physical) and leave digital mistrals as they are.');
     }
@@ -895,9 +895,29 @@ async function checkPlayerPayload(payload, campaignId, requestText = null) {
     const talents = payload.talents ?? payload.progression?.talents;
     if (talents !== undefined) {
       const list = parseListParam(talents);
-      const before = new Set((prog.talents || []).map(String));
-      const added = Array.isArray(list) ? list.map(String).filter(t => !before.has(t)) : [];
-      if (added.length) changes.push(`talents +${added.join(', +')}`);
+      if (!Array.isArray(list)) {
+        problems.push('talents must be a list of existing talent IDs (from list_entities(type="talent")).');
+      } else {
+        const before = new Set((prog.talents || []).map(String));
+        const added = list.map(String).filter(t => !before.has(t));
+        if (added.length) {
+          const catalogs = await getReferenceCatalogs(campaignId);
+          const talentById = new Map((catalogs.talents || []).map(t => [String(t.id), t]));
+          const talentByName = new Map((catalogs.talents || []).map(t => [String(t.name || '').toLowerCase(), t]));
+          if (talentById.size > 0) {
+            for (const tid of added) {
+              if (talentById.has(tid)) continue;
+              const named = talentByName.get(tid.trim().toLowerCase());
+              if (named) {
+                problems.push(`talents: use the talent ID "${named.id}" for "${named.name}", not its name.`);
+              } else {
+                problems.push(`talents: "${tid}" is not an existing talent ID in this campaign (check list_entities(type="talent")). Do not invent IDs; if what the GM named does not exist, say so and stage nothing.`);
+              }
+            }
+          }
+          changes.push(`talents +${added.join(', +')}`);
+        }
+      }
     }
   }
   // A top-level "mistrals" object is not a player field; the update would silently drop it.
@@ -1209,12 +1229,27 @@ const AGENT_TOOLS = [
     type: 'function',
     function: {
       name: 'get_latest_session',
-      description: 'Get the latest session plan and conclusion with clean entity names.',
+      description: 'Get the latest (most recent) session plan and conclusion with clean entity names. For any earlier or specific numbered session (e.g. Session 4), use get_session instead.',
       parameters: {
         type: 'object',
         properties: {
           campaignId: { type: 'number', description: 'Campaign ID (defaults to active)' }
         }
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'get_session',
+      description: 'Get a specific session\'s full plan and conclusion by session number or title (with clean entity names). Always call this when asked about a numbered or past session (e.g. "Session 4", "Session 7") instead of get_latest_session or partial RAG excerpts.',
+      parameters: {
+        type: 'object',
+        properties: {
+          sessionId: { type: 'string', description: 'Session number (e.g. "4", "7") or title substring' },
+          campaignId: { type: 'number', description: 'Campaign ID (defaults to active)' }
+        },
+        required: ['sessionId']
       }
     }
   },
@@ -1406,7 +1441,7 @@ function loadDesignerGuide(topic) {
   }
   const guide = [
     `[GUIDE: ${skill}]`,
-    'In this chat, `node scripts/campaign-session-tool.js <cmd>` examples map to tools: read-only commands -> the matching tool (get_campaign_summary, get_latest_session, get_entity, list_entities, calculate_pr, auto_tag); mutations -> stage_command(command, params) with the same parameter names (no leading --). Ignore instructions about run_command or files.',
+    'In this chat, `node scripts/campaign-session-tool.js <cmd>` examples map to tools: read-only commands -> the matching tool (get_campaign_summary, get_latest_session, get_session, get_entity, list_entities, calculate_pr, auto_tag); mutations -> stage_command(command, params) with the same parameter names (no leading --). Ignore instructions about run_command or files.',
     '',
     truncateText(text, DESIGNER_GUIDE_MAX_CHARS)
   ].join('\n');
@@ -1421,6 +1456,8 @@ function formatToolSummary(toolName, args) {
       return `Fetching summary for Campaign ${args.campaignId || ''}`.trim();
     case 'get_latest_session':
       return `Fetching latest session`;
+    case 'get_session':
+      return `Fetching session ${args.sessionId ?? ''}`.trim();
     case 'list_sessions':
       return `Listing sessions`;
     case 'get_entity':
@@ -1592,6 +1629,15 @@ async function getCleanSessions(campId) {
       playerVisibleBranches: s.playerVisibleBranches || []
     }))
     .sort((a, b) => a.sessionId - b.sessionId);
+}
+
+function findCleanSession(sessions, idOrName) {
+  const key = String(idOrName ?? '').trim().toLowerCase();
+  if (!key) return null;
+  const numKey = key.replace(/^session\s*#?/, '').replace(/^#/, '');
+  return sessions.find(s => String(s.sessionId) === numKey) ||
+    sessions.find(s => s.title.toLowerCase().includes(key)) ||
+    null;
 }
 
 function formatSessionForModel(s) {
@@ -2044,7 +2090,7 @@ function claimsStagedWithoutCard(replyText, userText) {
   if (!replyText) return false;
   const lowerUser = String(userText || '').toLowerCase();
   if (lowerUser.includes('[user approved command]') || lowerUser.includes('[user declined command]') ||
-      lowerUser.includes('[command execution error]')) {
+    lowerUser.includes('[command execution error]')) {
     return false;   // reporting on a card the GM already handled
   }
   const claim = /approval card|\bstaged\b|(awaiting|pending) (your |the gm'?s? )?approval|click (the )?["'*]*approve/i;
@@ -2071,6 +2117,26 @@ function asksForListAnswer(text) {
   const t = String(text || '');
   if (/^\s*\[(user approved command|user declined command|command execution error)\]/i.test(t)) return false;
   return LIST_QUESTION_PATTERNS.some(re => re.test(t));
+}
+
+/**
+ * Existing session numbers explicitly named in the user's message (e.g. "Session 4", "session #7").
+ * RAG chunks for a session are partial (often missing part of the conclusion), so when the GM asks
+ * about an existing numbered session we remind the model to read the whole thing via get_session.
+ */
+async function referencedExistingSessions(text, campaignId) {
+  const t = String(text || '');
+  if (/^\s*\[(user approved command|user declined command|command execution error)\]/i.test(t)) return [];
+  const matches = [...t.matchAll(/\bsession\s*#?\s*(\d+)\b/gi)];
+  if (matches.length === 0) return [];
+  const requested = [...new Set(matches.map(m => Number(m[1])).filter(Number.isFinite))];
+  try {
+    const ctx = await getCachedCampaignContext(campaignId);
+    const existing = new Set((ctx?.sessions || []).map(s => Number(s.sessionId ?? s.id)));
+    return requested.filter(n => existing.has(n)).slice(0, 3);
+  } catch (_) {
+    return [];
+  }
 }
 
 // Words that ask for something new: "create an NPC", "draft a creature", "a new item", "design a shop".
@@ -2173,7 +2239,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
       `You are the Nebryss RPG / Kill Team session planner for Campaign ${targetCamp}.`,
       'RULES:',
       `1. SCOPE: Nebryss campaign work for Campaign ${targetCamp} (always pass campaignId=${targetCamp}). Nebryss is set in the Warhammer 40,000 universe, so 40k lore questions are in scope, and so are FLUX image prompts for campaign characters, creatures, places and scenes. Decline unrelated requests and any change to code, files or non-entities.`,
-      '2. CAMPAIGN FACTS FROM TOOLS, 40K LORE FROM KNOWLEDGE: Facts about this campaign (sessions, players, NPCs, locations, items, stats, what happened) come only from tools/RAG, which are partial: never invent them. General Warhammer 40k lore (the God-Emperor, the Imperium, Chaos, Astartes, the Inquisition...) you may answer from your own knowledge, saying it is general 40k lore; where Nebryss lore in the tools/RAG differs, Nebryss wins. For overviews, rosters, session history, planning or concluding, call get_campaign_summary first (and get_latest_session for details). A character took part in a session only if that session\'s text names them. Any question about whether, when or where someone did or met something ("has X ever...", "was X at...", "what did X do") is a history question: call search_sessions(name) before answering, never answer it from memory, and say plainly which sessions do not mention them.',
+      '2. CAMPAIGN FACTS FROM TOOLS, 40K LORE FROM KNOWLEDGE: Facts about this campaign (sessions, players, NPCs, locations, items, stats, what happened) come only from tools/RAG, which are partial: never invent them. General Warhammer 40k lore (the God-Emperor, the Imperium, Chaos, Astartes, the Inquisition...) you may answer from your own knowledge, saying it is general 40k lore; where Nebryss lore in the tools/RAG differs, Nebryss wins. For overviews, rosters, planning or concluding, call get_campaign_summary first (and get_latest_session for the latest session). For any specific numbered or past session ("Session 4", "what happened in Session 7"), call get_session(sessionId) directly — never answer from RAG excerpts alone or get_latest_session. A character took part in a session only if that session\'s text names them. Any question about whether, when or where someone did or met something ("has X ever...", "was X at...", "what did X do") is a history question: call search_sessions(name) before answering, never answer it from memory, and say plainly which sessions do not mention them.',
       '3. WEAPONS: when presenting a weapon, give every special rule\'s name and effect (never bare IDs).',
       '4. UPDATES MERGE: update-* keeps every field you do not send, so pass id + changed fields. A list you pass (weapons, items, abilities, profiles, talents...) REPLACES the stored list: get_entity first and send the full list.',
       '5. A DIRECT REQUEST IS THE APPROVAL: when the GM directly asks for a specific change ("give Akrina a chainsword", "add 20 mistrals to Thennur", "set the Medkit price to 14", "create an NPC named X... stage it", "save it"), call stage_command in that same turn without asking first: the Approval Card is the GM\'s review, so never draft the change and wait for a yes. This also counts as the approval a designer guide asks for before staging. Draft in chat for review first (clean names, no @type[id] tags) only open-ended work: session plans, conclusions, and new entities the GM did not ask to stage; when the GM then approves ("looks good, save it", "stage the NPC"), stage it in that turn. If the GM says not to stage or save yet, do not. Never say something is staged, saved or awaiting approval unless stage_command returned staged:true this turn. Keep confirmations short; no unsolicited session pitches.',
@@ -2208,7 +2274,28 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
           if (sessions.length === 0) {
             return { output: JSON.stringify({ error: 'This campaign has no sessions yet.' }), status: 'done', staged: false };
           }
+          if (args.sessionId !== undefined && args.sessionId !== null && String(args.sessionId).trim() !== '') {
+            const requested = findCleanSession(sessions, args.sessionId);
+            if (requested) return { output: formatSessionForModel(requested), status: 'done', staged: false };
+          }
           return { output: formatSessionForModel(sessions[sessions.length - 1]), status: 'done', staged: false };
+        }
+
+        case 'get_session': {
+          const target = args.sessionId ?? args.id ?? args.idOrName;
+          if (target === undefined || target === null || String(target).trim() === '') {
+            return { output: JSON.stringify({ error: 'sessionId is required (a session number or title).' }), status: 'error', staged: false };
+          }
+          const sessions = await getCleanSessions(campId);
+          const found = findCleanSession(sessions, target);
+          if (!found) {
+            return {
+              output: JSON.stringify({ error: `No session "${target}". Sessions: ${sessions.map(s => s.sessionId).join(', ')}` }),
+              status: 'error',
+              staged: false
+            };
+          }
+          return { output: formatSessionForModel(found), status: 'done', staged: false };
         }
 
         case 'search_sessions': {
@@ -2244,9 +2331,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
           if (/^sessions?$/i.test(String(args.type))) {
             // Whole session, names instead of tags (see formatSessionForModel).
             const sessions = await getCleanSessions(campId);
-            const key = String(args.idOrName).trim().toLowerCase();
-            const found = sessions.find(s => String(s.sessionId) === key.replace(/^session\s*#?/, '')) ||
-              sessions.find(s => s.title.toLowerCase().includes(key));
+            const found = findCleanSession(sessions, args.idOrName);
             if (!found) {
               return {
                 output: JSON.stringify({ error: `No session "${args.idOrName}". Sessions: ${sessions.map(s => s.sessionId).join(', ')}` }),
@@ -2564,7 +2649,9 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     // Qwen3.6 thinking mode loops easily at temperature 0.25; use 0.6 unless explicitly overridden.
     const temperature = process.env.COLIBRI_TEMPERATURE !== undefined
       ? Number(process.env.COLIBRI_TEMPERATURE)
-      : (thinkingOn ? 0.6 : 0.25);
+      : (typeof options.temperature === 'number' && Number.isFinite(options.temperature)
+      ? Math.min(1, Math.max(0, options.temperature))
+      : (thinkingOn ? 0.6 : 0.25));
 
     const response = await fetch(`${COLIBRI_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -2753,6 +2840,9 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     const turnThinking = options.thinking !== undefined
       ? Boolean(options.thinking)
       : process.env.LLAMACPP_THINKING === 'true';
+    const turnTemperature = (typeof options.temperature === 'number' && Number.isFinite(options.temperature))
+      ? Math.min(1, Math.max(0, options.temperature))
+      : undefined;
     let hasEmittedReasoning = false;
     turnRequestText = String(text || '');
     const previousAssistant = [...conversationHistory].reverse().find(m => m.role === 'assistant' && typeof m.content === 'string' && m.content.trim());
@@ -2794,7 +2884,11 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
       // creatures by eye in a long conversation (7 of 9 above PR 160). Sent with the question,
       // not as a check after the reply, so the GM never sees a wrong first answer.
       const listNote = asksForListAnswer(text) ? `\n\n${LIST_ANSWER_NOTE}` : '';
-      const userLine = `[Active Campaign ID: ${activeCampaignId}]\n${text}${listNote}`;
+      const existingSessions = await referencedExistingSessions(text, activeCampaignId);
+      const sessionNote = existingSessions.length > 0
+        ? `\n\n[BRIDGE NOTE] This message refers to existing Session ${existingSessions.join(', ')}: retrieved RAG excerpts are partial. Call get_session(${existingSessions.map(n => `"${n}"`).join(' / ')}) to read the complete plan and conclusion before answering.`
+        : '';
+      const userLine = `[Active Campaign ID: ${activeCampaignId}]\n${text}${listNote}${sessionNote}`;
 
       let ragContextBlock = '';
       let ragChunkKeys = [];
@@ -2855,224 +2949,227 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
       // Status shown while the next request waits for its first token (the model reading its prompt).
       let nextStatus = 'Reading your message...';
       for (; ;) {
-      finalResponseText = '';
-      partialReply = '';
-      for (let iter = 0; iter < COLIBRI_MAX_TOOL_ITERATIONS; iter++) {
-        if (isDestroyed || activeAbortController.signal.aborted) break;
+        finalResponseText = '';
+        partialReply = '';
+        for (let iter = 0; iter < COLIBRI_MAX_TOOL_ITERATIONS; iter++) {
+          if (isDestroyed || activeAbortController.signal.aborted) break;
 
-        // Trim the stored history itself (with headroom) rather than a per-request copy, so the
-        // prompt prefix only changes on the rare request that actually has to trim.
-        await refreshContextBudget();
-        if (promptTokens(conversationHistory) > inputTokenBudget()) {
-          const before = conversationHistory.length;
-          const target = Math.floor(inputTokenBudget() * COLIBRI_TRIM_TARGET_RATIO);
-          // The prompt is re-read once either way, so first drop the RAG blocks of older turns
-          // (the bulk of the growth), and only then whole turns if that is not enough.
-          const ragStrip = stripOldRagBlocks(conversationHistory, ragInfo);
-          // A stripped message is a new object (same place, same length of history): it keeps
-          // its id, so the UI's list and its deleted messages stay in conversation order.
-          ragStrip.messages.forEach((m, i) => {
-            const old = conversationHistory[i];
-            if (m !== old && messageIds.has(old)) messageIds.set(m, messageIds.get(old));
-          });
-          conversationHistory = ragStrip.messages;
-          if (estimateMessagesTokens(conversationHistory) > target) {
-            conversationHistory = trimMessagesToBudget(conversationHistory, target);
-          }
-          console.log(`[Colibri Bridge] Trimmed history: RAG removed from ${ragStrip.stripped} older messages (~${Math.round(ragStrip.savedChars / CHARS_PER_TOKEN)} tokens), ${before} -> ${conversationHistory.length} messages (next request re-reads the prompt once)`);
-          nextStatus = 'Re-reading the conversation (older messages trimmed)...';
-        }
-
-        onEvent({ type: 'task_update', summary: nextStatus, status: 'thinking' });
-        nextStatus = 'Reading tool results...';
-
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
-          thinking: turnThinking,
-          separateReasoning: hasEmittedReasoning
-        });
-        if (result.reasoningText) hasEmittedReasoning = true;
-        if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
-
-        // Fallback: if the engine leaked a raw XML <tool_call> block into contentText (e.g. due to a
-        // stray tag like <killTeam> that broke llama.cpp's parser), recover valid <parameter=...> args,
-        // rewind the leaked XML from the UI, and execute it normally.
-        if (result.toolCalls.length === 0 && result.contentText && /<tool_call>/i.test(result.contentText)) {
-          const recovered = extractXmlToolCalls(result.contentText);
-          if (recovered.toolCalls.length > 0) {
-            if (result.contentText.length > recovered.cleanText.length) {
-              onEvent({ type: 'rewind', chars: result.contentText.length - recovered.cleanText.length });
+          // Trim the stored history itself (with headroom) rather than a per-request copy, so the
+          // prompt prefix only changes on the rare request that actually has to trim.
+          await refreshContextBudget();
+          if (promptTokens(conversationHistory) > inputTokenBudget()) {
+            const before = conversationHistory.length;
+            const target = Math.floor(inputTokenBudget() * COLIBRI_TRIM_TARGET_RATIO);
+            // The prompt is re-read once either way, so first drop the RAG blocks of older turns
+            // (the bulk of the growth), and only then whole turns if that is not enough.
+            const ragStrip = stripOldRagBlocks(conversationHistory, ragInfo);
+            // A stripped message is a new object (same place, same length of history): it keeps
+            // its id, so the UI's list and its deleted messages stay in conversation order.
+            ragStrip.messages.forEach((m, i) => {
+              const old = conversationHistory[i];
+              if (m !== old && messageIds.has(old)) messageIds.set(m, messageIds.get(old));
+            });
+            conversationHistory = ragStrip.messages;
+            if (estimateMessagesTokens(conversationHistory) > target) {
+              conversationHistory = trimMessagesToBudget(conversationHistory, target);
             }
-            result.contentText = recovered.cleanText;
-            result.toolCalls = recovered.toolCalls;
-          }
-        }
-
-        if (result.toolCalls.length > 0) {
-          conversationHistory.push(assistantHistoryMessage(result, result.contentText || null, {
-            tool_calls: result.toolCalls
-          }));
-
-          for (const tc of result.toolCalls) {
-            const toolName = tc.function.name;
-            let parsedArgs = {};
-            try {
-              parsedArgs = JSON.parse(tc.function.arguments || '{}');
-            } catch (_) { }
-
-            const summary = formatToolSummary(toolName, parsedArgs);
-            executedToolsInTurn.push({ toolName, commandLine: parsedArgs.commandLine || '' });
-
-            onEvent({
-              type: 'tool_call',
-              name: toolName,
-              args: parsedArgs,
-              status: 'running',
-              summary
-            });
-
-            const execRes = await executeTool(toolName, tc.function.arguments, trackedOnEvent);
-
-            onEvent({
-              type: 'tool_result',
-              name: toolName,
-              status: execRes.status,
-              summary,
-              output: execRes.output
-            });
-
-            conversationHistory.push({
-              role: 'tool',
-              tool_call_id: tc.id,
-              content: execRes.output
-            });
+            console.log(`[Colibri Bridge] Trimmed history: RAG removed from ${ragStrip.stripped} older messages (~${Math.round(ragStrip.savedChars / CHARS_PER_TOKEN)} tokens), ${before} -> ${conversationHistory.length} messages (next request re-reads the prompt once)`);
+            nextStatus = 'Re-reading the conversation (older messages trimmed)...';
           }
 
-          continue;
-        }
+          onEvent({ type: 'task_update', summary: nextStatus, status: 'thinking' });
+          nextStatus = 'Reading tool results...';
 
-        // Model produced final assistant message
-        const piece = result.contentText || '';
-        // Cut by the reply length limit (the server's --ngen, 8000 tokens): the context had room,
-        // but one answer of five full tables did not fit one reply. Keep what was written and ask
-        // for the rest. A user message, not Colibri's open-turn continuation, which refuses
-        // requests with tools: dropping them would change the prompt's start and re-read it all.
-        if (result.finishReason === 'length' && piece.trim() && continuations < MAX_REPLY_CONTINUATIONS &&
-            !isDestroyed && !activeAbortController.signal.aborted) {
-          continuations++;
-          // Resume at a line boundary: asked to go on from mid-word ("...retain"), the model
-          // restarted the half-written table row, then stopped. The unfinished last line (when
-          // short) is dropped from the stored reply and taken back off the screen.
-          let kept = piece;
-          const lastBreak = piece.lastIndexOf('\n');
-          if (lastBreak > 0 && piece.length - lastBreak - 1 <= 400) {
-            kept = piece.slice(0, lastBreak + 1);
-            if (piece.length > kept.length) onEvent({ type: 'rewind', chars: piece.length - kept.length });
-          }
-          partialReply += kept;
-          conversationHistory.push(assistantHistoryMessage(result, kept.replace(/\s+$/, '')));
-          conversationHistory.push({ role: 'user', content: continueReplyMessage(kept) });
-          console.log(`[Colibri Bridge] Reply cut by the length limit (${piece.length} chars, ${piece.length - kept.length} of an unfinished line dropped); asking for continuation ${continuations}/${MAX_REPLY_CONTINUATIONS}.`);
-          nextStatus = 'Continuing the reply (length limit reached)...';
-          iter--;   // a continuation is not a tool round
-          continue;
-        }
-        finalResponseText = partialReply + piece;
-        conversationHistory.push(assistantHistoryMessage(result, piece));
-        if (continuations > 0) {
-          console.log(`[Colibri Bridge] Continued reply ended (finish ${result.finishReason}, last piece ${piece.length} chars, reasoning ${(result.reasoningText || '').length} chars, ${result.usage?.completion_tokens ?? '?'} tokens).`);
-        }
-        if (result.finishReason === 'length') {
-          console.log('[Colibri Bridge] Reply cut by the length limit and the continuations are used up.');
-          onEvent({ type: 'token', content: '\n\n_(The reply reached its length limit. Ask for the rest, e.g. "continue from where you stopped".)_' });
-        }
-        break;
-      }
-      if (!finalResponseText && partialReply) finalResponseText = partialReply;
-
-      // The tool rounds ran out while the model was still gathering data (the last stored message
-      // is a tool result): without this the turn ended with no answer. Ask once for an answer from
-      // what it has. The tools stay in the request: dropping them (tool_choice "none") would
-      // change the prompt's start and make the engine re-read the whole conversation.
-      const roundsRanOut = conversationHistory[conversationHistory.length - 1]?.role === 'tool';
-      if (!finalResponseText && roundsRanOut && !isDestroyed && !activeAbortController.signal.aborted) {
-        console.log(`[Colibri Bridge] Tool round limit (${COLIBRI_MAX_TOOL_ITERATIONS}) reached; asking for an answer from the results so far.`);
-        conversationHistory.push({ role: 'user', content: TOOL_LIMIT_MESSAGE });
-        onEvent({ type: 'task_update', summary: 'Tool limit reached, writing the answer...', status: 'thinking' });
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
-          thinking: turnThinking,
-          separateReasoning: hasEmittedReasoning
-        });
-        if (result.reasoningText) hasEmittedReasoning = true;
-        if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
-        finalResponseText = result.contentText || '';
-        if (result.toolCalls.length > 0) {
-          // Store exactly what the engine generated (so its cache stays valid) but run nothing.
-          conversationHistory.push(assistantHistoryMessage(result, result.contentText || null, { tool_calls: result.toolCalls }));
-          for (const tc of result.toolCalls) {
-            conversationHistory.push({ role: 'tool', tool_call_id: tc.id, content: 'Not run: the tool limit for this message was reached.' });
-          }
-        } else {
-          conversationHistory.push(assistantHistoryMessage(result, finalResponseText));
-        }
-        // Asked for the answer, the model called tools again (asked for a full session plan, one
-        // model kept fetching records and the GM got "No answer was written"). Last try with tool
-        // calls switched off: the engine re-reads the conversation once, but an answer comes back.
-        if (!finalResponseText.trim() && result.toolCalls.length > 0 && !isDestroyed && !activeAbortController.signal.aborted) {
-          console.log('[Colibri Bridge] Still calling tools after the limit; asking again with tool calls switched off.');
-          conversationHistory.push({ role: 'user', content: TOOLS_OFF_MESSAGE });
-          const last = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
-            toolChoice: 'none',
+          const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
             thinking: turnThinking,
+            temperature: turnTemperature,
             separateReasoning: hasEmittedReasoning
           });
-          if (last.reasoningText) hasEmittedReasoning = true;
-          if (last.usage) { lastUsage = last.usage; lastTimings = last.timings || null; }
-          finalResponseText = last.contentText || '';
-          if (last.toolCalls.length > 0) {
-            conversationHistory.push(assistantHistoryMessage(last, last.contentText || null, { tool_calls: last.toolCalls }));
-            for (const tc of last.toolCalls) {
+          if (result.reasoningText) hasEmittedReasoning = true;
+          if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
+
+          // Fallback: if the engine leaked a raw XML <tool_call> block into contentText (e.g. due to a
+          // stray tag like <killTeam> that broke llama.cpp's parser), recover valid <parameter=...> args,
+          // rewind the leaked XML from the UI, and execute it normally.
+          if (result.toolCalls.length === 0 && result.contentText && /<tool_call>/i.test(result.contentText)) {
+            const recovered = extractXmlToolCalls(result.contentText);
+            if (recovered.toolCalls.length > 0) {
+              if (result.contentText.length > recovered.cleanText.length) {
+                onEvent({ type: 'rewind', chars: result.contentText.length - recovered.cleanText.length });
+              }
+              result.contentText = recovered.cleanText;
+              result.toolCalls = recovered.toolCalls;
+            }
+          }
+
+          if (result.toolCalls.length > 0) {
+            conversationHistory.push(assistantHistoryMessage(result, result.contentText || null, {
+              tool_calls: result.toolCalls
+            }));
+
+            for (const tc of result.toolCalls) {
+              const toolName = tc.function.name;
+              let parsedArgs = {};
+              try {
+                parsedArgs = JSON.parse(tc.function.arguments || '{}');
+              } catch (_) { }
+
+              const summary = formatToolSummary(toolName, parsedArgs);
+              executedToolsInTurn.push({ toolName, commandLine: parsedArgs.commandLine || '' });
+
+              onEvent({
+                type: 'tool_call',
+                name: toolName,
+                args: parsedArgs,
+                status: 'running',
+                summary
+              });
+
+              const execRes = await executeTool(toolName, tc.function.arguments, trackedOnEvent);
+
+              onEvent({
+                type: 'tool_result',
+                name: toolName,
+                status: execRes.status,
+                summary,
+                output: execRes.output
+              });
+
+              conversationHistory.push({
+                role: 'tool',
+                tool_call_id: tc.id,
+                content: execRes.output
+              });
+            }
+
+            continue;
+          }
+
+          // Model produced final assistant message
+          const piece = result.contentText || '';
+          // Cut by the reply length limit (the server's --ngen, 8000 tokens): the context had room,
+          // but one answer of five full tables did not fit one reply. Keep what was written and ask
+          // for the rest. A user message, not Colibri's open-turn continuation, which refuses
+          // requests with tools: dropping them would change the prompt's start and re-read it all.
+          if (result.finishReason === 'length' && piece.trim() && continuations < MAX_REPLY_CONTINUATIONS &&
+            !isDestroyed && !activeAbortController.signal.aborted) {
+            continuations++;
+            // Resume at a line boundary: asked to go on from mid-word ("...retain"), the model
+            // restarted the half-written table row, then stopped. The unfinished last line (when
+            // short) is dropped from the stored reply and taken back off the screen.
+            let kept = piece;
+            const lastBreak = piece.lastIndexOf('\n');
+            if (lastBreak > 0 && piece.length - lastBreak - 1 <= 400) {
+              kept = piece.slice(0, lastBreak + 1);
+              if (piece.length > kept.length) onEvent({ type: 'rewind', chars: piece.length - kept.length });
+            }
+            partialReply += kept;
+            conversationHistory.push(assistantHistoryMessage(result, kept.replace(/\s+$/, '')));
+            conversationHistory.push({ role: 'user', content: continueReplyMessage(kept) });
+            console.log(`[Colibri Bridge] Reply cut by the length limit (${piece.length} chars, ${piece.length - kept.length} of an unfinished line dropped); asking for continuation ${continuations}/${MAX_REPLY_CONTINUATIONS}.`);
+            nextStatus = 'Continuing the reply (length limit reached)...';
+            iter--;   // a continuation is not a tool round
+            continue;
+          }
+          finalResponseText = partialReply + piece;
+          conversationHistory.push(assistantHistoryMessage(result, piece));
+          if (continuations > 0) {
+            console.log(`[Colibri Bridge] Continued reply ended (finish ${result.finishReason}, last piece ${piece.length} chars, reasoning ${(result.reasoningText || '').length} chars, ${result.usage?.completion_tokens ?? '?'} tokens).`);
+          }
+          if (result.finishReason === 'length') {
+            console.log('[Colibri Bridge] Reply cut by the length limit and the continuations are used up.');
+            onEvent({ type: 'token', content: '\n\n_(The reply reached its length limit. Ask for the rest, e.g. "continue from where you stopped".)_' });
+          }
+          break;
+        }
+        if (!finalResponseText && partialReply) finalResponseText = partialReply;
+
+        // The tool rounds ran out while the model was still gathering data (the last stored message
+        // is a tool result): without this the turn ended with no answer. Ask once for an answer from
+        // what it has. The tools stay in the request: dropping them (tool_choice "none") would
+        // change the prompt's start and make the engine re-read the whole conversation.
+        const roundsRanOut = conversationHistory[conversationHistory.length - 1]?.role === 'tool';
+        if (!finalResponseText && roundsRanOut && !isDestroyed && !activeAbortController.signal.aborted) {
+          console.log(`[Colibri Bridge] Tool round limit (${COLIBRI_MAX_TOOL_ITERATIONS}) reached; asking for an answer from the results so far.`);
+          conversationHistory.push({ role: 'user', content: TOOL_LIMIT_MESSAGE });
+          onEvent({ type: 'task_update', summary: 'Tool limit reached, writing the answer...', status: 'thinking' });
+          const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
+            thinking: turnThinking,
+            temperature: turnTemperature,
+            separateReasoning: hasEmittedReasoning
+          });
+          if (result.reasoningText) hasEmittedReasoning = true;
+          if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
+          finalResponseText = result.contentText || '';
+          if (result.toolCalls.length > 0) {
+            // Store exactly what the engine generated (so its cache stays valid) but run nothing.
+            conversationHistory.push(assistantHistoryMessage(result, result.contentText || null, { tool_calls: result.toolCalls }));
+            for (const tc of result.toolCalls) {
               conversationHistory.push({ role: 'tool', tool_call_id: tc.id, content: 'Not run: the tool limit for this message was reached.' });
             }
           } else {
-            conversationHistory.push(assistantHistoryMessage(last, finalResponseText));
+            conversationHistory.push(assistantHistoryMessage(result, finalResponseText));
+          }
+          // Asked for the answer, the model called tools again (asked for a full session plan, one
+          // model kept fetching records and the GM got "No answer was written"). Last try with tool
+          // calls switched off: the engine re-reads the conversation once, but an answer comes back.
+          if (!finalResponseText.trim() && result.toolCalls.length > 0 && !isDestroyed && !activeAbortController.signal.aborted) {
+            console.log('[Colibri Bridge] Still calling tools after the limit; asking again with tool calls switched off.');
+            conversationHistory.push({ role: 'user', content: TOOLS_OFF_MESSAGE });
+            const last = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
+              toolChoice: 'none',
+              thinking: turnThinking,
+              temperature: turnTemperature,
+              separateReasoning: hasEmittedReasoning
+            });
+            if (last.reasoningText) hasEmittedReasoning = true;
+            if (last.usage) { lastUsage = last.usage; lastTimings = last.timings || null; }
+            finalResponseText = last.contentText || '';
+            if (last.toolCalls.length > 0) {
+              conversationHistory.push(assistantHistoryMessage(last, last.contentText || null, { tool_calls: last.toolCalls }));
+              for (const tc of last.toolCalls) {
+                conversationHistory.push({ role: 'tool', tool_call_id: tc.id, content: 'Not run: the tool limit for this message was reached.' });
+              }
+            } else {
+              conversationHistory.push(assistantHistoryMessage(last, finalResponseText));
+            }
           }
         }
-      }
-      if (!finalResponseText.trim() && pendingCommandsCount === 0 && !isDestroyed && !activeAbortController.signal.aborted) {
-        const reason = roundsRanOut
-          ? `the request needed more than ${COLIBRI_MAX_TOOL_ITERATIONS} rounds of tool calls`
-          : 'the model returned an empty reply';
-        console.log(`[Colibri Bridge] Turn ended without answer text (${reason}).`);
-        onEvent({ type: 'token', content: noAnswerNotice(reason) });
-      }
-
-      if (pendingCommandsCount === 0 && finalResponseText) {
-        const stagedFromText = await extractCommandsFromText(finalResponseText, activeCampaignId, trackedOnEvent);
-        // Asked to save, the model only wrote the plan out: the staging nudge below first gives it
-        // one chance to call stage_command itself; staging the reply text is the last resort.
-        const nudgeComing = !stagingNudged && stagingWasRequested(text) && !replyAsksForDetails(finalResponseText);
-        if (!stagedFromText && !nudgeComing) {
-          await tryFallbackAutoStage(finalResponseText, activeCampaignId, trackedOnEvent, text, executedToolsInTurn);
+        if (!finalResponseText.trim() && pendingCommandsCount === 0 && !isDestroyed && !activeAbortController.signal.aborted) {
+          const reason = roundsRanOut
+            ? `the request needed more than ${COLIBRI_MAX_TOOL_ITERATIONS} rounds of tool calls`
+            : 'the model returned an empty reply';
+          console.log(`[Colibri Bridge] Turn ended without answer text (${reason}).`);
+          onEvent({ type: 'token', content: noAnswerNotice(reason) });
         }
-      }
 
-      // The reply claims a change is staged / awaiting approval, or the GM asked for an Approval
-      // Card and the reply only drafted it, but no card exists: give the model one chance to
-      // actually call stage_command.
-      const claimed = claimsStagedWithoutCard(finalResponseText, text);
-      const draftedOnly = !claimed && stagingWasRequested(text) && !replyAsksForDetails(finalResponseText);
-      if (!stagingNudged && pendingCommandsCount === 0 && (claimed || draftedOnly) &&
+        if (pendingCommandsCount === 0 && finalResponseText) {
+          const stagedFromText = await extractCommandsFromText(finalResponseText, activeCampaignId, trackedOnEvent);
+          // Asked to save, the model only wrote the plan out: the staging nudge below first gives it
+          // one chance to call stage_command itself; staging the reply text is the last resort.
+          const nudgeComing = !stagingNudged && stagingWasRequested(text) && !replyAsksForDetails(finalResponseText);
+          if (!stagedFromText && !nudgeComing) {
+            await tryFallbackAutoStage(finalResponseText, activeCampaignId, trackedOnEvent, text, executedToolsInTurn);
+          }
+        }
+
+        // The reply claims a change is staged / awaiting approval, or the GM asked for an Approval
+        // Card and the reply only drafted it, but no card exists: give the model one chance to
+        // actually call stage_command.
+        const claimed = claimsStagedWithoutCard(finalResponseText, text);
+        const draftedOnly = !claimed && stagingWasRequested(text) && !replyAsksForDetails(finalResponseText);
+        if (!stagingNudged && pendingCommandsCount === 0 && (claimed || draftedOnly) &&
           !isDestroyed && !activeAbortController.signal.aborted) {
-        stagingNudged = true;
-        console.log(claimed
-          ? '[Colibri Bridge] Reply claims staging but no Approval Card was created; asking the model to call stage_command.'
-          : '[Colibri Bridge] The GM asked for an Approval Card but the reply created none; asking the model to call stage_command.');
-        nextStatus = 'Creating the Approval Card...';
-        onEvent({ type: 'token', content: '\n\n' });
-        conversationHistory.push({ role: 'user', content: claimed ? STAGING_CHECK_MESSAGE : STAGING_REQUESTED_MESSAGE });
-        continue;
-      }
-      break;
+          stagingNudged = true;
+          console.log(claimed
+            ? '[Colibri Bridge] Reply claims staging but no Approval Card was created; asking the model to call stage_command.'
+            : '[Colibri Bridge] The GM asked for an Approval Card but the reply created none; asking the model to call stage_command.');
+          nextStatus = 'Creating the Approval Card...';
+          onEvent({ type: 'token', content: '\n\n' });
+          conversationHistory.push({ role: 'user', content: claimed ? STAGING_CHECK_MESSAGE : STAGING_REQUESTED_MESSAGE });
+          continue;
+        }
+        break;
       }
 
       onEvent({

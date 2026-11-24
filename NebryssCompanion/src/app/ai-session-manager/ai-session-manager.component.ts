@@ -108,6 +108,10 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   experimentalFormat = true;
   // Reasoning/thinking mode for local models (off by default; toggleable per message without restart)
   thinkingEnabled = false;
+  // Sampling temperature for local models (0..1; auto-set to 0.25 with think off, 0.6 with think on)
+  temperature = 0.25;
+  // Collapsible model settings panel inside the sidebar (collapsed by default)
+  settingsOpen = false;
 
   // AI Engine menu: level 1 picks Local, FLUX or AGY; level 2 the local setup (Colibri or
   // llama.cpp) or AGY's model
@@ -119,6 +123,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     'q2kxl-96k': 'balance',
     'iq2m-120k': 'unfold_more',
     'llamacpp-q2kxl-150k-q8': 'star',
+    'llamacpp-qwen38-iq3s-150k-q4': 'verified',
     'llamacpp-iq3xxs-120k-q8': 'speed',
     'llamacpp-iq3xxs-128k': 'speed',
     'llamacpp-iq3xxs-256k': 'all_inclusive'
@@ -240,6 +245,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(on => {
         this.thinkingEnabled = on;
+      });
+
+    this.aiService.temperature$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(temp => {
+        this.temperature = temp;
       });
 
     // Colibri engine state and switch progress (from this or any other open UI)
@@ -445,12 +456,21 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     this.aiService.cancelResponse();
   }
 
-  get showThinkingToggle(): boolean {
-    return this.agentBackend === 'colibri';
+  get showEngineSettings(): boolean {
+    return (this.agentBackend === 'colibri' && !this.fluxActive) || this.canStopEngine || this.canStartEngine;
   }
 
-  toggleThinking(): void {
-    this.aiService.setThinkingEnabled(!this.thinkingEnabled);
+  get settingsSummary(): string {
+    if (this.agentBackend !== 'colibri' || this.fluxActive) return '';
+    return `${this.thinkingEnabled ? 'Think · ' : ''}${this.temperature.toFixed(2)}`;
+  }
+
+  onThinkingChange(enabled: boolean): void {
+    this.aiService.setThinkingEnabled(enabled);
+  }
+
+  onTemperatureChange(value: number | string): void {
+    this.aiService.setTemperature(Number(value));
   }
 
   toggleMessageReasoning(msg: ChatMessage): void {

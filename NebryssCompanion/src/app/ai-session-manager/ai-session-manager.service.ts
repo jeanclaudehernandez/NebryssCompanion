@@ -299,6 +299,8 @@ export class AiSessionManagerService implements OnDestroy {
   private experimentalFormatSubject = new BehaviorSubject<boolean>(this.loadSavedExperimentalFormat());
   // Reasoning/thinking toggle for local models (off by default for fast turns)
   private thinkingEnabledSubject = new BehaviorSubject<boolean>(this.loadSavedThinking());
+  // Sampling temperature for local models (0..1; defaults to 0.25 with think off, 0.6 with think on)
+  private temperatureSubject = new BehaviorSubject<number>(this.loadSavedTemperature());
 
   private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
   public commandResult$ = this.commandResultSubject.asObservable();
@@ -319,6 +321,7 @@ export class AiSessionManagerService implements OnDestroy {
   colibriEngine$: Observable<ColibriEngineState | null> = this.colibriEngineSubject.asObservable();
   experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
   thinkingEnabled$: Observable<boolean> = this.thinkingEnabledSubject.asObservable();
+  temperature$: Observable<number> = this.temperatureSubject.asObservable();
   history$: Observable<HistorySnapshot> = this.historySubject.asObservable();
   fluxCatalog$: Observable<FluxCatalog | null> = this.fluxCatalogSubject.asObservable();
   fluxState$: Observable<FluxState | null> = this.fluxStateSubject.asObservable();
@@ -435,6 +438,7 @@ export class AiSessionManagerService implements OnDestroy {
       message: text,
       campaignId: campaignId || undefined,
       thinking: this.thinkingEnabledSubject.value,
+      temperature: this.temperatureSubject.value,
     }));
 
     // Prepare for streaming response
@@ -493,11 +497,14 @@ export class AiSessionManagerService implements OnDestroy {
 
   setThinkingEnabled(enabled: boolean): void {
     const next = Boolean(enabled);
-    if (this.thinkingEnabledSubject.value === next) return;
-    this.thinkingEnabledSubject.next(next);
-    try {
-      localStorage.setItem('nebryss_ai_thinking', next ? 'true' : 'false');
-    } catch (_) {}
+    const changed = this.thinkingEnabledSubject.value !== next;
+    if (changed) {
+      this.thinkingEnabledSubject.next(next);
+      try {
+        localStorage.setItem('nebryss_ai_thinking', next ? 'true' : 'false');
+      } catch (_) {}
+    }
+    this.setTemperature(next ? 0.6 : 0.25);
   }
 
   private loadSavedThinking(): boolean {
@@ -506,6 +513,30 @@ export class AiSessionManagerService implements OnDestroy {
     } catch (_) {
       return false;
     }
+  }
+
+  setTemperature(value: number): void {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return;
+    const clamped = Math.round(Math.min(1, Math.max(0, num)) * 100) / 100;
+    if (this.temperatureSubject.value === clamped) return;
+    this.temperatureSubject.next(clamped);
+    try {
+      localStorage.setItem('nebryss_ai_temperature', String(clamped));
+    } catch (_) {}
+  }
+
+  private loadSavedTemperature(): number {
+    try {
+      const saved = localStorage.getItem('nebryss_ai_temperature');
+      if (saved !== null) {
+        const parsed = Number(saved);
+        if (Number.isFinite(parsed)) {
+          return Math.round(Math.min(1, Math.max(0, parsed)) * 100) / 100;
+        }
+      }
+    } catch (_) {}
+    return this.loadSavedThinking() ? 0.6 : 0.25;
   }
 
   setAgyModel(modelId: string): void {

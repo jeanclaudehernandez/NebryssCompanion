@@ -13,11 +13,10 @@
     </div>
 
     <div class="sidebar-content" *ngIf="!sidebarCollapsed">
-      <!-- Connection Status -->
-      <div class="status-bar">
-        <span class="status-dot" [class.connected]="connectionStatus === 'connected'"
-          [class.reconnecting]="connectionStatus === 'reconnecting'"
-          [class.disconnected]="connectionStatus === 'disconnected' || connectionStatus === 'connecting'">
+      <!-- Connection warning (only shown when disconnected / reconnecting) -->
+      <div class="status-bar" *ngIf="connectionStatus === 'disconnected' || connectionStatus === 'reconnecting'">
+        <span class="status-dot" [class.reconnecting]="connectionStatus === 'reconnecting'"
+          [class.disconnected]="connectionStatus === 'disconnected'">
         </span>
         <span class="status-label">{{ connectionStatus | titlecase }}</span>
         <button class="btn-icon btn-reconnect" *ngIf="connectionStatus === 'disconnected'" (click)="reconnect()"
@@ -142,27 +141,68 @@
           *ngIf="agentBackend === 'colibri' && (colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown')">
           {{ engineStatusText }}
         </div>
-        <button type="button" class="engine-stop-btn" *ngIf="canStopEngine"
-          [disabled]="isAgentTyping && agentBackend === 'colibri' && !fluxActive" (click)="stopEngine()"
-          [title]="(colibriEngine?.mode === 'flux' ? 'Stops ComfyUI' : 'Stops the ' + (localEngineName || 'local') + ' server') + ' and frees the GPU. The conversation is kept; pick an engine in the menu above to start one again.'">
-          <span class="material-icons">power_settings_new</span>
-          <span>{{ stopEngineLabel }}</span>
-        </button>
-        <button type="button" class="engine-stop-btn engine-start-btn" *ngIf="canStartEngine"
-          [disabled]="isAgentTyping || connectionStatus !== 'connected'" (click)="startEngine()"
-          [title]="'Starts ' + (defaultEngineProfile ? profileName(defaultEngineProfile) + ' (' + profileDescription(defaultEngineProfile) + ')' : 'the default local setup') + ' on the GPU. Other setups are in the menu above.'">
-          <span class="material-icons">power_settings_new</span>
-          <span>{{ startEngineLabel }}</span>
-        </button>
-        <label class="experimental-format" *ngIf="agentBackend === 'colibri' && !fluxActive"
-          title="Sends lists (bestiary, players, rules...) to the model as tables instead of JSON: about 12-24% fewer tokens. Applies from the next tool call.">
-          <input type="checkbox" [ngModel]="experimentalFormat" (ngModelChange)="onExperimentalFormatChange($event)"
-            [disabled]="isAgentTyping">
-          <span class="experimental-format-text">
-            Experimental format
-            <span class="experimental-format-hint">Lists as tables, fewer tokens</span>
-          </span>
-        </label>
+
+        <!-- Collapsible model settings (thinking, temperature, experimental format, power) -->
+        <div class="engine-settings" *ngIf="showEngineSettings" [class.open]="settingsOpen">
+          <button type="button" class="engine-settings-toggle" (click)="settingsOpen = !settingsOpen"
+            [attr.aria-expanded]="settingsOpen">
+            <span class="material-icons engine-settings-icon">tune</span>
+            <span class="engine-settings-title">Settings</span>
+            <span class="engine-settings-summary" *ngIf="settingsSummary && !settingsOpen">{{ settingsSummary }}</span>
+            <span class="material-icons engine-settings-chevron">{{ settingsOpen ? 'expand_less' : 'expand_more' }}</span>
+          </button>
+
+          <div class="engine-settings-body" *ngIf="settingsOpen">
+            <ng-container *ngIf="agentBackend === 'colibri' && !fluxActive">
+              <label class="experimental-format settings-row"
+                title="Enables step-by-step reasoning for the next message without restarting. Automatically sets temperature to 0.6 when ON and 0.25 when OFF.">
+                <input type="checkbox" [ngModel]="thinkingEnabled" (ngModelChange)="onThinkingChange($event)"
+                  [disabled]="connectionStatus !== 'connected'">
+                <span class="experimental-format-text">
+                  Thinking
+                  <span class="experimental-format-hint">Deeper reasoning (auto temp 0.6 / 0.25)</span>
+                </span>
+              </label>
+
+              <div class="settings-slider-group">
+                <div class="settings-slider-header">
+                  <label class="settings-slider-label" for="ai-temperature-slider">Temperature</label>
+                  <span class="settings-slider-value">{{ temperature | number:'1.2-2' }}</span>
+                </div>
+                <input id="ai-temperature-slider" type="range" class="settings-slider" min="0" max="1" step="0.05"
+                  [ngModel]="temperature" (ngModelChange)="onTemperatureChange($event)"
+                  [disabled]="connectionStatus !== 'connected'">
+                <div class="settings-slider-scale">
+                  <span>0.0 Precise</span>
+                  <span>1.0 Creative</span>
+                </div>
+              </div>
+
+              <label class="experimental-format settings-row"
+                title="Sends lists (bestiary, players, rules...) to the model as tables instead of JSON: about 12-24% fewer tokens. Applies from the next tool call.">
+                <input type="checkbox" [ngModel]="experimentalFormat" (ngModelChange)="onExperimentalFormatChange($event)"
+                  [disabled]="isAgentTyping">
+                <span class="experimental-format-text">
+                  Experimental format
+                  <span class="experimental-format-hint">Lists as tables, fewer tokens</span>
+                </span>
+              </label>
+            </ng-container>
+
+            <button type="button" class="engine-stop-btn" *ngIf="canStopEngine"
+              [disabled]="isAgentTyping && agentBackend === 'colibri' && !fluxActive" (click)="stopEngine()"
+              [title]="(colibriEngine?.mode === 'flux' ? 'Stops ComfyUI' : 'Stops the ' + (localEngineName || 'local') + ' server') + ' and frees the GPU. The conversation is kept; pick an engine in the menu above to start one again.'">
+              <span class="material-icons">power_settings_new</span>
+              <span>{{ stopEngineLabel }}</span>
+            </button>
+            <button type="button" class="engine-stop-btn engine-start-btn" *ngIf="canStartEngine"
+              [disabled]="isAgentTyping || connectionStatus !== 'connected'" (click)="startEngine()"
+              [title]="'Starts ' + (defaultEngineProfile ? profileName(defaultEngineProfile) + ' (' + profileDescription(defaultEngineProfile) + ')' : 'the default local setup') + ' on the GPU. Other setups are in the menu above.'">
+              <span class="material-icons">power_settings_new</span>
+              <span>{{ startEngineLabel }}</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Active Campaign -->
@@ -209,7 +249,7 @@
         </div>
       </div>
 
-      <!-- Quick Actions (chat only: hidden while FLUX has the GPU) -->
+      <!-- Quick Actions & Draft Templates (chat only: hidden while FLUX has the GPU) -->
       <div class="context-section" *ngIf="!fluxActive">
         <div class="context-label">Quick Actions</div>
         <div class="quick-actions">
@@ -226,25 +266,18 @@
           <button class="quick-action-btn" (click)="sendQuickAction('conclude-session')"
             [disabled]="isAgentTyping || connectionStatus !== 'connected'">
             <span class="material-icons">check_circle_outline</span>
-            <span>Conclude Session</span>
+            <span>Conclude</span>
           </button>
           <button class="quick-action-btn" (click)="sendQuickAction('list-sessions')"
             [disabled]="isAgentTyping || connectionStatus !== 'connected'">
             <span class="material-icons">format_list_numbered</span>
             <span>List Sessions</span>
           </button>
-        </div>
-
-        <!-- Draft templates: fill the message box, nothing is sent -->
-        <div class="context-label draft-label" id="draft-actions-label">
-          Draft <span class="draft-label-hint">fills the message box</span>
-        </div>
-        <div class="draft-actions" role="group" aria-labelledby="draft-actions-label">
-          <button type="button" class="quick-action-btn" *ngFor="let t of draftTemplates" (click)="prefillDraft(t.id)"
-            [disabled]="connectionStatus !== 'connected'"
-            [title]="'Put a ' + t.label.toLowerCase() + ' template in the message box to fill in (not sent)'">
+          <button type="button" class="quick-action-btn draft-action-btn" *ngFor="let t of draftTemplates"
+            (click)="prefillDraft(t.id)" [disabled]="connectionStatus !== 'connected'"
+            [title]="'Put a ' + t.label.toLowerCase() + ' draft template in the message box (not sent)'">
             <span class="material-icons">{{ t.icon }}</span>
-            <span>{{ t.label }}</span>
+            <span>Draft {{ t.label }}</span>
           </button>
         </div>
       </div>
@@ -545,13 +578,6 @@
         <textarea #inputArea class="message-input" [(ngModel)]="inputText" (keydown)="onInputKeydown($event)"
           placeholder="Type a message..." [disabled]="connectionStatus !== 'connected'" rows="1"
           (input)="autoResizeInput()"></textarea>
-        <button type="button" class="btn-think-toggle" *ngIf="showThinkingToggle"
-          [class.active]="thinkingEnabled" [disabled]="connectionStatus !== 'connected'"
-          (click)="toggleThinking()" [attr.aria-pressed]="thinkingEnabled"
-          [title]="thinkingEnabled ? 'Thinking ON (deeper planning, ~2-3x slower — click to turn off)' : 'Thinking OFF (fast replies — click to enable reasoning for next message)'">
-          <span class="material-icons">psychology</span>
-          <span class="think-label">Think</span>
-        </button>
         <button class="btn-send" *ngIf="!isAgentTyping" (click)="sendCurrentMessage()"
           [disabled]="!inputText.trim() || connectionStatus !== 'connected'">
           <span class="material-icons">send</span>

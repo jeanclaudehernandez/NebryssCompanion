@@ -23,6 +23,12 @@ const QWEN_IQ3XXS_GGUF = process.env.LLAMACPP_MODEL_PATH
 // The unsloth UD-Q2_K_XL GGUF of the same model (Colibri's q2kxl setup links to it too).
 const QWEN_Q2KXL_GGUF = process.env.LLAMACPP_Q2KXL_MODEL_PATH
   || path.join(COLIBRI_DIR, 'colibri-models', 'gguf', 'Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf');
+// ISTA-DASLab GSQ-RCO IQ3_S dense 27B model (measured 2026-11-24: 99.5/100 suite100, 80/80 staging, 0 risky).
+const QWEN38_DIR = process.env.LLAMACPP_QWEN38_DIR || 'C:\\Users\\Jean\\Desktop\\llm-eval\\qwen38';
+const QWEN38_IQ3S_GGUF = process.env.LLAMACPP_QWEN38_MODEL_PATH
+  || path.join(QWEN38_DIR, 'Qwen3.8-27B-GSQ-RCO-IQ3_S.gguf');
+const QWEN38_SERVER_EXE = process.env.LLAMACPP_QWEN38_SERVER
+  || path.join(QWEN38_DIR, 'llama-b12651-cu135', 'llama-server.exe');
 const REPLY_TOKENS = 8000; // as Colibri's --ngen: the bridge's history budget is context - this
 
 /**
@@ -46,7 +52,7 @@ const REPLY_TOKENS = 8000; // as Colibri's --ngen: the bridge's history budget i
  *   ~120k real tokens, tests at 121-135k): 11 of 12 tests in 9 of 10 runs.
  * kvCache: 'f16' (llama-server's default) or 'q8_0' (--cache-type-k/-v q8_0, about half the size).
  */
-function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCache = 'f16') {
+function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCache = 'f16', opts = {}) {
   return {
     id,
     engine: 'llamacpp',
@@ -56,12 +62,19 @@ function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCa
     contextTokens,
     nCpuMoe,
     kvCache,
+    ubatchSize: opts.ubatchSize || 2048,
+    serverExe: opts.serverExe || null,
     env: {}
   };
 }
 const PROFILES = {
   'llamacpp-q2kxl-150k-q8': llamaProfile('llamacpp-q2kxl-150k-q8', 'UD-Q2_K_XL',
     'Every expert on the GPU: the best-scoring local setup', QWEN_Q2KXL_GGUF, 150000, 0, 'q8_0'),
+  'llamacpp-qwen38-iq3s-150k-q4': llamaProfile('llamacpp-qwen38-iq3s-150k-q4', 'Qwen3.8-27B IQ3_S',
+    'Dense 27B GSQ-RCO: highest accuracy & zero-error staging (slower than 3.6)', QWEN38_IQ3S_GGUF, 150000, null, 'q4_0', {
+      ubatchSize: 512,
+      serverExe: QWEN38_SERVER_EXE
+    }),
   'llamacpp-iq3xxs-120k-q8': llamaProfile('llamacpp-iq3xxs-120k-q8', 'IQ3_XXS',
     'Every expert on the GPU: the fastest local setup', QWEN_IQ3XXS_GGUF, 120000, 0, 'q8_0'),
   'llamacpp-iq3xxs-128k': llamaProfile('llamacpp-iq3xxs-128k', 'IQ3_XXS',
@@ -74,9 +87,10 @@ function isLlamaProfile(profile) {
   return !!profile && profile.engine === 'llamacpp';
 }
 
-/** llama-server.exe: LLAMACPP_SERVER, else the one Ollama installs (it bundles a CUDA build). */
-function resolveServerExe() {
+/** llama-server.exe: profile override, else LLAMACPP_SERVER, else the one Ollama installs (CUDA build). */
+function resolveServerExe(profile = null) {
   const candidates = [
+    profile?.serverExe,
     process.env.LLAMACPP_SERVER,
     process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Programs', 'Ollama', 'lib', 'ollama', 'llama-server.exe')
   ].filter(Boolean);
@@ -104,10 +118,10 @@ function serverArgs(profile, port) {
     '--ctx-size', String(profile.contextTokens),
     '--parallel', '1',
     '--n-gpu-layers', '99',
-    '--n-cpu-moe', String(profile.nCpuMoe),
+    ...(profile.nCpuMoe !== null && profile.nCpuMoe !== undefined ? ['--n-cpu-moe', String(profile.nCpuMoe)] : []),
     '--flash-attn', 'on',
     '--batch-size', '2048',
-    '--ubatch-size', '2048',
+    '--ubatch-size', String(profile.ubatchSize || 2048),
     '--threads', String(Number(process.env.LLAMACPP_THREADS) || 8),
     '--n-predict', String(REPLY_TOKENS),
     // 'auto' lets each request toggle thinking via chat_template_kwargs.enable_thinking
@@ -135,7 +149,7 @@ function launchSpec(profile, port) {
   if (!fs.existsSync(profile.modelPath)) {
     throw new Error(`The model file was not found: ${profile.modelPath} (set LLAMACPP_MODEL_PATH).`);
   }
-  const exe = resolveServerExe();
+  const exe = resolveServerExe(profile);
   const backendDir = resolveBackendDir(exe);
   const args = serverArgs(profile, port);
   return {

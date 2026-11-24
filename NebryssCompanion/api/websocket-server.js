@@ -162,7 +162,13 @@ function setupWebSocketServer(server) {
               ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
-            session.sendMessage(msg.message, msg.campaignId || null, { thinking: Boolean(msg.thinking) });
+            const parsedTemp = (typeof msg.temperature === 'number' && Number.isFinite(msg.temperature))
+              ? Math.min(1, Math.max(0, msg.temperature))
+              : undefined;
+            session.sendMessage(msg.message, msg.campaignId || null, {
+              thinking: Boolean(msg.thinking),
+              ...(parsedTemp !== undefined ? { temperature: parsedTemp } : {})
+            });
             break;
 
           case 'approve_command': {

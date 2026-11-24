@@ -110,7 +110,7 @@ let emitTimer = null;
  * llama.cpp IQ3_XXS 256k (2026-11-21: 92) stays for very long contexts. The others stay
  * defined, so a server running one of them is still recognised and can be stopped.
  */
-const OFFERED_PROFILES = [DEFAULT_PROFILE, 'iq3xxs-64k', 'llamacpp-iq3xxs-120k-q8', 'llamacpp-iq3xxs-256k'];
+const OFFERED_PROFILES = [DEFAULT_PROFILE, 'llamacpp-qwen38-iq3s-150k-q4', 'llamacpp-iq3xxs-256k'];
 
 /** 'Colibri' or 'llama.cpp' for an engine id ('colibri' | 'llamacpp'); '' for none. */
 function engineLabel(engine) {
