@@ -29,6 +29,8 @@ export interface ChatMessage {
   id: string;
   role: 'user' | 'agent' | 'system';
   content: string;
+  reasoning?: string;
+  reasoningExpanded?: boolean;
   timestamp: Date;
   isStreaming?: boolean;
   toolCalls?: ToolCallInfo[];
@@ -295,6 +297,8 @@ export class AiSessionManagerService implements OnDestroy {
   private fluxEventsSubject = new Subject<FluxEvent>();
   // Experimental format (Colibri): list results sent to the model as tables instead of JSON
   private experimentalFormatSubject = new BehaviorSubject<boolean>(this.loadSavedExperimentalFormat());
+  // Reasoning/thinking toggle for local models (off by default for fast turns)
+  private thinkingEnabledSubject = new BehaviorSubject<boolean>(this.loadSavedThinking());
 
   private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
   public commandResult$ = this.commandResultSubject.asObservable();
@@ -314,6 +318,7 @@ export class AiSessionManagerService implements OnDestroy {
   contextUsage$: Observable<ContextUsage | null> = this.contextUsageSubject.asObservable();
   colibriEngine$: Observable<ColibriEngineState | null> = this.colibriEngineSubject.asObservable();
   experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
+  thinkingEnabled$: Observable<boolean> = this.thinkingEnabledSubject.asObservable();
   history$: Observable<HistorySnapshot> = this.historySubject.asObservable();
   fluxCatalog$: Observable<FluxCatalog | null> = this.fluxCatalogSubject.asObservable();
   fluxState$: Observable<FluxState | null> = this.fluxStateSubject.asObservable();
@@ -429,6 +434,7 @@ export class AiSessionManagerService implements OnDestroy {
       type: 'chat',
       message: text,
       campaignId: campaignId || undefined,
+      thinking: this.thinkingEnabledSubject.value,
     }));
 
     // Prepare for streaming response
@@ -437,6 +443,8 @@ export class AiSessionManagerService implements OnDestroy {
       id: this.generateId(),
       role: 'agent',
       content: '',
+      reasoning: '',
+      reasoningExpanded: false,
       timestamp: new Date(),
       isStreaming: true,
       toolCalls: [],
@@ -481,6 +489,23 @@ export class AiSessionManagerService implements OnDestroy {
       if (saved === 'agy' || saved === 'colibri') return saved;
     } catch (_) {}
     return 'colibri';
+  }
+
+  setThinkingEnabled(enabled: boolean): void {
+    const next = Boolean(enabled);
+    if (this.thinkingEnabledSubject.value === next) return;
+    this.thinkingEnabledSubject.next(next);
+    try {
+      localStorage.setItem('nebryss_ai_thinking', next ? 'true' : 'false');
+    } catch (_) {}
+  }
+
+  private loadSavedThinking(): boolean {
+    try {
+      return localStorage.getItem('nebryss_ai_thinking') === 'true';
+    } catch (_) {
+      return false;
+    }
   }
 
   setAgyModel(modelId: string): void {
@@ -740,6 +765,10 @@ export class AiSessionManagerService implements OnDestroy {
         this.appendToken(event['content'] || '');
         break;
 
+      case 'reasoning_token':
+        this.appendReasoningToken(event['content'] || '');
+        break;
+
       case 'rewind':
         // The bridge dropped an unfinished last line of a reply cut by the length limit (the
         // continuation starts again on that line): take it back off the streaming message.
@@ -934,6 +963,13 @@ export class AiSessionManagerService implements OnDestroy {
   private appendToken(content: string): void {
     const msg = this.ensureStreamingMessage();
     msg.content += content;
+    this.emitMessages();
+  }
+
+  private appendReasoningToken(content: string): void {
+    if (!content) return;
+    const msg = this.ensureStreamingMessage();
+    msg.reasoning = (msg.reasoning || '') + content;
     this.emitMessages();
   }
 

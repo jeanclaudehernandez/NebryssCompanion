@@ -162,7 +162,7 @@ function setupWebSocketServer(server) {
               ws.send(JSON.stringify({ type: 'response_end', status: 'ERROR' }));
               return;
             }
-            session.sendMessage(msg.message, msg.campaignId || null);
+            session.sendMessage(msg.message, msg.campaignId || null, { thinking: Boolean(msg.thinking) });
             break;
 
           case 'approve_command': {

@@ -2558,6 +2558,14 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     // re-prefilling when the new prompt begins byte-for-byte with what it already holds.
     const trimmedMessages = promptTokens(messages) > inputTokenBudget() ? trimMessagesToBudget(messages) : messages;
 
+    const thinkingOn = options.thinking !== undefined
+      ? Boolean(options.thinking)
+      : process.env.LLAMACPP_THINKING === 'true';
+    // Qwen3.6 thinking mode loops easily at temperature 0.25; use 0.6 unless explicitly overridden.
+    const temperature = process.env.COLIBRI_TEMPERATURE !== undefined
+      ? Number(process.env.COLIBRI_TEMPERATURE)
+      : (thinkingOn ? 0.6 : 0.25);
+
     const response = await fetch(`${COLIBRI_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers,
@@ -2571,8 +2579,10 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
         stream_options: { include_usage: true },
         // Unset: the server's own reply limit (--ngen). Set (tests): a smaller one.
         ...(Number(process.env.COLIBRI_MAX_REPLY_TOKENS) > 0 ? { max_tokens: Number(process.env.COLIBRI_MAX_REPLY_TOKENS) } : {}),
-        temperature: process.env.COLIBRI_TEMPERATURE !== undefined ? Number(process.env.COLIBRI_TEMPERATURE) : 0.25,
-        ...(serverEngine === 'llamacpp' ? llamacpp.requestExtras() : {})
+        temperature,
+        ...(serverEngine === 'llamacpp'
+          ? llamacpp.requestExtras({ thinking: thinkingOn })
+          : (thinkingOn ? { reasoning_effort: 'medium' } : {}))
       })
     });
 
@@ -2634,12 +2644,19 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
           reasoningText += delta.reasoning_content;
           if (!reasoningAnnounced) {
             reasoningAnnounced = true;
+            if (options.separateReasoning) {
+              onEvent({ type: 'reasoning_token', content: '\n\n---\n\n' });
+            }
             onEvent({
               type: 'task_update',
               summary: 'Reasoning...',
               status: 'thinking'
             });
           }
+          onEvent({
+            type: 'reasoning_token',
+            content: delta.reasoning_content
+          });
         }
 
         if (typeof delta.content === 'string' && delta.content.length > 0) {
@@ -2730,9 +2747,13 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     return msg;
   }
 
-  async function runTurn(text, campaignId) {
+  async function runTurn(text, campaignId, options = {}) {
     isProcessing = true;
     activeAbortController = new AbortController();
+    const turnThinking = options.thinking !== undefined
+      ? Boolean(options.thinking)
+      : process.env.LLAMACPP_THINKING === 'true';
+    let hasEmittedReasoning = false;
     turnRequestText = String(text || '');
     const previousAssistant = [...conversationHistory].reverse().find(m => m.role === 'assistant' && typeof m.content === 'string' && m.content.trim());
     turnPreviousReply = previousAssistant ? previousAssistant.content : '';
@@ -2865,7 +2886,11 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
         onEvent({ type: 'task_update', summary: nextStatus, status: 'thinking' });
         nextStatus = 'Reading tool results...';
 
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal);
+        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
+          thinking: turnThinking,
+          separateReasoning: hasEmittedReasoning
+        });
+        if (result.reasoningText) hasEmittedReasoning = true;
         if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
 
         // Fallback: if the engine leaked a raw XML <tool_call> block into contentText (e.g. due to a
@@ -2973,7 +2998,11 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
         console.log(`[Colibri Bridge] Tool round limit (${COLIBRI_MAX_TOOL_ITERATIONS}) reached; asking for an answer from the results so far.`);
         conversationHistory.push({ role: 'user', content: TOOL_LIMIT_MESSAGE });
         onEvent({ type: 'task_update', summary: 'Tool limit reached, writing the answer...', status: 'thinking' });
-        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal);
+        const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
+          thinking: turnThinking,
+          separateReasoning: hasEmittedReasoning
+        });
+        if (result.reasoningText) hasEmittedReasoning = true;
         if (result.usage) { lastUsage = result.usage; lastTimings = result.timings || null; }
         finalResponseText = result.contentText || '';
         if (result.toolCalls.length > 0) {
@@ -2991,7 +3020,12 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
         if (!finalResponseText.trim() && result.toolCalls.length > 0 && !isDestroyed && !activeAbortController.signal.aborted) {
           console.log('[Colibri Bridge] Still calling tools after the limit; asking again with tool calls switched off.');
           conversationHistory.push({ role: 'user', content: TOOLS_OFF_MESSAGE });
-          const last = await streamColibriCompletion(conversationHistory, activeAbortController.signal, { toolChoice: 'none' });
+          const last = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
+            toolChoice: 'none',
+            thinking: turnThinking,
+            separateReasoning: hasEmittedReasoning
+          });
+          if (last.reasoningText) hasEmittedReasoning = true;
           if (last.usage) { lastUsage = last.usage; lastTimings = last.timings || null; }
           finalResponseText = last.contentText || '';
           if (last.toolCalls.length > 0) {
@@ -3063,7 +3097,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     }
   }
 
-  function sendMessage(text, campaignId) {
+  function sendMessage(text, campaignId, options = {}) {
     if (isDestroyed) return;
 
     if (campaignId !== undefined && campaignId !== null) {
@@ -3071,17 +3105,17 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     }
 
     if (isProcessing) {
-      messageQueue.push({ text, campaignId: activeCampaignId });
+      messageQueue.push({ text, campaignId: activeCampaignId, options });
       return;
     }
 
-    runTurn(text, activeCampaignId);
+    runTurn(text, activeCampaignId, options);
   }
 
   function processQueue() {
     if (isDestroyed || messageQueue.length === 0) return;
     const next = messageQueue.shift();
-    sendMessage(next.text, next.campaignId);
+    sendMessage(next.text, next.campaignId, next.options);
   }
 
   function cancel() {

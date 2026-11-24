@@ -106,6 +106,8 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   ];
   // Experimental format (Colibri): list results as tables instead of JSON (on by default)
   experimentalFormat = true;
+  // Reasoning/thinking mode for local models (off by default; toggleable per message without restart)
+  thinkingEnabled = false;
 
   // AI Engine menu: level 1 picks Local, FLUX or AGY; level 2 the local setup (Colibri or
   // llama.cpp) or AGY's model
@@ -232,6 +234,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(on => {
         this.experimentalFormat = on;
+      });
+
+    this.aiService.thinkingEnabled$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(on => {
+        this.thinkingEnabled = on;
       });
 
     // Colibri engine state and switch progress (from this or any other open UI)
@@ -435,6 +443,18 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
 
   cancelResponse(): void {
     this.aiService.cancelResponse();
+  }
+
+  get showThinkingToggle(): boolean {
+    return this.agentBackend === 'colibri';
+  }
+
+  toggleThinking(): void {
+    this.aiService.setThinkingEnabled(!this.thinkingEnabled);
+  }
+
+  toggleMessageReasoning(msg: ChatMessage): void {
+    msg.reasoningExpanded = !msg.reasoningExpanded;
   }
 
   startNewConversation(): void {

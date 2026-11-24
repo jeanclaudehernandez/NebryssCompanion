@@ -110,7 +110,9 @@ function serverArgs(profile, port) {
     '--ubatch-size', '2048',
     '--threads', String(Number(process.env.LLAMACPP_THREADS) || 8),
     '--n-predict', String(REPLY_TOKENS),
-    '--reasoning', 'off',
+    // 'auto' lets each request toggle thinking via chat_template_kwargs.enable_thinking
+    // (default false in requestExtras) without restarting llama-server.
+    '--reasoning', 'auto',
     // A RAM prompt cache, so a short unrelated request (a RAG rerank, another tab) does not
     // evict the conversation's prefix. 2 GB: the 256k setup leaves ~4 GB free, and the default
     // (8 GB) once starved Docker's MongoDB.
@@ -209,14 +211,16 @@ async function readServerContext(origin, headers = {}) {
 
 /**
  * Extra request fields for llama-server. cache_prompt keeps the conversation's KV prefix (the
- * default, set so it stays on), and enable_thinking=false keeps Qwen from thinking even on a
- * server started without --reasoning off (LLAMACPP_THINKING=true turns thinking on). Both are
- * the same on every request, so the prompt stays byte-stable and the prefix is reused.
+ * default, set so it stays on), and enable_thinking toggles Qwen's reasoning per request
+ * (default false unless options.thinking is true or LLAMACPP_THINKING=true).
  */
-function requestExtras() {
+function requestExtras(options = {}) {
+  const enableThinking = options.thinking !== undefined
+    ? Boolean(options.thinking)
+    : process.env.LLAMACPP_THINKING === 'true';
   return {
     cache_prompt: true,
-    chat_template_kwargs: { enable_thinking: process.env.LLAMACPP_THINKING === 'true' }
+    chat_template_kwargs: { enable_thinking: enableThinking }
   };
 }
 

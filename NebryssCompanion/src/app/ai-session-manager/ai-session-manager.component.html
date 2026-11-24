@@ -320,6 +320,19 @@
 
         <!-- Agent message -->
         <div *ngIf="msg.role === 'agent'" class="message-bubble agent-bubble">
+          <!-- Collapsible Reasoning Block (when the model emitted thinking tokens) -->
+          <div class="reasoning-drawer" *ngIf="msg.reasoning">
+            <button type="button" class="reasoning-toggle" (click)="toggleMessageReasoning(msg)"
+              [attr.aria-expanded]="!!msg.reasoningExpanded">
+              <span class="material-icons reasoning-icon"
+                [class.thinking-pulse]="msg.isStreaming && !msg.content">psychology</span>
+              <span class="reasoning-label">{{ msg.isStreaming && !msg.content ? 'Reasoning...' : 'Thought process' }}</span>
+              <span class="reasoning-meta">~{{ formatTokens(msg.reasoning.length / 3.5) }} tok</span>
+              <span class="material-icons reasoning-chevron">{{ msg.reasoningExpanded ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+            <pre class="reasoning-body" *ngIf="msg.reasoningExpanded">{{ msg.reasoning }}</pre>
+          </div>
+
           <!-- Tool call chips -->
           <div class="tool-calls" *ngIf="msg.toolCalls && msg.toolCalls.length > 0">
             <div *ngFor="let tc of msg.toolCalls" class="tool-chip" [class.running]="tc.status === 'running'"
@@ -532,6 +545,13 @@
         <textarea #inputArea class="message-input" [(ngModel)]="inputText" (keydown)="onInputKeydown($event)"
           placeholder="Type a message..." [disabled]="connectionStatus !== 'connected'" rows="1"
           (input)="autoResizeInput()"></textarea>
+        <button type="button" class="btn-think-toggle" *ngIf="showThinkingToggle"
+          [class.active]="thinkingEnabled" [disabled]="connectionStatus !== 'connected'"
+          (click)="toggleThinking()" [attr.aria-pressed]="thinkingEnabled"
+          [title]="thinkingEnabled ? 'Thinking ON (deeper planning, ~2-3x slower — click to turn off)' : 'Thinking OFF (fast replies — click to enable reasoning for next message)'">
+          <span class="material-icons">psychology</span>
+          <span class="think-label">Think</span>
+        </button>
         <button class="btn-send" *ngIf="!isAgentTyping" (click)="sendCurrentMessage()"
           [disabled]="!inputText.trim() || connectionStatus !== 'connected'">
           <span class="material-icons">send</span>
