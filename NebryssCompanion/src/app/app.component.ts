@@ -1015,7 +1015,7 @@ export class AppComponent {
       }
     }
 
-    const statusLink = target.closest('[data-status]');
+    const statusLink = target.closest('.status-link[data-status]');
     if (statusLink) {
       const stateName = statusLink.getAttribute('data-status');
       if (stateName) {

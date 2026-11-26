@@ -64,7 +64,7 @@ function setupWebSocketServer(server) {
       requestedBackend = reqUrl.searchParams.get('backend');
       requestedModel = reqUrl.searchParams.get('model') || '';
       experimentalFormat = reqUrl.searchParams.get('format') !== 'json';
-    } catch (_) {}
+    } catch (_) { }
 
     let activeBackend = (requestedBackend === 'agy' || requestedBackend === 'colibri')
       ? requestedBackend
@@ -165,9 +165,13 @@ function setupWebSocketServer(server) {
             const parsedTemp = (typeof msg.temperature === 'number' && Number.isFinite(msg.temperature))
               ? Math.min(1, Math.max(0, msg.temperature))
               : undefined;
+            const parsedMaxReply = (typeof msg.maxReplyTokens === 'number' && Number.isFinite(msg.maxReplyTokens) && msg.maxReplyTokens > 0)
+              ? Math.min(64000, Math.max(1000, Math.round(msg.maxReplyTokens)))
+              : undefined;
             session.sendMessage(msg.message, msg.campaignId || null, {
               thinking: Boolean(msg.thinking),
-              ...(parsedTemp !== undefined ? { temperature: parsedTemp } : {})
+              ...(parsedTemp !== undefined ? { temperature: parsedTemp } : {}),
+              ...(parsedMaxReply !== undefined ? { maxReplyTokens: parsedMaxReply } : {})
             });
             break;
 
@@ -202,7 +206,7 @@ function setupWebSocketServer(server) {
                   payloadToPass = { ...filePayload, ...payloadToPass, campaignId: targetCampaignId };
                   delete payloadToPass._payloadFile;
                   // Clean up the staged content temp file
-                  try { fs.unlinkSync(payloadFilePath); } catch (_) {}
+                  try { fs.unlinkSync(payloadFilePath); } catch (_) { }
                 }
               } catch (e) {
                 console.warn('[AGY WS] Failed to read _payloadFile:', e.message);
@@ -245,7 +249,7 @@ function setupWebSocketServer(server) {
             const cleanupTempFile = () => {
               try {
                 if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-              } catch (_) {}
+              } catch (_) { }
             };
 
             child.on('error', (err) => {
@@ -419,6 +423,16 @@ function setupWebSocketServer(server) {
             sendHistory(outcome);
             if (outcome.ok && outcome.deleted > 0 && session.contextEstimate && ws.readyState === WebSocket.OPEN) {
               ws.send(JSON.stringify({ type: 'context_estimate', context: session.contextEstimate() }));
+            }
+            break;
+          }
+
+          case 'restore_conversation': {
+            if (session.restoreHistory) {
+              const res = session.restoreHistory(Array.isArray(msg.messages) ? msg.messages : []);
+              if (res.ok && session.contextEstimate && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'context_estimate', context: session.contextEstimate() }));
+              }
             }
             break;
           }

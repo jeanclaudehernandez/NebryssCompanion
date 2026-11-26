@@ -82,23 +82,26 @@
               </button>
             </ng-container>
 
-            <!-- Level 2: the local setup (engine, quantization, max context, KV cache) -->
+            <!-- Level 2: the local setup (grouped by model family) -->
             <ng-container *ngIf="engineMenuView === 'colibri'">
               <button type="button" class="engine-menu-back" role="menuitem" (click)="openEngineMenuView('bridges')">
                 <span class="material-icons">chevron_left</span> Local model
               </button>
-              <button type="button" class="engine-menu-item" role="menuitemradio"
-                *ngFor="let p of colibriProfiles"
-                [attr.aria-checked]="agentBackend === 'colibri' && colibriEngine?.mode === p.id"
-                [disabled]="connectionStatus !== 'connected'" (click)="chooseColibriEngine(p.id)">
-                <span class="material-icons engine-menu-icon">{{ colibriProfileIcon(p.id) }}</span>
-                <span class="engine-menu-text">
-                  <span class="engine-menu-name">{{ profileName(p) }}</span>
-                  <span class="engine-menu-desc">{{ profileDescription(p) }}</span>
-                </span>
-                <span class="material-icons engine-menu-current" *ngIf="colibriEngine?.mode === p.id"
-                  aria-label="running">check</span>
-              </button>
+              <ng-container *ngFor="let g of colibriProfileGroups; let first = first">
+                <div class="engine-menu-heading engine-menu-group" [class.first]="first">{{ g.label }}</div>
+                <button type="button" class="engine-menu-item" role="menuitemradio"
+                  *ngFor="let p of g.profiles"
+                  [attr.aria-checked]="agentBackend === 'colibri' && colibriEngine?.mode === p.id"
+                  [disabled]="connectionStatus !== 'connected'" (click)="chooseColibriEngine(p.id)">
+                  <span class="material-icons engine-menu-icon">{{ colibriProfileIcon(p.id) }}</span>
+                  <span class="engine-menu-text">
+                    <span class="engine-menu-name">{{ p.label }}</span>
+                    <span class="engine-menu-desc">{{ profileDescription(p) }}</span>
+                  </span>
+                  <span class="material-icons engine-menu-current" *ngIf="colibriEngine?.mode === p.id"
+                    aria-label="running">check</span>
+                </button>
+              </ng-container>
               <div class="engine-menu-note" *ngIf="colibriProfiles.length === 0">Loading the model list...</div>
               <div class="engine-menu-note"
                 [class.warn]="colibriEngine?.mode === 'offline' || colibriEngine?.mode === 'unknown' || colibriEngine?.mode === 'custom'">
@@ -175,6 +178,21 @@
                 <div class="settings-slider-scale">
                   <span>0.0 Precise</span>
                   <span>1.0 Creative</span>
+                </div>
+              </div>
+
+              <div class="settings-slider-group">
+                <div class="settings-slider-header">
+                  <label class="settings-slider-label" for="ai-reply-limit-slider">Reply Limit</label>
+                  <span class="settings-slider-value">{{ maxReplyTokens / 1000 | number:'1.0-0' }}k tokens</span>
+                </div>
+                <input id="ai-reply-limit-slider" type="range" class="settings-slider" min="2000" max="32000" step="1000"
+                  [ngModel]="maxReplyTokens" (ngModelChange)="onMaxReplyTokensChange($event)"
+                  [disabled]="connectionStatus !== 'connected'">
+                <div class="settings-slider-scale">
+                  <span>2k</span>
+                  <span>8k default</span>
+                  <span>32k</span>
                 </div>
               </div>
 
@@ -297,6 +315,11 @@
 
       <!-- New Conversation / context editor -->
       <div class="context-section conversation-actions" *ngIf="!fluxActive">
+        <button type="button" class="btn-view-history" (click)="openSavedChatsModal()"
+          title="Save this conversation to the database or load a previously saved one">
+          <span class="material-icons">bookmarks</span>
+          <span>Saved Chats</span>
+        </button>
         <button type="button" class="btn-view-history" (click)="openHistory()"
           [disabled]="connectionStatus !== 'connected'"
           title="See every message the model holds (prompt, RAG, tool calls and results) and delete some to free context">
@@ -701,6 +724,66 @@
             'Delete selected (' + historySelected.size + ')' }}</span>
         </button>
       </div>
+    </div>
+  </div>
+
+  <!-- Saved Conversations Modal -->
+  <div class="history-overlay" *ngIf="savedChatsModalOpen" (click)="closeSavedChatsModal()">
+    <div class="history-modal saved-chats-modal" role="dialog" aria-modal="true" aria-labelledby="saved-chats-title"
+      (click)="$event.stopPropagation()">
+      <div class="history-header">
+        <div>
+          <h3 id="saved-chats-title">Saved Conversations</h3>
+          <div class="history-summary">
+            Save the current chat to MongoDB or load a previous one{{ activeCampaign ? ' for ' + activeCampaign.name : '' }}.
+          </div>
+        </div>
+        <button type="button" class="history-close" (click)="closeSavedChatsModal()" aria-label="Close">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+
+      <div class="saved-chat-save-bar">
+        <input type="text" class="saved-chat-title-input" [(ngModel)]="saveChatTitle"
+          placeholder="Conversation title..." maxlength="120"
+          (keydown.enter)="saveCurrentConversation()" />
+        <button type="button" class="saved-chat-save-btn"
+          [disabled]="messages.length === 0 || savingConversation"
+          (click)="saveCurrentConversation()">
+          <span class="material-icons">{{ savingConversation ? 'sync' : 'save' }}</span>
+          <span>{{ activeSavedConversationId ? 'Update' : 'Save' }}</span>
+        </button>
+      </div>
+
+      <div class="history-outcome error" *ngIf="savedChatsError">{{ savedChatsError }}</div>
+
+      <div class="history-empty" *ngIf="savedChatsLoading">Loading saved conversations...</div>
+      <div class="history-empty" *ngIf="!savedChatsLoading && savedConversations.length === 0">
+        No saved conversations yet for this campaign.
+      </div>
+
+      <ol class="saved-chats-list" *ngIf="!savedChatsLoading && savedConversations.length > 0">
+        <li class="saved-chat-item" *ngFor="let c of savedConversations"
+          [class.active]="c.id === activeSavedConversationId">
+          <div class="saved-chat-info">
+            <div class="saved-chat-name">{{ c.title }}</div>
+            <div class="saved-chat-meta">
+              {{ c.messageCount }} messages · {{ c.backend | uppercase }} · {{ c.updatedAt | date:'short' }}
+            </div>
+          </div>
+          <div class="saved-chat-actions">
+            <button type="button" class="saved-chat-load-btn" (click)="loadSavedConversation(c.id)"
+              [disabled]="isAgentTyping">
+              <span class="material-icons">folder_open</span>
+              <span>Load</span>
+            </button>
+            <button type="button" class="saved-chat-del-btn" (click)="deleteSavedConversation(c.id, c.title)"
+              title="Delete saved conversation">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+        </li>
+      </ol>
     </div>
   </div>
 

@@ -14,7 +14,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const COLIBRI_DIR = process.env.COLIBRI_DIR || 'C:\\Users\\Jean\\Desktop\\colibri-2.1.0';
+const COLIBRI_DIR = process.env.COLIBRI_DIR || 'C:\\Users\\Jean\\Documents\\AI-models\\colibri-2.1.0';
 const MODEL_ALIAS = process.env.COLIBRI_MODEL || 'qwen3.6-colibri';
 const ENGINE_NAME = 'llama.cpp';
 // The same unsloth GGUF that Colibri's IQ3_XXS setup links to.
@@ -24,7 +24,7 @@ const QWEN_IQ3XXS_GGUF = process.env.LLAMACPP_MODEL_PATH
 const QWEN_Q2KXL_GGUF = process.env.LLAMACPP_Q2KXL_MODEL_PATH
   || path.join(COLIBRI_DIR, 'colibri-models', 'gguf', 'Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf');
 // ISTA-DASLab GSQ-RCO IQ3_S dense 27B model (measured 2026-11-24: 99.5/100 suite100, 80/80 staging, 0 risky).
-const QWEN38_DIR = process.env.LLAMACPP_QWEN38_DIR || 'C:\\Users\\Jean\\Desktop\\llm-eval\\qwen38';
+const QWEN38_DIR = process.env.LLAMACPP_QWEN38_DIR || 'C:\\Users\\Jean\\Documents\\AI-models\\llm-eval\\qwen38';
 const QWEN38_IQ3S_GGUF = process.env.LLAMACPP_QWEN38_MODEL_PATH
   || path.join(QWEN38_DIR, 'Qwen3.8-27B-GSQ-RCO-IQ3_S.gguf');
 const QWEN38_SERVER_EXE = process.env.LLAMACPP_QWEN38_SERVER
@@ -56,6 +56,7 @@ function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCa
   return {
     id,
     engine: 'llamacpp',
+    modelGroup: opts.modelGroup || 'Qwen3.6-35B-A3B',
     label,
     detail,
     modelPath,
@@ -69,18 +70,25 @@ function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCa
 }
 const PROFILES = {
   'llamacpp-q2kxl-150k-q8': llamaProfile('llamacpp-q2kxl-150k-q8', 'UD-Q2_K_XL',
-    'Every expert on the GPU: the best-scoring local setup', QWEN_Q2KXL_GGUF, 150000, 0, 'q8_0'),
-  'llamacpp-qwen38-iq3s-150k-q4': llamaProfile('llamacpp-qwen38-iq3s-150k-q4', 'Qwen3.8-27B IQ3_S',
-    'Dense 27B GSQ-RCO: highest accuracy & zero-error staging (slower than 3.6)', QWEN38_IQ3S_GGUF, 150000, null, 'q4_0', {
+    'Every expert on the GPU: fastest daily setup', QWEN_Q2KXL_GGUF, 150000, 0, 'q8_0', {
+      modelGroup: 'Qwen3.6-35B-A3B'
+    }),
+  'llamacpp-q2kxl-256k-q8': llamaProfile('llamacpp-q2kxl-256k-q8', 'UD-Q2_K_XL',
+    'Full native 256k memory (6 CPU MoE layers, 8-bit KV)', QWEN_Q2KXL_GGUF, 262144, 6, 'q8_0', {
+      modelGroup: 'Qwen3.6-35B-A3B'
+    }),
+  'llamacpp-qwen38-iq3s-150k-q4': llamaProfile('llamacpp-qwen38-iq3s-150k-q4', 'GSQ-RCO-IQ3_S',
+    'Dense 27B GSQ-RCO: highest precision & zero-error staging', QWEN38_IQ3S_GGUF, 150000, null, 'q4_0', {
+      modelGroup: 'Qwen3.8-27B',
       ubatchSize: 512,
       serverExe: QWEN38_SERVER_EXE
     }),
   'llamacpp-iq3xxs-120k-q8': llamaProfile('llamacpp-iq3xxs-120k-q8', 'IQ3_XXS',
-    'Every expert on the GPU: the fastest local setup', QWEN_IQ3XXS_GGUF, 120000, 0, 'q8_0'),
+    'Every expert on the GPU: legacy IQ3_XXS setup', QWEN_IQ3XXS_GGUF, 120000, 0, 'q8_0'),
   'llamacpp-iq3xxs-128k': llamaProfile('llamacpp-iq3xxs-128k', 'IQ3_XXS',
     'Twice the IQ3_XXS context and the fastest replies', QWEN_IQ3XXS_GGUF, 131072, 4),
   'llamacpp-iq3xxs-256k': llamaProfile('llamacpp-iq3xxs-256k', 'IQ3_XXS',
-    'Same model as IQ3_XXS with 4x the context; slower on very long prompts', QWEN_IQ3XXS_GGUF, 262144, 18)
+    'Legacy IQ3_XXS 256k setup', QWEN_IQ3XXS_GGUF, 262144, 18)
 };
 
 function isLlamaProfile(profile) {
@@ -123,7 +131,7 @@ function serverArgs(profile, port) {
     '--batch-size', '2048',
     '--ubatch-size', String(profile.ubatchSize || 2048),
     '--threads', String(Number(process.env.LLAMACPP_THREADS) || 8),
-    '--n-predict', String(REPLY_TOKENS),
+    '--n-predict', '-1',
     // 'auto' lets each request toggle thinking via chat_template_kwargs.enable_thinking
     // (default false in requestExtras) without restarting llama-server.
     '--reasoning', 'auto',

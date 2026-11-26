@@ -110,6 +110,8 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
   thinkingEnabled = false;
   // Sampling temperature for local models (0..1; auto-set to 0.25 with think off, 0.6 with think on)
   temperature = 0.25;
+  // Per-request reply token limit / reserve for local models (hotswapped without restart)
+  maxReplyTokens = 8000;
   // Collapsible model settings panel inside the sidebar (collapsed by default)
   settingsOpen = false;
 
@@ -122,8 +124,9 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     'iq3xxs-64k': 'bolt',
     'q2kxl-96k': 'balance',
     'iq2m-120k': 'unfold_more',
-    'llamacpp-q2kxl-150k-q8': 'star',
-    'llamacpp-qwen38-iq3s-150k-q4': 'verified',
+    'llamacpp-q2kxl-150k-q8': 'bolt',
+    'llamacpp-q2kxl-256k-q8': 'storage',
+    'llamacpp-qwen38-iq3s-150k-q4': 'gps_fixed',
     'llamacpp-iq3xxs-120k-q8': 'speed',
     'llamacpp-iq3xxs-128k': 'speed',
     'llamacpp-iq3xxs-256k': 'all_inclusive'
@@ -251,6 +254,12 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(temp => {
         this.temperature = temp;
+      });
+
+    this.aiService.maxReplyTokens$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(tokens => {
+        this.maxReplyTokens = tokens;
       });
 
     // Colibri engine state and switch progress (from this or any other open UI)
@@ -473,15 +482,120 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     this.aiService.setTemperature(Number(value));
   }
 
+  onMaxReplyTokensChange(value: number | string): void {
+    this.aiService.setMaxReplyTokens(Number(value));
+  }
+
   toggleMessageReasoning(msg: ChatMessage): void {
     msg.reasoningExpanded = !msg.reasoningExpanded;
   }
 
+  // Saved conversations modal
+  savedChatsModalOpen = false;
+  savedConversations: { id: string; title: string; campaignId: number; backend: string; messageCount: number; updatedAt: string }[] = [];
+  savedChatsLoading = false;
+  savingConversation = false;
+  saveChatTitle = '';
+  activeSavedConversationId: string | null = null;
+  savedChatsError = '';
+
   startNewConversation(): void {
     this.aiService.clearHistory();
     this.conversationId = null;
+    this.activeSavedConversationId = null;
+    this.saveChatTitle = '';
     this.aiService.disconnect();
     setTimeout(() => this.aiService.connect(), 300);
+  }
+
+  openSavedChatsModal(): void {
+    this.savedChatsModalOpen = true;
+    this.savedChatsError = '';
+    this.activeSavedConversationId = this.aiService.currentSavedConversationId;
+    if (this.aiService.currentSavedConversationTitle) {
+      this.saveChatTitle = this.aiService.currentSavedConversationTitle;
+    } else if (!this.saveChatTitle.trim()) {
+      const firstUser = this.messages.find(m => m.role === 'user');
+      this.saveChatTitle = firstUser
+        ? firstUser.content.trim().slice(0, 60)
+        : `Session Chat (${new Date().toLocaleDateString()})`;
+    }
+    this.refreshSavedConversations();
+  }
+
+  closeSavedChatsModal(): void {
+    this.savedChatsModalOpen = false;
+  }
+
+  refreshSavedConversations(): void {
+    this.savedChatsLoading = true;
+    this.aiService.listSavedConversations(this.activeCampaign?.id).subscribe({
+      next: (list) => {
+        this.savedConversations = list || [];
+        this.savedChatsLoading = false;
+      },
+      error: (err) => {
+        this.savedChatsError = err?.error?.error || 'Could not load saved conversations.';
+        this.savedChatsLoading = false;
+      }
+    });
+  }
+
+  saveCurrentConversation(): void {
+    if (this.messages.length === 0 || this.savingConversation) return;
+    const title = this.saveChatTitle.trim() || 'Saved Conversation';
+    this.savingConversation = true;
+    this.savedChatsError = '';
+    this.aiService.saveCurrentConversation(title, this.activeCampaign?.id, this.activeSavedConversationId).subscribe({
+      next: (saved) => {
+        this.activeSavedConversationId = saved.id;
+        this.saveChatTitle = saved.title;
+        this.savingConversation = false;
+        this.toastService.show(`Saved "${saved.title}"`, 'success');
+        this.refreshSavedConversations();
+      },
+      error: (err) => {
+        this.savedChatsError = err?.error?.error || 'Failed to save conversation.';
+        this.savingConversation = false;
+      }
+    });
+  }
+
+  loadSavedConversation(id: string): void {
+    this.savedChatsLoading = true;
+    this.savedChatsError = '';
+    this.aiService.loadSavedConversation(id).subscribe({
+      next: (conv) => {
+        this.aiService.applyLoadedConversation(conv);
+        this.activeSavedConversationId = conv.id;
+        this.saveChatTitle = conv.title;
+        this.conversationId = conv.id;
+        this.savedChatsLoading = false;
+        this.savedChatsModalOpen = false;
+        this.isAtBottom = true;
+        this.shouldScrollToBottom = true;
+        this.toastService.show(`Loaded "${conv.title}"`, 'success');
+      },
+      error: (err) => {
+        this.savedChatsError = err?.error?.error || 'Failed to load conversation.';
+        this.savedChatsLoading = false;
+      }
+    });
+  }
+
+  deleteSavedConversation(id: string, title: string): void {
+    this.aiService.deleteSavedConversation(id).subscribe({
+      next: () => {
+        if (this.activeSavedConversationId === id) {
+          this.activeSavedConversationId = null;
+        }
+        this.savedConversations = this.savedConversations.filter(c => c.id !== id);
+        this.toastService.show(`Deleted "${title}"`, 'info');
+      },
+      error: (err) => {
+        this.savedChatsError = err?.error?.error || 'Failed to delete conversation.';
+      }
+    });
   }
 
   reconnect(): void {
@@ -739,9 +853,25 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     return e.engineName || '';
   }
 
-  /** A setup's name in the Local menu: "llama.cpp · IQ3_XXS". */
+  /** A setup's full name (for the Start button / tooltips): "Qwen3.6-35B-A3B · UD-Q2_K_XL". */
   profileName(p: ColibriProfile): string {
-    return p.engineName ? `${p.engineName} · ${p.label}` : p.label;
+    const prefix = p.modelGroup || p.engineName;
+    return prefix ? `${prefix} · ${p.label}` : p.label;
+  }
+
+  /** Local setups grouped by model family (e.g. Qwen3.6-35B-A3B, Qwen3.8-27B) for the dropdown. */
+  get colibriProfileGroups(): { label: string; profiles: ColibriProfile[] }[] {
+    const groups: { label: string; profiles: ColibriProfile[] }[] = [];
+    for (const p of this.colibriProfiles) {
+      const label = p.modelGroup || p.engineName || 'Local';
+      let group = groups.find(g => g.label === label);
+      if (!group) {
+        group = { label, profiles: [] };
+        groups.push(group);
+      }
+      group.profiles.push(p);
+    }
+    return groups;
   }
 
   /** A setup's second line in the Local menu: "120k max context · 8-bit KV cache". */

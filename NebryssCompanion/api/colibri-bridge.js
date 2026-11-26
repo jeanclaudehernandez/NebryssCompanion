@@ -1261,7 +1261,7 @@ const AGENT_TOOLS = [
       parameters: {
         type: 'object',
         properties: {
-          query: { type: 'string', description: 'Name, place or phrase, e.g. "Chinchilla" or "Pale Crown"' },
+          query: { type: 'string', description: 'Name, place or phrase, e.g. "Akrina" or "Pale Crown"' },
           limit: { type: 'number', description: 'Max paragraphs (default 14)' },
           campaignId: { type: 'number', description: 'Campaign ID (defaults to active)' }
         },
@@ -2650,8 +2650,12 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     const temperature = process.env.COLIBRI_TEMPERATURE !== undefined
       ? Number(process.env.COLIBRI_TEMPERATURE)
       : (typeof options.temperature === 'number' && Number.isFinite(options.temperature)
-      ? Math.min(1, Math.max(0, options.temperature))
-      : (thinkingOn ? 0.6 : 0.25));
+        ? Math.min(1, Math.max(0, options.temperature))
+        : (thinkingOn ? 0.6 : 0.25));
+
+    const maxTokens = (typeof options.maxReplyTokens === 'number' && Number.isFinite(options.maxReplyTokens) && options.maxReplyTokens > 0)
+      ? Math.round(options.maxReplyTokens)
+      : (Number(process.env.COLIBRI_MAX_REPLY_TOKENS) > 0 ? Number(process.env.COLIBRI_MAX_REPLY_TOKENS) : 8000);
 
     const response = await fetch(`${COLIBRI_BASE_URL}/chat/completions`, {
       method: 'POST',
@@ -2664,8 +2668,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
         tool_choice: options.toolChoice || 'auto',
         stream: true,
         stream_options: { include_usage: true },
-        // Unset: the server's own reply limit (--ngen). Set (tests): a smaller one.
-        ...(Number(process.env.COLIBRI_MAX_REPLY_TOKENS) > 0 ? { max_tokens: Number(process.env.COLIBRI_MAX_REPLY_TOKENS) } : {}),
+        max_tokens: maxTokens,
         temperature,
         ...(serverEngine === 'llamacpp'
           ? llamacpp.requestExtras({ thinking: thinkingOn })
@@ -2843,6 +2846,10 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     const turnTemperature = (typeof options.temperature === 'number' && Number.isFinite(options.temperature))
       ? Math.min(1, Math.max(0, options.temperature))
       : undefined;
+    const turnMaxReplyTokens = (typeof options.maxReplyTokens === 'number' && Number.isFinite(options.maxReplyTokens) && options.maxReplyTokens > 0)
+      ? Math.min(64000, Math.max(1000, Math.round(options.maxReplyTokens)))
+      : (Number(process.env.COLIBRI_MAX_REPLY_TOKENS) > 0 ? Number(process.env.COLIBRI_MAX_REPLY_TOKENS) : 8000);
+    serverReplyTokens = turnMaxReplyTokens;
     let hasEmittedReasoning = false;
     turnRequestText = String(text || '');
     const previousAssistant = [...conversationHistory].reverse().find(m => m.role === 'assistant' && typeof m.content === 'string' && m.content.trim());
@@ -2983,6 +2990,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
           const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
             thinking: turnThinking,
             temperature: turnTemperature,
+            maxReplyTokens: turnMaxReplyTokens,
             separateReasoning: hasEmittedReasoning
           });
           if (result.reasoningText) hasEmittedReasoning = true;
@@ -3096,6 +3104,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
           const result = await streamColibriCompletion(conversationHistory, activeAbortController.signal, {
             thinking: turnThinking,
             temperature: turnTemperature,
+            maxReplyTokens: turnMaxReplyTokens,
             separateReasoning: hasEmittedReasoning
           });
           if (result.reasoningText) hasEmittedReasoning = true;
@@ -3353,6 +3362,27 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     return { ok: true, deleted: drop.size, notFound: wanted.size - matched };
   }
 
+  function restoreHistory(savedMessages) {
+    if (isProcessing) {
+      return { ok: false, error: 'Wait for the current reply to finish before loading a conversation.' };
+    }
+    const clean = [];
+    if (Array.isArray(savedMessages)) {
+      for (const m of savedMessages) {
+        if (!m || typeof m.content !== 'string' || !m.content.trim()) continue;
+        const role = m.role === 'agent' || m.role === 'assistant' ? 'assistant' : (m.role === 'user' ? 'user' : null);
+        if (!role) continue;
+        clean.push({ role, content: m.content });
+      }
+    }
+    conversationHistory = [{ role: 'system', content: buildSystemPrompt(activeCampaignId) }, ...clean];
+    deletedMessages.length = 0;
+    const lastUser = [...clean].reverse().find(m => m.role === 'user');
+    lastUserText = lastUser ? lastUser.content : '';
+    console.log(`[Colibri Bridge] Restored ${clean.length} message(s) into model context for campaign ${activeCampaignId}.`);
+    return { ok: true, restored: clean.length };
+  }
+
   function destroy() {
     isDestroyed = true;
     messageQueue = [];
@@ -3379,6 +3409,7 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     isProcessing: () => isProcessing,
     getHistory,
     deleteHistory,
+    restoreHistory,
     contextEstimate,
     setActiveCampaign: (newId) => {
       activeCampaignId = Number(newId) || activeCampaignId;

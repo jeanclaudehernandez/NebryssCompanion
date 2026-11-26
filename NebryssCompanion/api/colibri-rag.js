@@ -735,8 +735,8 @@ function createColibriRag({
 
     // A summary of the session ("summarize session 7", "what happened in session 4") may fill the
     // whole budget with it. A question that only uses the session as a reference point ("was
-    // Chinchilla in the party during session 2?") gets at most half: the rest goes to the best
-    // matches for the rest of the question (Chinchilla's own record, the session she joined in).
+    // Akrina in the party during session 2?") gets at most half: the rest goes to the best
+    // matches for the rest of the question (Akrina's own record, the session she joined in).
     // With the session's pieces first and nothing else, the model answered "no" from session 2
     // alone and never said when she joined.
     const isSessionSummary = /\b(summar\w*|recap\w*|what happened|overview|retell|events? of|tell me about session|walk me through)\b/i.test(query);

@@ -1,5 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { SKIP_LOADING_HEADER } from '../loading.interceptor';
 import { BehaviorSubject, Subject, Observable } from 'rxjs';
 import { AuthService } from '../auth.service';
 import { AdminService } from '../admin.service';
@@ -111,17 +112,32 @@ export interface HistorySnapshot {
   outcome?: { ok: boolean; deleted?: number; notFound?: number; error?: string } | null;
 }
 
+export interface SavedConversationMeta {
+  id: string;
+  title: string;
+  campaignId: number;
+  backend: 'colibri' | 'agy';
+  messageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SavedConversation extends SavedConversationMeta {
+  uiMessages: ChatMessage[];
+}
+
 /** A Colibri model setup's id, as api/colibri-engine.js defines them (e.g. 'iq2m-120k'). */
 export type ColibriEngineMode = string;
 
 export interface ColibriProfile {
   id: ColibriEngineMode;
-  label: string;          // the quantization, e.g. 'IQ3_XXS'
+  label: string;          // the quantization, e.g. 'UD-Q2_K_XL' or 'GSQ-RCO-IQ3_S'
+  modelGroup?: string;    // model family heading in the dropdown, e.g. 'Qwen3.6-35B-A3B'
   detail: string;         // one line on what it is good for
   contextTokens: number;
   engine?: 'colibri' | 'llamacpp';
   engineName?: string;    // 'Colibri' | 'llama.cpp'
-  kvCache?: string;       // 'f16' (16-bit) | 'q8_0' (8-bit)
+  kvCache?: string;       // 'f16' (16-bit) | 'q8_0' (8-bit) | 'q4_0' (4-bit)
 }
 
 /** The local model server's setup (Colibri or llama.cpp) and the progress of a switch, as the API reports it. */
@@ -301,6 +317,8 @@ export class AiSessionManagerService implements OnDestroy {
   private thinkingEnabledSubject = new BehaviorSubject<boolean>(this.loadSavedThinking());
   // Sampling temperature for local models (0..1; defaults to 0.25 with think off, 0.6 with think on)
   private temperatureSubject = new BehaviorSubject<number>(this.loadSavedTemperature());
+  // Per-request reply token limit / reserve for local models (default 8000)
+  private maxReplyTokensSubject = new BehaviorSubject<number>(this.loadSavedMaxReplyTokens());
 
   private commandResultSubject = new Subject<{ commandId: string; status: 'approved' | 'declined' | 'error'; summary: string; result?: any; error?: string }>();
   public commandResult$ = this.commandResultSubject.asObservable();
@@ -308,6 +326,9 @@ export class AiSessionManagerService implements OnDestroy {
   // Currently streaming agent message (accumulates tokens)
   private currentStreamingMessage: ChatMessage | null = null;
   private conversationId: string | null = null;
+  private savedConversationId: string | null = null;
+  private savedConversationTitle = '';
+  private lastActiveCampaignId = 1;
 
   connectionStatus$: Observable<ConnectionStatus> = this.connectionStatusSubject.asObservable();
   agentBackend$: Observable<AgentBackend> = this.agentBackendSubject.asObservable();
@@ -322,6 +343,7 @@ export class AiSessionManagerService implements OnDestroy {
   experimentalFormat$: Observable<boolean> = this.experimentalFormatSubject.asObservable();
   thinkingEnabled$: Observable<boolean> = this.thinkingEnabledSubject.asObservable();
   temperature$: Observable<number> = this.temperatureSubject.asObservable();
+  maxReplyTokens$: Observable<number> = this.maxReplyTokensSubject.asObservable();
   history$: Observable<HistorySnapshot> = this.historySubject.asObservable();
   fluxCatalog$: Observable<FluxCatalog | null> = this.fluxCatalogSubject.asObservable();
   fluxState$: Observable<FluxState | null> = this.fluxStateSubject.asObservable();
@@ -423,6 +445,10 @@ export class AiSessionManagerService implements OnDestroy {
       return;
     }
 
+    if (campaignId) {
+      this.lastActiveCampaignId = campaignId;
+    }
+
     // Add user message to the list
     const userMsg: ChatMessage = {
       id: this.generateId(),
@@ -431,6 +457,7 @@ export class AiSessionManagerService implements OnDestroy {
       timestamp: new Date(),
     };
     this.addMessage(userMsg);
+    this.autoSaveConversation(this.lastActiveCampaignId, text);
 
     // Send to server
     this.ws.send(JSON.stringify({
@@ -439,6 +466,7 @@ export class AiSessionManagerService implements OnDestroy {
       campaignId: campaignId || undefined,
       thinking: this.thinkingEnabledSubject.value,
       temperature: this.temperatureSubject.value,
+      maxReplyTokens: this.maxReplyTokensSubject.value,
     }));
 
     // Prepare for streaming response
@@ -467,6 +495,9 @@ export class AiSessionManagerService implements OnDestroy {
    * server-side activeCampaignId so subsequent commands use the correct campaign.
    */
   setActiveCampaign(campaignId: number): void {
+    if (campaignId) {
+      this.lastActiveCampaignId = campaignId;
+    }
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return;
     this.ws.send(JSON.stringify({ type: 'set_campaign', campaignId }));
     console.log(`[AI Session] Campaign switched to ID: ${campaignId}`);
@@ -537,6 +568,30 @@ export class AiSessionManagerService implements OnDestroy {
       }
     } catch (_) {}
     return this.loadSavedThinking() ? 0.6 : 0.25;
+  }
+
+  setMaxReplyTokens(value: number): void {
+    const num = Number(value);
+    if (!Number.isFinite(num)) return;
+    const clamped = Math.round(Math.min(32000, Math.max(2000, num)) / 1000) * 1000;
+    if (this.maxReplyTokensSubject.value === clamped) return;
+    this.maxReplyTokensSubject.next(clamped);
+    try {
+      localStorage.setItem('nebryss_ai_max_reply_tokens', String(clamped));
+    } catch (_) {}
+  }
+
+  private loadSavedMaxReplyTokens(): number {
+    try {
+      const saved = localStorage.getItem('nebryss_ai_max_reply_tokens');
+      if (saved !== null) {
+        const parsed = Number(saved);
+        if (Number.isFinite(parsed) && parsed >= 2000) {
+          return Math.round(Math.min(32000, Math.max(2000, parsed)) / 1000) * 1000;
+        }
+      }
+    } catch (_) {}
+    return 8000;
   }
 
   setAgyModel(modelId: string): void {
@@ -664,6 +719,94 @@ export class AiSessionManagerService implements OnDestroy {
     return true;
   }
 
+  private getApiBaseUrl(): string {
+    const win = window as any;
+    return win.API_URL || `${window.location.origin}/api`;
+  }
+
+  get currentSavedConversationId(): string | null {
+    return this.savedConversationId;
+  }
+
+  get currentSavedConversationTitle(): string {
+    return this.savedConversationTitle;
+  }
+
+  private generateSavedId(): string {
+    return `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  }
+
+  private autoSaveConversation(campaignId?: number, firstPrompt?: string): void {
+    if (!this.savedConversationId) {
+      this.savedConversationId = this.generateSavedId();
+    }
+    if (!this.savedConversationTitle) {
+      const candidate = (firstPrompt || this.messagesSubject.value.find(m => m.role === 'user')?.content || '').trim();
+      this.savedConversationTitle = candidate ? candidate.slice(0, 60) : `Session Chat (${new Date().toLocaleDateString()})`;
+    }
+    this.saveCurrentConversation(this.savedConversationTitle, campaignId || this.lastActiveCampaignId, this.savedConversationId)
+      .subscribe({
+        error: (err) => console.warn('[AI Session] Auto-save failed:', err?.message || err)
+      });
+  }
+
+  listSavedConversations(campaignId?: number): Observable<SavedConversationMeta[]> {
+    return this.http.get<SavedConversationMeta[]>(`${this.getApiBaseUrl()}/ai-conversations`);
+  }
+
+  loadSavedConversation(id: string): Observable<SavedConversation> {
+    return this.http.get<SavedConversation>(`${this.getApiBaseUrl()}/ai-conversations/${encodeURIComponent(id)}`);
+  }
+
+  saveCurrentConversation(title: string, campaignId?: number, existingId?: string | null): Observable<SavedConversationMeta> {
+    const targetId = existingId || this.savedConversationId || this.generateSavedId();
+    const cleanTitle = (title || '').trim() || this.savedConversationTitle || 'Saved Conversation';
+    this.savedConversationId = targetId;
+    this.savedConversationTitle = cleanTitle;
+    if (campaignId) this.lastActiveCampaignId = campaignId;
+
+    const uiMessages = this.messagesSubject.value
+      .filter(m => !(m.isStreaming && !m.content && (!m.toolCalls || m.toolCalls.length === 0)))
+      .map(m => ({ ...m, isStreaming: false }));
+    return this.http.post<SavedConversationMeta>(`${this.getApiBaseUrl()}/ai-conversations`, {
+      id: targetId,
+      title: cleanTitle,
+      campaignId: campaignId || this.lastActiveCampaignId || 1,
+      backend: this.agentBackendSubject.value,
+      uiMessages
+    }, { headers: { [SKIP_LOADING_HEADER]: 'true' } });
+  }
+
+  deleteSavedConversation(id: string): Observable<{ ok: boolean; id: string }> {
+    if (this.savedConversationId === id) {
+      this.savedConversationId = null;
+      this.savedConversationTitle = '';
+    }
+    return this.http.delete<{ ok: boolean; id: string }>(`${this.getApiBaseUrl()}/ai-conversations/${encodeURIComponent(id)}`);
+  }
+
+  applyLoadedConversation(saved: SavedConversation): void {
+    const restored: ChatMessage[] = (saved.uiMessages || []).map(m => ({
+      ...m,
+      timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
+      isStreaming: false
+    }));
+    this.currentStreamingMessage = null;
+    this.isAgentTypingSubject.next(false);
+    this.contextUsageSubject.next(null);
+    this.conversationId = saved.id;
+    this.savedConversationId = saved.id;
+    this.savedConversationTitle = saved.title;
+    if (saved.campaignId) this.lastActiveCampaignId = saved.campaignId;
+    this.messagesSubject.next(restored);
+    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      this.ws.send(JSON.stringify({
+        type: 'restore_conversation',
+        messages: restored.map(m => ({ role: m.role, content: m.content }))
+      }));
+    }
+  }
+
   /** On by default; off only when it was turned off here. */
   private loadSavedExperimentalFormat(): boolean {
     try {
@@ -685,6 +828,8 @@ export class AiSessionManagerService implements OnDestroy {
     this.messagesSubject.next([]);
     this.contextUsageSubject.next(null);
     this.conversationId = null;
+    this.savedConversationId = null;
+    this.savedConversationTitle = '';
     this.currentStreamingMessage = null;
     this.isAgentTypingSubject.next(false);
   }
@@ -1040,6 +1185,9 @@ export class AiSessionManagerService implements OnDestroy {
     this.currentStreamingMessage = null;
     this.isAgentTypingSubject.next(false);
     this.emitMessages();
+    if (this.messagesSubject.value.length > 0) {
+      this.autoSaveConversation(this.lastActiveCampaignId);
+    }
   }
 
   private handleErrorEvent(message: string): void {
@@ -1050,6 +1198,9 @@ export class AiSessionManagerService implements OnDestroy {
       this.currentStreamingMessage = null;
       this.isAgentTypingSubject.next(false);
       this.emitMessages();
+      if (this.messagesSubject.value.length > 0) {
+        this.autoSaveConversation(this.lastActiveCampaignId);
+      }
     } else {
       this.addSystemMessage(`⚠️ Error: ${message}`);
     }

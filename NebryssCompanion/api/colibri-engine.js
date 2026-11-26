@@ -21,7 +21,7 @@ const FLUX_MODE = 'flux';
 // llama.cpp's llama-server: its setups, launch command and /props context (see that file).
 const llamacpp = require('./llamacpp-bridge');
 
-const COLIBRI_DIR = process.env.COLIBRI_DIR || 'C:\\Users\\Jean\\Desktop\\colibri-2.1.0';
+const COLIBRI_DIR = process.env.COLIBRI_DIR || 'C:\\Users\\Jean\\Documents\\AI-models\\colibri-2.1.0';
 const BASE_URL = (process.env.COLIBRI_BASE_URL || 'http://127.0.0.1:8000/v1').replace(/\/+$/, '');
 const SERVER_ORIGIN = BASE_URL.replace(/\/v1$/, '');
 const SERVER_PORT = Number(new URL(SERVER_ORIGIN).port) || 8000;
@@ -110,7 +110,7 @@ let emitTimer = null;
  * llama.cpp IQ3_XXS 256k (2026-11-21: 92) stays for very long contexts. The others stay
  * defined, so a server running one of them is still recognised and can be stopped.
  */
-const OFFERED_PROFILES = [DEFAULT_PROFILE, 'llamacpp-qwen38-iq3s-150k-q4', 'llamacpp-iq3xxs-256k'];
+const OFFERED_PROFILES = [DEFAULT_PROFILE, 'llamacpp-q2kxl-256k-q8', 'llamacpp-qwen38-iq3s-150k-q4'];
 
 /** 'Colibri' or 'llama.cpp' for an engine id ('colibri' | 'llamacpp'); '' for none. */
 function engineLabel(engine) {
@@ -121,7 +121,7 @@ function engineLabel(engine) {
 function profileSummary(p) {
   return {
     id: p.id, label: p.label, detail: p.detail, contextTokens: p.contextTokens,
-    engine: p.engine, engineName: engineLabel(p.engine), kvCache: p.kvCache || 'f16'
+    engine: p.engine, engineName: engineLabel(p.engine), modelGroup: p.modelGroup || '', kvCache: p.kvCache || 'f16'
   };
 }
 

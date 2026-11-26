@@ -1509,6 +1509,123 @@ for (const alias of collectionAliases) {
   createDeleteRoute(alias.plural, { usePlayersDb: alias.usePlayersDb, collectionName: alias.collectionName });
 }
 
+// ─── Saved AI Conversations (GM/Admin only) ────────────────────────────────────
+function requireGmOrAdmin(req, res, next) {
+  if (req.user?.role !== 'admin' && req.user?.role !== 'gm') {
+    return res.status(403).json({ error: 'Forbidden: GM/Admin role required' });
+  }
+  return next();
+}
+
+function getUserId(req) {
+  return String(req.user?.userId || req.user?.id || req.user?.email || '');
+}
+
+app.get('/api/ai-conversations', requireGmOrAdmin, async (req, res) => {
+  try {
+    const dbs = await getDatabases();
+    if (!dbs?.mainDb) return res.status(503).json({ error: 'Database unavailable' });
+    const userId = getUserId(req);
+    const filter = { userId };
+    const rawCamp = Array.isArray(req.query.campaignId) ? req.query.campaignId[0] : req.query.campaignId;
+    if (rawCamp !== undefined && rawCamp !== '') {
+      const campNum = Number(rawCamp);
+      if (Number.isFinite(campNum)) {
+        filter.campaignId = campNum;
+      }
+    }
+    const list = await dbs.mainDb
+      .collection('aiConversations')
+      .find(filter, { projection: { _id: 0, uiMessages: 0, modelHistory: 0 } })
+      .sort({ updatedAt: -1 })
+      .limit(100)
+      .toArray();
+    return res.json(list);
+  } catch (err) {
+    console.error('[API] GET /api/ai-conversations error:', err);
+    return res.status(500).json({ error: 'Failed to load saved conversations' });
+  }
+});
+
+app.get('/api/ai-conversations/:id', requireGmOrAdmin, async (req, res) => {
+  try {
+    const dbs = await getDatabases();
+    if (!dbs?.mainDb) return res.status(503).json({ error: 'Database unavailable' });
+    const userId = getUserId(req);
+    const doc = await dbs.mainDb
+      .collection('aiConversations')
+      .findOne({ id: String(req.params.id), userId }, { projection: { _id: 0 } });
+    if (!doc) return res.status(404).json({ error: 'Conversation not found' });
+    return res.json(doc);
+  } catch (err) {
+    console.error('[API] GET /api/ai-conversations/:id error:', err);
+    return res.status(500).json({ error: 'Failed to load conversation' });
+  }
+});
+
+app.post('/api/ai-conversations', requireGmOrAdmin, async (req, res) => {
+  try {
+    const dbs = await getDatabases();
+    if (!dbs?.mainDb) return res.status(503).json({ error: 'Database unavailable' });
+    const userId = getUserId(req);
+    const rawBody = req.body || {};
+    const body = (rawBody.payload && typeof rawBody.payload === 'object')
+      ? { ...rawBody.payload, campaignId: rawBody.payload.campaignId ?? rawBody.campaignId }
+      : rawBody;
+    const uiMessages = Array.isArray(body.uiMessages) ? body.uiMessages : [];
+    if (uiMessages.length === 0) {
+      return res.status(400).json({ error: 'Cannot save an empty conversation' });
+    }
+    const now = new Date().toISOString();
+    const id = (typeof body.id === 'string' && body.id.trim())
+      ? body.id.trim()
+      : `conv_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const title = (typeof body.title === 'string' && body.title.trim())
+      ? body.title.trim().slice(0, 120)
+      : 'Saved Conversation';
+    const campaignId = Number(body.campaignId) || 1;
+    const backend = body.backend === 'agy' ? 'agy' : 'colibri';
+
+    const col = dbs.mainDb.collection('aiConversations');
+    const existing = await col.findOne({ id, userId }, { projection: { createdAt: 1 } });
+    const doc = {
+      id,
+      userId,
+      title,
+      campaignId,
+      backend,
+      messageCount: uiMessages.length,
+      uiMessages,
+      createdAt: existing?.createdAt || now,
+      updatedAt: now
+    };
+    await col.updateOne({ id, userId }, { $set: doc }, { upsert: true });
+    const { uiMessages: _omit, ...meta } = doc;
+    return res.json(meta);
+  } catch (err) {
+    console.error('[API] POST /api/ai-conversations error:', err);
+    return res.status(500).json({ error: 'Failed to save conversation' });
+  }
+});
+
+app.delete('/api/ai-conversations/:id', requireGmOrAdmin, async (req, res) => {
+  try {
+    const dbs = await getDatabases();
+    if (!dbs?.mainDb) return res.status(503).json({ error: 'Database unavailable' });
+    const userId = getUserId(req);
+    const result = await dbs.mainDb
+      .collection('aiConversations')
+      .deleteOne({ id: String(req.params.id), userId });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Conversation not found' });
+    }
+    return res.json({ ok: true, id: String(req.params.id) });
+  } catch (err) {
+    console.error('[API] DELETE /api/ai-conversations/:id error:', err);
+    return res.status(500).json({ error: 'Failed to delete conversation' });
+  }
+});
+
 const staticPath = path.join(__dirname, '../dist/nebryss-companion/browser');
 const indexHtmlPath = path.join(staticPath, 'index.html');
 
