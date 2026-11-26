@@ -2650,8 +2650,8 @@ function createAgentSession({ onEvent, onError, onClose, experimentalFormat = fa
     const temperature = process.env.COLIBRI_TEMPERATURE !== undefined
       ? Number(process.env.COLIBRI_TEMPERATURE)
       : (typeof options.temperature === 'number' && Number.isFinite(options.temperature)
-        ? Math.min(1, Math.max(0, options.temperature))
-        : (thinkingOn ? 0.6 : 0.25));
+      ? Math.min(1, Math.max(0, options.temperature))
+      : (thinkingOn ? 0.6 : 0.25));
 
     const maxTokens = (typeof options.maxReplyTokens === 'number' && Number.isFinite(options.maxReplyTokens) && options.maxReplyTokens > 0)
       ? Math.round(options.maxReplyTokens)

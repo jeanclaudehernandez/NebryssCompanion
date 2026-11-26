@@ -64,7 +64,7 @@ function setupWebSocketServer(server) {
       requestedBackend = reqUrl.searchParams.get('backend');
       requestedModel = reqUrl.searchParams.get('model') || '';
       experimentalFormat = reqUrl.searchParams.get('format') !== 'json';
-    } catch (_) { }
+    } catch (_) {}
 
     let activeBackend = (requestedBackend === 'agy' || requestedBackend === 'colibri')
       ? requestedBackend
@@ -206,7 +206,7 @@ function setupWebSocketServer(server) {
                   payloadToPass = { ...filePayload, ...payloadToPass, campaignId: targetCampaignId };
                   delete payloadToPass._payloadFile;
                   // Clean up the staged content temp file
-                  try { fs.unlinkSync(payloadFilePath); } catch (_) { }
+                  try { fs.unlinkSync(payloadFilePath); } catch (_) {}
                 }
               } catch (e) {
                 console.warn('[AGY WS] Failed to read _payloadFile:', e.message);
@@ -249,7 +249,7 @@ function setupWebSocketServer(server) {
             const cleanupTempFile = () => {
               try {
                 if (fs.existsSync(tmpFile)) fs.unlinkSync(tmpFile);
-              } catch (_) { }
+              } catch (_) {}
             };
 
             child.on('error', (err) => {
