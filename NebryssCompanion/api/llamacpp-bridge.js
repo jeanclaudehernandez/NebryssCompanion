@@ -23,12 +23,11 @@ const QWEN_IQ3XXS_GGUF = process.env.LLAMACPP_MODEL_PATH
 // The unsloth UD-Q2_K_XL GGUF of the same model (Colibri's q2kxl setup links to it too).
 const QWEN_Q2KXL_GGUF = process.env.LLAMACPP_Q2KXL_MODEL_PATH
   || path.join(COLIBRI_DIR, 'colibri-models', 'gguf', 'Qwen3.6-35B-A3B-UD-Q2_K_XL.gguf');
-// ISTA-DASLab GSQ-RCO IQ3_S dense 27B model (measured 2026-11-24: 99.5/100 suite100, 80/80 staging, 0 risky).
-const QWEN38_DIR = process.env.LLAMACPP_QWEN38_DIR || 'C:\\Users\\Jean\\Documents\\AI-models\\llm-eval\\qwen38';
-const QWEN38_IQ3S_GGUF = process.env.LLAMACPP_QWEN38_MODEL_PATH
-  || path.join(QWEN38_DIR, 'Qwen3.8-27B-GSQ-RCO-IQ3_S.gguf');
-const QWEN38_SERVER_EXE = process.env.LLAMACPP_QWEN38_SERVER
-  || path.join(QWEN38_DIR, 'llama-b12651-cu135', 'llama-server.exe');
+// The unsloth UD-IQ4_XS GGUF of Qwen3.6-35B-A3B (measured 2026-11-28: 99.5/100 suite100 x4, 40/40 staging, 8/8 230k recall).
+const QWEN_IQ4XS_GGUF = process.env.LLAMACPP_IQ4XS_MODEL_PATH
+  || path.join(COLIBRI_DIR, 'colibri-models', 'gguf', 'Qwen3.6-35B-A3B-UD-IQ4_XS.gguf');
+// Shared llama.cpp v1.1.0 (b12774, CUDA 13.5) build used by all llama.cpp profiles.
+const DEFAULT_SERVER_EXE = 'C:\\Users\\Jean\\Documents\\AI-models\\llama-v1.1.0-cu135\\llama-server.exe';
 const REPLY_TOKENS = 8000; // as Colibri's --ngen: the bridge's history budget is context - this
 
 /**
@@ -62,6 +61,9 @@ function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCa
     modelPath,
     contextTokens,
     nCpuMoe,
+    cpuMoe: Boolean(opts.cpuMoe),
+    moeCacheMib: opts.moeCacheMib || 0,
+    cacheRam: opts.cacheRam ?? 2048,
     kvCache,
     ubatchSize: opts.ubatchSize || 2048,
     serverExe: opts.serverExe || null,
@@ -71,35 +73,38 @@ function llamaProfile(id, label, detail, modelPath, contextTokens, nCpuMoe, kvCa
 const PROFILES = {
   'llamacpp-q2kxl-150k-q8': llamaProfile('llamacpp-q2kxl-150k-q8', 'UD-Q2_K_XL',
     'Every expert on the GPU: fastest daily setup', QWEN_Q2KXL_GGUF, 150000, 0, 'q8_0', {
-      modelGroup: 'Qwen3.6-35B-A3B'
-    }),
+    modelGroup: 'Qwen3.6-35B-A3B'
+  }),
   'llamacpp-q2kxl-256k-q8': llamaProfile('llamacpp-q2kxl-256k-q8', 'UD-Q2_K_XL',
-    'Full native 256k memory (6 CPU MoE layers, 8-bit KV)', QWEN_Q2KXL_GGUF, 262144, 6, 'q8_0', {
-      modelGroup: 'Qwen3.6-35B-A3B'
+    'Full native 256k memory (24 CPU MoE layers, 4 GB expert cache, 8-bit KV)', QWEN_Q2KXL_GGUF, 262144, 24, 'q8_0', {
+    modelGroup: 'Qwen3.6-35B-A3B',
+    moeCacheMib: 4096
+  }),
+  'llamacpp-iq4xs-256k-q8': llamaProfile('llamacpp-iq4xs-256k-q8', 'UD-IQ4_XS',
+      'Highest precision (99.5/100) + full 256k memory (7 GB expert cache)', QWEN_IQ4XS_GGUF, 262144, null, 'q8_0', {
+      modelGroup: 'Qwen3.6-35B-A3B',
+      cpuMoe: true,
+      moeCacheMib: 7168,
+      cacheRam: 1024
     }),
-  'llamacpp-qwen38-iq3s-150k-q4': llamaProfile('llamacpp-qwen38-iq3s-150k-q4', 'GSQ-RCO-IQ3_S',
-    'Dense 27B GSQ-RCO: highest precision & zero-error staging', QWEN38_IQ3S_GGUF, 150000, null, 'q4_0', {
-      modelGroup: 'Qwen3.8-27B',
-      ubatchSize: 512,
-      serverExe: QWEN38_SERVER_EXE
-    }),
-  'llamacpp-iq3xxs-120k-q8': llamaProfile('llamacpp-iq3xxs-120k-q8', 'IQ3_XXS',
-    'Every expert on the GPU: legacy IQ3_XXS setup', QWEN_IQ3XXS_GGUF, 120000, 0, 'q8_0'),
-  'llamacpp-iq3xxs-128k': llamaProfile('llamacpp-iq3xxs-128k', 'IQ3_XXS',
-    'Twice the IQ3_XXS context and the fastest replies', QWEN_IQ3XXS_GGUF, 131072, 4),
-  'llamacpp-iq3xxs-256k': llamaProfile('llamacpp-iq3xxs-256k', 'IQ3_XXS',
-    'Legacy IQ3_XXS 256k setup', QWEN_IQ3XXS_GGUF, 262144, 18)
-};
+    'llamacpp-iq3xxs-120k-q8': llamaProfile('llamacpp-iq3xxs-120k-q8', 'IQ3_XXS',
+      'Every expert on the GPU: legacy IQ3_XXS setup', QWEN_IQ3XXS_GGUF, 120000, 0, 'q8_0'),
+    'llamacpp-iq3xxs-128k': llamaProfile('llamacpp-iq3xxs-128k', 'IQ3_XXS',
+      'Twice the IQ3_XXS context and the fastest replies', QWEN_IQ3XXS_GGUF, 131072, 4),
+    'llamacpp-iq3xxs-256k': llamaProfile('llamacpp-iq3xxs-256k', 'IQ3_XXS',
+      'Legacy IQ3_XXS 256k setup', QWEN_IQ3XXS_GGUF, 262144, 18)
+  };
 
-function isLlamaProfile(profile) {
-  return !!profile && profile.engine === 'llamacpp';
+  function isLlamaProfile(profile) {
+    return !!profile && profile.engine === 'llamacpp';
 }
 
-/** llama-server.exe: profile override, else LLAMACPP_SERVER, else the one Ollama installs (CUDA build). */
+/** llama-server.exe: profile override, else LLAMACPP_SERVER, else local llama.cpp v1.1.0, else Ollama's CUDA build. */
 function resolveServerExe(profile = null) {
   const candidates = [
     profile?.serverExe,
     process.env.LLAMACPP_SERVER,
+    DEFAULT_SERVER_EXE,
     process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Programs', 'Ollama', 'lib', 'ollama', 'llama-server.exe')
   ].filter(Boolean);
   const found = candidates.find(f => fs.existsSync(f));
@@ -126,7 +131,8 @@ function serverArgs(profile, port) {
     '--ctx-size', String(profile.contextTokens),
     '--parallel', '1',
     '--n-gpu-layers', '99',
-    ...(profile.nCpuMoe !== null && profile.nCpuMoe !== undefined ? ['--n-cpu-moe', String(profile.nCpuMoe)] : []),
+    ...(profile.cpuMoe ? ['--cpu-moe'] : profile.nCpuMoe !== null && profile.nCpuMoe !== undefined ? ['--n-cpu-moe', String(profile.nCpuMoe)] : []),
+    ...(profile.moeCacheMib > 0 ? ['--moe-cache-mib', String(profile.moeCacheMib)] : []),
     '--flash-attn', 'on',
     '--batch-size', '2048',
     '--ubatch-size', String(profile.ubatchSize || 2048),
@@ -136,9 +142,9 @@ function serverArgs(profile, port) {
     // (default false in requestExtras) without restarting llama-server.
     '--reasoning', 'auto',
     // A RAM prompt cache, so a short unrelated request (a RAG rerank, another tab) does not
-    // evict the conversation's prefix. 2 GB: the 256k setup leaves ~4 GB free, and the default
-    // (8 GB) once starved Docker's MongoDB.
-    '--cache-ram', '2048',
+    // evict the conversation's prefix. 2 GB (or 1 GB on UD-IQ4_XS): the default (8 GB) once
+    // starved Docker's MongoDB.
+    '--cache-ram', String(profile.cacheRam ?? 2048),
     ...(profile.kvCache && profile.kvCache !== 'f16'
       ? ['--cache-type-k', profile.kvCache, '--cache-type-v', profile.kvCache] : []),
     '--jinja',

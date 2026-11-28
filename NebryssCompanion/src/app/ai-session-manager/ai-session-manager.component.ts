@@ -126,7 +126,7 @@ export class AiSessionManagerComponent implements OnInit, AfterViewChecked {
     'iq2m-120k': 'unfold_more',
     'llamacpp-q2kxl-150k-q8': 'bolt',
     'llamacpp-q2kxl-256k-q8': 'storage',
-    'llamacpp-qwen38-iq3s-150k-q4': 'gps_fixed',
+    'llamacpp-iq4xs-256k-q8': 'gps_fixed',
     'llamacpp-iq3xxs-120k-q8': 'speed',
     'llamacpp-iq3xxs-128k': 'speed',
     'llamacpp-iq3xxs-256k': 'all_inclusive'
